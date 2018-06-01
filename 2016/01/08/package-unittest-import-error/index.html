@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>Python自定义包下不同目录单元测试的导入错误 | 随风</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="需求驱动学习。  前言嗯，很绕口的标题 最近的项目需要把编写的工具放到tools目录，把单元测试放到test目录，造成了不同目录下导入（import）的错误。基础原因很简单，Python无法找到要导入的文件，而解决这个问题的根本方法，是向sys.path中添加搜索路径，如果手动添加，太俗了不是么。">
+<meta name="keywords" content="Python,Package,单元测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python自定义包下不同目录单元测试的导入错误">
+<meta property="og:url" content="http://shitaibin.github.io/2016/01/08/package-unittest-import-error/index.html">
+<meta property="og:site_name" content="随风">
+<meta property="og:description" content="需求驱动学习。  前言嗯，很绕口的标题 最近的项目需要把编写的工具放到tools目录，把单元测试放到test目录，造成了不同目录下导入（import）的错误。基础原因很简单，Python无法找到要导入的文件，而解决这个问题的根本方法，是向sys.path中添加搜索路径，如果手动添加，太俗了不是么。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-31T05:57:23.129Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python自定义包下不同目录单元测试的导入错误">
+<meta name="twitter:description" content="需求驱动学习。  前言嗯，很绕口的标题 最近的项目需要把编写的工具放到tools目录，把单元测试放到test目录，造成了不同目录下导入（import）的错误。基础原因很简单，Python无法找到要导入的文件，而解决这个问题的根本方法，是向sys.path中添加搜索路径，如果手动添加，太俗了不是么。">
+  
+    <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="http://7xixtr.com1.z0.glb.clouddn.com/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">随风</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">随风而起，随风而散</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>Menu</li>
+						<li>Tags</li>
+						
+						
+						<li>About</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/Shitaibin" title="github">github</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/Github/" style="font-size: 10px;">Github</a> <a href="/tags/Github-Pages/" style="font-size: 10px;">Github Pages</a> <a href="/tags/Hexo/" style="font-size: 20px;">Hexo</a> <a href="/tags/JOS/" style="font-size: 10px;">JOS</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Package/" style="font-size: 12.5px;">Package</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/TADM/" style="font-size: 17.5px;">TADM</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/fork/" style="font-size: 10px;">fork</a> <a href="/tags/malloc/" style="font-size: 10px;">malloc</a> <a href="/tags/pthread/" style="font-size: 10px;">pthread</a> <a href="/tags/动态规划/" style="font-size: 10px;">动态规划</a> <a href="/tags/单元测试/" style="font-size: 15px;">单元测试</a> <a href="/tags/图论/" style="font-size: 10px;">图论</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/并发/" style="font-size: 10px;">并发</a> <a href="/tags/待办/" style="font-size: 10px;">待办</a> <a href="/tags/思考/" style="font-size: 12.5px;">思考</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/排序/" style="font-size: 10px;">排序</a> <a href="/tags/搜索/" style="font-size: 12.5px;">搜索</a> <a href="/tags/操作系统/" style="font-size: 12.5px;">操作系统</a> <a href="/tags/数据挖掘/" style="font-size: 10px;">数据挖掘</a> <a href="/tags/机器学习/" style="font-size: 10px;">机器学习</a> <a href="/tags/机试/" style="font-size: 10px;">机试</a> <a href="/tags/栈/" style="font-size: 10px;">栈</a> <a href="/tags/特征/" style="font-size: 10px;">特征</a> <a href="/tags/编程语言/" style="font-size: 10px;">编程语言</a> <a href="/tags/面试/" style="font-size: 17.5px;">面试</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">随风</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="http://7xixtr.com1.z0.glb.clouddn.com/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">随风</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">随风而起，随风而散</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/Shitaibin" title="github">github</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-package-unittest-import-error" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/01/08/package-unittest-import-error/" class="article-date">
+  	<time datetime="2016-01-08T13:51:23.000Z" itemprop="datePublished">2016-01-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Python自定义包下不同目录单元测试的导入错误
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Package/">Package</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/单元测试/">单元测试</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>需求驱动学习。</p>
+</blockquote>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>嗯，很绕口的标题</p>
+<p>最近的项目需要把编写的工具放到tools目录，把单元测试放到test目录，造成了不同目录下导入（import）的错误。<strong>基础原因很简单，Python无法找到要导入的文件，而解决这个问题的根本方法，是向<code>sys.path</code>中添加搜索路径，如果手动添加，太俗了不是么。</strong></p>
+<a id="more"></a>
+<p>所以，本文内容为包（Package）和单元测试的结合笔记。从基本的单元测试，到多目录级的单元测试。单元测试使用PyUnit和nose。</p>
+<p>所以，假设你已经有编写过单元测试的基础经历，但nose可以不了解，只需要知道如何安装和运行即可，若不了解，可参考<a href="https://nose.readthedocs.org/en/latest/" target="_blank" rel="noopener">本页面</a>。</p>
+<h1 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h1><p>为了方便些笔记，该实验都是在Window上进行的，实验4为了使用nose，nose部分在Ubuntu上进行。</p>
+<h2 id="1-基础导入测试"><a href="#1-基础导入测试" class="headerlink" title="1. 基础导入测试"></a>1. 基础导入测试</h2><p>当前文件结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foo</span><br><span class="line">	./bar.py</span><br><span class="line">	./test_bar.py</span><br></pre></td></tr></table></figure>
+<p><code>bar.py</code>内容如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dumb_true</span><span class="params">()</span>:</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">True</span></span><br></pre></td></tr></table></figure>
+<p><code>test_bar.py</code>内容如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> bar</span><br></pre></td></tr></table></figure>
+<p>运行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd foo</span><br><span class="line">python test_bar.py</span><br></pre></td></tr></table></figure>
+<p><strong><code>python</code>命令会将运行文件所在目录加到<code>sys.path</code>中</strong>，因此python可以搜索到模块<code>bar.py</code>，所以导入成功。</p>
+<p>运行结果：无错误提示， 能导入模块bar。</p>
+<h2 id="2-基础单元测试"><a href="#2-基础单元测试" class="headerlink" title="2. 基础单元测试"></a>2. 基础单元测试</h2><p>修改<code>test_bar.py</code>内容为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> bar</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestBar</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_bar_true</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.assertTrue(bar.dumb_true())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> bar <span class="keyword">import</span> dumb_true</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestBar</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_bar_true</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.assertTrue(dumb_true())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
+<p>运行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd foo</span><br><span class="line">python test_bar.py</span><br></pre></td></tr></table></figure>
+<p>运行结果：单元测试成功，说明可以从<code>test_bar.py</code>内调用<code>bar.dumb_true</code>函数。</p>
+<h2 id="3-不同目录下的单元测试"><a href="#3-不同目录下的单元测试" class="headerlink" title="3. 不同目录下的单元测试"></a>3. 不同目录下的单元测试</h2><p>这起源于构建package后，通常把单元测试放到单独的<code>tests</code>目录。<strong>tests在包的外面，和包在相同的目录。</strong></p>
+<p>目录结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">my_project</span><br><span class="line">	./foo</span><br><span class="line">		./__init__.py</span><br><span class="line">		./bar.py</span><br><span class="line">	./tests</span><br><span class="line">        ./__init__.py</span><br><span class="line">		./test_foo.py</span><br><span class="line">		./test_bar.py</span><br></pre></td></tr></table></figure>
+<p>其中，<code>my_project</code>是你的项目目录，<code>foo</code>是包目录。<code>tests</code>目录存放了对工程的单元测试。<code>foo</code>目录下的<code>__init__.py</code>使得，foo是一个包，也就说目录下有<code>__init__.py</code>的目录都是包。</p>
+<p>在本实验中单元测试的对象是包<code>foo</code>下的<code>bar.py</code>文件。</p>
+<p><code>bar.py</code>文件内容如实验1与实验2，在本系列实验中，<code>bar.py</code>的内容始终保持不变。</p>
+<p><code>__init__.py</code>和<code>test_foo.py</code>内容全部为空。</p>
+<p>修改<code>test_bar.py</code>内容为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> foo <span class="keyword">import</span> bar</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestBar</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_bar_true</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.assertTrue(bar.dumb_true())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
+<p>运行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd my_project</span><br><span class="line">python -m unittest discover #自动发现测试文件，并测试</span><br></pre></td></tr></table></figure>
+<p><strong>unittest的命令行接口，会把当前的路径(运行<code>python -m unittest</code>命令的路径，关于该验证，可以看本文末尾)加入到<code>sys.path</code>中</strong>，因此Python可以搜索到包<code>foo</code>，所以在<code>test_bar.py</code>中，可以直接使用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> foo <span class="keyword">import</span> bar</span><br></pre></td></tr></table></figure>
+<p>运行结果：单元测试成功，说明可以从<code>test_bar.py</code>内调用<code>foo.bar.dumb_true</code>函数。</p>
+<p>但是当我把<code>test_bar.py</code>修改为如下时：直接导入dumb_true函数，出现了一个错误。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> foo.bar <span class="keyword">import</span> dumb_tree  <span class="comment"># look here</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestBar</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_bar_true</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.assertTrue(dumb_true())  <span class="comment"># and here</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
+<p>错误是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">E</span><br><span class="line">======================================================================</span><br><span class="line">ERROR: tests.test_bar (unittest.loader.ModuleImportFailure)</span><br><span class="line">----------------------------------------------------------------------</span><br><span class="line">ImportError: Failed to import test module: tests.test_bar</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;C:\Anaconda\lib\unittest\loader.py&quot;, line 254, in _find_tests</span><br><span class="line">    module = self._get_module_from_name(name)</span><br><span class="line">  File &quot;C:\Anaconda\lib\unittest\loader.py&quot;, line 232, in _get_module_from_name</span><br><span class="line">    __import__(name)</span><br><span class="line">  File &quot;C:\Users\Brave\PycharmProjects\learn-python\py2\my_project\tests\test_bar.py&quot;, line 3, in &lt;module&gt;</span><br><span class="line">    from foo.bar import dumb_tree</span><br><span class="line">ImportError: cannot import name dumb_tree</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">----------------------------------------------------------------------</span><br><span class="line">Ran 1 test in 0.000s</span><br><span class="line"></span><br><span class="line">FAILED (errors=1)</span><br></pre></td></tr></table></figure>
+<p>从<code>ImportError: cannot import name dumb_tree</code>可以看出，是我的拼写错误，但是我找了几次才发现这个错误的，错误总是发生在意想不到的地方。</p>
+<p>也许你认为这个错误很Silly，但我认为，拼写错误是常见的，但看了几次才发现错误，确实很Silly。</p>
+<p>将<code>dumb_tree</code>改为<code>dumb_true</code>后，单元测试成功。</p>
+<h2 id="4-如果my-project是一个包呢"><a href="#4-如果my-project是一个包呢" class="headerlink" title="4. 如果my_project是一个包呢"></a>4. 如果my_project是一个包呢</h2><p>如果我将my_project改为一个包，<strong>tests是包的一部分。</strong>为了理解，我将my_project改为my_package。</p>
+<p>目录结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">my_package</span><br><span class="line">	./__init__.py</span><br><span class="line">	./foo</span><br><span class="line">		./__init__.py</span><br><span class="line">		./bar.py</span><br><span class="line">	./tests</span><br><span class="line">        ./__init__.py</span><br><span class="line">		./test_foo.py</span><br><span class="line">		./test_bar.py</span><br></pre></td></tr></table></figure>
+<p>这些my_package下多了一个<code>./__init__.py</code>，它变成包了。</p>
+<p>现在不修改任何内容，我们重新运行单元测试命令，看会得到什么结果。</p>
+<p><strong>单元测试成功，因为依然遵循了unittest的命令行接口，会把当前的路径加入到<code>sys.path</code>中</strong>的原则。</p>
+<p>假若我将<code>test_bar.py</code>修改为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> my_package.foo.bar <span class="keyword">import</span> dumb_true  <span class="comment"># look here</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestBar</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_bar_true</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.assertTrue(dumb_true())  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
+<p>我们重新运行单元测试命令，得到了错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">E</span><br><span class="line">======================================================================</span><br><span class="line">ERROR: tests.test_bar (unittest.loader.ModuleImportFailure)</span><br><span class="line">----------------------------------------------------------------------</span><br><span class="line">ImportError: Failed to import test module: tests.test_bar</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;C:\Anaconda\lib\unittest\loader.py&quot;, line 254, in _find_tests</span><br><span class="line">    module = self._get_module_from_name(name)</span><br><span class="line">  File &quot;C:\Anaconda\lib\unittest\loader.py&quot;, line 232, in _get_module_from_name</span><br><span class="line">    __import__(name)</span><br><span class="line">  File &quot;C:\Users\Brave\PycharmProjects\learn-python\py2\my_package\tests\test_bar.py&quot;, line 3, in &lt;module&gt;</span><br><span class="line">    from my_package.foo.bar import dumb_true  # here</span><br><span class="line">ImportError: No module named my_package.foo.bar</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">----------------------------------------------------------------------</span><br><span class="line">Ran 1 test in 0.001s</span><br><span class="line"></span><br><span class="line">FAILED (errors=1)</span><br></pre></td></tr></table></figure>
+<p>错误显示，没有被命名为<code>my_package.foo.bar</code>的模块，说白了，是他没找到这个模块。那么怎么才能成功运行单元测试呢？既然本质是没有在搜索路径中，那么只要能让my_package在搜索路径中即可。</p>
+<p><strong>猜测解决方案1：</strong>在my_package的父目录运行单元测试命令。经测试成功。<br><strong>猜测解决方案2：</strong>修改文件，手动将<code>my_package</code>的父目录添加到<code>sys.path</code>中。</p>
+<p>在<code>test_bar.py</code>行首添加：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line">sys.path.append(<span class="string">"../../"</span>)  <span class="comment"># 相对路径：相对于test_bar.py的路径</span></span><br></pre></td></tr></table></figure>
+<p>然后</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd tests</span><br><span class="line">python test_bar.py</span><br></pre></td></tr></table></figure>
+<p>单元测试成功。</p>
+<h4 id="为什么我不是这样做呢？"><a href="#为什么我不是这样做呢？" class="headerlink" title="为什么我不是这样做呢？"></a>为什么我不是这样做呢？</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd my_package</span><br><span class="line">python test_bar.py</span><br></pre></td></tr></table></figure>
+<p>这样本错误依然存在。在实验1中提到，python会搜索文件所在的路径，而不是添加到<code>sys.path</code>中，如今，我使用的是相对于<code>test_bar.py</code>的路径，必须在tests目录运行，python才会搜索<code>test_bar.py</code>的祖父目录，这样才能找到<code>my_package.foo.bar</code>。在my_packge目录中运行，my_package的祖父目录找不到<code>my_package.foo.bar</code>。</p>
+<p><strong>猜测解决方案3：</strong>使用nose，nose很人性化，它会将运行nosetests的目录，及其子目录下所有测试文件，所引用到的模块，自动加入到<code>sys.path</code>中，使用nose通常很少遇到导入问题。*该方案是在Ubuntu下实验的**。</p>
+<h2 id="附件测试：unittest命令行接口会改变sys-path"><a href="#附件测试：unittest命令行接口会改变sys-path" class="headerlink" title="附件测试：unittest命令行接口会改变sys.path"></a>附件测试：unittest命令行接口会改变<code>sys.path</code></h2><p>目录结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">outter_dir</span><br><span class="line">	./inner_dir</span><br><span class="line">		./__init__.py</span><br><span class="line">		./test.py</span><br></pre></td></tr></table></figure>
+<p><code>test.py</code>内容如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pprint <span class="keyword">import</span> pprint</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line">pprint(sys.path)</span><br></pre></td></tr></table></figure>
+<p><strong>1. python命令:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd outter_dir</span><br><span class="line">python inner_dir\test.py  # in linux is :python inner_dir/test.py</span><br></pre></td></tr></table></figure>
+<p>结果中包含的是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\\Users\\Brave\\PycharmProjects\\learn-python\\py2\\test\\outter_dir\\inner_dir</span><br></pre></td></tr></table></figure>
+<p><strong>1. python -m unittest命令:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd outter_dir</span><br><span class="line">python  -m unittest discover</span><br></pre></td></tr></table></figure>
+<p>结果中包含的是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\\Users\\Brave\\PycharmProjects\\learn-python\\py2\\test\\outter_dir</span><br></pre></td></tr></table></figure>
+<p>本实验证明了，<code>python</code>命令会将运行文件所在目录加到<code>sys.path</code>中，而<code>python -m unittest</code>命令，将运行命令所在目录加入到<code>sys.path</code>中。</p>
+<h2 id="包与单元测试的实验终结"><a href="#包与单元测试的实验终结" class="headerlink" title="包与单元测试的实验终结"></a>包与单元测试的实验终结</h2><p>到目前的实验为止，已经知道相同目录下的单元测试，单元测试在包外，单元测试在包内的三种情况，及相应的单元测试方法。</p>
+<p>其实，本质上讲，还是要让导入的包处于搜索路径内，所以，无论是如何放置单元测试，一定要让他们在搜索路径内。实验3与实验4是两种常用的目录组织方式，实验4需要稍作处理，sklearn使用的即实验4的组织方式，它的解决方案是修改了顶层<code>__init__.py</code>做了处理，但我还没有搞懂，有兴趣的可访问：<br><a href="https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/__init__.py" target="_blank" rel="noopener">https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/__init__.py</a> 。</p>
+<p>相关文章：<a href="#">对自定义包的引用</a></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<li>StackOverflow：<a href="http://stackoverflow.com/questions/1896918/running-unittest-with-typical-test-directory-structure" target="_blank" rel="noopener">http://stackoverflow.com/questions/1896918/running-unittest-with-typical-test-directory-structure</a></li>
+<li>A simple instance: <a href="https://schettino72.wordpress.com/2008/01/19/11/" target="_blank" rel="noopener">https://schettino72.wordpress.com/2008/01/19/11/</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/09/project-and-custom-package/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          对自定义包的引用
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/07/never-stop-learning/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">不要限制学习</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+    <a class="jiathis_button_twitter"></a>
+    <a class="jiathis_button_plus"></a> 
+    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="package-unittest-import-error" data-title="Python自定义包下不同目录单元测试的导入错误" data-url="http://shitaibin.github.io/2016/01/08/package-unittest-import-error/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2018 随风
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>

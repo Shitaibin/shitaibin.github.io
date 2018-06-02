@@ -4,18 +4,20 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>Tag: TADM | 随风</title>
+  <title>重新安装Hexo博客的流程 | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="屌丝程序员的自留地#为搜索引擎留的">
-<meta property="og:type" content="website">
-<meta property="og:title" content="随风">
-<meta property="og:url" content="http://shitaibin.github.io/tags/TADM/index.html">
+  <meta name="description" content="流程 安装Hexo。 新建文件夹blog，然后进入。 hexo init。">
+<meta name="keywords" content="Hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重新安装Hexo博客的流程">
+<meta property="og:url" content="http://shitaibin.github.io/2018/06/02/redeploy-hexo-blog/index.html">
 <meta property="og:site_name" content="随风">
-<meta property="og:description" content="屌丝程序员的自留地#为搜索引擎留的">
+<meta property="og:description" content="流程 安装Hexo。 新建文件夹blog，然后进入。 hexo init。">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-02T01:00:03.193Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="随风">
-<meta name="twitter:description" content="屌丝程序员的自留地#为搜索引擎留的">
+<meta name="twitter:title" content="重新安装Hexo博客的流程">
+<meta name="twitter:description" content="流程 安装Hexo。 新建文件夹blog，然后进入。 hexo init。">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -164,146 +166,130 @@
 	</div>
 </nav>
 
-      <div class="body-wrap">
+      <div class="body-wrap"><article id="post-redeploy-hexo-blog" class="article article-type-post" itemscope itemprop="blogPost">
   
+    <div class="article-meta">
+      <a href="/2018/06/02/redeploy-hexo-blog/" class="article-date">
+  	<time datetime="2018-06-02T00:45:31.000Z" itemprop="datePublished">2018-06-02</time>
+</a>
+    </div>
   
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      重新安装Hexo博客的流程
+    </h1>
+  
+
+      </header>
       
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/">Hexo</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
     
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/" class="archive-article-date">
-  	<time datetime="2015-05-07T12:36:44.000Z" itemprop="datePublished">May 7</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/">算法设计手册第二版第六章课后习题解答</a>
-    </h1>
-  
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><ol>
+<li>安装Hexo。</li>
+<li>新建文件夹<code>blog</code>，然后进入。</li>
+<li><code>hexo init</code>。</li>
+</ol>
+<a id="more"></a>
+<ol>
+<li><code>hexo new &#39;find posts directory&#39;</code>，记录下新的post地址</li>
+<li>把备份的md文件放到新的post的地址，删除掉上一步新建的文件。</li>
+<li>把备份的<code>_config.yaml</code>配置文件中<strong>有用的选项</strong>放到新的配置文件中，不要覆盖进新版本的Hexo。</li>
+<li>建立<code>hexo_resource</code>分支，该分支用来存放hexo的配置和博文等文件。master分支留着给博客使用，存放的是博客的静态文件。</li>
+<li><code>hexo g &amp;&amp; hexo s</code>，本地预览效果。</li>
+<li>执行<code>hexo d</code>，生成的博客文件会上传到Github。</li>
+<li>在<code>hexo_resource</code>分支下工作即可，写完文章后，执行<code>sh deploy_and_backup_hexo_br.sh</code>，备份好分支，博客推送到远端。</li>
+</ol>
+<h1 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h1><ul>
+<li>deploy_and_backup_hexo_br.sh:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">git add .</span><br><span class="line">git commit -m &apos;auto backup&apos;</span><br><span class="line">git push origin hexo_resource</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+<h1 id="初次搭建Hexo"><a href="#初次搭建Hexo" class="headerlink" title="初次搭建Hexo"></a>初次搭建Hexo</h1><ul>
+<li><a href="/2015/05/01/Github-Pages-Hexo部署总结/">Github-Pages-Hexo部署总结</a></li>
+</ul>
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TADM/">TADM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试/">面试</a></li></ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    
   </div>
-</article>
   
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/05/07/Ch7-Exercises-and-Solutions-of-TADM2E/" class="archive-article-date">
-  	<time datetime="2015-05-07T12:36:44.000Z" itemprop="datePublished">May 7</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/07/Ch7-Exercises-and-Solutions-of-TADM2E/">算法设计手册第二版第七章课后习题解答</a>
-    </h1>
   
+    <a href="/2018/06/01/Mac-software-and-Chrom-app/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">必备Mac软件&amp;Chrome应用</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TADM/">TADM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试/">面试</a></li></ul>
+  
+</article>
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+    <a class="jiathis_button_twitter"></a>
+    <a class="jiathis_button_plus"></a> 
+    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
 	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
 
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/05/04/Ch5-Exercises-and-Solutions-of-TADM2E/" class="archive-article-date">
-  	<time datetime="2015-05-03T16:00:00.000Z" itemprop="datePublished">May 4</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/04/Ch5-Exercises-and-Solutions-of-TADM2E/">算法设计手册第二版第五章课后习题解答</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TADM/">TADM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/图论/">图论</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/搜索/">搜索</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试/">面试</a></li></ul>
-	</div>
 
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/05/01/Ch4-Exercises-and-Solutions-of-TADM2E/" class="archive-article-date">
-  	<time datetime="2015-05-01T10:39:02.000Z" itemprop="datePublished">May 1</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/01/Ch4-Exercises-and-Solutions-of-TADM2E/">算法设计手册第二版第四章课后习题解答</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TADM/">TADM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/搜索/">搜索</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试/">面试</a></li></ul>
-	</div>
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="redeploy-hexo-blog" data-title="重新安装Hexo博客的流程" data-url="http://shitaibin.github.io/2018/06/02/redeploy-hexo-blog/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
 
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
 
-    
 
 </div>
       <footer id="footer">
@@ -329,9 +315,9 @@
 		mathjax: true,
 		animate: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false
 	}

@@ -4,16 +4,20 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>随风</title>
+  <title>为什么要深入理解库/包/框架等工具 | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="随风">
-<meta property="og:url" content="http://shitaibin.github.io/404.html">
+  <meta name="description" content="以前太简单，太SB。认为学会使用一个工具就好了，干嘛非得了解这个工具是怎么构建的，理解他的原理呢？ 有段时间我想通了，但没有记录下来。许多事情运作的原理是相似的，举个车的例子吧。 汽车是一个工具，你努力学会了开车，你开车上路的时候，兴奋的不得了，开车上路了，感觉还不错，你飚到了200码，简直爽翻了。有一天，你的车子在路上抛锚了，但是你不了解汽车是怎么运作的，你也不会修车呀，只能打个电话联系修车厂，">
+<meta name="keywords" content="工具">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为什么要深入理解库&#x2F;包&#x2F;框架等工具">
+<meta property="og:url" content="http://shitaibin.github.io/2016/06/05/why-insight-to-tools/index.html">
 <meta property="og:site_name" content="随风">
+<meta property="og:description" content="以前太简单，太SB。认为学会使用一个工具就好了，干嘛非得了解这个工具是怎么构建的，理解他的原理呢？ 有段时间我想通了，但没有记录下来。许多事情运作的原理是相似的，举个车的例子吧。 汽车是一个工具，你努力学会了开车，你开车上路的时候，兴奋的不得了，开车上路了，感觉还不错，你飚到了200码，简直爽翻了。有一天，你的车子在路上抛锚了，但是你不了解汽车是怎么运作的，你也不会修车呀，只能打个电话联系修车厂，">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-31T05:57:23.123Z">
+<meta property="og:updated_time" content="2018-05-31T05:57:23.130Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="随风">
+<meta name="twitter:title" content="为什么要深入理解库&#x2F;包&#x2F;框架等工具">
+<meta name="twitter:description" content="以前太简单，太SB。认为学会使用一个工具就好了，干嘛非得了解这个工具是怎么构建的，理解他的原理呢？ 有段时间我想通了，但没有记录下来。许多事情运作的原理是相似的，举个车的例子吧。 汽车是一个工具，你努力学会了开车，你开车上路的时候，兴奋的不得了，开车上路了，感觉还不错，你飚到了200码，简直爽翻了。有一天，你的车子在路上抛锚了，但是你不了解汽车是怎么运作的，你也不会修车呀，只能打个电话联系修车厂，">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -162,11 +166,11 @@
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-why-insight-to-tools" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/404.html" class="article-date">
-  	<time datetime="2018-05-31T05:58:02.818Z" itemprop="datePublished">2018-05-31</time>
+      <a href="/2016/06/05/why-insight-to-tools/" class="article-date">
+  	<time datetime="2016-06-05T09:33:44.000Z" itemprop="datePublished">2016-06-05</time>
 </a>
     </div>
   
@@ -175,15 +179,69 @@
       <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      为什么要深入理解库/包/框架等工具
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <script type="text/javascript" src="http://www.qq.com/404/search_children.js" charset="utf-8" homepageurl="http://shitaibin.github.io" homepagename="回到我的主页"></script>
+        <p>以前太简单，太SB。认为学会使用一个工具就好了，干嘛非得了解这个工具是怎么构建的，理解他的原理呢？</p>
+<p>有段时间我想通了，但没有记录下来。许多事情运作的原理是相似的，举个车的例子吧。</p>
+<p>汽车是一个工具，你努力学会了开车，你开车上路的时候，兴奋的不得了，开车上路了，感觉还不错，你飚到了200码，简直爽翻了。有一天，你的车子在路上抛锚了，但是你不了解汽车是怎么运作的，你也不会修车呀，只能打个电话联系修车厂，把你的车子运回去。但是，这个修车厂的效率太低了，修的很慢，你还想到，万一你在沙漠里面开车子，找不到修车厂怎么办？所以，你学了汽车的一些原理，了解了构造，跟着学修车，有一天你出师了，汽车常见的问题，你基本可以解决了。这下把你乐坏了，开车去旅行，出了山海关，东北溜一圈，一路上各种小问题你都解决了。但你还是发现了很多问题，比如车子在雪地上跑的不行，上坡时也比较吃力。你觉得你必须学习改造这个车子了，在不同的环境下，让他发挥最好的性能。掌握了改造技术，进入内蒙古改造车子，让它在草原上飞起，到沙漠地带，你又改造车子，沙漠驰骋。这一路上，你看了许多美景，也学会了，开车、修车、改造车。</p>
+<p>以上故事，纯属瞎BB，如有雷同，纯属巧合。</p>
+<p>对我们使用的库、包、框架而言，他们也是工具，编程语言也是工具，服务器、PC、手机等等，都是工具。</p>
+<p>有些东西你需要掌握使用它的常用功能。但有些，需要你去改造它，让它适应不同的场景需求。所以我觉得，对于一门工具，应当有以下几个境界：</p>
+<ol>
+<li>掌握常用功能。</li>
+<li>见识一些奇淫巧计。</li>
+<li>掌握工具架构（骨骼）。</li>
+<li>洞察工具血肉。</li>
+<li>根据场景需求定制工具。</li>
+</ol>
+
       
     </div>
     
   </div>
   
     
+<nav id="article-nav">
+  
+    <a href="/2016/06/21/Big-Number-Add-for-Signed-Number/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          有符号数的大数减法
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/05/17/design-fork-with-COW-in-JOS/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">JOS中具有写时拷贝的fork设计</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
   
 </article>
 
@@ -213,7 +271,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="" data-title="" data-url="http://shitaibin.github.io/404.html"></div>
+	<div class="ds-thread" data-thread-key="why-insight-to-tools" data-title="为什么要深入理解库/包/框架等工具" data-url="http://shitaibin.github.io/2016/06/05/why-insight-to-tools/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
@@ -257,7 +315,7 @@
 		mathjax: true,
 		animate: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

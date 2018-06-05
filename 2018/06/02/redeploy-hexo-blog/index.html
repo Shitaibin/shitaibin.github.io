@@ -4,16 +4,20 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>随风</title>
+  <title>重新安装Hexo博客的流程 | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="随风">
-<meta property="og:url" content="http://shitaibin.github.io/404.html">
+  <meta name="description" content="流程 安装Hexo。 新建文件夹blog，然后进入。 hexo init。">
+<meta name="keywords" content="Hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重新安装Hexo博客的流程">
+<meta property="og:url" content="http://shitaibin.github.io/2018/06/02/redeploy-hexo-blog/index.html">
 <meta property="og:site_name" content="随风">
+<meta property="og:description" content="流程 安装Hexo。 新建文件夹blog，然后进入。 hexo init。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-31T05:57:23.123Z">
+<meta property="og:updated_time" content="2018-06-02T01:00:03.193Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="随风">
+<meta name="twitter:title" content="重新安装Hexo博客的流程">
+<meta name="twitter:description" content="流程 安装Hexo。 新建文件夹blog，然后进入。 hexo init。">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -162,11 +166,11 @@
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-redeploy-hexo-blog" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/404.html" class="article-date">
-  	<time datetime="2018-05-31T05:58:02.818Z" itemprop="datePublished">2018-05-31</time>
+      <a href="/2018/06/02/redeploy-hexo-blog/" class="article-date">
+  	<time datetime="2018-06-02T00:45:31.000Z" itemprop="datePublished">2018-06-02</time>
 </a>
     </div>
   
@@ -175,15 +179,78 @@
       <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      重新安装Hexo博客的流程
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/">Hexo</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <script type="text/javascript" src="http://www.qq.com/404/search_children.js" charset="utf-8" homepageurl="http://shitaibin.github.io" homepagename="回到我的主页"></script>
+        <h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><ol>
+<li>安装Hexo。</li>
+<li>新建文件夹<code>blog</code>，然后进入。</li>
+<li><code>hexo init</code>。</li>
+</ol>
+<a id="more"></a>
+<ol>
+<li><code>hexo new &#39;find posts directory&#39;</code>，记录下新的post地址</li>
+<li>把备份的md文件放到新的post的地址，删除掉上一步新建的文件。</li>
+<li>把备份的<code>_config.yaml</code>配置文件中<strong>有用的选项</strong>放到新的配置文件中，不要覆盖进新版本的Hexo。</li>
+<li>建立<code>hexo_resource</code>分支，该分支用来存放hexo的配置和博文等文件。master分支留着给博客使用，存放的是博客的静态文件。</li>
+<li><code>hexo g &amp;&amp; hexo s</code>，本地预览效果。</li>
+<li>执行<code>hexo d</code>，生成的博客文件会上传到Github。</li>
+<li>在<code>hexo_resource</code>分支下工作即可，写完文章后，执行<code>sh deploy_and_backup_hexo_br.sh</code>，备份好分支，博客推送到远端。</li>
+</ol>
+<h1 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h1><ul>
+<li>deploy_and_backup_hexo_br.sh:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">git add .</span><br><span class="line">git commit -m &apos;auto backup&apos;</span><br><span class="line">git push origin hexo_resource</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+<h1 id="初次搭建Hexo"><a href="#初次搭建Hexo" class="headerlink" title="初次搭建Hexo"></a>初次搭建Hexo</h1><ul>
+<li><a href="/2015/05/01/Github-Pages-Hexo部署总结/">Github-Pages-Hexo部署总结</a></li>
+</ul>
+
       
     </div>
     
   </div>
   
     
+<nav id="article-nav">
+  
+    <a href="/2018/06/02/etheruem-anti-distort/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          以太坊是如何防止篡改数据的？
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/01/Mac-software-and-Chrom-app/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">必备Mac软件&amp;Chrome应用</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
   
 </article>
 
@@ -213,7 +280,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="" data-title="" data-url="http://shitaibin.github.io/404.html"></div>
+	<div class="ds-thread" data-thread-key="redeploy-hexo-blog" data-title="重新安装Hexo博客的流程" data-url="http://shitaibin.github.io/2018/06/02/redeploy-hexo-blog/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
@@ -257,7 +324,7 @@
 		mathjax: true,
 		animate: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

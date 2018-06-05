@@ -4,16 +4,22 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>随风</title>
+  <title>JOS中具有写时拷贝的fork设计 | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="随风">
-<meta property="og:url" content="http://shitaibin.github.io/404.html">
+  <meta name="description" content="如果不高清fork的设计思想，是无法实现正确高效的fork。 JOS中写时拷贝的fork设计">
+<meta name="keywords" content="JOS,fork,操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JOS中具有写时拷贝的fork设计">
+<meta property="og:url" content="http://shitaibin.github.io/2016/05/17/design-fork-with-COW-in-JOS/index.html">
 <meta property="og:site_name" content="随风">
+<meta property="og:description" content="如果不高清fork的设计思想，是无法实现正确高效的fork。 JOS中写时拷贝的fork设计">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-31T05:57:23.123Z">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/fork%E8%AE%BE%E8%AE%A1.jpg">
+<meta property="og:updated_time" content="2018-05-31T05:57:23.128Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="随风">
+<meta name="twitter:title" content="JOS中具有写时拷贝的fork设计">
+<meta name="twitter:description" content="如果不高清fork的设计思想，是无法实现正确高效的fork。 JOS中写时拷贝的fork设计">
+<meta name="twitter:image" content="http://7xixtr.com1.z0.glb.clouddn.com/fork%E8%AE%BE%E8%AE%A1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -162,11 +168,11 @@
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-design-fork-with-COW-in-JOS" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/404.html" class="article-date">
-  	<time datetime="2018-05-31T05:58:02.818Z" itemprop="datePublished">2018-05-31</time>
+      <a href="/2016/05/17/design-fork-with-COW-in-JOS/" class="article-date">
+  	<time datetime="2016-05-17T05:44:39.000Z" itemprop="datePublished">2016-05-17</time>
 </a>
     </div>
   
@@ -175,15 +181,98 @@
       <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JOS中具有写时拷贝的fork设计
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JOS/">JOS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/fork/">fork</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/操作系统/">操作系统</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <script type="text/javascript" src="http://www.qq.com/404/search_children.js" charset="utf-8" homepageurl="http://shitaibin.github.io" homepagename="回到我的主页"></script>
+        <p>如果不高清fork的设计思想，是无法实现正确高效的fork。</p>
+<h1 id="JOS中写时拷贝的fork设计"><a href="#JOS中写时拷贝的fork设计" class="headerlink" title="JOS中写时拷贝的fork设计"></a>JOS中写时拷贝的fork设计</h1><p><img src="http://7xixtr.com1.z0.glb.clouddn.com/fork%E8%AE%BE%E8%AE%A1.jpg" alt="JOS中写时拷贝的fork设计"></p>
+<a id="more"></a>
+<hr>
+<h1 id="内核态"><a href="#内核态" class="headerlink" title="内核态"></a>内核态</h1><h5 id="kern-syscall-c-sys-exofork"><a href="#kern-syscall-c-sys-exofork" class="headerlink" title="kern/syscall.c/sys_exofork():"></a>kern/syscall.c/sys_exofork():</h5><ol>
+<li>分配新的Env结构体</li>
+<li>拷贝父进程的trapframe（主要为寄存器信息）</li>
+<li>设置eax寄存器为0（eax存放返回值）</li>
+<li>返回新进程的eid</li>
+</ol>
+<h5 id="kern-syscall-c-sys-env-set-pgfault-upcall"><a href="#kern-syscall-c-sys-env-set-pgfault-upcall" class="headerlink" title="kern/syscall.c/sys_env_set_pgfault_upcall():"></a>kern/syscall.c/sys_env_set_pgfault_upcall():</h5><ol>
+<li>在Env结构体中设置upcall，本质：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env-&gt;env_pgfault_upcall = _pgfault_upcall</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h5 id="kern-trap-c-pgfault-handler"><a href="#kern-trap-c-pgfault-handler" class="headerlink" title="kern/trap.c/pgfault_handler():"></a>kern/trap.c/pgfault_handler():</h5><ol>
+<li>内核缺页，panic</li>
+<li>如果设置了<code>env_pgfault_upcall</code>，则调用<code>_pgfault_upcall</code>。</li>
+</ol>
+<hr>
+<h1 id="用户态"><a href="#用户态" class="headerlink" title="用户态"></a>用户态</h1><h5 id="lib-fork-c-fork"><a href="#lib-fork-c-fork" class="headerlink" title="lib/fork.c/fork():"></a>lib/fork.c/fork():</h5><ol>
+<li>set_pgfault_handler()，设置用户态异常栈，以及设置用户态异常入口<code>_pgfault_upcall</code></li>
+<li>sys_exo_fork()，创建子进程</li>
+<li>子进程返回，父进程继续</li>
+<li>duppage()，复制父进程地址空间到子进程，实现共享内存，设置COW</li>
+<li>sys_env_set_pgfault_upcall()，为子进程设置户态异常入口<code>_pgfault_upcall</code></li>
+<li>sys_env_set_status()，修改子进程状态</li>
+</ol>
+<h5 id="lib-pgfault-c-set-pgfault-handler"><a href="#lib-pgfault-c-set-pgfault-handler" class="headerlink" title="lib/pgfault.c/set_pgfault_handler():"></a>lib/pgfault.c/set_pgfault_handler():</h5><ol>
+<li>如果没有设置用户态异常栈（异常处理函数运行的地方），设置用户态异常栈</li>
+<li>设置用户态异常入口<code>_pgfault_upcall</code></li>
+<li>只会被父进程调用</li>
+</ol>
+<h5 id="lib-fork-c-duppage"><a href="#lib-fork-c-duppage" class="headerlink" title="lib/fork.c/duppage():"></a>lib/fork.c/duppage():</h5><ol>
+<li>把虚地址页映射到制定进程的地址空间</li>
+</ol>
+<h5 id="lib-pfentry-S-pgfault-upcall"><a href="#lib-pfentry-S-pgfault-upcall" class="headerlink" title="lib/pfentry.S/_pgfault_upcall"></a>lib/pfentry.S/_pgfault_upcall</h5><ol>
+<li>调用lib/fork.c/pgfault()</li>
+</ol>
+<h5 id="lib-fork-c-pgfault"><a href="#lib-fork-c-pgfault" class="headerlink" title="lib/fork.c/pgfault():"></a>lib/fork.c/pgfault():</h5><ol>
+<li>如果页异常的页是COW属性</li>
+<li>创建临时页，属性可读写，原数据拷贝到临时页，临时页映射到页异常进程的该页</li>
+</ol>
+
       
     </div>
     
   </div>
   
     
+<nav id="article-nav">
+  
+    <a href="/2016/06/05/why-insight-to-tools/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          为什么要深入理解库/包/框架等工具
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/26/why-from-right-to-left-push-variables-into-stack/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">为什么参数从右到左进栈</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
   
 </article>
 
@@ -213,7 +302,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="" data-title="" data-url="http://shitaibin.github.io/404.html"></div>
+	<div class="ds-thread" data-thread-key="design-fork-with-COW-in-JOS" data-title="JOS中具有写时拷贝的fork设计" data-url="http://shitaibin.github.io/2016/05/17/design-fork-with-COW-in-JOS/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
@@ -257,7 +346,7 @@
 		mathjax: true,
 		animate: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

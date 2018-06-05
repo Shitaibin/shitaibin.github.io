@@ -4,16 +4,20 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>随风</title>
+  <title>Python单元测试实践 | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="随风">
-<meta property="og:url" content="http://shitaibin.github.io/404.html">
+  <meta name="description" content="本文主要记录使用Python单元测试时，遇到的问题及解决办法。随着使用的增多，将会遇到更多的问题，与更多的单元测试方法。  常用的有： 12assertTrue, assertFalseassertEqual">
+<meta name="keywords" content="Python,单元测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python单元测试实践">
+<meta property="og:url" content="http://shitaibin.github.io/2015/12/22/python-unittest-in-action/index.html">
 <meta property="og:site_name" content="随风">
+<meta property="og:description" content="本文主要记录使用Python单元测试时，遇到的问题及解决办法。随着使用的增多，将会遇到更多的问题，与更多的单元测试方法。  常用的有： 12assertTrue, assertFalseassertEqual">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-31T05:57:23.123Z">
+<meta property="og:updated_time" content="2018-05-31T05:57:23.131Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="随风">
+<meta name="twitter:title" content="Python单元测试实践">
+<meta name="twitter:description" content="本文主要记录使用Python单元测试时，遇到的问题及解决办法。随着使用的增多，将会遇到更多的问题，与更多的单元测试方法。  常用的有： 12assertTrue, assertFalseassertEqual">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -162,11 +166,11 @@
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-python-unittest-in-action" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/404.html" class="article-date">
-  	<time datetime="2018-05-31T05:58:02.818Z" itemprop="datePublished">2018-05-31</time>
+      <a href="/2015/12/22/python-unittest-in-action/" class="article-date">
+  	<time datetime="2015-12-22T03:09:25.000Z" itemprop="datePublished">2015-12-22</time>
 </a>
     </div>
   
@@ -175,15 +179,66 @@
       <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Python单元测试实践
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/单元测试/">单元测试</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <script type="text/javascript" src="http://www.qq.com/404/search_children.js" charset="utf-8" homepageurl="http://shitaibin.github.io" homepagename="回到我的主页"></script>
+        <blockquote>
+<p>本文主要记录使用Python单元测试时，遇到的问题及解决办法。随着使用的增多，将会遇到更多的问题，与更多的单元测试方法。</p>
+</blockquote>
+<p>常用的有：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">assertTrue, assertFalse</span><br><span class="line">assertEqual</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="assertRaises引发的错误"><a href="#assertRaises引发的错误" class="headerlink" title="assertRaises引发的错误"></a>assertRaises引发的错误</h3><p>某天，我在程序中设置了Raise异常，如何让单元测试捕获异常呢？当然首先查了<a href="https://docs.python.org/2/library/unittest.html#unittest.TestCase.assertRaises" target="_blank" rel="noopener">Python文档</a>，但结果一运行就出现了错误，无法捕获异常，然后求助了<a href="http://stackoverflow.com/questions/6103825/how-to-properly-use-unit-testings-assertraises-with-nonetype-objects" target="_blank" rel="noopener">StackOverflow</a>，呵呵一笑，仍然没有解决，然后求助Google，得到一篇文章：<a href="http://www.lengrand.fr/2011/12/pythonunittest-assertraises-raises-error/" target="_blank" rel="noopener">Python/Unittest: assertRaises raises Error </a>，<strong>问题描述如博文一致，只是出错问题不同罢了</strong>，也按其中的方法解决了，但是没有给出为何这样使用？</p>
+<p>解决方法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.assertRaises(TypeError, <span class="keyword">lambda</span>: test_function(params))</span><br></pre></td></tr></table></figure>
+<h3 id="包的单元测试导入错误"><a href="#包的单元测试导入错误" class="headerlink" title="包的单元测试导入错误"></a>包的单元测试导入错误</h3><p>请看文章<a href="/2016/01/08/package-unittest-import-error/">Python自定义包下不同目录单元测试的导入错误</a></p>
+
       
     </div>
     
   </div>
   
     
+<nav id="article-nav">
+  
+    <a href="/2015/12/27/things-about-github/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Github二三事
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/12/21/think-about-personal-management/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">个人管理的思考</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
   
 </article>
 
@@ -213,7 +268,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="" data-title="" data-url="http://shitaibin.github.io/404.html"></div>
+	<div class="ds-thread" data-thread-key="python-unittest-in-action" data-title="Python单元测试实践" data-url="http://shitaibin.github.io/2015/12/22/python-unittest-in-action/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
@@ -257,7 +312,7 @@
 		mathjax: true,
 		animate: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

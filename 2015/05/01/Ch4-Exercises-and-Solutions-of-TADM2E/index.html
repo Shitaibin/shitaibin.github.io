@@ -4,16 +4,20 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>随风</title>
+  <title>算法设计手册第二版第四章课后习题解答 | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="随风">
-<meta property="og:url" content="http://shitaibin.github.io/404.html">
+  <meta name="description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Sorting-searching-TADM2E 我的解答面试问题4-45题目 Given a search string of three words, find the smallest snippet of">
+<meta name="keywords" content="TADM,排序,搜索,面试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法设计手册第二版第四章课后习题解答">
+<meta property="og:url" content="http://shitaibin.github.io/2015/05/01/Ch4-Exercises-and-Solutions-of-TADM2E/index.html">
 <meta property="og:site_name" content="随风">
+<meta property="og:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Sorting-searching-TADM2E 我的解答面试问题4-45题目 Given a search string of three words, find the smallest snippet of">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-31T05:57:23.123Z">
+<meta property="og:updated_time" content="2018-05-31T05:57:23.129Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="随风">
+<meta name="twitter:title" content="算法设计手册第二版第四章课后习题解答">
+<meta name="twitter:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Sorting-searching-TADM2E 我的解答面试问题4-45题目 Given a search string of three words, find the smallest snippet of">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -162,11 +166,11 @@
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Ch4-Exercises-and-Solutions-of-TADM2E" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/404.html" class="article-date">
-  	<time datetime="2018-05-31T05:58:02.818Z" itemprop="datePublished">2018-05-31</time>
+      <a href="/2015/05/01/Ch4-Exercises-and-Solutions-of-TADM2E/" class="article-date">
+  	<time datetime="2015-05-01T10:39:02.000Z" itemprop="datePublished">2015-05-01</time>
 </a>
     </div>
   
@@ -175,15 +179,86 @@
       <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      算法设计手册第二版第四章课后习题解答
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TADM/">TADM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/搜索/">搜索</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试/">面试</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <script type="text/javascript" src="http://www.qq.com/404/search_children.js" charset="utf-8" homepageurl="http://shitaibin.github.io" homepagename="回到我的主页"></script>
+        <blockquote>
+<p>列出的解答仅为自己的思路，仅供参考，欢迎指出错误。</p>
+</blockquote>
+<h2 id="题目Wiki及参考答案"><a href="#题目Wiki及参考答案" class="headerlink" title="题目Wiki及参考答案"></a>题目Wiki及参考答案</h2><p><a href="http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Sorting-searching-TADM2E" target="_blank" rel="noopener">http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Sorting-searching-TADM2E</a></p>
+<h2 id="我的解答"><a href="#我的解答" class="headerlink" title="我的解答"></a>我的解答</h2><h3 id="面试问题"><a href="#面试问题" class="headerlink" title="面试问题"></a>面试问题</h3><h4 id="4-45"><a href="#4-45" class="headerlink" title="4-45"></a>4-45</h4><p>题目</p>
+<p>Given a search string of three words, find the smallest snippet of the document that contains all three of the search words—i.e., the snippet with smallest number of words in it. You are given the index positions where these words occur in the document, such as word1: (1, 4, 5), word2: (3, 9, 10), and word3: (2, 6, 15). Each of the lists are in sorted order, as above.</p>
+<p>解答</p>
+<p>每个单词出现的位置列表都是有序的，将它们看做是队列。设定<code>min_len</code>保存当前最短的片段的长度，初始化为-1.算法步骤如下：</p>
+<ol>
+<li>若各队列不空，将各队列最小元素出队,组成三元组</li>
+<li>得三元组<code>(a1, a2, a3)</code></li>
+<li>求三元组中的最大值<code>max</code>，与最小值<code>min</code>，则当前片段长度<code>len = max-min+1</code></li>
+<li>如果<code>min_len</code>为-1或<code>min_len</code>大于<code>len</code>，<code>min_len = len</code>，保存三元组.</li>
+<li>删除三元组中最小者<code>min</code>，若<code>min</code>对应队列不空，取新元素加入到三元组，执行2，若空，退出循环。</li>
+</ol>
+<h5 id="变形及分析"><a href="#变形及分析" class="headerlink" title="变形及分析"></a>变形及分析</h5><p>变形</p>
+<p>假设输入数据不是3个单词的出现位置，而直接是一个字符串数组，那么如何找到满足要求的最小片段？</p>
+<p>分析</p>
+<p>设<code>cur</code>为访问数组的当前位置，3个变量<code>l1, l2, l3</code>，代表<code>cur</code>前面离<code>cur</code>最近的3个单词(w1, w2, w3)的位置。若cur上的单词为3个单词之一，不妨设为w3，则计算w3与w1,w2的距离即<code>cur-l1+1</code>和<code>cur-l2+1</code>，取小者为<code>min</code>，另<code>min</code>与<code>min_len</code>比较，若min更小，保存<code>min</code>，及当前3个单词的位置。当遍历数组结束时，最后的<code>min_len</code>与保存的3元素的位置即满足要求的最小片段。</p>
+<a id="more"></a>
+<h4 id="4-46"><a href="#4-46" class="headerlink" title="4-46"></a>4-46</h4><p>题目</p>
+<p>You are given 12 coins. One of them is heavier or lighter than the rest. Identify this coin in just three weighings.<br>Note - weighings are with a balance, where you can have a greater than, equal to, or less than result. You can’t do this with a digital scale.</p>
+<p>解答</p>
+<p>答案Wiki之中给出的3步解决的办法，但是我想不到这个解决方案。下面讨论一下 <strong>二分搜索</strong>在这里的应用。</p>
+<p>题目是不知道是偏重还是偏轻的，如果知道偏重或偏轻，用二分搜索可3步解决。这种情况下，可以使用4步二分搜索。</p>
+<ol>
+<li>分为3堆，各4个硬币，记为a, b, c.</li>
+<li>比较(a, b) 和 (a, c). a, b, c三者中必有一个是偏大或偏小，从这两次比较重可得谁偏大或偏小。</li>
+<li>假设得到的是a偏大，再将a进行两次二分搜索，即可的偏大的那枚硬币。</li>
+</ol>
+
       
     </div>
     
   </div>
   
     
+<nav id="article-nav">
+  
+    <a href="/2015/05/02/Hexo-reference/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Hexo 搭建博客参考资料列表
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/01/to-list-of-blog/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">完善博客待办列表</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
   
 </article>
 
@@ -213,7 +288,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="" data-title="" data-url="http://shitaibin.github.io/404.html"></div>
+	<div class="ds-thread" data-thread-key="Ch4-Exercises-and-Solutions-of-TADM2E" data-title="算法设计手册第二版第四章课后习题解答" data-url="http://shitaibin.github.io/2015/05/01/Ch4-Exercises-and-Solutions-of-TADM2E/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
@@ -257,7 +332,7 @@
 		mathjax: true,
 		animate: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

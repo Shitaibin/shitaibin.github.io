@@ -4,16 +4,25 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>随风</title>
+  <title>为什么参数从右到左进栈 | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="随风">
-<meta property="og:url" content="http://shitaibin.github.io/404.html">
+  <meta name="description" content="原因是由于可变长参数。  如今GCC已经支持按声明顺序进栈，这里分析传统的函数调用入栈。  前提了解函数调用，所涉及栈帧分配，见下图1：">
+<meta name="keywords" content="操作系统,栈">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为什么参数从右到左进栈">
+<meta property="og:url" content="http://shitaibin.github.io/2016/04/26/why-from-right-to-left-push-variables-into-stack/index.html">
 <meta property="og:site_name" content="随风">
+<meta property="og:description" content="原因是由于可变长参数。  如今GCC已经支持按声明顺序进栈，这里分析传统的函数调用入栈。  前提了解函数调用，所涉及栈帧分配，见下图1：">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-05-31T05:57:23.123Z">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/stack_frame.png">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/process_and_stack.png">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/%E5%8F%82%E6%95%B0%E8%BF%9B%E6%A0%88%E9%A1%BA%E5%BA%8F.png">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/%E5%8F%82%E6%95%B0%E8%BF%9B%E6%A0%88%E9%A1%BA%E5%BA%8F-%E6%AD%A3%E5%BA%8F.png">
+<meta property="og:updated_time" content="2018-05-31T05:57:23.132Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="随风">
+<meta name="twitter:title" content="为什么参数从右到左进栈">
+<meta name="twitter:description" content="原因是由于可变长参数。  如今GCC已经支持按声明顺序进栈，这里分析传统的函数调用入栈。  前提了解函数调用，所涉及栈帧分配，见下图1：">
+<meta name="twitter:image" content="http://7xixtr.com1.z0.glb.clouddn.com/stack_frame.png">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -162,11 +171,11 @@
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-why-from-right-to-left-push-variables-into-stack" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/404.html" class="article-date">
-  	<time datetime="2018-05-31T05:58:02.818Z" itemprop="datePublished">2018-05-31</time>
+      <a href="/2016/04/26/why-from-right-to-left-push-variables-into-stack/" class="article-date">
+  	<time datetime="2016-04-26T03:39:39.000Z" itemprop="datePublished">2016-04-26</time>
 </a>
     </div>
   
@@ -175,15 +184,78 @@
       <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      为什么参数从右到左进栈
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/操作系统/">操作系统</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/栈/">栈</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <script type="text/javascript" src="http://www.qq.com/404/search_children.js" charset="utf-8" homepageurl="http://shitaibin.github.io" homepagename="回到我的主页"></script>
+        <p>原因是由于可变长参数。</p>
+<blockquote>
+<p>如今GCC已经支持按声明顺序进栈，这里分析传统的函数调用入栈。</p>
+</blockquote>
+<h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>了解函数调用，所涉及栈帧分配，见下图1：</p>
+<a id="more"></a>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/stack_frame.png" alt=""><br>图1：函数调用栈帧</p>
+<p>这个图2也有意思，把函数调用之间的关系展示了出来。</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/process_and_stack.png" alt=""><br>图2：函数调用关系</p>
+<h2 id="理论分析"><a href="#理论分析" class="headerlink" title="理论分析"></a>理论分析</h2><p>假设现在有函数f，固定参数m个，可变参数n（未知）个，假设所有参数都是32位整数，如果不是整数，也可以根据参数类型，推出参数地址，为了简单画图，在此使用整数。</p>
+<h3 id="自右向左（逆变量声明顺序）"><a href="#自右向左（逆变量声明顺序）" class="headerlink" title="自右向左（逆变量声明顺序）"></a>自右向左（逆变量声明顺序）</h3><p>那么调用栈图3：</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/%E5%8F%82%E6%95%B0%E8%BF%9B%E6%A0%88%E9%A1%BA%E5%BA%8F.png" alt=""><br>图3：自右向左入栈的调用栈</p>
+<p>虽然不知道可变参数n的大小，但是，依然可以根据固定参数的大小m，找到可变参数的开始位置，然后去访问就可以了。<strong>至于访问第n+1个可变参数，会造成什么问题，我们一会讨论。</strong></p>
+<h3 id="自左向右（按变量声明顺序）"><a href="#自左向右（按变量声明顺序）" class="headerlink" title="自左向右（按变量声明顺序）"></a>自左向右（按变量声明顺序）</h3><p>那么调用栈图4：</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/%E5%8F%82%E6%95%B0%E8%BF%9B%E6%A0%88%E9%A1%BA%E5%BA%8F-%E6%AD%A3%E5%BA%8F.png" alt=""><br>图4：自左向右入栈的调用栈</p>
+<p>在只知道ebp的情况下，而不知道可变参数n的大小，不能确定可变参数和参数的分解，怎么确定参数1，参数m的地址呢？不确定他们怎么能访问呢？<strong>真相就是这样子，你无法确定各参数的地址</strong>。</p>
+<h3 id="如何实现自左向右入栈"><a href="#如何实现自左向右入栈" class="headerlink" title="如何实现自左向右入栈"></a>如何实现自左向右入栈</h3><p>使用另外的寄存器指向参数1。那么就可以访问固定参数，已经可变参数的区域也就确定了。</p>
+<h3 id="自右向左访问参数超过范围"><a href="#自右向左访问参数超过范围" class="headerlink" title="自右向左访问参数超过范围"></a>自右向左访问参数超过范围</h3><p>未定义。</p>
+<p>以printf为例：</p>
+<pre><code class="C"><span class="built_in">printf</span>(<span class="string">"%d %d\n"</span>, <span class="number">1</span>); 
+</code></pre>
+<p>这条语句输出另个整数，但可变参数只给了一个整数1，那么访问第二个整数的时候必然也就“越界”了。<br>假设1的地址为ptr，那么会把(char *)ptr+sizeof(int)，这个地址上的数据解析为一个整数输出。如果这个区域是它不能访问的，还会造成非法访问，如果可以访问，数据也是错误的。</p>
+
       
     </div>
     
   </div>
   
     
+<nav id="article-nav">
+  
+    <a href="/2016/05/17/design-fork-with-COW-in-JOS/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          JOS中具有写时拷贝的fork设计
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/14/a-malloc-tutorial/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">malloc的故事</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
   
 </article>
 
@@ -213,7 +285,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="" data-title="" data-url="http://shitaibin.github.io/404.html"></div>
+	<div class="ds-thread" data-thread-key="why-from-right-to-left-push-variables-into-stack" data-title="为什么参数从右到左进栈" data-url="http://shitaibin.github.io/2016/04/26/why-from-right-to-left-push-variables-into-stack/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
@@ -257,7 +329,7 @@
 		mathjax: true,
 		animate: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

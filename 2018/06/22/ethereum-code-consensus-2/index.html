@@ -4,20 +4,22 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>必备Mac软件&amp;Chrome应用 | 随风</title>
+  <title>以太坊源码分析：共识（2） | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="必备的Mac软件编程 Dash：开发必备，秒差各语言API Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。 iTerm2：The Best Terminal，用好快捷键 Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000">
-<meta name="keywords" content="Mac,Chrome">
+  <meta name="description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。  接下来我们看一下engine具体定义了哪些功能，还有各功能的使用场景。 engine定义的具体功能engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类">
+<meta name="keywords" content="以太坊">
 <meta property="og:type" content="article">
-<meta property="og:title" content="必备Mac软件&amp;Chrome应用">
-<meta property="og:url" content="http://shitaibin.github.io/2018/06/01/Mac-software-and-Chrom-app/index.html">
+<meta property="og:title" content="以太坊源码分析：共识（2）">
+<meta property="og:url" content="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-2/index.html">
 <meta property="og:site_name" content="随风">
-<meta property="og:description" content="必备的Mac软件编程 Dash：开发必备，秒差各语言API Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。 iTerm2：The Best Terminal，用好快捷键 Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000">
+<meta property="og:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。  接下来我们看一下engine具体定义了哪些功能，还有各功能的使用场景。 engine定义的具体功能engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-02T07:06:30.778Z">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121139.png">
+<meta property="og:updated_time" content="2018-06-22T12:16:18.164Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="必备Mac软件&amp;Chrome应用">
-<meta name="twitter:description" content="必备的Mac软件编程 Dash：开发必备，秒差各语言API Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。 iTerm2：The Best Terminal，用好快捷键 Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000">
+<meta name="twitter:title" content="以太坊源码分析：共识（2）">
+<meta name="twitter:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。  接下来我们看一下engine具体定义了哪些功能，还有各功能的使用场景。 engine定义的具体功能engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类">
+<meta name="twitter:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121139.png">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -166,11 +168,11 @@
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="post-Mac-software-and-Chrom-app" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-ethereum-code-consensus-2" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2018/06/01/Mac-software-and-Chrom-app/" class="article-date">
-  	<time datetime="2018-06-01T13:02:19.000Z" itemprop="datePublished">2018-06-01</time>
+      <a href="/2018/06/22/ethereum-code-consensus-2/" class="article-date">
+  	<time datetime="2018-06-22T12:15:16.000Z" itemprop="datePublished">2018-06-22</time>
 </a>
     </div>
   
@@ -183,7 +185,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      必备Mac软件&amp;Chrome应用
+      以太坊源码分析：共识（2）
     </h1>
   
 
@@ -192,7 +194,7 @@
       <div class="article-info article-info-post">
         
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Chrome/">Chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mac/">Mac</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
 	</div>
 
         
@@ -206,35 +208,37 @@
         
 <div id="toc">
     <h1>目录</h1>
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">必备的Mac软件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">编程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">办公</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">Mac截图</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">必备的Chrome应用</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">engine定义的具体功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">验证区块类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">验证区块类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">辅助类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">FAQ</span></a></li></ol>
 </div>
 
-        <h1><span id="必备的mac软件">必备的Mac软件</span></h1><h3><span id="编程">编程</span></h3><ul>
-<li>Dash：开发必备，秒差各语言API</li>
-<li>Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。</li>
-<li>iTerm2：The Best Terminal，用好快捷键</li>
-<li>Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000</li>
-</ul>
-<a id="more"></a>
-<h3><span id="办公">办公</span></h3><ul>
-<li>Copy Clip2：保存复制文本，对于程序员和文字重度工作者很重要</li>
-<li>疯狂番茄：番茄工作法，只用来当定时器用，配合Things</li>
-<li>Things：安排好工作（More Than TODO）</li>
-<li>iThoughtx：思维导图</li>
-<li>Paralles Desktop：还是习惯Windows办公全家桶</li>
-<li>Entropy：windows解压无压力的软件，压缩为7z文件更小，zip实际不压缩只是打包。符正确使用姿势：<strong>右键-&gt;服务-&gt;Archive as 7z</strong>，Keka必须打开软件才能压缩，简直弱爆了。<br>￼</li>
-</ul>
-<h3><span id="mac截图">Mac截图</span></h3><p>许多朋友都觉得Mac的抓图不好用，找好用的截图软件，但那些工具太Low了。</p>
-<p><strong>Ctrl + Command + Shift + 4</strong>，截图后存到剪贴板。</p>
-<p>其他：<br>Command + Shift + 3 截取整个屏幕，保存图片在桌面<br>Command + Shift + 4 选取部分屏幕区域，保存图片在桌面<br>先 Command + Shift + 4 再空格，可以对指定的窗口或者菜单截屏<br>以上快捷键，<strong>加上 Ctrl，可以把截屏保存在剪贴板</strong>。</p>
-<h1><span id="必备的chrome应用">必备的Chrome应用</span></h1><blockquote>
-<p>安装应用记得翻墙，或者国内保存插件的网站。</p>
-</blockquote>
-<ul>
-<li>方片收集：把网页收藏起来，想看的时候🔍一下。</li>
-<li>Diigo Web Collector：最好用的是给网页加标注，就像用PDF一样，可以从库中查看所有标记。</li>
-<li>EasyReader：让浏览网页更清晰，对付杂乱的网站很有用。</li>
-<li>Proxy SwitchyOmega：用Google查资料必备。</li>
+        <h2><span id="前言">前言</span></h2><p><code>engine</code>是以太坊封定义的一个接口，它的功能可以分为3类：</p>
+<ol>
+<li>验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。</li>
+<li>产生区块类，主要用在挖矿时。</li>
+<li>辅助类。</li>
+</ol>
+<p>接下来我们看一下<code>engine</code>具体定义了哪些功能，还有各功能的使用场景。</p>
+<h2><span id="engine定义的具体功能">engine定义的具体功能</span></h2><p>engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类，分别介绍它们的功能和使用场景。</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121139.png" alt="img"><br>engine接口调用图</p>
+<h3><span id="验证区块类">验证区块类</span></h3><ol>
+<li><code>Prepare</code>：初始化区块头信息，不同的共识算法初始化不同。使用场景是，worker创建work的时候调用。</li>
+<li><code>Finalize</code>：根据数据生成“基本定型”的区块，但区块头中还缺少部分数据。使用场景是，1）模拟区块链的时候，被<code>GenerateChain</code>调用，用来生成区块链。2）交易状态管理时，被<code>StateProcessor.Process</code>调用用来执行交易。3）worker创建work的时候调用。</li>
+<li><code>Seal</code>：根据传入的块，进行的是挖矿工作，使用挖矿的结果，修改区块头，然后生成新的区块。使用场景是，被<code>agent.mine</code>调用。</li>
+</ol>
+<h3><span id="验证区块类">验证区块类</span></h3><ol>
+<li><code>VerifyHeader</code>：验证区块头。使用在fetcher中，当fetcher要插入区块的时候，需要先对区块头进行校验。</li>
+<li><code>VerifyHeaders</code>：验证一批区块头。有2种使用场景，1）区块链中，<code>insertChain</code>当把一批区块插入到区块链这个链条的时候，需要进行检查；2）LightChain中，把一批区块头插入到本地链。</li>
+<li><code>VerifyUncles</code>：验证区块中的叔块。<code>insertChain</code>当区块插入区块链的时候，需要对叔块进行验证，调用在VerifyHeaders之后。</li>
+<li><code>VerifySeal</code>：针对Seal函数做的功能进行验证。验证Seal()所修改的区块头中的数据。对外的使用场景是，把Work发送给远端Agent的时候调用。对内的使用场景是，验证区块头的时候会被调用。</li>
+</ol>
+<h3><span id="辅助类">辅助类</span></h3><ol>
+<li><code>APIs</code>：生成以太坊共识相关的API。在以太坊启动RPC服务时，生成API。</li>
+<li><code>Author</code>：读取区块头中的<code>coinbase</code>。被ethstats使用，ethstats是以太坊状态管理服务，当报告数据的时候，需要获取区块的Author信息。</li>
+</ol>
+<p>最后关注一下蓝色的线条，它们代表insertChain所调用的范围，先关的有VerifyHeaders、VerifyUncles、Finalize，涉及到块头的验证、叔块的验证，以及执行区块中的交易，一个区块加入到区块链中，不仅要验证，还要执行各种交易，改变各种状态，所有节点执行确定性的行为之后，达成一致性。</p>
+<h2><span id="faq">FAQ</span></h2><ul>
+<li>Q：谁实现engine<br>A：以太坊中的Ethash和Clique实现了<code>engine</code>，Ethash是基于PoW的共识，Clique是基于PoA的共识。</li>
+<li>Q：为什么<code>insertChain</code>没有调用<code>VerifySeal</code>？<br>A：因为<code>Seal()</code>修改的是header中的部分数据，在验证区块头的时候，会被调用。只是调用流程在Ethash和Clique中的实现略有不同，后续讲解。</li>
 </ul>
 
       
@@ -245,18 +249,9 @@
     
 <nav id="article-nav">
   
-    <a href="/2018/06/02/redeploy-hexo-blog/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          重新安装Hexo博客的流程
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/03/07/7days-pthread/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">7天掌握pthread</div>
+    <a href="/2018/06/22/ethereum-code-consensus-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">以太坊源码分析：共识（1）</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -291,7 +286,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="Mac-software-and-Chrom-app" data-title="必备Mac软件&amp;Chrome应用" data-url="http://shitaibin.github.io/2018/06/01/Mac-software-and-Chrom-app/"></div>
+	<div class="ds-thread" data-thread-key="ethereum-code-consensus-2" data-title="以太坊源码分析：共识（2）" data-url="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-2/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

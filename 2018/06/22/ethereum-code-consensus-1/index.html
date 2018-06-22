@@ -4,20 +4,25 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>必备Mac软件&amp;Chrome应用 | 随风</title>
+  <title>以太坊源码分析：共识（1） | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="必备的Mac软件编程 Dash：开发必备，秒差各语言API Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。 iTerm2：The Best Terminal，用好快捷键 Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000">
-<meta name="keywords" content="Mac,Chrome">
+  <meta name="description" content="前言矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。 接下来我们将从以下角度介绍矿工：  角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。 一个区块产生的主要流程。 矿工的主要函数介绍，掌握矿工的主要挖矿机制。">
+<meta name="keywords" content="以太坊">
 <meta property="og:type" content="article">
-<meta property="og:title" content="必备Mac软件&amp;Chrome应用">
-<meta property="og:url" content="http://shitaibin.github.io/2018/06/01/Mac-software-and-Chrom-app/index.html">
+<meta property="og:title" content="以太坊源码分析：共识（1）">
+<meta property="og:url" content="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-1/index.html">
 <meta property="og:site_name" content="随风">
-<meta property="og:description" content="必备的Mac软件编程 Dash：开发必备，秒差各语言API Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。 iTerm2：The Best Terminal，用好快捷键 Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000">
+<meta property="og:description" content="前言矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。 接下来我们将从以下角度介绍矿工：  角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。 一个区块产生的主要流程。 矿工的主要函数介绍，掌握矿工的主要挖矿机制。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-02T07:06:30.778Z">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121153.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121152.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121154.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121151.jpg">
+<meta property="og:updated_time" content="2018-06-22T12:14:46.738Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="必备Mac软件&amp;Chrome应用">
-<meta name="twitter:description" content="必备的Mac软件编程 Dash：开发必备，秒差各语言API Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。 iTerm2：The Best Terminal，用好快捷键 Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000">
+<meta name="twitter:title" content="以太坊源码分析：共识（1）">
+<meta name="twitter:description" content="前言矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。 接下来我们将从以下角度介绍矿工：  角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。 一个区块产生的主要流程。 矿工的主要函数介绍，掌握矿工的主要挖矿机制。">
+<meta name="twitter:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121153.jpg">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -166,11 +171,11 @@
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="post-Mac-software-and-Chrom-app" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-ethereum-code-consensus-1" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2018/06/01/Mac-software-and-Chrom-app/" class="article-date">
-  	<time datetime="2018-06-01T13:02:19.000Z" itemprop="datePublished">2018-06-01</time>
+      <a href="/2018/06/22/ethereum-code-consensus-1/" class="article-date">
+  	<time datetime="2018-06-22T12:12:57.000Z" itemprop="datePublished">2018-06-22</time>
 </a>
     </div>
   
@@ -183,7 +188,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      必备Mac软件&amp;Chrome应用
+      以太坊源码分析：共识（1）
     </h1>
   
 
@@ -192,7 +197,7 @@
       <div class="article-info article-info-post">
         
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Chrome/">Chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mac/">Mac</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
 	</div>
 
         
@@ -206,36 +211,60 @@
         
 <div id="toc">
     <h1>目录</h1>
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">必备的Mac软件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">编程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">办公</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">Mac截图</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">必备的Chrome应用</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">角色</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">一个区块产生的主要流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">矿工的主要函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">miner的主要函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">worker的主要函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">agent的主要函数</span></a></li></ol></li></ol>
 </div>
 
-        <h1><span id="必备的mac软件">必备的Mac软件</span></h1><h3><span id="编程">编程</span></h3><ul>
-<li>Dash：开发必备，秒差各语言API</li>
-<li>Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。</li>
-<li>iTerm2：The Best Terminal，用好快捷键</li>
-<li>Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000</li>
-</ul>
+        <h2><span id="前言">前言</span></h2><p>矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。</p>
+<p>接下来我们将从以下角度介绍矿工：</p>
+<ol>
+<li>角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。</li>
+<li>一个区块产生的主要流程。</li>
+<li>矿工的主要函数介绍，掌握矿工的主要挖矿机制。</li>
+</ol>
 <a id="more"></a>
-<h3><span id="办公">办公</span></h3><ul>
-<li>Copy Clip2：保存复制文本，对于程序员和文字重度工作者很重要</li>
-<li>疯狂番茄：番茄工作法，只用来当定时器用，配合Things</li>
-<li>Things：安排好工作（More Than TODO）</li>
-<li>iThoughtx：思维导图</li>
-<li>Paralles Desktop：还是习惯Windows办公全家桶</li>
-<li>Entropy：windows解压无压力的软件，压缩为7z文件更小，zip实际不压缩只是打包。符正确使用姿势：<strong>右键-&gt;服务-&gt;Archive as 7z</strong>，Keka必须打开软件才能压缩，简直弱爆了。<br>￼</li>
-</ul>
-<h3><span id="mac截图">Mac截图</span></h3><p>许多朋友都觉得Mac的抓图不好用，找好用的截图软件，但那些工具太Low了。</p>
-<p><strong>Ctrl + Command + Shift + 4</strong>，截图后存到剪贴板。</p>
-<p>其他：<br>Command + Shift + 3 截取整个屏幕，保存图片在桌面<br>Command + Shift + 4 选取部分屏幕区域，保存图片在桌面<br>先 Command + Shift + 4 再空格，可以对指定的窗口或者菜单截屏<br>以上快捷键，<strong>加上 Ctrl，可以把截屏保存在剪贴板</strong>。</p>
-<h1><span id="必备的chrome应用">必备的Chrome应用</span></h1><blockquote>
-<p>安装应用记得翻墙，或者国内保存插件的网站。</p>
-</blockquote>
+<p>介绍矿工由哪些部分组成，会和哪些其他模块进行交互，这些部分是如何协作产生区块的。</p>
+<h2><span id="角色">角色</span></h2><p>有3种角色：miner、worker、agent。</p>
 <ul>
-<li>方片收集：把网页收藏起来，想看的时候🔍一下。</li>
-<li>Diigo Web Collector：最好用的是给网页加标注，就像用PDF一样，可以从库中查看所有标记。</li>
-<li>EasyReader：让浏览网页更清晰，对付杂乱的网站很有用。</li>
-<li>Proxy SwitchyOmega：用Google查资料必备。</li>
+<li>miner：是矿长，负责管理整个矿场的运作，比如：启动、停止挖矿，处理外部请求，设置挖矿获得的奖励的钱包地址等等。</li>
+<li>worker：副矿长，负责具体挖矿工作的安排，把挖矿任务（Work）安排给agent。</li>
+<li>agent：真实的矿工，他们负责挖矿，把自己的劳动成果（Result）交给worker，agent默认只有1个，可以通过API创建多个。</li>
 </ul>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121153.jpg" alt="img"></p>
+<h2><span id="一个区块产生的主要流程">一个区块产生的主要流程</span></h2><p>实际的挖矿过程基本不涉及miner，只涉及worker、agent和engine，engine是共识引擎模块，我们利用下图介绍生成一个区块的主要流程。</p>
+<blockquote>
+<p>挖矿过程中只涉及engine的3个接口：1）Prepare()挖矿前的准备工作，2）Finalize()形成一个基本定型的区块，3）Seal()形成最终的区块。</p>
+</blockquote>
+<ol>
+<li>worker把区块头、交易、交易执行的收据等传递给engine.Finalize。</li>
+<li>engine.Finalize返回一个<code>block</code>，该block的header中缺少<code>Nonce</code>和<code>MixDigest</code>，这两个值是挖矿获取的。</li>
+<li>worker把block封装到<code>work</code>，把work发送给所有的agent。</li>
+<li>agent.update把work传递给agent.mine。</li>
+<li>agent.mine把work传递给engine.Seal，调用engine.Seal挖矿。</li>
+<li>engine.Seal把<code>Nonce</code>和<code>MixDigest</code>填到区块头，生成一个<code>new block</code>交给agent.mine.</li>
+<li>agent.mine把<code>new block</code>封装成<code>Result</code>，发送给worker。</li>
+</ol>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121152.jpg" alt="img"></p>
+<h2><span id="矿工的主要函数">矿工的主要函数</span></h2><p>介绍miner、worker和agent的主要函数，他们是矿工的具体运作机制。</p>
+<h3><span id="miner的主要函数">miner的主要函数</span></h3><p>主要关注2个函数：</p>
+<ol>
+<li><code>New()</code>：负责创建miner。还创建1个worker和1个agent，但agent还可以通过API创建，然后启动<code>update</code>函数。</li>
+<li><code>update()</code>：负责关注downloader的3个事件：StartEvent、DoneEvent、FailedEvent。StartEvent是开始同步区块，必须停止挖矿，DoneEvent和FailedEvent是同步成功或者失败，是同步的结束，已经可以挖矿了。<strong>表明：挖矿和同步区块不可同时进行，尽量降低了区块冲突的可能。</strong></li>
+</ol>
+<h3><span id="worker的主要函数">worker的主要函数</span></h3><p>主要是3个函数：</p>
+<ol>
+<li><code>commitNewWork()</code>：负责生成work，分配agent。这个阶段做了很多工作，调用Engine.Prepare进行准备工作，创建Header，<strong>执行交易</strong>，获取Uncle，使用Engine.Finalize形成“基本定型”的临时区块，创建Work，最后把work传递给agent。另外<code>commitNewWork</code>存在多处调用，并且worker有<code>wait</code>和<code>update</code>另外2个协程，他们都会调用<code>commitNewWork</code>，所以存在临界区需要谨慎加锁。</li>
+<li><code>update()</code>：负责处理外部事件。它是死循环，主要处理3种事件：1）ChainHeadEvent，有了新区块头，所以得切换到挖下一个高度的区块，2）ChainSideEvent，收到了uncle区块，缓存起来，3）TxPreEvent，预处理交易，如果在挖矿执行<code>commitNewWork</code>，如果未挖矿，则交易设置为未决状态。</li>
+<li><code>wait()</code>：负责处理agent挖矿的结果。它是死循环，一直等待接收agent发回的result，然后把区块加入到本地数据库，如果没有问题，就发布<code>NewMinedBlockEvent</code>事件，通告其他节点挖到了一个新块。</li>
+</ol>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121154.jpg" alt="img"></p>
+<h3><span id="agent的主要函数">agent的主要函数</span></h3><p>主要2个函数:</p>
+<ol>
+<li><code>update()</code>：负责接收worker发来的任务（work）。它是死循环，把work交给mine去挖矿。</li>
+<li><code>mine()</code>：负责挖矿。它拥有挖矿的能力，调用Engine.Seal挖矿，如果挖矿成功则生成result，发送给worker。<br><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121151.jpg" alt="img"></li>
+</ol>
+<blockquote>
+<p>最后两张图片来源网络，侵删。</p>
+</blockquote>
 
       
     </div>
@@ -245,18 +274,18 @@
     
 <nav id="article-nav">
   
-    <a href="/2018/06/02/redeploy-hexo-blog/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/06/22/ethereum-code-consensus-2/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          重新安装Hexo博客的流程
+          以太坊源码分析：共识（2）
         
       </div>
     </a>
   
   
-    <a href="/2017/03/07/7days-pthread/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">7天掌握pthread</div>
+    <a href="/2018/06/22/ethereum-code-statedb/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">以太坊源码分析：statedb</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -291,7 +320,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="Mac-software-and-Chrom-app" data-title="必备Mac软件&amp;Chrome应用" data-url="http://shitaibin.github.io/2018/06/01/Mac-software-and-Chrom-app/"></div>
+	<div class="ds-thread" data-thread-key="ethereum-code-consensus-1" data-title="以太坊源码分析：共识（1）" data-url="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-1/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

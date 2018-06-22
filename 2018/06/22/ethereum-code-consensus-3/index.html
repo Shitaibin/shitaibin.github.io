@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>以太坊源码分析：共识（3） | 随风</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言Ethash实现了PoW，PoW的精妙在于如何通过一个随机数确定，矿工确实做了大量的工作，并且是没有办法作弊的。Ethash做到了，接下来将介绍：  Ethash的挖矿本质。 Ethash是如何挖矿的。 如何验证Ethash的随机数。">
+<meta name="keywords" content="以太坊">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊源码分析：共识（3）">
+<meta property="og:url" content="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-3/index.html">
+<meta property="og:site_name" content="随风">
+<meta property="og:description" content="前言Ethash实现了PoW，PoW的精妙在于如何通过一个随机数确定，矿工确实做了大量的工作，并且是没有办法作弊的。Ethash做到了，接下来将介绍：  Ethash的挖矿本质。 Ethash是如何挖矿的。 如何验证Ethash的随机数。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121846.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121843.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121841.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121842.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121840.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121839.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121838.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121844.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121845.jpg">
+<meta property="og:updated_time" content="2018-06-22T12:19:52.544Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="以太坊源码分析：共识（3）">
+<meta name="twitter:description" content="前言Ethash实现了PoW，PoW的精妙在于如何通过一个随机数确定，矿工确实做了大量的工作，并且是没有办法作弊的。Ethash做到了，接下来将介绍：  Ethash的挖矿本质。 Ethash是如何挖矿的。 如何验证Ethash的随机数。">
+<meta name="twitter:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121846.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="http://7xixtr.com1.z0.glb.clouddn.com/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">随风</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">随风而起，随风而散</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>Menu</li>
+						<li>Tags</li>
+						
+						
+						<li>About</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/Shitaibin" title="github">github</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/Chrome/" style="font-size: 10px;">Chrome</a> <a href="/tags/Github/" style="font-size: 10px;">Github</a> <a href="/tags/Github-Pages/" style="font-size: 10px;">Github Pages</a> <a href="/tags/Goland/" style="font-size: 10px;">Goland</a> <a href="/tags/Golang/" style="font-size: 10px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 20px;">Hexo</a> <a href="/tags/JOS/" style="font-size: 10px;">JOS</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Mac/" style="font-size: 10px;">Mac</a> <a href="/tags/Package/" style="font-size: 12px;">Package</a> <a href="/tags/Python/" style="font-size: 14px;">Python</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/TADM/" style="font-size: 16px;">TADM</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/fork/" style="font-size: 10px;">fork</a> <a href="/tags/malloc/" style="font-size: 10px;">malloc</a> <a href="/tags/pthread/" style="font-size: 10px;">pthread</a> <a href="/tags/以太坊/" style="font-size: 18px;">以太坊</a> <a href="/tags/动态规划/" style="font-size: 10px;">动态规划</a> <a href="/tags/单元测试/" style="font-size: 14px;">单元测试</a> <a href="/tags/图论/" style="font-size: 10px;">图论</a> <a href="/tags/安全/" style="font-size: 10px;">安全</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/并发/" style="font-size: 10px;">并发</a> <a href="/tags/待办/" style="font-size: 10px;">待办</a> <a href="/tags/思考/" style="font-size: 12px;">思考</a> <a href="/tags/房子/" style="font-size: 10px;">房子</a> <a href="/tags/房贷/" style="font-size: 10px;">房贷</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/排序/" style="font-size: 10px;">排序</a> <a href="/tags/搜索/" style="font-size: 12px;">搜索</a> <a href="/tags/操作系统/" style="font-size: 12px;">操作系统</a> <a href="/tags/数据挖掘/" style="font-size: 10px;">数据挖掘</a> <a href="/tags/机器学习/" style="font-size: 10px;">机器学习</a> <a href="/tags/机试/" style="font-size: 10px;">机试</a> <a href="/tags/栈/" style="font-size: 10px;">栈</a> <a href="/tags/特征/" style="font-size: 10px;">特征</a> <a href="/tags/管理/" style="font-size: 10px;">管理</a> <a href="/tags/编程语言/" style="font-size: 10px;">编程语言</a> <a href="/tags/面试/" style="font-size: 16px;">面试</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">随风</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="http://7xixtr.com1.z0.glb.clouddn.com/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">随风</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">随风而起，随风而散</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/Shitaibin" title="github">github</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-ethereum-code-consensus-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/06/22/ethereum-code-consensus-3/" class="article-date">
+  	<time datetime="2018-06-22T12:16:01.000Z" itemprop="datePublished">2018-06-22</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      以太坊源码分析：共识（3）
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">前言</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">Ethash的挖矿本质</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">如何挖矿</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">挖矿入口Seal()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">挖矿函数mine()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">挖矿需要的数据cache和dataset</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">Rand()的实现hashimotoFull()和hashimoto()</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">如何验证</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">验证函数VerifySeal</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">hashimotoLight函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">FAQ</span></a>
+</div>
+
+        <h2><span id="前言">前言</span></h2><p>Ethash实现了PoW，PoW的精妙在于如何通过一个随机数确定，矿工确实做了大量的工作，并且是没有办法作弊的。Ethash做到了，接下来将介绍：</p>
+<ol>
+<li>Ethash的挖矿本质。</li>
+<li>Ethash是如何挖矿的。</li>
+<li>如何验证Ethash的随机数。</li>
+</ol>
+<a id="more"></a>
+<h1><span id="ethash的挖矿本质">Ethash的挖矿本质</span></h1><p>挖矿的本质是找到一个随机数，证明自己做了很多工作（计算）。在Ethash中，该随机数称为<code>Nonce</code>，它需要满足一个公式：</p>
+<p><code>Rand(hash, nonce) ≤ MaxValue / Difficulty</code></p>
+<p>其中，</p>
+<ul>
+<li>hash：去除区块头中Nonce、MixDigest生成的哈希值，见<code>HashNoNonce()</code>。</li>
+<li>nonce：待寻找的符合条件的随机数。</li>
+<li>MaxValue：固定值2^256，生成的哈希值的最大取值。</li>
+<li>Difficulty：挖矿难度。</li>
+<li>Rand()：使用hash和nonce生成一个哈希值，这其中包含了很多哈希运算。</li>
+</ul>
+<p>以上参数中，在得到区块头的hash之后，只有nonce是未知的。</p>
+<p><strong>公式的含义是，使用hash和nonce生成的哈希值必须落在合法的区间。</strong>利用下图介绍一下，Rand()函数结果取值范围是[0, MaxValue]，但只有计算出的哈希值在[0, MaxValue / Difficulty]内，才是符合条件的哈希值，进而该Nonce才是符合条件的，否则只能再去寻找下一个Nonce。</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121846.jpg" alt="img"></p>
+<p>以太坊可以通过调整Difficulty来调节当前挖矿的难度，Difficulty越大，挖矿的难度越大。当Difficulty越大时， <code>MaxValue / Difficulty</code>越小，合法的哈希值范围越小，造成挖矿难度增加。</p>
+<p>哈希值满足条件的概率是 <code>p = (MaxValue / Difficulty) / MaxValue = 1 / Difficulty</code>，矿工需要进行<code>1 / p = Difficulty</code>次的判断，才有可能找到一个符合条件的Nonce，当前以太坊难度为3241847139727150。</p>
+<h1><span id="如何挖矿">如何挖矿</span></h1><p>Ethash挖矿的主要思想是，开启多个线程去寻找符合条件的Nonce，给每个线程分配一个随机数，作为本线程的Nonce的初始值，然后每个线程判断当前的Nonce是否符合上面的公式，如果不符合，则把Nonce加1，再次进行判断，这样不定的迭代下去，直到找到一个符合条件的Nonce，或者挖矿被叫停。</p>
+<p>接下来介绍挖矿的几个主要函数的实现，它们是：</p>
+<ol>
+<li>挖矿的入口Seal函数。</li>
+<li>挖矿函数mine函数。</li>
+<li>挖矿需要的数据cache和dataset。</li>
+<li>Rand()函数的实现hashimotoFull和hashimoto。</li>
+</ol>
+<h2><span id="挖矿入口seal">挖矿入口Seal()</span></h2><p><code>Seal</code>是引擎的挖矿入口函数，它是管理岗位，负责管理挖矿的线程。它发起多个线程执行<code>Ethash.mine</code>进行并行挖矿，当要更新或者停止的时候，重新启动或停止这些线程。<br><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121843.jpg" alt="img"></p>
+<h2><span id="挖矿函数mine">挖矿函数mine()</span></h2><p><code>mine</code>函数负责挖矿。<code>Seal</code>在启动每一个<code>mine</code>的时候，给它分配了一个<code>seed</code>，<code>mine</code>会把它作为<code>Nonce</code>的初始值，然后生成本高度使用的<code>dataset</code>，然后把<code>dataset, hash, nonce</code>传递给<code>hashimotoFull</code>函数，这个函数可以认为是原理介绍中的<code>Rand</code>随机函数，他会生成哈希值<code>Result</code>，当<code>Result &lt;= Target</code>的时候，说明哈希值落在符合条件的区间了，<strong>mine找到了符合条件的Nonce</strong>，使用Digest和nonce组成新的区块后，发送给<code>Seal</code>，否则验证下一个Nonce是否是符合条件的。</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121841.jpg" alt="img"></p>
+<h2><span id="挖矿需要的数据cache和dataset">挖矿需要的数据cache和dataset</span></h2><p><code>dataset</code>用来生成<code>Result</code>，而<code>cache</code>用来生成<code>dataset</code>。至于如何使用<code>dataset</code>生成<code>Result</code>在<code>hashimoto()</code>中讲述，本节介绍如何生成dataset。</p>
+<p>dataset和cache中存放的都是伪随机数，每个epoch的区块使用相同的cache和dataset，并且dataset需要暂用大量的内存。刚开始时cache是16MB，dataset是1GB，但每个epoch它们就会增大一次，它们的大小分别定义在<code>datasetSizes</code>和<code>cacheSizes</code>，dataset每次增长8MB，最大能达到16GB，所以挖矿的节点必须有足够大的内存。</p>
+<p>使用cache生成dataset。使用cache的部分数据，进行哈希和异或运算，就能生成一组dataset的item，比如下图中的cache中黄色块，能生成dataset中的黄色块，最后把这些Item拼起来就生成了完整的Dataset，完成该功能的函数是<code>generateDataset</code>。</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121842.jpg" alt="img"></p>
+<p><code>dataset.generate()</code>是dataset的生成函数，该函数只执行一次，先使用<code>generateCache()</code>生成cache，再将cache作为<code>generateDataset()</code>的入参生成dataset，其中需要重点关注的是<code>generateDatasetItem()</code>，该函数是根据部分cache，生成一组dataset item，验证PoW的nonce的时候，也需要使用该函数。</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121840.jpg" alt="img"></p>
+<h2><span id="rand的实现hashimotofull和hashimoto">Rand()的实现hashimotoFull()和hashimoto()</span></h2><p><code>hashimotoFull</code>功能是使用dataset、hash和nonce生成Digest和Result。它创建一个获取dataset部分数据的lookup函数，该函数能够返回连续的64字节dataset中的数据，然后把lookup函数、hash和nonce传递给<code>hashimoto</code>。<br><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121839.jpg" alt="img"></p>
+<p><code>hashimoto</code>的功能是根据hash和nonce，以及lookup函数生成<code>Digest</code>和<code>Result</code>，lookup函数能够返回64字节的数据就行。它把hash和nonce合成种子，然后根据种子生成混合的数据mix，然后进入一个循环，使用mix和seed获得dataset的行号，使用lookup获取指定行的数据，然后把数据混合到mix中，混合的方式是使用<strong>哈希和异或运算</strong>，循环结束后再使用哈希和异或函数把mix压缩为64字节，把mix转为小端模式就得到了Digest，把seed和mix进行hash运算得到Result。</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121838.jpg" alt="img"></p>
+<h1><span id="如何验证">如何验证</span></h1><p>PoW的验证是证明出块人确实进行了大量的哈希计算。Ethash验证区块头中的<code>Nonce</code>和<code>MixDigest</code>是否合法，如果验证通过，则认为出块人确实进行了大量的哈希运算。验证方式是确定区块头中的<code>Nonce</code>是否符合公式，并且区块头中的<code>MixDigest</code>是否与使用此<code>Nonce</code>计算出的是否相同。</p>
+<p>验证与挖矿相比，简直是毫不费力，因为：</p>
+<ol>
+<li>时间节省。验证只进行1次<code>hashimoto</code>运算，而挖矿进行大约Difficulty次。</li>
+<li>空间节省。验证只需要cache，不需要dataset，也就不需要计算庞大的dataset，因此不挖矿的验证节点，不需要很高的配置。</li>
+</ol>
+<p>接下来介绍验证函数<code>VerifySeal()</code>，以及根据cache生成<code>Digest</code>和<code>Result</code>的<code>hashimotoLight()</code>。</p>
+<h2><span id="验证函数verifyseal">验证函数VerifySeal</span></h2><p><code>Ethash.VerifySeal</code>实现PoW验证功能。首先先判断区块中的Difficulty是否匹配，然后生成（获取）当前区块高度的cache，把cache和nonce传递给<code>hashimotoLight</code>，该函数能根据<code>cache, hash, nonce</code>生成Digest和Result，然后校验Digest是否匹配以及Result是否符合条件。</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121844.jpg" alt="img"></p>
+<h2><span id="hashimotolight函数">hashimotoLight函数</span></h2><p><code>hashimotoLight</code>使用<code>cache, hash, nonce</code>生成<code>Digest</code>和<code>Result</code>。<strong>生成Digest和Result只需要部分的dataset数据，而这些部分dataset数据时可以通过cache生成，因此也就不需要完整的dataset</strong>。它把<code>generateDatasetItem</code>函数封装成了获取部分dataset数据的lookup函数，然后传递给<code>hashimoto</code>计算出Digest和Result。</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121845.jpg" alt="img"></p>
+<h1><span id="faq">FAQ</span></h1><ul>
+<li>Q：每30000个块使用同一个dataset，那可以提前挖出一些合法的Nonce？<br>A： 不行。提前挖去Nonce，意味着还不知道区块头的hash，因此无法生成合法的Nonce。</li>
+<li>Q：能否根据符合条件的哈希值，反推出Nonce呢？<br>A：不行。因为哈希运算具有不可逆性，不能根据摘要反推出明文，同理根据哈希值也无法推出Nonce。</li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/06/22/ethereum-code-consensus-2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">以太坊源码分析：共识（2）</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+    <a class="jiathis_button_twitter"></a>
+    <a class="jiathis_button_plus"></a> 
+    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="ethereum-code-consensus-3" data-title="以太坊源码分析：共识（3）" data-url="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-3/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2018 随风
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>

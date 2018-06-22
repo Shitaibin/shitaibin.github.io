@@ -4,18 +4,27 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>随风</title>
+  <title>以太坊源码分析:statedb | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="屌丝程序员的自留地#为搜索引擎留的">
-<meta property="og:type" content="website">
-<meta property="og:title" content="随风">
-<meta property="og:url" content="http://shitaibin.github.io/index.html">
+  <meta name="description" content="[TOC] 前言就如以太坊黄皮书讲的，以太坊是状态机，区块的产生，实际是状态迁移的过程。那以太坊  是如何定义状态的？ 是如何迁移状态的？ 是怎么存储状态的？  这篇文章就介绍什么是状态，以及是怎么存储的。 状态基本知识状态的定义一个账户的信息，就是一个状态，而以太坊是所有状态的集合。比如，最开始的状态是：{A有10元，B有0元}，后来A发起了交易，给B2元，状态变成{A有8元，B有2元}，这中间">
+<meta name="keywords" content="以太坊">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊源码分析:statedb">
+<meta property="og:url" content="http://shitaibin.github.io/2018/06/22/ethereum-code-statedb/index.html">
 <meta property="og:site_name" content="随风">
-<meta property="og:description" content="屌丝程序员的自留地#为搜索引擎留的">
+<meta property="og:description" content="[TOC] 前言就如以太坊黄皮书讲的，以太坊是状态机，区块的产生，实际是状态迁移的过程。那以太坊  是如何定义状态的？ 是如何迁移状态的？ 是怎么存储状态的？  这篇文章就介绍什么是状态，以及是怎么存储的。 状态基本知识状态的定义一个账户的信息，就是一个状态，而以太坊是所有状态的集合。比如，最开始的状态是：{A有10元，B有0元}，后来A发起了交易，给B2元，状态变成{A有8元，B有2元}，这中间">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-100624.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-100654.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-100700.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-100711.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-100716.jpg">
+<meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-100745.jpg">
+<meta property="og:updated_time" content="2018-06-22T10:11:57.096Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="随风">
-<meta name="twitter:description" content="屌丝程序员的自留地#为搜索引擎留的">
+<meta name="twitter:title" content="以太坊源码分析:statedb">
+<meta name="twitter:description" content="[TOC] 前言就如以太坊黄皮书讲的，以太坊是状态机，区块的产生，实际是状态迁移的过程。那以太坊  是如何定义状态的？ 是如何迁移状态的？ 是怎么存储状态的？  这篇文章就介绍什么是状态，以及是怎么存储的。 状态基本知识状态的定义一个账户的信息，就是一个状态，而以太坊是所有状态的集合。比如，最开始的状态是：{A有10元，B有0元}，后来A发起了交易，给B2元，状态变成{A有8元，B有2元}，这中间">
+<meta name="twitter:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-100624.jpg">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
   
@@ -164,9 +173,7 @@
 	</div>
 </nav>
 
-      <div class="body-wrap">
-  
-    <article id="post-ethereum-code-statedb" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-ethereum-code-statedb" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
       <a href="/2018/06/22/ethereum-code-statedb/" class="article-date">
@@ -182,12 +189,23 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/22/ethereum-code-statedb/">以太坊源码分析:statedb</a>
+    <h1 class="article-title" itemprop="name">
+      以太坊源码分析:statedb
     </h1>
   
 
       </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
       
     
     <div class="article-entry" itemprop="articleBody">
@@ -328,594 +346,68 @@
       
     </div>
     
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/06/04/test-qiniu/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">test-qiniu</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+    <a class="jiathis_button_twitter"></a>
+    <a class="jiathis_button_plus"></a> 
+    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
 	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
 
-      
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
 
 
 
 
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="ethereum-code-statedb" data-title="以太坊源码分析:statedb" data-url="http://shitaibin.github.io/2018/06/22/ethereum-code-statedb/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
 
 
 
 
-
-  
-    <article id="post-test-qiniu" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/06/04/test-qiniu/" class="article-date">
-  	<time datetime="2018-06-04T13:10:40.000Z" itemprop="datePublished">2018-06-04</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/04/test-qiniu/">test-qiniu</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;% qnimg test/a.jpg %&#125;</span><br><span class="line"></span><br><span class="line">问题：plugin中设置qiniu，hexo s命令失效了。如果不设置，就不识别qnimg</span><br></pre></td></tr></table></figure>
-<blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque hendrerit lacus ut purus iaculis feugiat. Sed nec tempor elit, quis aliquam neque. Curabitur sed diam eget dolor fermentum semper at eu lorem.</p>
-</blockquote>
-<p>图片</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-steps-of-house-trade" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/06/03/steps-of-house-trade/" class="article-date">
-  	<time datetime="2018-06-03T01:14:37.000Z" itemprop="datePublished">2018-06-03</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/03/steps-of-house-trade/">二手房交易流程（附时间表）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><strong>帮你了解二手房购买路上的盲点。</strong>关于二手房的买卖的教程有很多，交易流程教程也很多，但都是总体的一个大概步骤，<strong>等走到那一步，才发现，我们仍然有很多疑问</strong>：什么时候打首付？什么时候缴税？什么时候办理产权证？房贷的审批和房贷流程是什么样？各种问题围绕着我们，我们问已经买房的朋友，但这件事，就像人的长相，虽然基本相同，有鼻子有眼睛，但大多数每个人的长相又是不同的。</p>
-<p><strong>希望这篇文章，能让你在正确的时间做正确的事。</strong>我们将从签订意向合同开始，因为在这之前的就是挑房子、和房东交流各种事情，网上都有教程，问问已经买房的朋友也可以。</p>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/房子/">房子</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/房贷/">房贷</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2018/06/03/steps-of-house-trade/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Goland" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/06/02/Goland/" class="article-date">
-  	<time datetime="2018-06-02T10:40:01.000Z" itemprop="datePublished">2018-06-02</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/02/Goland/">VSCode V.S. Goland</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Goland是我目前（2018年06月02日）体验过的最方便/高效的Golang IDE。</p>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Goland/">Goland</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2018/06/02/Goland/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-etheruem-anti-distort" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/06/02/etheruem-anti-distort/" class="article-date">
-  	<time datetime="2018-06-02T04:05:41.000Z" itemprop="datePublished">2018-06-02</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/02/etheruem-anti-distort/">以太坊是如何防止篡改数据的？</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>安全永远是区块链的核心，区块链需要确保链上的数据不被篡改，保证数据永远的真实性，否则，将会带来重大的利益损失。</p>
-<h1 id="哪些数据被篡改"><a href="#哪些数据被篡改" class="headerlink" title="哪些数据被篡改"></a>哪些数据被篡改</h1><p>能让篡改人获取利益的，都是需要保护的数据。有2种获取利益最直接的方式：</p>
-<ol>
-<li>修改交易信息</li>
-<li>修改奖励地址，盗取挖矿人的奖励</li>
-</ol>
-<p>我们看看以太坊是如何保护交易和挖矿人的。</p>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安全/">安全</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2018/06/02/etheruem-anti-distort/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-redeploy-hexo-blog" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/06/02/redeploy-hexo-blog/" class="article-date">
-  	<time datetime="2018-06-02T00:45:31.000Z" itemprop="datePublished">2018-06-02</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/02/redeploy-hexo-blog/">重新安装Hexo博客的流程</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><ol>
-<li>安装Hexo。</li>
-<li>新建文件夹<code>blog</code>，然后进入。</li>
-<li><code>hexo init</code>。</li>
-</ol>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/">Hexo</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2018/06/02/redeploy-hexo-blog/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Mac-software-and-Chrom-app" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/06/01/Mac-software-and-Chrom-app/" class="article-date">
-  	<time datetime="2018-06-01T13:02:19.000Z" itemprop="datePublished">2018-06-01</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/01/Mac-software-and-Chrom-app/">必备Mac软件&amp;Chrome应用</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="必备的Mac软件"><a href="#必备的Mac软件" class="headerlink" title="必备的Mac软件"></a>必备的Mac软件</h1><h3 id="编程"><a href="#编程" class="headerlink" title="编程"></a>编程</h3><ul>
-<li>Dash：开发必备，秒差各语言API</li>
-<li>Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。</li>
-<li>iTerm2：The Best Terminal，用好快捷键</li>
-<li>Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000</li>
-</ul>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Chrome/">Chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mac/">Mac</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2018/06/01/Mac-software-and-Chrom-app/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-7days-pthread" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2017/03/07/7days-pthread/" class="article-date">
-  	<time datetime="2017-03-07T12:25:09.000Z" itemprop="datePublished">2017-03-07</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/07/7days-pthread/">7天掌握pthread</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>纸上得来终觉浅，绝知此事要躬行。</p>
-</blockquote>
-<p>对于入门/掌握/认知/学习某个东西/项技能，最好的方法是顶一个小目标，虽然我们这个目标与王首富的目标差距有点大，仍然需要付出持续的努力，然后完成它。所以有了这个7天掌握pthread的小目标，然后每天利用碎片时间去完成它。为何用碎片的时间呢？因为工作时间是属于公司的，只能利用碎片时间提升工作以外的技能。</p>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pthread/">pthread</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/并发/">并发</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2017/03/07/7days-pthread/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-story-about-me-and-lanshiren" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/01/story-about-me-and-lanshiren/" class="article-date">
-  	<time datetime="2016-07-01T13:45:31.000Z" itemprop="datePublished">2016-07-01</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/01/story-about-me-and-lanshiren/">我和烂诗人</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>溪水流于山石间，岁月流转手指间。</p>
-</blockquote>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2016/07/01/story-about-me-and-lanshiren/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Big-Number-Add-for-Signed-Number" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/21/Big-Number-Add-for-Signed-Number/" class="article-date">
-  	<time datetime="2016-06-21T02:36:44.000Z" itemprop="datePublished">2016-06-21</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/21/Big-Number-Add-for-Signed-Number/">有符号数的大数减法</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>搜索题目的时候发现一道大数减法的题目，觉得有点意思，以前看到的都是大数加法。</p>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机试/">机试</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2016/06/21/Big-Number-Add-for-Signed-Number/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-  
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
-    </nav>
-  
 </div>
       <footer id="footer">
   <div class="outer">
@@ -939,8 +431,8 @@
 		fancybox: true,
 		mathjax: true,
 		animate: true,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

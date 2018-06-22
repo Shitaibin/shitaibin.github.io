@@ -257,42 +257,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
-<div id="toc">
-    <h1>目录</h1>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">engine定义的具体功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">验证区块类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">验证区块类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">辅助类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">FAQ</span></a></li></ol>
-</div>
-
-        <h2><span id="前言">前言</span></h2><p><code>engine</code>是以太坊封定义的一个接口，它的功能可以分为3类：</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>engine</code>是以太坊封定义的一个接口，它的功能可以分为3类：</p>
 <ol>
 <li>验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。</li>
 <li>产生区块类，主要用在挖矿时。</li>
 <li>辅助类。</li>
 </ol>
-<p>接下来我们看一下<code>engine</code>具体定义了哪些功能，还有各功能的使用场景。</p>
-<h2><span id="engine定义的具体功能">engine定义的具体功能</span></h2><p>engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类，分别介绍它们的功能和使用场景。</p>
-<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121139.png" alt="img"><br>engine接口调用图</p>
-<h3><span id="验证区块类">验证区块类</span></h3><ol>
-<li><code>Prepare</code>：初始化区块头信息，不同的共识算法初始化不同。使用场景是，worker创建work的时候调用。</li>
-<li><code>Finalize</code>：根据数据生成“基本定型”的区块，但区块头中还缺少部分数据。使用场景是，1）模拟区块链的时候，被<code>GenerateChain</code>调用，用来生成区块链。2）交易状态管理时，被<code>StateProcessor.Process</code>调用用来执行交易。3）worker创建work的时候调用。</li>
-<li><code>Seal</code>：根据传入的块，进行的是挖矿工作，使用挖矿的结果，修改区块头，然后生成新的区块。使用场景是，被<code>agent.mine</code>调用。</li>
-</ol>
-<h3><span id="验证区块类">验证区块类</span></h3><ol>
-<li><code>VerifyHeader</code>：验证区块头。使用在fetcher中，当fetcher要插入区块的时候，需要先对区块头进行校验。</li>
-<li><code>VerifyHeaders</code>：验证一批区块头。有2种使用场景，1）区块链中，<code>insertChain</code>当把一批区块插入到区块链这个链条的时候，需要进行检查；2）LightChain中，把一批区块头插入到本地链。</li>
-<li><code>VerifyUncles</code>：验证区块中的叔块。<code>insertChain</code>当区块插入区块链的时候，需要对叔块进行验证，调用在VerifyHeaders之后。</li>
-<li><code>VerifySeal</code>：针对Seal函数做的功能进行验证。验证Seal()所修改的区块头中的数据。对外的使用场景是，把Work发送给远端Agent的时候调用。对内的使用场景是，验证区块头的时候会被调用。</li>
-</ol>
-<h3><span id="辅助类">辅助类</span></h3><ol>
-<li><code>APIs</code>：生成以太坊共识相关的API。在以太坊启动RPC服务时，生成API。</li>
-<li><code>Author</code>：读取区块头中的<code>coinbase</code>。被ethstats使用，ethstats是以太坊状态管理服务，当报告数据的时候，需要获取区块的Author信息。</li>
-</ol>
-<p>最后关注一下蓝色的线条，它们代表insertChain所调用的范围，先关的有VerifyHeaders、VerifyUncles、Finalize，涉及到块头的验证、叔块的验证，以及执行区块中的交易，一个区块加入到区块链中，不仅要验证，还要执行各种交易，改变各种状态，所有节点执行确定性的行为之后，达成一致性。</p>
-<h2><span id="faq">FAQ</span></h2><ul>
-<li>Q：谁实现engine<br>A：以太坊中的Ethash和Clique实现了<code>engine</code>，Ethash是基于PoW的共识，Clique是基于PoA的共识。</li>
-<li>Q：为什么<code>insertChain</code>没有调用<code>VerifySeal</code>？<br>A：因为<code>Seal()</code>修改的是header中的部分数据，在验证区块头的时候，会被调用。只是调用流程在Ethash和Clique中的实现略有不同，后续讲解。</li>
-</ul>
-
       
     </div>
     
@@ -305,6 +275,10 @@
 
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2018/06/22/ethereum-code-consensus-2/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>

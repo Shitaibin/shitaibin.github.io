@@ -6,19 +6,19 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>以太坊源码分析：共识（2） | 随风</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。  接下来我们看一下engine具体定义了哪些功能，还有各功能的使用场景。 engine定义的具体功能engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类">
+  <meta name="description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。">
 <meta name="keywords" content="以太坊">
 <meta property="og:type" content="article">
 <meta property="og:title" content="以太坊源码分析：共识（2）">
 <meta property="og:url" content="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-2/index.html">
 <meta property="og:site_name" content="随风">
-<meta property="og:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。  接下来我们看一下engine具体定义了哪些功能，还有各功能的使用场景。 engine定义的具体功能engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类">
+<meta property="og:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121139.png">
-<meta property="og:updated_time" content="2018-06-22T12:16:18.164Z">
+<meta property="og:updated_time" content="2018-06-22T12:21:06.276Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="以太坊源码分析：共识（2）">
-<meta name="twitter:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。  接下来我们看一下engine具体定义了哪些功能，还有各功能的使用场景。 engine定义的具体功能engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类">
+<meta name="twitter:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。">
 <meta name="twitter:image" content="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121139.png">
   
     <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
@@ -217,6 +217,7 @@
 <li>产生区块类，主要用在挖矿时。</li>
 <li>辅助类。</li>
 </ol>
+<a id="more"></a>
 <p>接下来我们看一下<code>engine</code>具体定义了哪些功能，还有各功能的使用场景。</p>
 <h2><span id="engine定义的具体功能">engine定义的具体功能</span></h2><p>engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类，分别介绍它们的功能和使用场景。</p>
 <p><img src="http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121139.png" alt="img"><br>engine接口调用图</p>

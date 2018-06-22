@@ -205,26 +205,32 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">JOS中写时拷贝的fork设计</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">内核态</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#undefined"><span class="toc-text">kern/syscall.c/sys_exofork():</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#undefined"><span class="toc-text">kern/syscall.c/sys_env_set_pgfault_upcall():</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#undefined"><span class="toc-text">kern/trap.c/pgfault_handler():</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">用户态</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#undefined"><span class="toc-text">lib/fork.c/fork():</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#undefined"><span class="toc-text">lib/pgfault.c/set_pgfault_handler():</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#undefined"><span class="toc-text">lib/fork.c/duppage():</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#undefined"><span class="toc-text">lib/pfentry.S/_pgfault_upcall</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#undefined"><span class="toc-text">lib/fork.c/pgfault():</span></a></li></ol></li></ol></li></ol></li></ol></li></ol>
+</div>
+
         <p>如果不高清fork的设计思想，是无法实现正确高效的fork。</p>
-<h1 id="JOS中写时拷贝的fork设计"><a href="#JOS中写时拷贝的fork设计" class="headerlink" title="JOS中写时拷贝的fork设计"></a>JOS中写时拷贝的fork设计</h1><p><img src="http://7xixtr.com1.z0.glb.clouddn.com/fork%E8%AE%BE%E8%AE%A1.jpg" alt="JOS中写时拷贝的fork设计"></p>
+<h1><span id="jos中写时拷贝的fork设计">JOS中写时拷贝的fork设计</span></h1><p><img src="http://7xixtr.com1.z0.glb.clouddn.com/fork%E8%AE%BE%E8%AE%A1.jpg" alt="JOS中写时拷贝的fork设计"></p>
 <a id="more"></a>
 <hr>
-<h1 id="内核态"><a href="#内核态" class="headerlink" title="内核态"></a>内核态</h1><h5 id="kern-syscall-c-sys-exofork"><a href="#kern-syscall-c-sys-exofork" class="headerlink" title="kern/syscall.c/sys_exofork():"></a>kern/syscall.c/sys_exofork():</h5><ol>
+<h1><span id="内核态">内核态</span></h1><h5><span id="kernsyscallcsys_exofork">kern/syscall.c/sys_exofork():</span></h5><ol>
 <li>分配新的Env结构体</li>
 <li>拷贝父进程的trapframe（主要为寄存器信息）</li>
 <li>设置eax寄存器为0（eax存放返回值）</li>
 <li>返回新进程的eid</li>
 </ol>
-<h5 id="kern-syscall-c-sys-env-set-pgfault-upcall"><a href="#kern-syscall-c-sys-env-set-pgfault-upcall" class="headerlink" title="kern/syscall.c/sys_env_set_pgfault_upcall():"></a>kern/syscall.c/sys_env_set_pgfault_upcall():</h5><ol>
+<h5><span id="kernsyscallcsys_env_set_pgfault_upcall">kern/syscall.c/sys_env_set_pgfault_upcall():</span></h5><ol>
 <li>在Env结构体中设置upcall，本质：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env-&gt;env_pgfault_upcall = _pgfault_upcall</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<h5 id="kern-trap-c-pgfault-handler"><a href="#kern-trap-c-pgfault-handler" class="headerlink" title="kern/trap.c/pgfault_handler():"></a>kern/trap.c/pgfault_handler():</h5><ol>
+<h5><span id="kerntrapcpgfault_handler">kern/trap.c/pgfault_handler():</span></h5><ol>
 <li>内核缺页，panic</li>
 <li>如果设置了<code>env_pgfault_upcall</code>，则调用<code>_pgfault_upcall</code>。</li>
 </ol>
 <hr>
-<h1 id="用户态"><a href="#用户态" class="headerlink" title="用户态"></a>用户态</h1><h5 id="lib-fork-c-fork"><a href="#lib-fork-c-fork" class="headerlink" title="lib/fork.c/fork():"></a>lib/fork.c/fork():</h5><ol>
+<h1><span id="用户态">用户态</span></h1><h5><span id="libforkcfork">lib/fork.c/fork():</span></h5><ol>
 <li>set_pgfault_handler()，设置用户态异常栈，以及设置用户态异常入口<code>_pgfault_upcall</code></li>
 <li>sys_exo_fork()，创建子进程</li>
 <li>子进程返回，父进程继续</li>
@@ -232,18 +238,18 @@
 <li>sys_env_set_pgfault_upcall()，为子进程设置户态异常入口<code>_pgfault_upcall</code></li>
 <li>sys_env_set_status()，修改子进程状态</li>
 </ol>
-<h5 id="lib-pgfault-c-set-pgfault-handler"><a href="#lib-pgfault-c-set-pgfault-handler" class="headerlink" title="lib/pgfault.c/set_pgfault_handler():"></a>lib/pgfault.c/set_pgfault_handler():</h5><ol>
+<h5><span id="libpgfaultcset_pgfault_handler">lib/pgfault.c/set_pgfault_handler():</span></h5><ol>
 <li>如果没有设置用户态异常栈（异常处理函数运行的地方），设置用户态异常栈</li>
 <li>设置用户态异常入口<code>_pgfault_upcall</code></li>
 <li>只会被父进程调用</li>
 </ol>
-<h5 id="lib-fork-c-duppage"><a href="#lib-fork-c-duppage" class="headerlink" title="lib/fork.c/duppage():"></a>lib/fork.c/duppage():</h5><ol>
+<h5><span id="libforkcduppage">lib/fork.c/duppage():</span></h5><ol>
 <li>把虚地址页映射到制定进程的地址空间</li>
 </ol>
-<h5 id="lib-pfentry-S-pgfault-upcall"><a href="#lib-pfentry-S-pgfault-upcall" class="headerlink" title="lib/pfentry.S/_pgfault_upcall"></a>lib/pfentry.S/_pgfault_upcall</h5><ol>
+<h5><span id="libpfentrys_pgfault_upcall">lib/pfentry.S/_pgfault_upcall</span></h5><ol>
 <li>调用lib/fork.c/pgfault()</li>
 </ol>
-<h5 id="lib-fork-c-pgfault"><a href="#lib-fork-c-pgfault" class="headerlink" title="lib/fork.c/pgfault():"></a>lib/fork.c/pgfault():</h5><ol>
+<h5><span id="libforkcpgfault">lib/fork.c/pgfault():</span></h5><ol>
 <li>如果页异常的页是COW属性</li>
 <li>创建临时页，属性可读写，原数据拷贝到临时页，临时页映射到页异常进程的该页</li>
 </ol>

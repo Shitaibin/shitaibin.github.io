@@ -203,16 +203,22 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">实验</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">1. 基础导入测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">2. 基础单元测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">3. 不同目录下的单元测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">4. 如果my_project是一个包呢</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">为什么我不是这样做呢？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">附件测试：unittest命令行接口会改变sys.path</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">包与单元测试的实验终结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">参考资料</span></a></li></ol>
+</div>
+
         <blockquote>
 <p>需求驱动学习。</p>
 </blockquote>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>嗯，很绕口的标题</p>
+<h1><span id="前言">前言</span></h1><p>嗯，很绕口的标题</p>
 <p>最近的项目需要把编写的工具放到tools目录，把单元测试放到test目录，造成了不同目录下导入（import）的错误。<strong>基础原因很简单，Python无法找到要导入的文件，而解决这个问题的根本方法，是向<code>sys.path</code>中添加搜索路径，如果手动添加，太俗了不是么。</strong></p>
 <a id="more"></a>
 <p>所以，本文内容为包（Package）和单元测试的结合笔记。从基本的单元测试，到多目录级的单元测试。单元测试使用PyUnit和nose。</p>
 <p>所以，假设你已经有编写过单元测试的基础经历，但nose可以不了解，只需要知道如何安装和运行即可，若不了解，可参考<a href="https://nose.readthedocs.org/en/latest/" target="_blank" rel="noopener">本页面</a>。</p>
-<h1 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h1><p>为了方便些笔记，该实验都是在Window上进行的，实验4为了使用nose，nose部分在Ubuntu上进行。</p>
-<h2 id="1-基础导入测试"><a href="#1-基础导入测试" class="headerlink" title="1. 基础导入测试"></a>1. 基础导入测试</h2><p>当前文件结构如下：</p>
+<h1><span id="实验">实验</span></h1><p>为了方便些笔记，该实验都是在Window上进行的，实验4为了使用nose，nose部分在Ubuntu上进行。</p>
+<h2><span id="1-基础导入测试">1. 基础导入测试</span></h2><p>当前文件结构如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foo</span><br><span class="line">	./bar.py</span><br><span class="line">	./test_bar.py</span><br></pre></td></tr></table></figure>
 <p><code>bar.py</code>内容如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dumb_true</span><span class="params">()</span>:</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">True</span></span><br></pre></td></tr></table></figure>
@@ -222,14 +228,14 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd foo</span><br><span class="line">python test_bar.py</span><br></pre></td></tr></table></figure>
 <p><strong><code>python</code>命令会将运行文件所在目录加到<code>sys.path</code>中</strong>，因此python可以搜索到模块<code>bar.py</code>，所以导入成功。</p>
 <p>运行结果：无错误提示， 能导入模块bar。</p>
-<h2 id="2-基础单元测试"><a href="#2-基础单元测试" class="headerlink" title="2. 基础单元测试"></a>2. 基础单元测试</h2><p>修改<code>test_bar.py</code>内容为：</p>
+<h2><span id="2-基础单元测试">2. 基础单元测试</span></h2><p>修改<code>test_bar.py</code>内容为：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> bar</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestBar</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_bar_true</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.assertTrue(bar.dumb_true())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
 <p>或者</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> bar <span class="keyword">import</span> dumb_true</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestBar</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_bar_true</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.assertTrue(dumb_true())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
 <p>运行命令：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd foo</span><br><span class="line">python test_bar.py</span><br></pre></td></tr></table></figure>
 <p>运行结果：单元测试成功，说明可以从<code>test_bar.py</code>内调用<code>bar.dumb_true</code>函数。</p>
-<h2 id="3-不同目录下的单元测试"><a href="#3-不同目录下的单元测试" class="headerlink" title="3. 不同目录下的单元测试"></a>3. 不同目录下的单元测试</h2><p>这起源于构建package后，通常把单元测试放到单独的<code>tests</code>目录。<strong>tests在包的外面，和包在相同的目录。</strong></p>
+<h2><span id="3-不同目录下的单元测试">3. 不同目录下的单元测试</span></h2><p>这起源于构建package后，通常把单元测试放到单独的<code>tests</code>目录。<strong>tests在包的外面，和包在相同的目录。</strong></p>
 <p>目录结构如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">my_project</span><br><span class="line">	./foo</span><br><span class="line">		./__init__.py</span><br><span class="line">		./bar.py</span><br><span class="line">	./tests</span><br><span class="line">        ./__init__.py</span><br><span class="line">		./test_foo.py</span><br><span class="line">		./test_bar.py</span><br></pre></td></tr></table></figure>
 <p>其中，<code>my_project</code>是你的项目目录，<code>foo</code>是包目录。<code>tests</code>目录存放了对工程的单元测试。<code>foo</code>目录下的<code>__init__.py</code>使得，foo是一个包，也就说目录下有<code>__init__.py</code>的目录都是包。</p>
@@ -250,7 +256,7 @@
 <p>从<code>ImportError: cannot import name dumb_tree</code>可以看出，是我的拼写错误，但是我找了几次才发现这个错误的，错误总是发生在意想不到的地方。</p>
 <p>也许你认为这个错误很Silly，但我认为，拼写错误是常见的，但看了几次才发现错误，确实很Silly。</p>
 <p>将<code>dumb_tree</code>改为<code>dumb_true</code>后，单元测试成功。</p>
-<h2 id="4-如果my-project是一个包呢"><a href="#4-如果my-project是一个包呢" class="headerlink" title="4. 如果my_project是一个包呢"></a>4. 如果my_project是一个包呢</h2><p>如果我将my_project改为一个包，<strong>tests是包的一部分。</strong>为了理解，我将my_project改为my_package。</p>
+<h2><span id="4-如果my_project是一个包呢">4. 如果my_project是一个包呢</span></h2><p>如果我将my_project改为一个包，<strong>tests是包的一部分。</strong>为了理解，我将my_project改为my_package。</p>
 <p>目录结构如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">my_package</span><br><span class="line">	./__init__.py</span><br><span class="line">	./foo</span><br><span class="line">		./__init__.py</span><br><span class="line">		./bar.py</span><br><span class="line">	./tests</span><br><span class="line">        ./__init__.py</span><br><span class="line">		./test_foo.py</span><br><span class="line">		./test_bar.py</span><br></pre></td></tr></table></figure>
 <p>这些my_package下多了一个<code>./__init__.py</code>，它变成包了。</p>
@@ -267,10 +273,10 @@
 <p>然后</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd tests</span><br><span class="line">python test_bar.py</span><br></pre></td></tr></table></figure>
 <p>单元测试成功。</p>
-<h4 id="为什么我不是这样做呢？"><a href="#为什么我不是这样做呢？" class="headerlink" title="为什么我不是这样做呢？"></a>为什么我不是这样做呢？</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd my_package</span><br><span class="line">python test_bar.py</span><br></pre></td></tr></table></figure>
+<h4><span id="为什么我不是这样做呢">为什么我不是这样做呢？</span></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd my_package</span><br><span class="line">python test_bar.py</span><br></pre></td></tr></table></figure>
 <p>这样本错误依然存在。在实验1中提到，python会搜索文件所在的路径，而不是添加到<code>sys.path</code>中，如今，我使用的是相对于<code>test_bar.py</code>的路径，必须在tests目录运行，python才会搜索<code>test_bar.py</code>的祖父目录，这样才能找到<code>my_package.foo.bar</code>。在my_packge目录中运行，my_package的祖父目录找不到<code>my_package.foo.bar</code>。</p>
 <p><strong>猜测解决方案3：</strong>使用nose，nose很人性化，它会将运行nosetests的目录，及其子目录下所有测试文件，所引用到的模块，自动加入到<code>sys.path</code>中，使用nose通常很少遇到导入问题。*该方案是在Ubuntu下实验的**。</p>
-<h2 id="附件测试：unittest命令行接口会改变sys-path"><a href="#附件测试：unittest命令行接口会改变sys-path" class="headerlink" title="附件测试：unittest命令行接口会改变sys.path"></a>附件测试：unittest命令行接口会改变<code>sys.path</code></h2><p>目录结构如下：</p>
+<h2><span id="附件测试unittest命令行接口会改变syspath">附件测试：unittest命令行接口会改变<code>sys.path</code></span></h2><p>目录结构如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">outter_dir</span><br><span class="line">	./inner_dir</span><br><span class="line">		./__init__.py</span><br><span class="line">		./test.py</span><br></pre></td></tr></table></figure>
 <p><code>test.py</code>内容如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pprint <span class="keyword">import</span> pprint</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line">pprint(sys.path)</span><br></pre></td></tr></table></figure>
@@ -283,10 +289,10 @@
 <p>结果中包含的是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\\Users\\Brave\\PycharmProjects\\learn-python\\py2\\test\\outter_dir</span><br></pre></td></tr></table></figure>
 <p>本实验证明了，<code>python</code>命令会将运行文件所在目录加到<code>sys.path</code>中，而<code>python -m unittest</code>命令，将运行命令所在目录加入到<code>sys.path</code>中。</p>
-<h2 id="包与单元测试的实验终结"><a href="#包与单元测试的实验终结" class="headerlink" title="包与单元测试的实验终结"></a>包与单元测试的实验终结</h2><p>到目前的实验为止，已经知道相同目录下的单元测试，单元测试在包外，单元测试在包内的三种情况，及相应的单元测试方法。</p>
+<h2><span id="包与单元测试的实验终结">包与单元测试的实验终结</span></h2><p>到目前的实验为止，已经知道相同目录下的单元测试，单元测试在包外，单元测试在包内的三种情况，及相应的单元测试方法。</p>
 <p>其实，本质上讲，还是要让导入的包处于搜索路径内，所以，无论是如何放置单元测试，一定要让他们在搜索路径内。实验3与实验4是两种常用的目录组织方式，实验4需要稍作处理，sklearn使用的即实验4的组织方式，它的解决方案是修改了顶层<code>__init__.py</code>做了处理，但我还没有搞懂，有兴趣的可访问：<br><a href="https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/__init__.py" target="_blank" rel="noopener">https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/__init__.py</a> 。</p>
 <p>相关文章：<a href="#">对自定义包的引用</a></p>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<h1><span id="参考资料">参考资料</span></h1><ol>
 <li>StackOverflow：<a href="http://stackoverflow.com/questions/1896918/running-unittest-with-typical-test-directory-structure" target="_blank" rel="noopener">http://stackoverflow.com/questions/1896918/running-unittest-with-typical-test-directory-structure</a></li>
 <li>A simple instance: <a href="https://schettino72.wordpress.com/2008/01/19/11/" target="_blank" rel="noopener">https://schettino72.wordpress.com/2008/01/19/11/</a></li>
 </ol>

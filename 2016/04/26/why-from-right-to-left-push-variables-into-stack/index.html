@@ -208,24 +208,30 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">前提</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">理论分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">自右向左（逆变量声明顺序）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">自左向右（按变量声明顺序）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">如何实现自左向右入栈</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">自右向左访问参数超过范围</span></a></li></ol></li></ol>
+</div>
+
         <p>原因是由于可变长参数。</p>
 <blockquote>
 <p>如今GCC已经支持按声明顺序进栈，这里分析传统的函数调用入栈。</p>
 </blockquote>
-<h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>了解函数调用，所涉及栈帧分配，见下图1：</p>
+<h2><span id="前提">前提</span></h2><p>了解函数调用，所涉及栈帧分配，见下图1：</p>
 <a id="more"></a>
 <p><img src="http://7xixtr.com1.z0.glb.clouddn.com/stack_frame.png" alt=""><br>图1：函数调用栈帧</p>
 <p>这个图2也有意思，把函数调用之间的关系展示了出来。</p>
 <p><img src="http://7xixtr.com1.z0.glb.clouddn.com/process_and_stack.png" alt=""><br>图2：函数调用关系</p>
-<h2 id="理论分析"><a href="#理论分析" class="headerlink" title="理论分析"></a>理论分析</h2><p>假设现在有函数f，固定参数m个，可变参数n（未知）个，假设所有参数都是32位整数，如果不是整数，也可以根据参数类型，推出参数地址，为了简单画图，在此使用整数。</p>
-<h3 id="自右向左（逆变量声明顺序）"><a href="#自右向左（逆变量声明顺序）" class="headerlink" title="自右向左（逆变量声明顺序）"></a>自右向左（逆变量声明顺序）</h3><p>那么调用栈图3：</p>
+<h2><span id="理论分析">理论分析</span></h2><p>假设现在有函数f，固定参数m个，可变参数n（未知）个，假设所有参数都是32位整数，如果不是整数，也可以根据参数类型，推出参数地址，为了简单画图，在此使用整数。</p>
+<h3><span id="自右向左逆变量声明顺序">自右向左（逆变量声明顺序）</span></h3><p>那么调用栈图3：</p>
 <p><img src="http://7xixtr.com1.z0.glb.clouddn.com/%E5%8F%82%E6%95%B0%E8%BF%9B%E6%A0%88%E9%A1%BA%E5%BA%8F.png" alt=""><br>图3：自右向左入栈的调用栈</p>
 <p>虽然不知道可变参数n的大小，但是，依然可以根据固定参数的大小m，找到可变参数的开始位置，然后去访问就可以了。<strong>至于访问第n+1个可变参数，会造成什么问题，我们一会讨论。</strong></p>
-<h3 id="自左向右（按变量声明顺序）"><a href="#自左向右（按变量声明顺序）" class="headerlink" title="自左向右（按变量声明顺序）"></a>自左向右（按变量声明顺序）</h3><p>那么调用栈图4：</p>
+<h3><span id="自左向右按变量声明顺序">自左向右（按变量声明顺序）</span></h3><p>那么调用栈图4：</p>
 <p><img src="http://7xixtr.com1.z0.glb.clouddn.com/%E5%8F%82%E6%95%B0%E8%BF%9B%E6%A0%88%E9%A1%BA%E5%BA%8F-%E6%AD%A3%E5%BA%8F.png" alt=""><br>图4：自左向右入栈的调用栈</p>
 <p>在只知道ebp的情况下，而不知道可变参数n的大小，不能确定可变参数和参数的分解，怎么确定参数1，参数m的地址呢？不确定他们怎么能访问呢？<strong>真相就是这样子，你无法确定各参数的地址</strong>。</p>
-<h3 id="如何实现自左向右入栈"><a href="#如何实现自左向右入栈" class="headerlink" title="如何实现自左向右入栈"></a>如何实现自左向右入栈</h3><p>使用另外的寄存器指向参数1。那么就可以访问固定参数，已经可变参数的区域也就确定了。</p>
-<h3 id="自右向左访问参数超过范围"><a href="#自右向左访问参数超过范围" class="headerlink" title="自右向左访问参数超过范围"></a>自右向左访问参数超过范围</h3><p>未定义。</p>
+<h3><span id="如何实现自左向右入栈">如何实现自左向右入栈</span></h3><p>使用另外的寄存器指向参数1。那么就可以访问固定参数，已经可变参数的区域也就确定了。</p>
+<h3><span id="自右向左访问参数超过范围">自右向左访问参数超过范围</span></h3><p>未定义。</p>
 <p>以printf为例：</p>
 <pre><code class="C"><span class="built_in">printf</span>(<span class="string">"%d %d\n"</span>, <span class="number">1</span>); 
 </code></pre>

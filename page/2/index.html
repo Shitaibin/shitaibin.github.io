@@ -166,75 +166,6 @@
 
       <div class="body-wrap">
   
-    <article id="post-why-insight-to-tools" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/05/why-insight-to-tools/" class="article-date">
-  	<time datetime="2016-06-05T09:33:44.000Z" itemprop="datePublished">2016-06-05</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/05/why-insight-to-tools/">为什么要深入理解库/包/框架等工具</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>以前太简单，太SB。认为学会使用一个工具就好了，干嘛非得了解这个工具是怎么构建的，理解他的原理呢？</p>
-<p>有段时间我想通了，但没有记录下来。许多事情运作的原理是相似的，举个车的例子吧。</p>
-<p>汽车是一个工具，你努力学会了开车，你开车上路的时候，兴奋的不得了，开车上路了，感觉还不错，你飚到了200码，简直爽翻了。有一天，你的车子在路上抛锚了，但是你不了解汽车是怎么运作的，你也不会修车呀，只能打个电话联系修车厂，把你的车子运回去。但是，这个修车厂的效率太低了，修的很慢，你还想到，万一你在沙漠里面开车子，找不到修车厂怎么办？所以，你学了汽车的一些原理，了解了构造，跟着学修车，有一天你出师了，汽车常见的问题，你基本可以解决了。这下把你乐坏了，开车去旅行，出了山海关，东北溜一圈，一路上各种小问题你都解决了。但你还是发现了很多问题，比如车子在雪地上跑的不行，上坡时也比较吃力。你觉得你必须学习改造这个车子了，在不同的环境下，让他发挥最好的性能。掌握了改造技术，进入内蒙古改造车子，让它在草原上飞起，到沙漠地带，你又改造车子，沙漠驰骋。这一路上，你看了许多美景，也学会了，开车、修车、改造车。</p>
-<p>以上故事，纯属瞎BB，如有雷同，纯属巧合。</p>
-<p>对我们使用的库、包、框架而言，他们也是工具，编程语言也是工具，服务器、PC、手机等等，都是工具。</p>
-<p>有些东西你需要掌握使用它的常用功能。但有些，需要你去改造它，让它适应不同的场景需求。所以我觉得，对于一门工具，应当有以下几个境界：</p>
-<ol>
-<li>掌握常用功能。</li>
-<li>见识一些奇淫巧计。</li>
-<li>掌握工具架构（骨骼）。</li>
-<li>洞察工具血肉。</li>
-<li>根据场景需求定制工具。</li>
-</ol>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-design-fork-with-COW-in-JOS" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -802,6 +733,81 @@
         <p class="article-more-link">
           <a  href="/2016/01/07/never-stop-learning/#more">more >></a>
         </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-things-about-github" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/12/27/things-about-github/" class="article-date">
+  	<time datetime="2015-12-27T06:40:01.000Z" itemprop="datePublished">2015-12-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/27/things-about-github/">Github二三事</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">提交者显示unknown</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">无法commit或add已经modified的文件(夹)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">http代理带来的问题</span></a></li></ol>
+</div>
+
+        <blockquote>
+<p>总会有些疑问，也总有原因，也必然有解决方案。</p>
+</blockquote>
+<h2><span id="提交者显示unknown">提交者显示unknown</span></h2><p>明明都是我提交的，怎么显示unkonw commit呢？</p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/github-unkonw-commit.png" alt="unknown commit"></p>
+<p>原因：本地Git配置的邮箱与Github上面配置的邮箱不一致，具体原因是大小写导致的，本地中有大写字母，而Github上面全为小写。</p>
+<h2><span id="无法commit或add已经modified的文件夹">无法commit或add已经modified的文件(夹)</span></h2><p>明明显示修改了，但就是提交不上去，原因是那个目录是子模块，有自己的git信息。</p>
+<p>参考资料：<a href="http://stackoverflow.com/questions/5186371/problem-with-modified-files-showing-up-in-git-but-not-updating" target="_blank" rel="noopener">时光机1号</a>，<a href="http://stackoverflow.com/questions/7726131/git-add-a-is-not-adding-all-modified-files-in-directories" target="_blank" rel="noopener">时光机2号</a>。</p>
+<h2><span id="http代理带来的问题">http代理带来的问题</span></h2><p>在push操作的时候出现了这个问题：<code>error: RPC failed; result=56, HTTP code = 0</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git push ...</span><br><span class="line">error: RPC failed; result=56, HTTP code = 200</span><br><span class="line">fatal: The remote end hung up unexpectedly</span><br><span class="line">fatal: The remote end hung up unexpectedly</span><br><span class="line">Everything up-to-date</span><br></pre></td></tr></table></figure>
+<p>原因：git设置的http的缓冲区太小了。</p>
+<p>调大即可解决：<code>git config http.postBuffer 524288000</code>。</p>
+<p><a href="https://flyingtomoon.com/2013/10/02/using-bitbucket-as-assignment-submission-system-for-the-courses/" target="_blank" rel="noopener">参考资料</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Github/">Github</a></li></ul>
+	</div>
+
+      
+
       
       <div class="clearfix"></div>
     </div>

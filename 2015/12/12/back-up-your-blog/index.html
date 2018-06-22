@@ -203,6 +203,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">那么，什么需要备份呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">备份到哪里？</span></a></li></ol>
+</div>
+
         <p>之前，在搭好博客后我就可是对博客的备份了，备份了配置文件和文章的Markdown文件，以及自己修改的主题。</p>
 <p>由于备份的并不是十分勤奋，以至于在我重新做系统后，将备份到Github上的数据Clone到本地后，傻眼了。出现了以下两个大问题：</p>
 <ol>
@@ -210,14 +216,14 @@
 <li>一些设置没有了，包括博客的自定义主题。</li>
 </ol>
 <a id="more"></a>
-<h3 id="那么，什么需要备份呢？"><a href="#那么，什么需要备份呢？" class="headerlink" title="那么，什么需要备份呢？"></a>那么，什么需要备份呢？</h3><p>以下举例以Hexo的文件为例。</p>
+<h3><span id="那么什么需要备份呢">那么，什么需要备份呢？</span></h3><p>以下举例以Hexo的文件为例。</p>
 <ol>
 <li>博客配置文件，如<code>_config.yml</code>。</li>
 <li>主题文件夹，如themes目录下自己自定义的主题。</li>
 <li>发表过的博文，如source目录。</li>
 </ol>
 <p>如果想省事，可以对整个Hexo博客文件进行完整备份，但是备份前需要进行<code>hexo clean</code>，清理掉一些临时的缓存文件（如public目录）。</p>
-<h3 id="备份到哪里？"><a href="#备份到哪里？" class="headerlink" title="备份到哪里？"></a>备份到哪里？</h3><p>如今流行备份到云端，如果没有什么机密的东西，就备份到云上，并且随处可取。如果备份到本地私有服务器，就没有放在网络上方便了。于云端而言，可以备份到网盘、Github等托管网站。</p>
+<h3><span id="备份到哪里">备份到哪里？</span></h3><p>如今流行备份到云端，如果没有什么机密的东西，就备份到云上，并且随处可取。如果备份到本地私有服务器，就没有放在网络上方便了。于云端而言，可以备份到网盘、Github等托管网站。</p>
 <p>对比备份到网盘与Github的等托管网站的特点。</p>
 <p>网盘特点：<br>国内网盘备份速度快；可自动备份，省心；相对较私密，只要自己不设置共享。用了一段时间，缺点是会备份许多脏文件(如临时文件)，数据量比较大（有许多无用的文件），下载时，也是非常消耗时间。</p>
 <p>Github特点：<br>备份速度慢点；需手动Push（为了偷懒，写了脚本，每次deploy时也会自动push）；共享。</p>

@@ -203,11 +203,17 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">题目Wiki及参考答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">我的解答</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">面试问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">4-45</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#undefined"><span class="toc-text">变形及分析</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">4-46</span></a></li></ol></li></ol></li></ol>
+</div>
+
         <blockquote>
 <p>列出的解答仅为自己的思路，仅供参考，欢迎指出错误。</p>
 </blockquote>
-<h2 id="题目Wiki及参考答案"><a href="#题目Wiki及参考答案" class="headerlink" title="题目Wiki及参考答案"></a>题目Wiki及参考答案</h2><p><a href="http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Sorting-searching-TADM2E" target="_blank" rel="noopener">http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Sorting-searching-TADM2E</a></p>
-<h2 id="我的解答"><a href="#我的解答" class="headerlink" title="我的解答"></a>我的解答</h2><h3 id="面试问题"><a href="#面试问题" class="headerlink" title="面试问题"></a>面试问题</h3><h4 id="4-45"><a href="#4-45" class="headerlink" title="4-45"></a>4-45</h4><p>题目</p>
+<h2><span id="题目wiki及参考答案">题目Wiki及参考答案</span></h2><p><a href="http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Sorting-searching-TADM2E" target="_blank" rel="noopener">http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Sorting-searching-TADM2E</a></p>
+<h2><span id="我的解答">我的解答</span></h2><h3><span id="面试问题">面试问题</span></h3><h4><span id="4-45">4-45</span></h4><p>题目</p>
 <p>Given a search string of three words, find the smallest snippet of the document that contains all three of the search words—i.e., the snippet with smallest number of words in it. You are given the index positions where these words occur in the document, such as word1: (1, 4, 5), word2: (3, 9, 10), and word3: (2, 6, 15). Each of the lists are in sorted order, as above.</p>
 <p>解答</p>
 <p>每个单词出现的位置列表都是有序的，将它们看做是队列。设定<code>min_len</code>保存当前最短的片段的长度，初始化为-1.算法步骤如下：</p>
@@ -218,12 +224,12 @@
 <li>如果<code>min_len</code>为-1或<code>min_len</code>大于<code>len</code>，<code>min_len = len</code>，保存三元组.</li>
 <li>删除三元组中最小者<code>min</code>，若<code>min</code>对应队列不空，取新元素加入到三元组，执行2，若空，退出循环。</li>
 </ol>
-<h5 id="变形及分析"><a href="#变形及分析" class="headerlink" title="变形及分析"></a>变形及分析</h5><p>变形</p>
+<h5><span id="变形及分析">变形及分析</span></h5><p>变形</p>
 <p>假设输入数据不是3个单词的出现位置，而直接是一个字符串数组，那么如何找到满足要求的最小片段？</p>
 <p>分析</p>
 <p>设<code>cur</code>为访问数组的当前位置，3个变量<code>l1, l2, l3</code>，代表<code>cur</code>前面离<code>cur</code>最近的3个单词(w1, w2, w3)的位置。若cur上的单词为3个单词之一，不妨设为w3，则计算w3与w1,w2的距离即<code>cur-l1+1</code>和<code>cur-l2+1</code>，取小者为<code>min</code>，另<code>min</code>与<code>min_len</code>比较，若min更小，保存<code>min</code>，及当前3个单词的位置。当遍历数组结束时，最后的<code>min_len</code>与保存的3元素的位置即满足要求的最小片段。</p>
 <a id="more"></a>
-<h4 id="4-46"><a href="#4-46" class="headerlink" title="4-46"></a>4-46</h4><p>题目</p>
+<h4><span id="4-46">4-46</span></h4><p>题目</p>
 <p>You are given 12 coins. One of them is heavier or lighter than the rest. Identify this coin in just three weighings.<br>Note - weighings are with a balance, where you can have a greater than, equal to, or less than result. You can’t do this with a digital scale.</p>
 <p>解答</p>
 <p>答案Wiki之中给出的3步解决的办法，但是我想不到这个解决方案。下面讨论一下 <strong>二分搜索</strong>在这里的应用。</p>

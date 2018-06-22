@@ -203,22 +203,28 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">题目Wiki及参考答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">Backtracking</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">7-1 permutations</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">7-2 Multisets</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">7-3 图的同构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#undefined"><span class="toc-text">7-4</span></a></li></ol></li></ol>
+</div>
+
         <blockquote>
 <p>列出的解答仅为自己的思路，仅供参考，欢迎指出错误。</p>
 </blockquote>
-<h2 id="题目Wiki及参考答案"><a href="#题目Wiki及参考答案" class="headerlink" title="题目Wiki及参考答案"></a>题目Wiki及参考答案</h2><p><a href="http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Search-TADM2E" target="_blank" rel="noopener">http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Search-TADM2E</a></p>
+<h2><span id="题目wiki及参考答案">题目Wiki及参考答案</span></h2><p><a href="http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Search-TADM2E" target="_blank" rel="noopener">http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Search-TADM2E</a></p>
 <p>该页面答案，也是由用户编辑的，不确定是完全的正确。</p>
-<h2 id="Backtracking"><a href="#Backtracking" class="headerlink" title="Backtracking"></a>Backtracking</h2><h3 id="7-1-permutations"><a href="#7-1-permutations" class="headerlink" title="7-1 permutations"></a>7-1 permutations</h3><p>题目</p>
+<h2><span id="backtracking">Backtracking</span></h2><h3><span id="7-1-permutations">7-1 permutations</span></h3><p>题目</p>
 <p>A derangement is a permutation p of {1,…,n} such that no item is in its proper position, i.e. pi≠i for all 1≤i≤n. derangement Write an efficient backtracking program with pruning that constructs all the derangements of n items.</p>
 <a id="more"></a>
 <p>解答</p>
 <p>剪枝就是构建合适的候选者。只需增加一个限制条件<code>i != k</code>。<a href="https://github.com/Shitaibin/The-Algorithm-Design-Manual/blob/master/7.11/7_1_permutations.c" target="_blank" rel="noopener">完整代码</a>。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">void construct_candidates(int a\[\], int k, int n, int c\[\], int *ncandidates)  </span><br><span class="line">&#123;  </span><br><span class="line"> int i;  </span><br><span class="line"> bool in_perm\[NMAX\];  </span><br><span class="line">  </span><br><span class="line"> for (i=1; i&lt;NMAX; ++i) in_perm\[i\] = FALSE;  </span><br><span class="line"> for (i=1; i&lt;k; ++i) in_perm\[a\[i\]\] = TRUE;  </span><br><span class="line"> *ncandidates = 0;  </span><br><span class="line"> for (i=1; i&lt;=n; ++i)  </span><br><span class="line"> if (i != k &amp;&amp; in_perm\[i\] == FALSE) // pruning  </span><br><span class="line"> c\[(*ncandidates)++\] = i;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="7-2-Multisets"><a href="#7-2-Multisets" class="headerlink" title="7-2 Multisets"></a>7-2 Multisets</h3><p>题目</p>
+<h3><span id="7-2-multisets">7-2 Multisets</span></h3><p>题目</p>
 <p>Multisets are allowed to have repeated elements. A multiset of n items may thus have fewer than n! distinct permutations. For example, {1,1,2,2} has only six different permutations: {1,1,2,2}, {1,2,1,2}, {1,2,2,1}, {2,1,1,2}, {2,1,2,1}, and {2,2,1,1}. multiset Design and implement an efficient algorithm for constructing all permutations of a multiset.</p>
 <p>解答</p>
 <p>在每次选取候选者的时候，重复的候选者，只选择一个，就不会出现同一个数字在同一个位置，出现多次。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">mulset\[NMAX\]; // Multisets  </span><br><span class="line">a\[\]; // save the indexes of the number in mulset  </span><br><span class="line">void construct_candidates(int a\[\], int k, int n, int c\[\], int *ncandidates)  </span><br><span class="line">&#123;  </span><br><span class="line"> int i;  </span><br><span class="line"> bool in_perm\[NMAX\]; // save the indexes of the number in mulset  </span><br><span class="line"> int uniset\[NMAX\]; // save the first indexes of a number in mulset  </span><br><span class="line">  </span><br><span class="line"> for (i=1; i&lt;NMAX; ++i) in_perm\[i\] = FALSE;  </span><br><span class="line"> for (i=1; i&lt;k; ++i) in_perm\[a\[i\]\] = TRUE;  </span><br><span class="line">  </span><br><span class="line"> get\_unique\_set(in_perm, uniset);   </span><br><span class="line">  </span><br><span class="line"> *ncandidates = 0;  </span><br><span class="line"> for (i=1; i&lt;=n; ++i)  </span><br><span class="line"> if (i != k &amp;&amp; uniset\[i\] == FALSE) // pruning  </span><br><span class="line"> c\[(*ncandidates)++\] = i;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="7-3-图的同构"><a href="#7-3-图的同构" class="headerlink" title="7-3 图的同构"></a>7-3 图的同构</h3><p>题目</p>
+<h3><span id="7-3-图的同构">7-3 图的同构</span></h3><p>题目</p>
 <p>Design and implement an algorithm for testing whether two graphs are isomorphic to each other. The graph isomorphism problem is discussed in graph-isomorphism. With proper pruning, graphs on hundreds of vertices can be tested reliably.</p>
 <p>解答</p>
 <p>NP问题。</p>
@@ -231,7 +237,7 @@
 <li>验证方式是：图G中有的边，图H中也有，图H中有的边图G中也有。</li>
 </ol>
 <p>剪枝：仅将H中与G中当前顶点度相同的顶点加入到候选者列表。</p>
-<h3 id="7-4"><a href="#7-4" class="headerlink" title="7-4"></a>7-4</h3><p>题目</p>
+<h3><span id="7-4">7-4</span></h3><p>题目</p>
 <p>Anagrams are rearrangements of the letters of a word or phrase into a different word or phrase. Sometimes the results are quite striking. For example, “MANY VOTED BUSH RETIRED” is an anagram of “TUESDAY NOVEMBER THIRD”, which correctly predicted the result of the 1992 U.S. presidential election. Design and implement an algorithm for finding anagrams using combinatorial search and a dictionary.</p>
 <p>解答</p>
 <ol>

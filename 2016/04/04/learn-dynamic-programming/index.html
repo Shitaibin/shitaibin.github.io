@@ -203,6 +203,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">Coin-row</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">Change-making</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">数字三角形问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">LIS</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">背包问题</span></a></li></ol>
+</div>
+
         <p>动态规划一直以来，算是一个弱点，前几腾讯的实习生笔试有道区间DP的题目，当时只能暴力的使用了递归，存在大量的重复计算，时间复杂度会达到O(N^2)。所以今日，查资料，从基础学习DP。</p>
 <a id="more"></a>
 <p>首先参考的资料是知乎回答：<a href="https://www.zhihu.com/topic/19660018" target="_blank" rel="noopener">什么是动态规划？动态规划的意义是什么？</a> 。王勐和徐凯强帮我建立的对DP的概念认识和理论认知，在这点上，两位的答案要比书中讲解的好，因为更直白。</p>
@@ -229,7 +235,7 @@
 <p>以下更新于2016年4月5日。</p>
 <p>既然DP的核心是状态的定义和转移方程，定义状态的基础是确定自变量和因变量，因变量就是题目要求的最优解，而自变量就需要根据题意设定了，在确定题目之后，一般就能发现与因变量相关的一些变量，并不能拿这些变量全部作为自变量，应当探索着取其中的一个作为自变量，如果不行，再取两个。</p>
 <p>这面罗列一些，白天总结的自变量和因变量。</p>
-<h4 id="Coin-row"><a href="#Coin-row" class="headerlink" title="Coin-row"></a>Coin-row</h4><blockquote>
+<h4><span id="coin-row">Coin-row</span></h4><blockquote>
 <p>一行硬币，取若干硬币，使得硬币的和最大，取出的硬币不相邻。</p>
 </blockquote>
 <ul>
@@ -239,7 +245,7 @@
 <li>F（k）：前n个硬币，满足不相邻条件，所能得到的最大和。</li>
 <li>结果：max{F（k）| 1 &lt;= k &lt;= n}</li>
 </ul>
-<h4 id="Change-making"><a href="#Change-making" class="headerlink" title="Change-making"></a>Change-making</h4><blockquote>
+<h4><span id="change-making">Change-making</span></h4><blockquote>
 <p>d[m]为币值，给你一个金额amount，使用最少（多）数量的硬币组成amount。</p>
 </blockquote>
 <ul>
@@ -248,7 +254,7 @@
 <li>F（k）：当前amount所需要的最少的硬币数量。</li>
 <li>结果：F（n）</li>
 </ul>
-<h4 id="数字三角形问题"><a href="#数字三角形问题" class="headerlink" title="数字三角形问题"></a>数字三角形问题</h4><blockquote>
+<h4><span id="数字三角形问题">数字三角形问题</span></h4><blockquote>
 <p>数字三角形问题。有一个由非负整数组成的三角形，第一行只有一个数，除了最下行之外每个数的左下方和右下方各有一个数，从第一行的数开始，每次可以往左下或右下走一格，直到走到最下行，把沿途经过的数全部加起来。求最大和。</p>
 </blockquote>
 <ul>
@@ -257,11 +263,11 @@
 <li>F(i, j)：自(i,j)开始，能得到的最大和，包括(i,j)本身。</li>
 <li>结果：F(1,1)</li>
 </ul>
-<h4 id="LIS"><a href="#LIS" class="headerlink" title="LIS"></a>LIS</h4><ul>
+<h4><span id="lis">LIS</span></h4><ul>
 <li>因变量：</li>
 <li>自变量：</li>
 </ul>
-<h4 id="背包问题"><a href="#背包问题" class="headerlink" title="背包问题"></a>背包问题</h4><blockquote>
+<h4><span id="背包问题">背包问题</span></h4><blockquote>
 <p>一个容量为W的包，一堆重量分别为w1…wn，价值分别为vi…vn的钻石，问如何用包装下尽量多的钻石，让总价值最大。</p>
 </blockquote>
 <ul>

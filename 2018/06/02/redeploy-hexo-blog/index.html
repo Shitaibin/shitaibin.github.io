@@ -203,7 +203,13 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><ol>
+        
+<div id="toc">
+    <h1>目录</h1>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">脚本</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">初次搭建Hexo</span></a></li></ol>
+</div>
+
+        <h1><span id="流程">流程</span></h1><ol>
 <li>安装Hexo。</li>
 <li>新建文件夹<code>blog</code>，然后进入。</li>
 <li><code>hexo init</code>。</li>
@@ -218,11 +224,11 @@
 <li>执行<code>hexo d</code>，生成的博客文件会上传到Github。</li>
 <li>在<code>hexo_resource</code>分支下工作即可，写完文章后，执行<code>sh deploy_and_backup_hexo_br.sh</code>，备份好分支，博客推送到远端。</li>
 </ol>
-<h1 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h1><ul>
+<h1><span id="脚本">脚本</span></h1><ul>
 <li>deploy_and_backup_hexo_br.sh:</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">git add .</span><br><span class="line">git commit -m &apos;auto backup&apos;</span><br><span class="line">git push origin hexo_resource</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-<h1 id="初次搭建Hexo"><a href="#初次搭建Hexo" class="headerlink" title="初次搭建Hexo"></a>初次搭建Hexo</h1><ul>
+<h1><span id="初次搭建hexo">初次搭建Hexo</span></h1><ul>
 <li><a href="/2015/05/01/Github-Pages-Hexo部署总结/">Github-Pages-Hexo部署总结</a></li>
 </ul>
 
@@ -234,7 +240,7 @@
     
 <nav id="article-nav">
   
-    <a href="/2018/06/02/etheruem-anti-distort/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/06/02/ethereum-anti-distort/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         

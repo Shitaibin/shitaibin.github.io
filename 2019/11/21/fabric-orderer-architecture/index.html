@@ -29,18 +29,18 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="Orderer介绍排序服务由一组排序节点组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的一致性服务。   图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft  排序服务所提供的一致性，依赖确定性的共识算法，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有S">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-11-arch-of-orderer.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-11-21-orderer-tx-flow.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-01-orderer-using-raft.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-01-fabric-order-with-etcdraft.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-11-fabric-orderer-network.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-11-arch-of-orderer.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-11-21-orderer-tx-flow.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-01-orderer-using-raft.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-01-fabric-order-with-etcdraft.png">
 <meta property="article:published_time" content="2019-11-21T12:07:54.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.779Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.385Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="区块链">
 <meta property="article:tag" content="Fabric">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-11-fabric-orderer-network.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/11/21/fabric-orderer-architecture/">
@@ -292,7 +292,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -306,14 +306,14 @@
     
     <div class="post-body" itemprop="articleBody">
         <h2 id="Orderer介绍"><a href="#Orderer介绍" class="headerlink" title="Orderer介绍"></a>Orderer介绍</h2><p>排序服务由一组<strong>排序节点</strong>组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的<strong>一致性</strong>服务。</p>
-<p><img src="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-11-fabric-orderer-network.png"></p>
 <blockquote>
 <p>图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft</p>
 </blockquote>
 <p>排序服务所提供的一致性，依赖<strong>确定性的共识算法</strong>，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有Solo、Kafka、EtcdRaft。</p>
 <p>客户端<strong>通过Broadcast接口向Orderer提交背书过的交易</strong>，客户端（此处广义指用户客户端和<strong>Peer节点</strong>）<strong>通过Deliver接口订阅区块事件，从Orderer获取区块</strong>。</p>
 <p>更多的排序服务介绍请参考这篇官方文档<a target="_blank" rel="noopener" href="https://hyperledger-fabric-cn.readthedocs.io/zh/latest/orderer/ordering_service.html">排序服务</a>。</p>
-<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="http://img.lessisbetter.site/2019-11-arch-of-orderer.png" alt="Architecture of Orderer"></p>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="https://lessisbetter.site/images/2019-11-arch-of-orderer.png" alt="Architecture of Orderer"></p>
 <blockquote>
 <p>本图依赖 Fabric 1.4 源码分析而得</p>
 </blockquote>
@@ -433,7 +433,7 @@
 <li>共识实例是单独运行的，也就是说Orderer把交易交给共识后，共识可能还在处理交易，然而Orderer已经开始向客户端发送提交交易的响应。共识如果发现排序服务的配置如果进行了更新，会再次检查交易，然后利用把Pending的交易分割成一组，然后打包成区块，然后共识机制确保各Orderer节点对区块达成一致，最后将区块写入账本。为下图绿色部分。</li>
 <li>Peer会向Orderer订阅区块事件，每当新区块被Orderer写入账本时，Orderer会把新区块以区块事件的方式，发送给Peer。为下图换色部分。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-11-21-orderer-tx-flow.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-11-21-orderer-tx-flow.png"></p>
 <p>上面提到Orderer和共识实例分别会对交易进行2次检查，这些检查是相同的，为何要进行两次检查呢？</p>
 <p>代码如下：ProcessMessage 会调用<code>ProcessNormalMsg</code>，对交易进行第一次检查，如果有错误，会向客户端返回错误响应。 SomeConsensurFunc 是一个假的函数名称，但3种共识插件实现，都包含相同的代码片，当消息中 configSeq &lt; seq 时，再次对交易进行检查，如果错误，则丢次此条交易。configSeq是Order函数传入的，即第一次检查交易时的配置号，seq为共识当前运行时的配置号。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bh *Handler)</span> <span class="title">ProcessMessage</span><span class="params">(msg *cb.Envelope, addr <span class="keyword">string</span>)</span> <span class="params">(resp *ab.BroadcastResponse)</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    configSeq, err := processor.ProcessNormalMsg(msg)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        logger.Warningf(<span class="string">&quot;[channel: %s] Rejecting broadcast of normal message from %s because of error: %s&quot;</span>, chdr.ChannelId, addr, err)</span><br><span class="line">        <span class="keyword">return</span> &amp;ab.BroadcastResponse&#123;Status: ClassifyError(err), Info: err.Error()&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    err = processor.Order(msg, configSeq)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SomeConsensurFunc</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> msg.configSeq &lt; seq &#123;</span><br><span class="line">        _, err = ch.support.ProcessNormalMsg(msg.normalMsg)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            logger.Warningf(<span class="string">&quot;Discarding bad normal message: %s&quot;</span>, err)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -447,7 +447,7 @@
 <li>…</li>
 </ul>
 <h3 id="使用Raft共识，交易在Orderer中的流程"><a href="#使用Raft共识，交易在Orderer中的流程" class="headerlink" title="使用Raft共识，交易在Orderer中的流程"></a>使用Raft共识，交易在Orderer中的流程</h3><p>上面2中流程都是与具体共识算法无关的，这里补充一个Raft共识的。</p>
-<p><img src="http://img.lessisbetter.site/2020-01-orderer-using-raft.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-01-orderer-using-raft.png"></p>
 <p>使用Raft共识的链处理交易包含了上图中的4步：</p>
 <ul>
 <li>交易：处理交易</li>
@@ -457,7 +457,7 @@
 </ul>
 <p>如果把图中提到的：转发和Raft去掉，就是以Solo为共识的链的过程。</p>
 <p>下图是更加细化一层的，如果看不懂，建议先读下<a href="http://lessisbetter.site/2019/08/22/etcd-raft-source-data-flow/">Etcd Raft架构设计和源码剖析2：数据流</a>这篇文章。</p>
-<p><img src="http://img.lessisbetter.site/2020-01-fabric-order-with-etcdraft.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-01-fabric-order-with-etcdraft.png"></p>
 <p>红色圈出来的是etcd/raft的实现，蓝色圈出来的是Fabric使用raft为共识的部分，外面的Broadcast、Deliver是属于Orderer但不属于某条链。</p>
 <p>这张图和etcd与raft交互没有太多不同，只有2个地方：</p>
 <ol>

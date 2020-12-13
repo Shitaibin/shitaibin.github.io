@@ -29,23 +29,23 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="新老朋友好久不见，我是大彬。今天为大家带来的分享是Go语言垃圾回收，这篇文章筹划的了很久，因为GC也是很强大的一个话题，关于GC已经有很多篇论文还有书籍，想通过一篇文章来介绍Go语言的垃圾回收是困难的，所以决定分几篇文章来完成Go语言垃圾回收的相关话题：  Go垃圾回收 1: 历史和原理 Go垃圾回收 2: GC主要流程 Go垃圾回收 3: 源码分析 Go垃圾回收 4: GC对性能的影响与优化">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-10-gc-go1.7.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-10-obj-tree.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-10-obj-ref-tree.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-10-mem-obj.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-10-obj-root.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-10-obj-reachable.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-10-obj-traced.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-10-increment-gc.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-10-normal-vs-incremnt.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-10-gc-go1.7.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-10-obj-tree.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-10-obj-ref-tree.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-10-mem-obj.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-10-obj-root.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-10-obj-reachable.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-10-obj-traced.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-10-increment-gc.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-10-normal-vs-incremnt.png">
 <meta property="og:image" content="https://dt-cdn.net/images/the-different-gc-algorithms-510-ed7afde0fb.png">
-<meta property="og:image" content="http://img.lessisbetter.site/blog-gzh.png">
+<meta property="og:image" content="https://lessisbetter.site/images/blog-gzh.png">
 <meta property="article:published_time" content="2019-10-20T03:13:11.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.784Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.386Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-10-gc-go1.7.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-10-gc-go1.7.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/10/20/go-gc-1-history-and-priciple/">
@@ -297,7 +297,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -352,12 +352,12 @@
 </ul>
 <p>以上的历史版本信息都来自<a target="_blank" rel="noopener" href="https://golang.org/doc/devel/release.html">Go release归档</a>，有兴趣可以去翻阅一下。</p>
 <h3 id="Go垃圾回收主要流程"><a href="#Go垃圾回收主要流程" class="headerlink" title="Go垃圾回收主要流程"></a>Go垃圾回收主要流程</h3><p>下面这幅图来自Go1.5的<a target="_blank" rel="noopener" href="https://talks.golang.org/2015/go-gc.pdf" title="Go talk: go1.5">go talk</a>，虽然go1.12的GC与go1.5有了许多改变，但总体的流程没有较大改变，并且也找不到官方更新的图了，所有就用这幅图介绍GC主流程。</p>
-<p><img src="http://img.lessisbetter.site/2019-10-gc-go1.7.png" alt="Go GC"></p>
+<p><img src="https://lessisbetter.site/images/2019-10-gc-go1.7.png" alt="Go GC"></p>
 <p>Go 垃圾回收是分<strong>轮次</strong>的，每一轮GC都是从 Off 状态开始，如果不是 Off 状态，则代表上一轮GC还未完成，如果这时修改指针的值，是直接修改的。</p>
 <p>Go 垃圾回收的主要分2部分，第1部分是扫描所有对象进行三色标记，标记为黑色、灰色和白色，标记完成后只有黑色和白色对象，黑色代表使用中对象，白色对象代表垃圾，灰色是白色过渡到黑色的中间临时状态，第2部分是清扫垃圾，即清理白色对象。</p>
 <p>第1部分包含了栈扫描、标记和标记结束3个阶段。在栈扫描之前有2个重要的准备：STW（Stop The World）和开启<strong>写屏障</strong>（WB，Write Barrier）。</p>
 <p>STW是为了暂停当前所有运行中的goroutine，进行一些准备工作，比如开启WB，把全局变量，以及每个goroutine中的 <strong>Root对象</strong> 收集起来，Root对象是标记扫描的源头，可以从Root对象依次索引到使用中的对象。</p>
-<p><img src="http://img.lessisbetter.site/2019-10-obj-tree.png" alt="Objects Reference Tree"></p>
+<p><img src="https://lessisbetter.site/images/2019-10-obj-tree.png" alt="Objects Reference Tree"></p>
 <blockquote>
 <p>假设内存中的对象用圆圈表示，那根据对象的指向关系，所有的对象可以组成若干依赖树，每一个 Root对象 都是树根，按图索骥能找到每一个使用中的对象。但树根不一定是Root对象，也有可能是垃圾，使用灰色树根代表Root对象，白色树根代表垃圾。</p>
 </blockquote>
@@ -380,9 +380,9 @@
 <h3 id="Tracing-GC"><a href="#Tracing-GC" class="headerlink" title="Tracing GC"></a>Tracing GC</h3><p>WIKI介绍：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Tracing_garbage_collection">https://en.wikipedia.org/wiki/Tracing_garbage_collection</a></p>
 <p>Tracing GC 是垃圾回收的一个大类，另外一个大类是<strong>引用计数</strong>，关于各种垃圾回收的类别可以看下这个系列文章<a target="_blank" rel="noopener" href="https://liujiacai.net/blog/2018/08/04/incremental-gc/">深入浅出垃圾回收</a>。</p>
 <p>本文主要介绍Tracing GC的简要原理，我们首先看一下引用树的概念。把内存中所有的对象，都作为一个节点，对象A中的指针，指向了对象B，就存在从对象A指向对象B的一条边，对象B也可能指向了其他对象，那么根据指向关系就能生成一颗对象引用树。</p>
-<p><img src="http://img.lessisbetter.site/2019-10-obj-ref-tree.png" alt="Objects Reference Tree"></p>
+<p><img src="https://lessisbetter.site/images/2019-10-obj-ref-tree.png" alt="Objects Reference Tree"></p>
 <p>把内存中所有的对象引用树组合起来，就组成了一幅图。</p>
-<p><img src="http://img.lessisbetter.site/2019-10-mem-obj.png" alt="Memory Objects"></p>
+<p><img src="https://lessisbetter.site/images/2019-10-mem-obj.png" alt="Memory Objects"></p>
 <p>Tracing GC中有2类对象：</p>
 <ol>
 <li>可到达对象，即使用中对象</li>
@@ -390,22 +390,22 @@
 </ol>
 <p>Tracing GC使用对象引用树找到所有可到达的对象，找到可到达对象有2个原则。</p>
 <p><strong>原则1：被程序中调用栈，或者全局变量指向的对象是可到达对象。</strong></p>
-<p><img src="http://img.lessisbetter.site/2019-10-obj-root.png" alt="Root Objects"></p>
+<p><img src="https://lessisbetter.site/images/2019-10-obj-root.png" alt="Root Objects"></p>
 <p><strong>原则2：被可到达对象指向的对象也是可到达对象。</strong></p>
 <p>A是可到达的，并且B被A引用，所以B也是可到达的。</p>
-<p><img src="http://img.lessisbetter.site/2019-10-obj-reachable.png" alt="Reachable Objects"></p>
+<p><img src="https://lessisbetter.site/images/2019-10-obj-reachable.png" alt="Reachable Objects"></p>
 <p>Tracing GC使用任何一种图论的遍历算法，都可以从<strong>Root对象</strong>，根据引用关系找到所有的可到达对象，并把他们做标记。Tracing GC扫描后，<strong>黑色</strong>对象为可到达对象，剩下的<strong>白色</strong>对象为不可到达对象。</p>
 <blockquote>
 <p>原生的 Tracing GC 只有黑色和白色2种颜色。</p>
 </blockquote>
-<p><img src="http://img.lessisbetter.site/2019-10-obj-traced.png" alt="Tracing GC"></p>
+<p><img src="https://lessisbetter.site/images/2019-10-obj-traced.png" alt="Tracing GC"></p>
 <h3 id="增量式垃圾回收思想"><a href="#增量式垃圾回收思想" class="headerlink" title="增量式垃圾回收思想"></a>增量式垃圾回收思想</h3><p>垃圾回收离不开STW，STW是Stop The World，指会暂停所有正在执行的用户线程/协程，进行垃圾回收的操作，STW为垃圾对象的扫描和标记提供了必要的条件。</p>
 <p><strong>非增量式垃圾</strong>回收需要STW，在STW期间完成<strong>所有</strong>垃圾对象的标记，STW结束后慢慢的执行垃圾对象的清理。</p>
 <p><strong>增量式垃圾回收</strong>也需要STW，在STW期间完成<strong>部分</strong>垃圾对象的标记，然后结束STW继续执行用户线程，一段时间后再次执行STW再标记<strong>部分</strong>垃圾对象，这个过程会多次重复执行，直到<strong>所有</strong>垃圾对象标记完成。</p>
-<p><img src="http://img.lessisbetter.site/2019-10-increment-gc.png" alt="Increment GC"></p>
+<p><img src="https://lessisbetter.site/images/2019-10-increment-gc.png" alt="Increment GC"></p>
 <p>GC算法有3大性能指标：吞吐量、最大暂停时间（最大的STW占时）、内存占用率。<strong>增量式垃圾回收不能提高吞吐量，但和非增量式垃圾回收相比，每次STW的时间更短，能够降低最大暂停时间</strong>，就是Go每个版本Release Note中提到的GC延迟、GC暂停时间。</p>
 <p>下图是非增量式GC和增量式GC的对比：</p>
-<p><img src="http://img.lessisbetter.site/2019-10-normal-vs-incremnt.png" alt="Normal V.S. Increment GC"></p>
+<p><img src="https://lessisbetter.site/images/2019-10-normal-vs-incremnt.png" alt="Normal V.S. Increment GC"></p>
 <blockquote>
 <p>以上图片来自 <a target="_blank" rel="noopener" href="https://blog.heroku.com/incremental-gc">Incremental Garbage Collection in Ruby 2.2</a> ，它也很好的介绍了增量式垃圾回收的思想。</p>
 </blockquote>
@@ -565,7 +565,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/blog-gzh.png" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/blog-gzh.png" style="border:0"  align=center />
     </div>
 
     

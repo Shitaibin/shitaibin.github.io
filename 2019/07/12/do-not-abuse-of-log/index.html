@@ -29,20 +29,20 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="代码Review的时候，遇到过一些log滥用的情况，今天聊一聊滥用（过渡使用）日志。  好的log能够帮助开发人员快速定位bug，而差的log各有各的不同。  你滥用日志了吗？是什么导致了滥用log？是不是存在这些误解： 1. 害怕出了问题，现有的log无法定位，要多加一些log，恨不得每段都有一个log，log数简直越多越好，看日志有一种，每一步都非常清晰的错觉。 2. 不知道log多了，定位效">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-debug-demo.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-test.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-ret.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-log.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-call.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-debug.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-debug-demo.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-log-test.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-log-ret.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-log-log.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-log-call.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-log-debug.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-01-article_qrcode.jpg">
 <meta property="article:published_time" content="2019-07-12T10:17:24.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.768Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.386Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta property="article:tag" content="log">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-07-debug-demo.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-07-debug-demo.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/">
@@ -294,7 +294,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -317,26 +317,26 @@
 <p><strong>3. 不知道log多了会影响性能</strong>，log自身涉及格式化和文件读写，虽然现在各log库都已经比较高效了，但是，这也扛不住“海量”的log啊，积少成多，势必影响程序性能。</p>
 <p><strong>4. 对log级别错误的认知</strong>：日志级别设置为Info，Debug、Trace级别的日志不会打印，Debug、Trace级别日志多没关系。虽然日志不会输出，并不代表相关代码没执行啊。</p>
 <p>第4点重点解释一下：</p>
-<p><img src="http://img.lessisbetter.site/2019-07-debug-demo.png" alt="debug-demo"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-debug-demo.png" alt="debug-demo"></p>
 <p>这是一个打印Debug级别的日志，它还有1项日志信息，是来自<code>func()</code>的结果，请问：</p>
 <ol>
 <li>日志级别设置为Info，log.Debug会执行吗？<code>func()</code>还会执行吗？</li>
 <li>如果这行日志频繁被执行，是不是浪费了CPU做无用功？</li>
 </ol>
 <p>如果你认为不会执行，看下面的Demo，log使用zap。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-test.png" alt="log-test"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-test.png" alt="log-test"></p>
 <p>结果：</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-ret.png" alt="log-ret"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-ret.png" alt="log-ret"></p>
 <p>事实证明无论限制的日志级别是什么，<code>log.***</code>一定会被调用，它入参中的函数也一定会被调用，只不过是日记级别不满足打印时，不会打印而已。被调函数的结果只被这条<code>log.***</code>使用，结果这个日志根本不打印，这就浪费了CPU。</p>
 <p>日志级别都设置为Info了，Debug级别的日志为何还会打印？</p>
 <p>如果你有这个问题，你可能没有理解2个地方。</p>
 <p>日志级别设置为Info，不代表<code>log.Debug</code>函数不执行。<code>log.Debug</code>函数一定会执行，看下图，<code>log.Info，Error</code>等接口会调用相同的真实实现函数<code>log.log</code>，<code>log.log</code>的入参包含了<code>log.Info</code>等接口的入参，以及当前的<code>log_level</code>，比如以下2种是等价的：</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-log.png" alt="log-log"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-log.png" alt="log-log"></p>
 <p>所以，无论设置的是什么日志级别控制，<code>log.Debug</code>一定会被执行，至于当前日志是否会打印，会在<code>log.log</code>里决定。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-call.png" alt="image-20190712072742045"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-call.png" alt="image-20190712072742045"></p>
 <p>日志为Warn级别，Debug日志不会打印，<code>func()</code>会不会执行？</p>
 <p>日志打印本质是函数调用，会先计算入参，再调用函数。比如：</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-debug.png" alt="log-debug"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-debug.png" alt="log-debug"></p>
 <p>所以<code>func()</code>一定会被调用。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>针对滥用日志的情况给几点建议：</p>
 <ol>
@@ -352,7 +352,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
     </div>
 
     

@@ -29,15 +29,15 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com&#x2F;golang&#x2F;protobuf&#x2F;proto完成的，">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-09-protobuf-marshal.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-09-marshal-unmarshal.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-09-protobuf-marshal.png">
 <meta property="article:published_time" content="2019-08-27T12:27:13.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.798Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.388Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta property="article:tag" content="RPC">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-09-marshal-unmarshal.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">
@@ -289,7 +289,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -309,13 +309,13 @@
 </ol>
 <p>本编是第二篇。</p>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇文章<a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的（1）：原理</a><br>中已经指出了<strong>Go语言数据和Protobuf数据的编解码是由包<code>github.com/golang/protobuf/proto</code>完成的</strong>，本编就来分析一下proto包是如何实现编解码的。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-09-marshal-unmarshal.png"></p>
 <h2 id="编解码原理"><a href="#编解码原理" class="headerlink" title="编解码原理"></a>编解码原理</h2><p>编解码包都有支持的编解码类型，我们暂且把这些类型称为底层类型，编解码的本质是：</p>
 <ol>
 <li>为每一个底层类型配备一个或多个编解码函数</li>
 <li>把一个结构体的字段，递归的拆解成底层类型，然后选择合适的函数进行编码或解码操作</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-09-protobuf-marshal.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-09-protobuf-marshal.png"></p>
 <p>接下来先看编码，再看解码。</p>
 <h3 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h3><blockquote>
 <p>约定：以下所有的代码片，如果是request.pb.go或main.go中的代码，会在第一行标记文件名，否则都是proto包的源码。</p>

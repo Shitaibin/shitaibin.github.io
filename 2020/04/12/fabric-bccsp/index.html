@@ -29,17 +29,17 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="序言密码学是当代数字信息化时代的基础技术，没有密码学，网络上的传输信息的可靠性就无法保证，比如你输入的密码会被窃取，你存在网络上的照片、文档如果没有加密，就有可能泄露。 密码学也是区块链的一项基础技术，使用密码学实现区块链中的：身份验证、数据可信、权限管理、零知识证明、可信计算等等。 Fabric提供了模块化的、可插拔的密码服务，该服务由bccsp模块提供，本文就谈一下BCCSP插件化设计，另外F">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-04-fabric-bccsp.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-04-12-bccsp-sw.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-04-fabric-gm.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-04-fabric-bccsp.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-04-12-bccsp-sw.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-04-fabric-gm.png">
 <meta property="article:published_time" content="2020-04-12T06:32:33.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.775Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.387Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="区块链">
 <meta property="article:tag" content="Fabric">
 <meta property="article:tag" content="密码学">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2020-04-fabric-bccsp.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2020-04-fabric-bccsp.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2020/04/12/fabric-bccsp/">
@@ -291,7 +291,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -311,7 +311,7 @@
 <p><code>bccsp</code>模块它为Fabric的上层模块提供密码学服务，它包含的具体功能有：对称加密和非对称加密的密钥生成、导如、导出，数字签名和验证，对称加密和解密、摘要计算。</p>
 <p><code>bccsp</code>模块为了密码服务的扩展性，定义了<code>BCCSP</code>接口，上层模块调用<code>BCCSP</code>接口中定义的方法，而不直接调用具体的实现函数，实现和具体密码学实现的解耦，当<code>bccsp</code>使用不同密码学实现时，上层模块无需修改，这种解耦是通过<strong>依赖反转</strong>实现的。</p>
 <p>bccsp模块中当前有2种密码实现，它们都是bccsp中的密码学插件：SW和PKCS11，SW代表的是国际标准加密的软实现，SW是software的缩写，PKCS11代指硬实现。</p>
-<p><img src="http://img.lessisbetter.site/2020-04-fabric-bccsp.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-04-fabric-bccsp.png"></p>
 <blockquote>
 <p>扩展阅读：PKCS11是PKCS系列标准中的第11个，它定义了应用层和底层加密设备的交互标准，比如过去在电脑上，插入USBKey用网银转账时，就需要走USBKey中的硬件进行数字签名，这个过程就需要使用PCKS11。</p>
 </blockquote>
@@ -332,13 +332,13 @@
 <li><code>Decrypt</code>：数据解密，包含对称和非对称加密</li>
 </ul>
 <p>SW要做的是，把ECDSA、RSA、AES、SHA中的各种函数，对应到以上各种分类中，主要的分类如下图所示。</p>
-<p><img src="http://img.lessisbetter.site/2020-04-12-bccsp-sw.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-04-12-bccsp-sw.png"></p>
 <p>从上图可以看出，密钥生成、派生、导入都包含了ECDSA、RSA、AES，签名和延签包含了ECDSA和RSA，摘要计算包含了SHA系列，加密解密包含了AES，但没有包含RSA，是因为非对称加密耗时，并不常用。</p>
 <h2 id="可插拔国密"><a href="#可插拔国密" class="headerlink" title="可插拔国密"></a>可插拔国密</h2><p>Fabric支持国密并非仅仅在bccsp中增加1个国密实现这么简单，还需要让数字证书支持国密，让数字证书的操作符合X.509。各语言的标准库<code>x509</code>都是适配标准加密的，并不能直接用来操作国密证书。</p>
 <p>在数字证书支持国密后，还可能需要进一步考虑，是否需要TLS证书使用国密数字证书，让通信过程使用国密算法。</p>
 <p>另外，国密的实现有很多版本，如果需要适配不同的国密实现，就需要保证国密的可插拔和可扩展。</p>
 <p>综上情况，你需要一个中间件，中间件中包含定义好国密接口、国密数字证书接口等，用这些接口去适配Fabric，然后当采用不同国密实现时，只需要对具体实现进行封装，去适配中间件中定义好的接口。</p>
-<p><img src="http://img.lessisbetter.site/2020-04-fabric-gm.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-04-fabric-gm.png"></p>
 <h2 id="社区对Fabric支持国密的态度"><a href="#社区对Fabric支持国密的态度" class="headerlink" title="社区对Fabric支持国密的态度"></a>社区对Fabric支持国密的态度</h2><p>国密有很多基于Fabric的项目，金融业是区块链场景最多的行业，金融行业又必须使用国密，所以国内对Fabric国密的改造是必须的，在《金融分布式账本安全规范》发布之后，社区也计划让Fabric支持国密，但方式是不提供具体国密实现，而是定义好接口，项目方使用哪种国密实现，去适配定义好的接口即可，这样保留了好的扩展性，与<a href="#%E5%8F%AF%E6%8F%92%E6%8B%94%E5%9B%BD%E5%AF%86">可插拔国密</a>的目的是一致的，选择权交给企业。</p>
 <p>社区支持Fabric国密的版本，预计在2.x版本发布。</p>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>密码学在区块链中的地位是相当高的，从区块链使用最基础的密码学，到现在还在不断融入同态加密、零知识证明等前言的加密技术，未来可以在区块链上保护数据隐私的情况，提供更好的服务，区块链也可以有更多的应用场景。</p>

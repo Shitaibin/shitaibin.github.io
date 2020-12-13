@@ -29,21 +29,21 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="前言这篇文章从区块传播策略入手，介绍新区块是如何传播到远端节点，以及新区块加入到远端节点本地链的过程，同时会介绍fetcher模块，fetcher的功能是处理Peer通知的区块信息。在介绍过程中，还会涉及到p2p，eth等模块，不会专门介绍，而是专注区块的传播和加入区块链的过程。 当前代码是以太坊Release 1.8，如果版本不同，代码上可能存在差异。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/image-20180821115214521.png-own">
-<meta property="og:image" content="http://img.lessisbetter.site/image-20180821114210114.png-own">
-<meta property="og:image" content="http://img.lessisbetter.site/image-20180821114756055.png-own">
-<meta property="og:image" content="http://img.lessisbetter.site/image-20180821175330370.png-own">
-<meta property="og:image" content="http://img.lessisbetter.site/image-20180821115537184.png-own">
-<meta property="og:image" content="http://img.lessisbetter.site/image-20180821143403650.png-own">
-<meta property="og:image" content="http://img.lessisbetter.site/image-20180822103401508.png-own">
-<meta property="og:image" content="http://img.lessisbetter.site/image-20180822103701006.png-own">
+<meta property="og:image" content="https://lessisbetter.site/images/image-20180821115214521.png-own">
+<meta property="og:image" content="https://lessisbetter.site/images/image-20180821114210114.png-own">
+<meta property="og:image" content="https://lessisbetter.site/images/image-20180821114756055.png-own">
+<meta property="og:image" content="https://lessisbetter.site/images/image-20180821175330370.png-own">
+<meta property="og:image" content="https://lessisbetter.site/images/image-20180821115537184.png-own">
+<meta property="og:image" content="https://lessisbetter.site/images/image-20180821143403650.png-own">
+<meta property="og:image" content="https://lessisbetter.site/images/image-20180822103401508.png-own">
+<meta property="og:image" content="https://lessisbetter.site/images/image-20180822103701006.png-own">
 <meta property="article:published_time" content="2018-08-30T08:49:47.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.774Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.387Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="区块链">
 <meta property="article:tag" content="以太坊">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/image-20180821115214521.png-own">
+<meta name="twitter:image" content="https://lessisbetter.site/images/image-20180821115214521.png-own">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2018/08/30/ethereum-fetcher-module-and-block-propagate/">
@@ -295,7 +295,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -315,18 +315,18 @@
 <h1 id="总体过程和传播策略"><a href="#总体过程和传播策略" class="headerlink" title="总体过程和传播策略"></a>总体过程和传播策略</h1><p>本节从宏观角度介绍，节点产生区块后，为了传播给远端节点做了啥，远端节点收到区块后又做了什么，每个节点都连接了很多Peer，它传播的策略是什么样的？</p>
 <p>总体流程和策略可以总结为，传播给远端Peer节点，Peer验证区块无误后，加入到本地区块链，继续传播新区块信息。具体过程如下。</p>
 <p>先看总体过程。产生区块后，<code>miner</code>模块会发布一个事件<code>NewMinedBlockEvent</code>，订阅事件的协程收到事件后，就会把新区块的消息，广播给它所有的peer，peer收到消息后，会交给自己的fetcher模块处理，fetcher进行基本的验证后，区块没问题，发现这个区块就是本地链需要的下一个区块，则交给<code>blockChain</code>进一步进行完整的验证，这个过程会执行区块所有的交易，无误后把区块加入到本地链，写入数据库，这个过程就是下面的流程图，图1。</p>
-<p><img src="http://img.lessisbetter.site/image-20180821115214521.png-own" alt="图1：新区块传播总体流程图"></p>
+<p><img src="https://lessisbetter.site/images/image-20180821115214521.png-own" alt="图1：新区块传播总体流程图"></p>
 <p>总体流程图，能看到有个分叉，是因为节点传播新区块是有策略的。它的传播策略为：</p>
 <ol>
 <li>假如节点连接了<code>N</code>个Peer，它只向Peer列表的<code>sqrt(N)</code>个Peer广播<strong>完整的区块</strong>消息。</li>
 <li>向所有的Peer广播<strong>只包含区块Hash</strong>的消息。</li>
 </ol>
-<p>策略图的效果如图2，红色节点将区块传播给黄色节点：<img src="http://img.lessisbetter.site/image-20180821114210114.png-own" alt="图2：产生区块后传播给相邻节点"></p>
-<p>收到区块Hash的节点，需要从发送给它消息的Peer那里获取对应的完整区块，获取区块后就会按照图1的流程，加入到fetcher队列，最终插入本地区块链后，<strong>将区块的Hash值广播给和它相连，但还不知道这个区块的Peer</strong>。非产生区块节点的策略图，如图3，黄色节点将区块Hash传播给青色节点：<img src="http://img.lessisbetter.site/image-20180821114756055.png-own" alt="图3：非产块节点传播新区块"></p>
+<p>策略图的效果如图2，红色节点将区块传播给黄色节点：<img src="https://lessisbetter.site/images/image-20180821114210114.png-own" alt="图2：产生区块后传播给相邻节点"></p>
+<p>收到区块Hash的节点，需要从发送给它消息的Peer那里获取对应的完整区块，获取区块后就会按照图1的流程，加入到fetcher队列，最终插入本地区块链后，<strong>将区块的Hash值广播给和它相连，但还不知道这个区块的Peer</strong>。非产生区块节点的策略图，如图3，黄色节点将区块Hash传播给青色节点：<img src="https://lessisbetter.site/images/image-20180821114756055.png-own" alt="图3：非产块节点传播新区块"></p>
 <p>至此，可以看出<strong>以太坊采用以石击水的方式，像水纹一样，层层扩散新产生的区块</strong>。</p>
 <h1 id="Fetcher模块是干啥的"><a href="#Fetcher模块是干啥的" class="headerlink" title="Fetcher模块是干啥的"></a>Fetcher模块是干啥的</h1><p>fetcher模块的功能，就是收集其他Peer通知它的区块信息：1）完整的区块2）区块Hash消息。根据通知的消息，获取完整的区块，然后传递给<code>eth</code>模块把区块插入区块链。</p>
 <p>如果是完整区块，就可以传递给eth插入区块，如果只有区块Hash，则需要从其他的Peer获取此完整的区块，然后再传递给eth插入区块。</p>
-<p><img src="http://img.lessisbetter.site/image-20180821175330370.png-own" alt="fetcher功能抽象"></p>
+<p><img src="https://lessisbetter.site/images/image-20180821175330370.png-own" alt="fetcher功能抽象"></p>
 <h1 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h1><p>本节介绍区块传播和处理的细节东西，方式仍然是先用图解释流程，再是代码流程。</p>
 <h2 id="产块节点的传播新区块"><a href="#产块节点的传播新区块" class="headerlink" title="产块节点的传播新区块"></a>产块节点的传播新区块</h2><p>节点产生区块后，广播的流程可以表示为图4：</p>
 <ol>
@@ -335,7 +335,7 @@
 <li>事件处理函数把区块Hash添加到所有Peer的另外一个通知队列</li>
 <li>每个Peer的广播处理函数，会遍历它的待广播区块队列和通知队列，把数据封装成消息，调用P2P接口发送出去</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/image-20180821115537184.png-own" alt="图4：产块节点的传播图"></p>
+<p><img src="https://lessisbetter.site/images/image-20180821115537184.png-own" alt="图4：产块节点的传播图"></p>
 <p>再看下代码上的细节。</p>
 <ol>
 <li><code>worker.wait()</code>函数发布事件<code>NewMinedBlockEvent</code>。</li>
@@ -359,7 +359,7 @@
 <h2 id="Peer节点处理新区块"><a href="#Peer节点处理新区块" class="headerlink" title="Peer节点处理新区块"></a>Peer节点处理新区块</h2><p>本节介绍远端节点收到2种区块同步消息的处理，其中<code>NewBlockMsg</code>的处理流程比较清晰，也简洁。<code>NewBlockHashesMsg</code>消息的处理就绕了2绕，从总体流程图1上能看出来，它需要先从给他发送消息Peer那里获取到完整的区块，剩下的流程和<code>NewBlockMsg</code>又一致了。</p>
 <p>这部分涉及的模块多，画出来有种眼花缭乱的感觉，但只要抓住上面的主线，代码看起来还是很清晰的。通过图5先看下整体流程。</p>
 <p>消息处理的起点是<code>ProtocolManager.handleMsg</code>，<code>NewBlockMsg</code>的处理流程是蓝色标记的区域，红色区域是单独的协程，是fetcher处理队列中区块的流程，如果从队列中取出的区块是当前链需要的，校验后，调用<code>blockchian.InsertChain()</code>把区块插入到区块链，最后写入数据库，这是黄色部分。最后，绿色部分是<code>NewBlockHashesMsg</code>的处理流程，代码流程上是比较复杂的，为了能通过图描述整体流程，我把它简化掉了。</p>
-<p><img src="http://img.lessisbetter.site/image-20180821143403650.png-own" alt="图5：远端节点处理新区块"></p>
+<p><img src="https://lessisbetter.site/images/image-20180821143403650.png-own" alt="图5：远端节点处理新区块"></p>
 <p>仔细看看这幅图，掌握整体的流程后，接下来看每个步骤的细节。</p>
 <h3 id="NewBlockMsg的处理"><a href="#NewBlockMsg的处理" class="headerlink" title="NewBlockMsg的处理"></a>NewBlockMsg的处理</h3><p>本节介绍节点收到完整区块的处理，流程如下：</p>
 <ol>
@@ -397,7 +397,7 @@
 <h3 id="fetcher获取完整区块"><a href="#fetcher获取完整区块" class="headerlink" title="fetcher获取完整区块"></a>fetcher获取完整区块</h3><p>本节介绍fetcher获取完整区块的过程，这也是fetcher最重要的功能，会涉及到fetcher至少80%的代码。单独拉放一大节吧。</p>
 <h2 id="Fetcher的大头"><a href="#Fetcher的大头" class="headerlink" title="Fetcher的大头"></a>Fetcher的大头</h2><p>Fetcher最主要的功能就是获取完整的区块，然后在合适的实际交给InsertChain去验证和插入到本地区块链。我们还是从宏观入手，看Fetcher是如何工作的，一定要先掌握好宏观，因为代码层面上没有这么清晰。</p>
 <h3 id="宏观"><a href="#宏观" class="headerlink" title="宏观"></a>宏观</h3><p>首先，看两个节点是如何交互，获取完整区块，使用时序图的方式看一下，见图6，流程很清晰不再文字介绍。</p>
-<p><img src="http://img.lessisbetter.site/image-20180822103401508.png-own" alt="图6：节点获取完整区块的时序图"></p>
+<p><img src="https://lessisbetter.site/images/image-20180822103401508.png-own" alt="图6：节点获取完整区块的时序图"></p>
 <p>再看下获取区块过程中，fetcher内部的状态转移，它使用状态来记录，要获取的区块在什么阶段，见图7。我稍微解释一下：</p>
 <ol>
 <li>收到<code>NewBlockHashesMsg</code>后，相关信息会记录到<code>announced</code>，进入<code>announced</code>状态，代表了本节点接收了消息。</li>
@@ -406,7 +406,7 @@
 <li>获取区块头后，如果区块头表示该区块有交易和uncle，则转移到<code>fetched</code>状态，然后发送请求，请求交易和uncle，然后转移到<code>completing</code>状态。</li>
 <li>收到交易和uncle后，使用头、交易、uncle这3个信息，生成完整的区块，加入到队列<code>queued</code>。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/image-20180822103701006.png-own" alt="图7：获取区块状态转移图"></p>
+<p><img src="https://lessisbetter.site/images/image-20180822103701006.png-own" alt="图7：获取区块状态转移图"></p>
 <h3 id="微观"><a href="#微观" class="headerlink" title="微观"></a>微观</h3><p>接下来就是从代码角度看如何获取完整区块的流程了，有点多，看不懂的时候，再回顾下上面宏观的介绍图。</p>
 <p>首先看Fetcher的定义，它存放了通信数据和状态管理，捡加注释的看，上文提到的状态，里面都有。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Fetcher is responsible for accumulating block announcements from various peers</span></span><br><span class="line"><span class="comment">// and scheduling them for retrieval.</span></span><br><span class="line"><span class="comment">// 积累块通知，然后调度获取这些块</span></span><br><span class="line"><span class="keyword">type</span> Fetcher <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// Various event channels</span></span><br><span class="line">    <span class="comment">// 收到区块hash值的通道</span></span><br><span class="line">	notify <span class="keyword">chan</span> *announce</span><br><span class="line">    <span class="comment">// 收到完整区块的通道</span></span><br><span class="line">	inject <span class="keyword">chan</span> *inject</span><br><span class="line"></span><br><span class="line">	blockFilter <span class="keyword">chan</span> <span class="keyword">chan</span> []*types.Block</span><br><span class="line">	<span class="comment">// 过滤header的通道的通道</span></span><br><span class="line">	headerFilter <span class="keyword">chan</span> <span class="keyword">chan</span> *headerFilterTask</span><br><span class="line">	<span class="comment">// 过滤body的通道的通道</span></span><br><span class="line">	bodyFilter <span class="keyword">chan</span> <span class="keyword">chan</span> *bodyFilterTask</span><br><span class="line"></span><br><span class="line">	done <span class="keyword">chan</span> common.Hash</span><br><span class="line">	quit <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Announce states</span></span><br><span class="line">	<span class="comment">// Peer已经给了本节点多少区块头通知</span></span><br><span class="line">	announces <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span> <span class="comment">// Per peer announce counts to prevent memory exhaustion</span></span><br><span class="line">	<span class="comment">// 已经announced的区块列表</span></span><br><span class="line">	announced <span class="keyword">map</span>[common.Hash][]*announce <span class="comment">// Announced blocks, scheduled for fetching</span></span><br><span class="line">	<span class="comment">// 正在fetching区块头的请求</span></span><br><span class="line">	fetching <span class="keyword">map</span>[common.Hash]*announce <span class="comment">// Announced blocks, currently fetching</span></span><br><span class="line">	<span class="comment">// 已经fetch到区块头，还差body的请求，用来获取body</span></span><br><span class="line">	fetched <span class="keyword">map</span>[common.Hash][]*announce <span class="comment">// Blocks with headers fetched, scheduled for body retrieval</span></span><br><span class="line">	<span class="comment">// 已经得到区块头的</span></span><br><span class="line">	completing <span class="keyword">map</span>[common.Hash]*announce <span class="comment">// Blocks with headers, currently body-completing</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Block cache</span></span><br><span class="line">	<span class="comment">// queue，优先级队列，高度做优先级</span></span><br><span class="line">	<span class="comment">// queues，queued队列中某个peer发来的区块数量</span></span><br><span class="line">	<span class="comment">// queued，等待插入到区块链的区块，实际插入时从queue取，queued就是用来快速判断区块是否在队列的</span></span><br><span class="line">	queue  *prque.Prque            <span class="comment">// Queue containing the import operations (block number sorted)</span></span><br><span class="line">	queues <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>          <span class="comment">// Per peer block counts to prevent memory exhaustion</span></span><br><span class="line">	queued <span class="keyword">map</span>[common.Hash]*inject <span class="comment">// Set of already queued blocks (to dedupe imports)</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Callbacks</span></span><br><span class="line">	getBlock       blockRetrievalFn   <span class="comment">// Retrieves a block from the local chain</span></span><br><span class="line">	verifyHeader   headerVerifierFn   <span class="comment">// Checks if a block&#x27;s headers have a valid proof of work，验证区块头，包含了PoW验证</span></span><br><span class="line">	broadcastBlock blockBroadcasterFn <span class="comment">// Broadcasts a block to connected peers，广播给peer</span></span><br><span class="line">	chainHeight    chainHeightFn      <span class="comment">// Retrieves the current chain&#x27;s height</span></span><br><span class="line">	insertChain    chainInsertFn      <span class="comment">// Injects a batch of blocks into the chain，插入区块到链的函数</span></span><br><span class="line">	dropPeer       peerDropFn         <span class="comment">// Drops a peer for misbehaving</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Testing hooks</span></span><br><span class="line">	announceChangeHook <span class="function"><span class="keyword">func</span><span class="params">(common.Hash, <span class="keyword">bool</span>)</span> // <span class="title">Method</span> <span class="title">to</span> <span class="title">call</span> <span class="title">upon</span> <span class="title">adding</span> <span class="title">or</span> <span class="title">deleting</span> <span class="title">a</span> <span class="title">hash</span> <span class="title">from</span> <span class="title">the</span> <span class="title">announce</span> <span class="title">list</span></span></span><br><span class="line">	queueChangeHook    <span class="function"><span class="keyword">func</span><span class="params">(common.Hash, <span class="keyword">bool</span>)</span> // <span class="title">Method</span> <span class="title">to</span> <span class="title">call</span> <span class="title">upon</span> <span class="title">adding</span> <span class="title">or</span> <span class="title">deleting</span> <span class="title">a</span> <span class="title">block</span> <span class="title">from</span> <span class="title">the</span> <span class="title">import</span> <span class="title">queue</span></span></span><br><span class="line">	fetchingHook       <span class="function"><span class="keyword">func</span><span class="params">([]common.Hash)</span>     // <span class="title">Method</span> <span class="title">to</span> <span class="title">call</span> <span class="title">upon</span> <span class="title">starting</span> <span class="title">a</span> <span class="title">block</span> <span class="params">(eth/61)</span> <span class="title">or</span> <span class="title">header</span> <span class="params">(eth/62)</span> <span class="title">fetch</span></span></span><br><span class="line">	completingHook     <span class="function"><span class="keyword">func</span><span class="params">([]common.Hash)</span>     // <span class="title">Method</span> <span class="title">to</span> <span class="title">call</span> <span class="title">upon</span> <span class="title">starting</span> <span class="title">a</span> <span class="title">block</span> <span class="title">body</span> <span class="title">fetch</span> <span class="params">(eth/62)</span></span></span><br><span class="line">	importedHook       <span class="function"><span class="keyword">func</span><span class="params">(*types.Block)</span>      // <span class="title">Method</span> <span class="title">to</span> <span class="title">call</span> <span class="title">upon</span> <span class="title">successful</span> <span class="title">block</span> <span class="title">import</span> <span class="params">(both eth/61 and eth/62)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

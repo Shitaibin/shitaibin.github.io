@@ -29,35 +29,35 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="新老朋友好久不见，我是大彬，这篇文章准备了很久，不是在拖延，而是中间做了一些其他事情，耽搁了一些。 这篇文章主要介绍Go内存分配和Go内存管理，会轻微涉及内存申请和释放，以及Go垃圾回收。 从非常宏观的角度看，Go的内存管理就是下图这个样子，我们今天主要关注其中标红的部分。   友情提醒： 文章有点长，建议先收藏，后阅读，绝对是学习内存管理的好资料。  本文基于go1.11.2，不同版本Go的内存">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-manage.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-data-heirarchy.jpg">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-CPU-DRAM.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-mbp-memory.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-Virtual-Memory-in-OS-Operating-System.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-figure_6-1.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-Mutator-Allocator-Collector.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-Memory_Blocks.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-Alignment-Header.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-tcmalloc-Overview.svg">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-tcmalloc-PageHeap.svg">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-detail.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-sizes.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-sizetable.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-size_tranform.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-span-objects.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-classify.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-detail.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-objs.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-mcentral.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-mheap.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-go-memory-manage.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-data-heirarchy.jpg">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-CPU-DRAM.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-mbp-memory.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-Virtual-Memory-in-OS-Operating-System.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-figure_6-1.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-Mutator-Allocator-Collector.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-Memory_Blocks.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-Alignment-Header.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-tcmalloc-Overview.svg">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-tcmalloc-PageHeap.svg">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-go-memory-detail.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-go-memory-sizes.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-go-sizetable.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-size_tranform.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-span-objects.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-go-memory-classify.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-go-memory-detail.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-go-memory-objs.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-go-mcentral.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-07-go-mheap.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-01-article_qrcode.jpg">
 <meta property="article:published_time" content="2019-07-06T15:19:39.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.786Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.082Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta property="article:tag" content="内存">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-07-go-memory-manage.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-07-go-memory-manage.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/07/06/go-memory-allocation/">
@@ -309,7 +309,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -325,7 +325,7 @@
         <p>新老朋友好久不见，我是大彬，这篇文章准备了很久，不是在拖延，而是中间做了一些其他事情，耽搁了一些。</p>
 <p>这篇文章<strong>主要介绍Go内存分配和Go内存管理</strong>，会轻微涉及内存申请和释放，以及Go垃圾回收。</p>
 <p>从非常宏观的角度看，Go的内存管理就是下图这个样子，我们今天主要关注其中标红的部分。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-manage.png" alt="Go内存管理"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-manage.png" alt="Go内存管理"></p>
 <blockquote>
 <p>友情提醒：</p>
 <p>文章有点长，建议先收藏，后阅读，绝对是学习内存管理的好资料。</p>
@@ -336,7 +336,7 @@
 <p><strong>这篇文章采用层层递进的方式，依次会介绍关于存储的基本知识，Go内存管理的“前辈”TCMalloc，然后是Go的内存管理和分配，最后是总结。这么做的目的是，希望各位能通过全局的认识和思考，拥有更好的编码思维和架构思维。</strong></p>
 <p>最后，这不是一篇源码分析文章，因为Go源码分析的文章已经有很多了，这些源码文章能够帮助你去学习具体的工程实践和奇淫巧计了，文章的末尾会推荐一些优秀文章，如果你对内存感兴趣，建议每一篇都去看一下，挑出自己喜欢的，多花时间研究下。</p>
 <h2 id="1-存储基础知识回顾"><a href="#1-存储基础知识回顾" class="headerlink" title="1. 存储基础知识回顾"></a>1. 存储基础知识回顾</h2><p>这部分我们简单回顾一下计算机存储体系、虚拟内存、栈和堆，以及堆内存的管理，这部分内容对理解和掌握Go内存管理比较重要，建议忘记或不熟悉的朋友不要跳过。</p>
-<h3 id="存储金字塔"><a href="#存储金字塔" class="headerlink" title="存储金字塔"></a>存储金字塔</h3><p><img src="http://img.lessisbetter.site/2019-07-data-heirarchy.jpg" alt="img"></p>
+<h3 id="存储金字塔"><a href="#存储金字塔" class="headerlink" title="存储金字塔"></a>存储金字塔</h3><p><img src="https://lessisbetter.site/images/2019-07-data-heirarchy.jpg" alt="img"></p>
 <p>这幅图表达了计算机的存储体系，从上至下依次是：</p>
 <ul>
 <li>CPU寄存器</li>
@@ -352,21 +352,21 @@
 <li>如果CPU直接访问内存，CPU能充分利用吗？</li>
 </ol>
 <p>CPU速度很快，但硬盘等持久存储很慢，如果CPU直接访问磁盘，磁盘可以拉低CPU的速度，机器整体性能就会低下，为了弥补这2个硬件之间的速率差异，所以在CPU和磁盘之间增加了比磁盘快很多的内存。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-CPU-DRAM.png" alt="CPU和内存速率差异"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-CPU-DRAM.png" alt="CPU和内存速率差异"></p>
 <p>然而，CPU跟内存的速率也不是相同的，从上图可以看到，CPU的速率提高的很快（摩尔定律），然而内存速率增长的很慢，<em>虽然CPU的速率现在增加的很慢了，但是内存的速率也没增加多少，速率差距很大</em>，从1980年开始CPU和内存速率差距在不断拉大，为了弥补这2个硬件之间的速率差异，所以在CPU跟内存之间增加了比内存更快的Cache，Cache是内存数据的缓存，可以降低CPU访问内存的时间。</p>
 <p>不要以为有了<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/CPU%E7%BC%93%E5%AD%98">Cache</a>就万事大吉了，CPU的速率还在不断增大，Cache也在不断改变，从最初的1级，到后来的2级，到当代的3级Cache，*<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/CPU%E7%BC%93%E5%AD%98#%E5%8E%86%E5%8F%B2%E5%92%8C%E6%9C%AA%E6%9D%A5">（有兴趣看cache历史）</a>*。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-mbp-memory.png" alt="MBP的CPU和Cache信息"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-mbp-memory.png" alt="MBP的CPU和Cache信息"></p>
 <p>三级Cache分别是L1、L2、L3，它们的速率是三个不同的层级，L1速率最快，与CPU速率最接近，是RAM速率的100倍，L2速率就降到了RAM的25倍，L3的速率更靠近RAM的速率。</p>
 <p>看到这了，你有没有Get到整个<strong>存储体系的分层设计</strong>？<strong>自顶向下，速率越来越低，访问时间越来越长，从磁盘到CPU寄存器，上一层都可以看做是下一层的缓存。</strong></p>
 <p>看了分层设计，我们看一下内存，毕竟我们是介绍内存管理的文章。</p>
 <h3 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h3><p>虚拟内存是当代操作系统必备的一项重要功能了，它向进程屏蔽了底层了RAM和磁盘，并向进程提供了远超物理内存大小的内存空间。我们看一下虚拟内存的<strong>分层设计</strong>。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-Virtual-Memory-in-OS-Operating-System.png" alt="虚拟内存原理"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-Virtual-Memory-in-OS-Operating-System.png" alt="虚拟内存原理"></p>
 <p>上图展示了某进程访问数据，当Cache没有命中的时候，访问虚拟内存获取数据的过程。</p>
 <p>访问内存，实际访问的是虚拟内存，虚拟内存通过页表查看，当前要访问的虚拟内存地址，是否已经加载到了物理内存，如果已经在物理内存，则取物理内存数据，如果没有对应的物理内存，则从磁盘加载数据到物理内存，并把物理内存地址和虚拟内存地址更新到页表。</p>
 <p>有没有Get到：<strong>物理内存就是磁盘存储缓存层</strong>。</p>
 <p>另外，在没有虚拟内存的时代，物理内存对所有进程是共享的，多进程同时访问同一个物理内存存在并发访问问题。<strong>引入虚拟内存后，每个进程都要各自的虚拟内存，内存的并发访问问题的粒度从多进程级别，可以降低到多线程级别</strong>。</p>
 <h3 id="栈和堆"><a href="#栈和堆" class="headerlink" title="栈和堆"></a>栈和堆</h3><p>我们现在从虚拟内存，再进一层，看虚拟内存中的栈和堆，也就是进程对内存的管理。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-figure_6-1.png" alt="虚拟内存布局"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-figure_6-1.png" alt="虚拟内存布局"></p>
 <p>上图展示了一个进程的虚拟内存划分，代码中使用的内存地址都是虚拟内存地址，而不是实际的物理内存地址。栈和堆只是虚拟内存上2块不同功能的内存区域：</p>
 <ul>
 <li><p>栈在高地址，从高地址向低地址增长。</p>
@@ -380,12 +380,12 @@
 <li>栈的内存不需要回收，而堆需要，无论是主动free，还是被动的垃圾回收，这都需要花费额外的CPU。</li>
 <li>栈上的内存有更好的局部性，堆上内存访问就不那么友好了，CPU访问的2块数据可能在不同的页上，CPU访问数据的时间可能就上去了。</li>
 </ol>
-<h3 id="堆内存管理"><a href="#堆内存管理" class="headerlink" title="堆内存管理"></a>堆内存管理</h3><p><img src="http://img.lessisbetter.site/2019-07-Mutator-Allocator-Collector.png" alt="内存管理"></p>
+<h3 id="堆内存管理"><a href="#堆内存管理" class="headerlink" title="堆内存管理"></a>堆内存管理</h3><p><img src="https://lessisbetter.site/images/2019-07-Mutator-Allocator-Collector.png" alt="内存管理"></p>
 <p>我们再进一层，当我们说内存管理的时候，主要是指堆内存的管理，因为栈的内存管理不需要程序去操心。这小节看下堆内存管理干的是啥，如上图所示主要是3部分：<strong>分配内存块，回收内存块和组织内存块</strong>。</p>
 <p>在一个最简单的内存管理中，堆内存最初会是一个完整的大块，即未分配内存，当来申请的时候，就会从未分配内存，分割出一个小内存块(block)，然后用链表把所有内存块连接起来。需要一些信息描述每个内存块的基本信息，比如大小(size)、是否使用中(used)和下一个内存块的地址(next)，内存块实际数据存储在data中。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-Memory_Blocks.png" alt="内存块链表"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-Memory_Blocks.png" alt="内存块链表"></p>
 <p>一个内存块包含了3类信息，如下图所示，元数据、用户数据和对齐字段，内存对齐是为了提高访问效率。下图申请5Byte内存的时候，就需要进行内存对齐。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-Alignment-Header.png" alt="内存块和对齐"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-Alignment-Header.png" alt="内存块和对齐"></p>
 <p>释放内存实质是把使用的内存块从链表中取出来，然后标记为未使用，当分配内存块的时候，可以从未使用内存块中有先查找大小相近的内存块，如果找不到，再从未分配的内存中分配内存。</p>
 <p>上面这个简单的设计中还没考虑内存碎片的问题，因为随着内存不断的申请和释放，内存上会存在大量的碎片，降低内存的使用率。为了解决内存碎片，可以将2个连续的未使用的内存块合并，减少碎片。</p>
 <p>以上就是内存管理的基本思路，关于基本的内存管理，想了解更多，可以阅读这篇文章《<a target="_blank" rel="noopener" href="http://dmitrysoshnikov.com/compilers/writing-a-memory-allocator/">Writing a Memory Allocator</a>》，本节的3张图片也是来自这片文章。</p>
@@ -408,7 +408,7 @@
 <blockquote>
 <p>声明：我没有研究过TCMalloc，以下介绍根据TCMalloc官方资料和其他博主资料总结而来，错误之处请朋友告知我。</p>
 </blockquote>
-<p><img src="http://img.lessisbetter.site/2019-07-tcmalloc-Overview.svg" alt="TCMalloc概要图"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-tcmalloc-Overview.svg" alt="TCMalloc概要图"></p>
 <p>结合上图，介绍TCMalloc的几个重要概念：</p>
 <ol>
 <li><strong>Page</strong>：操作系统对内存管理以页为单位，TCMalloc也是这样，只不过TCMalloc里的Page大小与操作系统里的大小并不一定相等，而是倍数关系。《<a target="_blank" rel="noopener" href="https://wallenwang.com/2018/11/tcmalloc/">TCMalloc解密</a>》里称x64下Page大小是8KB。</li>
@@ -417,7 +417,7 @@
 <li><strong>CentralCache</strong>：是所有线程共享的缓存，也是保存的空闲内存块链表，链表的数量与ThreadCache中链表数量相同，当ThreadCache内存块不足时，可以从CentralCache取，当ThreadCache内存块多时，可以放回CentralCache。由于CentralCache是共享的，所以它的访问是要加锁的。</li>
 <li><strong>PageHeap</strong>：PageHeap是堆内存的抽象，PageHeap存的也是若干链表，链表保存的是Span，当CentralCache没有内存的时，会从PageHeap取，把1个Span拆成若干内存块，添加到对应大小的链表中，当CentralCache内存多的时候，会放回PageHeap。如下图，分别是1页Page的Span链表，2页Page的Span链表等，最后是large span set，这个是用来保存中大对象的。毫无疑问，PageHeap也是要加锁的。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-07-tcmalloc-PageHeap.svg" alt="PageHeap"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-tcmalloc-PageHeap.svg" alt="PageHeap"></p>
 <p>上文提到了小、中、大对象，Go内存管理中也有类似的概念，我们瞄一眼TCMalloc的定义：</p>
 <ol>
 <li>小对象大小：0~256KB</li>
@@ -447,7 +447,7 @@
 <p>这一大章节，我们先介绍Go内存管理和Go内存分配，最后涉及一点垃圾回收和内存释放。</p>
 <h3 id="Go内存管理的基本概念"><a href="#Go内存管理的基本概念" class="headerlink" title="Go内存管理的基本概念"></a>Go内存管理的基本概念</h3><p>前面计算机基础知识回顾，是一种自上而下，从宏观到微观的介绍方式，把目光引入到今天的主题。</p>
 <p>Go内存管理的许多概念在TCMalloc中已经有了，含义是相同的，只是名字有一些变化。先给大家上一幅宏观的图，借助图一起来介绍。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
 <h4 id="Page"><a href="#Page" class="headerlink" title="Page"></a>Page</h4><p>与TCMalloc中的Page相同，x64下1个Page的大小是8KB。上图的最下方，1个浅蓝色的长方形代表1个Page。</p>
 <h4 id="Span"><a href="#Span" class="headerlink" title="Span"></a>Span</h4><p>与TCMalloc中的Span相同，<strong>Span是内存管理的基本单位</strong>，代码中为<code>mspan</code>，<strong>一组连续的Page组成1个Span</strong>，所以上图一组连续的浅蓝色长方形代表的是一组Page组成的1个Span，另外，1个淡紫色长方形为1个Span。</p>
 <h4 id="mcache"><a href="#mcache" class="headerlink" title="mcache"></a>mcache</h4><p>mcache与TCMalloc中的ThreadCache类似，<strong>mcache保存的是各种大小的Span，并按Span class分类，小对象直接从mcache分配内存，它起到了缓存的作用，并且可以无锁访问</strong>。</p>
@@ -457,7 +457,7 @@
 <h4 id="mheap"><a href="#mheap" class="headerlink" title="mheap"></a>mheap</h4><p>mheap与TCMalloc中的PageHeap类似，<strong>它是堆内存的抽象，把从OS申请出的内存页组织成Span，并保存起来</strong>。当mcentral的Span不够用时会向mheap申请，mheap的Span不够用时会向OS申请，向OS的内存申请是按页来的，然后把申请来的内存页生成Span组织起来，同样也是需要加锁访问的。</p>
 <p>但mheap与PageHeap也有不同点：mheap把Span组织成了树结构，而不是链表，并且还是2棵树，然后把Span分配到heapArena进行管理，它包含地址映射和span是否包含指针等位图，这样做的主要原因是为了更高效的利用内存：分配、回收和再利用。</p>
 <h4 id="大小转换"><a href="#大小转换" class="headerlink" title="大小转换"></a>大小转换</h4><p>除了以上内存块组织概念，还有几个重要的大小概念，一定要拿出来讲一下，不要忽视他们的重要性，他们是内存分配、组织和地址转换的基础。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-sizes.png" alt="Go内存大小转换"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-sizes.png" alt="Go内存大小转换"></p>
 <ol>
 <li><strong>object size</strong>：代码里简称<code>size</code>，指申请内存的对象大小。</li>
 <li><strong>size class</strong>：代码里简称<code>class</code>，它是size的级别，相当于把size归类到一定大小的区间段，比如size[1,8]属于size class 1，size(8,16]属于size class 2。</li>
@@ -467,9 +467,9 @@
 <p>在介绍这几个大小之间的换算前，我们得先看下图这个表，这个表决定了映射关系。</p>
 <p>最上面2行是我手动加的，前3列分别是size class，object size和span size，根据这3列做size、size class和num of page之间的转换。</p>
 <p>仔细看一遍这个表，再向下看转换是如何实现的。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-sizetable.png" alt="Go内存分配表"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-sizetable.png" alt="Go内存分配表"></p>
 <p>在Go内存大小转换那幅图中已经标记各大小之间的转换，分别是数组：<code>class_to_size</code>，<code>size_to_class*</code>和<code>class_to_allocnpages</code>，这3个数组内容，就是跟上表的映射关系匹配的。比如<code>class_to_size</code>，从上表看class 1对应的保存对象大小为8，所以<code>class_to_size[1]=8</code>，span大小为8192Byte，即8KB，为1页，所以<code>class_to_allocnpages[1]=1</code>。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-size_tranform.png" alt="Size转换"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-size_tranform.png" alt="Size转换"></p>
 <p><strong>为何不使用函数计算各种转换，而是写成数组？</strong></p>
 <p>有1个很重要的原因：<strong>空间换时间</strong>。你如果仔细观察了，上表中的转换，并不能通过简单的公式进行转换，比如size和size class的关系，并不是正比的。这些数据是使用较复杂的公式计算出来的，公式在<code>makesizeclass.go</code>中，这其中存在指数运算与for循环，造成每次大小转换的时间复杂度为O(N*2^N)。另外，对一个程序而言，内存的申请和管理操作是很多的，如果不能快速完成，就是非常的低效。把以上大小转换写死到数组里，做到了把大小转换的时间复杂度直接降到O(1)。</p>
 <h4 id="其他转换表字段"><a href="#其他转换表字段" class="headerlink" title="其他转换表字段"></a>其他转换表字段</h4><p>第4列num of objects代表是当前size class级别的Span可以保存多少对象数量，第5列tail waste是<code>span%obj</code>计算的结果，因为span的大小并不一定是对象大小的整数倍。</p>
@@ -480,15 +480,15 @@
 <blockquote>
 <p>((c.size - (preSize+1)) * objects + tailWaste) / spanSize</p>
 </blockquote>
-<p><img src="http://img.lessisbetter.site/2019-07-span-objects.png" alt="Span内object分布情况"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-span-objects.png" alt="Span内object分布情况"></p>
 <blockquote>
 <p>感谢<a target="_blank" rel="noopener" href="https://github.com/foobar">foobar</a>的提醒max waste的计算。</p>
 </blockquote>
 <h3 id="Go内存分配"><a href="#Go内存分配" class="headerlink" title="Go内存分配"></a>Go内存分配</h3><p>涉及的概念已经讲完了，我们看下Go内存分配原理。</p>
 <p>Go中的内存分类并不像TCMalloc那样分成小、中、大对象，但是它的小对象里又细分了一个Tiny对象，Tiny对象指大小在1Byte到16Byte之间并且不包含指针的对象。小对象和大对象只用大小划定，无其他区分。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-classify.png" alt="Go内存对象分类"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-classify.png" alt="Go内存对象分类"></p>
 <p>小对象是在mcache中分配的，而大对象是直接从mheap分配的，从小对象的内存分配看起。</p>
-<h4 id="小对象分配"><a href="#小对象分配" class="headerlink" title="小对象分配"></a>小对象分配</h4><p><img src="http://img.lessisbetter.site/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
+<h4 id="小对象分配"><a href="#小对象分配" class="headerlink" title="小对象分配"></a>小对象分配</h4><p><img src="https://lessisbetter.site/images/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
 <p><a href="#%E5%A4%A7%E5%B0%8F%E8%BD%AC%E6%8D%A2">大小转换</a>这一小节，我们介绍了转换表，size class从1到66共66个，代码中<code>_NumSizeClasses=67</code>代表了实际使用的size class数量，即67个，从0到66，size class 0实际并未使用到。</p>
 <p>上文提到1个size class对应2个span class：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">numSpanClasses = _NumSizeClasses * <span class="number">2</span></span><br></pre></td></tr></table></figure>
@@ -513,7 +513,7 @@
 
 <p>所以该对象需要的是span class 7指向的span。</p>
 <h5 id="从span分配对象空间"><a href="#从span分配对象空间" class="headerlink" title="从span分配对象空间"></a>从span分配对象空间</h5><p>Span可以按对象大小切成很多份，这些都可以从映射表上计算出来，以size class 3对应的span为例，span大小是8KB，每个对象实际所占空间为32Byte，这个span就被分成了256块，可以根据span的起始地址计算出每个对象块的内存地址。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-objs.png" alt="Span内对象"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-objs.png" alt="Span内对象"></p>
 <p>随着内存的分配，span中的对象内存块，有些被占用，有些未被占用，比如上图，整体代表1个span，蓝色块代表已被占用内存，绿色块代表未被占用内存。</p>
 <p>当分配内存时，只要快速找到第一个可用的绿色块，并计算出内存地址即可，如果需要还可以对内存块数据清零。</p>
 <h5 id="span没有空间怎么分配对象"><a href="#span没有空间怎么分配对象" class="headerlink" title="span没有空间怎么分配对象"></a>span没有空间怎么分配对象</h5><p>span内的所有内存块都被占用时，没有剩余空间继续分配对象，mcache会向mcentral申请1个span，mcache拿到span后继续分配对象。</p>
@@ -523,7 +523,7 @@
 <li><code>empty</code>：这个链表里的span，所有的span都不确定里面是否有空闲的对象空间。当一个span交给mcache的时候，就会加入到empty链表。</li>
 </ol>
 <p>这2个东西名称一直有点绕，建议直接把empty理解为没有对象空间就好了。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-mcentral.png" alt="mcentral"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-mcentral.png" alt="mcentral"></p>
 <p><em>实际代码中每1个span class对应1个mcentral，图里把所有mcentral抽象成1个整体了。</em></p>
 <p>mcache向mcentral要span时，mcentral会先从<code>nonempty</code>搜索满足条件的span，如果没有找到再从<code>emtpy</code>搜索满足条件的span，然后把找到的span交给mcache。</p>
 <h5 id="mheap的span管理"><a href="#mheap的span管理" class="headerlink" title="mheap的span管理"></a>mheap的span管理</h5><p>mheap里保存了2棵<strong>二叉排序树</strong>，按span的page数量进行排序：</p>
@@ -532,7 +532,7 @@
 <li><code>scav</code>：scav中保存的是空闲并且已经垃圾回收的span。</li>
 </ol>
 <p>如果是垃圾回收导致的span释放，span会被加入到<code>scav</code>，否则加入到<code>free</code>，比如刚从OS申请的的内存也组成的Span。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-mheap.png" alt="mheap"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-mheap.png" alt="mheap"></p>
 <p>mheap中还有arenas，有一组heapArena组成，每一个heapArena都包含了连续的<code>pagesPerArena</code>个span，这个主要是为mheap管理span和垃圾回收服务。</p>
 <p>mheap本身是一个全局变量，它其中的数据，也都是从OS直接申请来的内存，并不在mheap所管理的那部分内存内。</p>
 <h5 id="mcentral向mheap要span"><a href="#mcentral向mheap要span" class="headerlink" title="mcentral向mheap要span"></a>mcentral向mheap要span</h5><p>mcentral向mcache提供span时，如果<code>emtpy</code>里也没有符合条件的span，mcentral会向mheap申请span。</p>
@@ -575,7 +575,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 
 
 

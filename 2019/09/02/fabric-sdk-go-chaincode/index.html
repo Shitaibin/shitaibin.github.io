@@ -29,17 +29,17 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sd-go.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk-config.yaml.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-09-byfn-sdk.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-09-fabric-sdk.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-09-fabric-sd-go.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-09-fabric-sdk-config.yaml.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-09-byfn-sdk.png">
 <meta property="article:published_time" content="2019-09-02T06:55:16.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.781Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.386Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="区块链">
 <meta property="article:tag" content="Fabric">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-09-fabric-sdk.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">
@@ -291,7 +291,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -305,9 +305,9 @@
     
     <div class="post-body" itemprop="articleBody">
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-sdk.png" alt="fabric sdk"></p>
+<p><img src="https://lessisbetter.site/images/2019-09-fabric-sdk.png" alt="fabric sdk"></p>
 <h2 id="fabric-sdk-go项目简介"><a href="#fabric-sdk-go项目简介" class="headerlink" title="fabric-sdk-go项目简介"></a>fabric-sdk-go项目简介</h2><p><a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric-sdk-go">fabric-sdk-go</a>是Fabric官方的Go语言SDK，它的目录结构如下：</p>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-sd-go.png" alt="fabric sdk go"></p>
+<p><img src="https://lessisbetter.site/images/2019-09-fabric-sd-go.png" alt="fabric sdk go"></p>
 <p>有2个目录需要注意一下，internal和third_party，它们两个包含了sdk依赖的一些代码，来自于fabric、fabric-ca，当使用到fabric的一些类型时，应当使用以下的方式，而不是直接导入fabric或者fabric-ca：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/xxx&quot;</span></span><br></pre></td></tr></table></figure>
 
@@ -334,7 +334,7 @@
 <li>我是谁：即当前client的信息，包含所属组织、密钥和证书文件的路径等，这是每个client专用的信息。</li>
 <li>对方是谁：即fabric网络结构的信息，channel、org、orderer和peer等的怎么组合起当前fabric网络的，这些结构信息应当与<code>configytx.yaml</code>中是一致的。这是通用配置，每个客户端都可以拿来使用。另外，这部分信息并不需要是完整fabric网络信息，如果当前client只和部分节点交互，那配置文件中只需要包含所使用到的网络信息。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-sdk-config.yaml.png" alt="fabric sdk config"></p>
+<p><img src="https://lessisbetter.site/images/2019-09-fabric-sdk-config.yaml.png" alt="fabric sdk config"></p>
 <p>这里提供一个适合<a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric-samples/tree/release-1.4/first-network">BFYN</a>的精简配置文件<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/config/org1sdk-config.yaml">fabric-sdk-go-sample/config.yaml</a>。</p>
 <h2 id="使用go-mod管理依赖"><a href="#使用go-mod管理依赖" class="headerlink" title="使用go mod管理依赖"></a>使用go mod管理依赖</h2><p>fabric-sdk-go目前本身使用go modules管理依赖，从<a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric-sdk-go/blob/master/go.mod">go.mod</a>可知，依赖的一些包指定了具体的版本，如果项目依赖的版本和sdk依赖的版本不同，会产生编译问题。</p>
 <p>建议项目也使用go moudles管理依赖，然后相同的软件包可以使用相同的版本，可以这样操作：</p>
@@ -371,7 +371,7 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new channel request for query</span></span><br><span class="line">req := channel.Request&#123;</span><br><span class="line">  ChaincodeID: c.CCID,</span><br><span class="line">  Fcn:         <span class="string">&quot;query&quot;</span>,</span><br><span class="line">  Args:        packArgs([]<span class="keyword">string</span>&#123;keys&#125;),</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line">reqPeers := channel.WithTargetEndpoints(peer)</span><br><span class="line">resp, err := cc.Query(req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">&quot;query chaincode error&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">log.Printf(<span class="string">&quot;query chaincode tx: %s&quot;</span>, resp.TransactionID)</span><br><span class="line">log.Printf(<span class="string">&quot;result: %v&quot;</span>, <span class="keyword">string</span>(resp.Payload))</span><br></pre></td></tr></table></figure>
 
 <h2 id="示例项目"><a href="#示例项目" class="headerlink" title="示例项目"></a>示例项目</h2><p>本文的基础是创建了一个结合fabric byfn的示例项目，在byfn的基础之上对链码进行安装、实例化、升级，调用和查询等操作，项目的使用可见项目<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/fabric-sdk-go-sample">README文档</a>，项目地址：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/fabric-sdk-go-sample">https://github.com/Shitaibin/fabric-sdk-go-sample</a> ，项目样例执行后，可见新部署和升级成功的链码容器，操作日志可见项目。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-byfn-sdk.png" alt="byfn-sdk"></p>
+<p><img src="https://lessisbetter.site/images/2019-09-byfn-sdk.png" alt="byfn-sdk"></p>
 
     </div>
 

@@ -281,7 +281,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -297,10 +297,10 @@
           <h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>选择oh my zsh的原因在于它提供了很多插件和主题。</p>
 <p>zsh的配置文件为：<code>~/.zshrc</code>，oh my zsh的许多配置也在此添加。</p>
 <h3 id="主题"><a href="#主题" class="headerlink" title="主题"></a>主题</h3><p>习惯使用<a target="_blank" rel="noopener" href="https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/gallois.zsh-theme">gallois主题</a>，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。</p>
-<p><img src="http://img.lessisbetter.site/2020-11-old-gallois.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-old-gallois.png"></p>
 <p>oh my zsh的所有主题配置都在<code>.oh-my-zsh/themes/</code>目录，文件名称同主题名称，可以对这些主题的一些配置进行修改。</p>
 <p>注释掉配置文件中关于git的设置，打开新终端后，就可以不显示git分支信息了。</p>
-<p><img src="http://img.lessisbetter.site/2020-11-new-gallois.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-new-gallois.png"></p>
 <p>从此复制出的代码，在也没有多余文本。</p>
 <h3 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h3><p>插件目录在：<code>~/.oh-my-zsh/plugins</code>，从中可以浏览自己需要的插件。</p>
 <p>比如我常用的插件为：<code>plugins=(git autojump docker kubectl extract)</code>，添加到<code>~/.zshrc</code>即可。</p>
@@ -361,7 +361,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -377,7 +377,7 @@
           <h3 id="kustomize简介"><a href="#kustomize简介" class="headerlink" title="kustomize简介"></a>kustomize简介</h3><p><a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/kustomize">kustomize</a>是一个自定义管理原始的YAML模板资源文件的工具，同时无需修改原始的YAML文件。</p>
 <p>对于kustomize的理解是，它借助了docker镜像的类似概念：可以一层层的进行覆盖。</p>
 <p>Kustmoize有Base和Overlay 2个概念，被依赖的层成为base，当前进行覆盖操作的层成为overlay。所以1个overlay，也可以是另外overlay的base。</p>
-<p><img src="http://img.lessisbetter.site/2020-11-kustomize-base-overlay.png" alt="Kustomize base和overlay"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-kustomize-base-overlay.png" alt="Kustomize base和overlay"></p>
 <p>在kubectl v1.14之后，其中融合了kustomize，也就说如果安装了kubectl无需安装kustomize，即可使用kustomize。</p>
 <p>把kustmoize的资源文件部署到集群有2个办法：</p>
 <ol>
@@ -504,7 +504,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -519,7 +519,7 @@
     <div class="post-body" itemprop="articleBody">
           <h3 id="JSONPath基础"><a href="#JSONPath基础" class="headerlink" title="JSONPath基础"></a>JSONPath基础</h3><p>XML有一个非常强大的解析工具是XPath，用于提取XML中的内容。之后也出现了一种高效提取JSON内容的工具，它被称为JSONPath。</p>
 <p>JSONPath现在有很多不同的实现，不同的实现支持的提取语法略有不同，比如Goessner的JSONPath如下：</p>
-<p><img src="http://img.lessisbetter.site/2020-11-goessner-jsonpath.png" alt="goessner jsonpath"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-goessner-jsonpath.png" alt="goessner jsonpath"></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson/wiki/JSONPath#3-%E6%94%AF%E6%8C%81%E8%AF%AD%E6%B3%95">fastjson的JSONPath</a>支持的更加丰富。</p>
 <p>示例JSON内容：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;store&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;book&quot;</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;reference&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;Nigel Rees&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Sayings of the Century&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">8.95</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;fiction&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;Evelyn Waugh&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Sword of Honour&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">12.99</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;fiction&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;Herman Melville&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Moby Dick&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;isbn&quot;</span>: <span class="string">&quot;0-553-21311-3&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">8.99</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;fiction&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;J. R. R. Tolkien&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;The Lord of the Rings&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;isbn&quot;</span>: <span class="string">&quot;0-395-19395-8&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">22.99</span></span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        <span class="attr">&quot;bicycle&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;color&quot;</span>: <span class="string">&quot;red&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;price&quot;</span>: <span class="number">19.95</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;expensive&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -619,27 +619,27 @@
 <p>刚开始使用jsonpath时，有种眼花缭乱的感觉，我们就拆解下上面的样例jsonpath。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;.items[*].metadata.name&#125;&#39;</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-1-pod-name.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-1-pod-name.png"></p>
 <p>先提取每个pod的名称，这个还和原生的jsonpath一样。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-2-pod-name-range.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-2-pod-name-range.png"></p>
 <p>因为每个pod还要取容器名称和镜像，所以最好每个pod占一行，我们需要使用<code>range .. end</code>处理每一个pod，列pod所含的容器。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125;&#123;&quot;\n&quot;&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.spec.containers[*].name&#125;, &#123;.spec.containers[*].image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#39;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-3-pod-containers.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-3-pod-containers.png"></p>
 <p>可以看到每个pod内可能包含多个容器，所以也得用<code>range .. end</code>去处理pod的每一个container。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range .spec.containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-4-pod-contianers-image.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-4-pod-contianers-image.png"></p>
 <p>上面提到使用jsonpath可以简化层级，因为<code>containers</code>这个名词在层级中是独有的，不像<code>name</code>可能是存在于多个层级，所以可以使用<code>..</code>简化：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range ..containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-5-simplify-pod-containers.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-5-simplify-pod-containers.png"></p>
 <p>最后看一下过滤的使用，只想列出<code>weave</code>的pod的容器和镜像：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[?(@.metadata.name&#x3D;&#x3D;&quot;weave-net-sqjzh&quot;)]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range ..containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-6-pod-filter.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-6-pod-filter.png"></p>
 <h3 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h3><p>使用JSONPath获取：</p>
 <ol>
 <li>Pod的名称和IP</li>
@@ -1271,7 +1271,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1294,7 +1294,7 @@
 <li>cpuset : 用来绑定cgroup到指定CPU的哪个核上和NUMA节点</li>
 </ul>
 <p>每个子系统都有多个配置项和指标文件，主要介绍下图常用的配置项：</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpux.png" alt="cpu、cpuacct、cpuset的指标"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpux.png" alt="cpu、cpuacct、cpuset的指标"></p>
 <h3 id="cpu"><a href="#cpu" class="headerlink" title="cpu"></a>cpu</h3><p>cpu子系统用来限制cgroup如何使用CPU的时间，也就是调度，它提供了3种调度办法，并且这3种调度办法都可以在启动容器时进行配置，分别是：</p>
 <ul>
 <li>share ：相对权重的CPU调度</li>
@@ -1302,9 +1302,9 @@
 <li>rt ：实时调度</li>
 </ul>
 <p>share调度的配置项和原理如下：</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpu-share.png" alt="cpu share调度"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpu-share.png" alt="cpu share调度"></p>
 <p>cfs 是Completely Fair Scheduler的缩写，代表完全公平调度，它利用 <code>cpu.cfs_quota_us</code> 和 <code>cpu.cfs_period_us</code> 实现公平调度，这两个文件内容组合使用可以限制进程在长度为 <code>cfs_period_us</code> 的时间内，只能被分配到总量为 <code>cfs_quota_us</code> 的 CPU 时间。CFS的指标如下：</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpu-cfs.png" alt="cpu cfs调度"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpu-cfs.png" alt="cpu cfs调度"></p>
 <p><strong>注意</strong>： </p>
 <ol>
 <li><code>cfs_period_us</code> 取值范围1000~1000000：1ms ~ 1s，<code>cfs_quota_us</code>的最小值为1000，当设置的值不在取值范围时，会报 <code>write xxx: invalid argument</code> 的错误。</li>
@@ -1312,7 +1312,7 @@
 </ol>
 <p>rt 是RealTime的缩写，它是实时调度，它与cfs调度的区别是cfs不会保证进程的CPU使用率一定要达到设置的比率，而rt会严格保证，让进程的占用率达到这个比率，适合实时性较强的任务，它包含 <code>cpu.rt_period_us</code> 和 <code>cpu.rt_runtime_us</code> 2个配置项。</p>
 <h3 id="cpuacct"><a href="#cpuacct" class="headerlink" title="cpuacct"></a>cpuacct</h3><p>cpuacct包含非常多的统计指标，常用的有以下4个文件：</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpuacct.png" alt="cpuacct常用指标文件"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpuacct.png" alt="cpuacct常用指标文件"></p>
 <h3 id="cpuset"><a href="#cpuset" class="headerlink" title="cpuset"></a>cpuset</h3><p>为啥需要cpuset？</p>
 <p>比如：</p>
 <ol>
@@ -1320,7 +1320,7 @@
 <li>一个服务器上部署多种应用，不同的应用不同的核。</li>
 </ol>
 <p>cpuset也包含居多的配置项，主要是分为cpu和mem 2类，mem与NUMA有关，其常用的配置项如下图:</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpuset.png" alt="cpuset常用配置项"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpuset.png" alt="cpuset常用配置项"></p>
 <h2 id="利用Docker演示Cgroup-CPU限制"><a href="#利用Docker演示Cgroup-CPU限制" class="headerlink" title="利用Docker演示Cgroup CPU限制"></a>利用Docker演示Cgroup CPU限制</h2><h3 id="cpu-1"><a href="#cpu-1" class="headerlink" title="cpu"></a>cpu</h3><h4 id="不限制cpu的情况"><a href="#不限制cpu的情况" class="headerlink" title="不限制cpu的情况"></a>不限制cpu的情况</h4><p>stress为基于ubuntu:16.04安装stress做出来的镜像，利用stress来测试cpu限制。</p>
 <p>Dockerfile如下：</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">From</span> ubuntu:<span class="number">16.04</span></span><br><span class="line"><span class="comment"># Using Aliyun mirror</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mv /etc/apt/sources.list /root/sources.list.bak</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> sed -e s/security.ubuntu/mirrors.aliyun/ -e s/archive.ubuntu/mirrors.aliyun/ -e s/archive.canonical/mirrors.aliyun/ -e s/esm.ubuntu/mirrors.aliyun/ /root/sources.list.bak &gt; /etc/apt/sources.list</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get install -y stress</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /root</span></span><br></pre></td></tr></table></figure>
@@ -1514,7 +1514,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1536,7 +1536,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ ls memory.*</span><br><span class="line">memory.failcnt                  memory.kmem.tcp.limit_in_bytes      memory.memsw.limit_in_bytes      memory.soft_limit_in_bytes</span><br><span class="line">memory.force_empty              memory.kmem.tcp.max_usage_in_bytes  memory.memsw.max_usage_in_bytes  memory.stat</span><br><span class="line">memory.kmem.failcnt             memory.kmem.tcp.usage_in_bytes      memory.memsw.usage_in_bytes      memory.swappiness</span><br><span class="line">memory.kmem.limit_in_bytes      memory.kmem.usage_in_bytes          memory.move_charge_at_immigrate  memory.usage_in_bytes</span><br><span class="line">memory.kmem.max_usage_in_bytes  memory.limit_in_bytes               memory.numa_stat                 memory.use_hierarchy</span><br><span class="line">memory.kmem.slabinfo            memory.max_usage_in_bytes           memory.oom_control</span><br><span class="line">memory.kmem.tcp.failcnt         memory.memsw.failcnt                memory.pressure_level</span><br></pre></td></tr></table></figure>
 
 <p>下图进行了汇总，虚线所圈出的指标为常用指标，每个指标的含义也如图所标注：</p>
-<p><img src="http://img.lessisbetter.site/2020-08-cgroup-memory.png" alt="cgroup memory subsystem"></p>
+<p><img src="https://lessisbetter.site/images/2020-08-cgroup-memory.png" alt="cgroup memory subsystem"></p>
 <p>所有指标的含义可以参考<a target="_blank" rel="noopener" href="https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups/memory.txt">Linux Kernel关于cgroup memory</a>的介绍。</p>
 <h2 id="利用Docker演示Cgroup内存限制"><a href="#利用Docker演示Cgroup内存限制" class="headerlink" title="利用Docker演示Cgroup内存限制"></a>利用Docker演示Cgroup内存限制</h2><ol>
 <li>创建一个容器，限制为内存为128MB</li>
@@ -1583,7 +1583,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ cat cgroup.procs</span><br><span class="line">13780</span><br><span class="line">13792</span><br><span class="line">13793</span><br><span class="line">21124</span><br><span class="line">21221</span><br></pre></td></tr></table></figure>
 
 <p>从 <code>pstree -p</code> 可以查看整个进程树:</p>
-<p><img src="http://img.lessisbetter.site/2020-cgroup-memory-pstree.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-cgroup-memory-pstree.png"></p>
 <h2 id="利用Go演示Cgroup内存限制"><a href="#利用Go演示Cgroup内存限制" class="headerlink" title="利用Go演示Cgroup内存限制"></a>利用Go演示Cgroup内存限制</h2><h3 id="测试源码"><a href="#测试源码" class="headerlink" title="测试源码"></a>测试源码</h3><p>cgroup的演示<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/notes/blob/master/docker/codes/02.1.cgroup.go">源码</a> ，关于源码中的<code>/proc/self/exe</code>看<a href="#%E8%A1%A5%E5%85%85%E5%B0%8F%E7%9F%A5%E8%AF%86">补充小知识</a>。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="comment">// 参考《自动动手写Docker》</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;io/ioutil&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;os/exec&quot;</span></span><br><span class="line">	<span class="string">&quot;path&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">	<span class="string">&quot;syscall&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> CgroupMemoryHierarchyMount = <span class="string">&quot;/sys/fs/cgroup/memory&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> os.Args[<span class="number">0</span>] == <span class="string">&quot;/proc/self/exe&quot;</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;---------- 2 ------------&quot;</span>)</span><br><span class="line">		fmt.Printf(<span class="string">&quot;Current pid: %d\n&quot;</span>, syscall.Getpid())</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 创建stress子进程，施加内存压力</span></span><br><span class="line">		allocMemSize := <span class="string">&quot;99m&quot;</span> <span class="comment">// 另外1项测试为99m</span></span><br><span class="line">		fmt.Printf(<span class="string">&quot;allocMemSize: %v\n&quot;</span>, allocMemSize)</span><br><span class="line">		stressCmd := fmt.Sprintf(<span class="string">&quot;stress --vm-bytes %s --vm-keep -m 1&quot;</span>, allocMemSize)</span><br><span class="line">		cmd := exec.Command(<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, stressCmd)</span><br><span class="line">		cmd.SysProcAttr = &amp;syscall.SysProcAttr&#123;&#125;</span><br><span class="line">		cmd.Stdin = os.Stdin</span><br><span class="line">		cmd.Stdout = os.Stdout</span><br><span class="line">		cmd.Stderr = os.Stderr</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> err := cmd.Run(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Printf(<span class="string">&quot;stress run error: %v&quot;</span>, err)</span><br><span class="line">			os.Exit(<span class="number">-1</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">&quot;---------- 1 ------------&quot;</span>)</span><br><span class="line">	cmd := exec.Command(<span class="string">&quot;/proc/self/exe&quot;</span>)</span><br><span class="line">	cmd.SysProcAttr = &amp;syscall.SysProcAttr&#123;</span><br><span class="line">		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWNS | syscall.CLONE_NEWPID,</span><br><span class="line">	&#125;</span><br><span class="line">	cmd.Stdin = os.Stdin</span><br><span class="line">	cmd.Stdout = os.Stdout</span><br><span class="line">	cmd.Stderr = os.Stderr</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动子进程</span></span><br><span class="line">	<span class="keyword">if</span> err := cmd.Start(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;/proc/self/exe start error: %v&quot;</span>, err)</span><br><span class="line">		os.Exit(<span class="number">-1</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	cmdPid := cmd.Process.Pid</span><br><span class="line">	fmt.Printf(<span class="string">&quot;cmdPid: %d\n&quot;</span>, cmdPid)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建子cgroup</span></span><br><span class="line">	memoryGroup := path.Join(CgroupMemoryHierarchyMount, <span class="string">&quot;test_memory_limit&quot;</span>)</span><br><span class="line">	os.Mkdir(memoryGroup, <span class="number">0755</span>)</span><br><span class="line">	<span class="comment">// 设定内存限制</span></span><br><span class="line">	ioutil.WriteFile(path.Join(memoryGroup, <span class="string">&quot;memory.limit_in_bytes&quot;</span>),</span><br><span class="line">		[]<span class="keyword">byte</span>(<span class="string">&quot;100m&quot;</span>), <span class="number">0644</span>)</span><br><span class="line">	<span class="comment">// 将进程加入cgroup</span></span><br><span class="line">	ioutil.WriteFile(path.Join(memoryGroup, <span class="string">&quot;tasks&quot;</span>),</span><br><span class="line">		[]<span class="keyword">byte</span>(strconv.Itoa(cmdPid)), <span class="number">0644</span>)</span><br><span class="line"></span><br><span class="line">	cmd.Process.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1606,7 +1606,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat memory.limit_in_bytes</span><br><span class="line">104857600</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ # 104857600 刚好为100MB</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat memory.usage_in_bytes</span><br><span class="line">2617344</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat tasks</span><br><span class="line">2533 &lt;--- &#x2F;prof&#x2F;self&#x2F;exe进程</span><br><span class="line">2534</span><br><span class="line">2535</span><br><span class="line">2536</span><br><span class="line">2537</span><br><span class="line">2538</span><br><span class="line">2539 &lt;--- stress进程</span><br></pre></td></tr></table></figure>
 
 <p>tasks下都是在cgroup <code>test_memory_limit</code> 中的进程，这些是Host中真实的进程号，通过<code>pstree -p</code>查看进程树，看看这些都是哪些进程：</p>
-<p><img src="http://img.lessisbetter.site/2020-08-cgroup.png" alt="Cgroup限制内存的进程树"></p>
+<p><img src="https://lessisbetter.site/images/2020-08-cgroup.png" alt="Cgroup限制内存的进程树"></p>
 <p>进程树佐证了前面的代码执行流程分析大致是对的，只不过这其中还涉及一些创建子进程的具体手段，比如stress是通过sh命令创建出来的。</p>
 <h3 id="内存超过限制被Kill情况"><a href="#内存超过限制被Kill情况" class="headerlink" title="内存超过限制被Kill情况"></a>内存超过限制被Kill情况</h3><p>内存超过cgroup限制的内存会怎么样？会OOM吗？</p>
 <p>如果将stress内存提高到占用101MB，大于cgroup中内存的限制100M时，整个group中的进程就会被Kill。</p>

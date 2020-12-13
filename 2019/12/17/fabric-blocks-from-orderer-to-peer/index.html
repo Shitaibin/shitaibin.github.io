@@ -29,15 +29,15 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，本文就来介绍，Peer是如何从Orderer获取区块的，顺带介绍为何Peer从Orderer获取的区块“好慢”。 网络拓扑假设存在如下的Fabric网络拓扑情况，本文使用此拓扑进行介绍Orderer到Peer的区块传播情况： 网络中存在两家组织：Org1和Org2，它们分别拥有Peer1作为主节点，连向了排序服务的O">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-12-spread-of-blocks-new.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-12-orderer-to-peer.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-12-spread-of-blocks-new.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-12-orderer-to-peer.png">
 <meta property="article:published_time" content="2019-12-17T12:14:34.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.775Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.386Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="区块链">
 <meta property="article:tag" content="Fabric">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-12-spread-of-blocks-new.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-12-spread-of-blocks-new.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/">
@@ -289,7 +289,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -312,7 +312,7 @@
 <li>Orderer上有2个通道的账本，每个Peer分别有2个Deliver Server对应2个通道的账本，从账本读取区块，发送给Peer。</li>
 <li>每个Peer有2个Deliver Client，也对应2个通道，接收Orderer发来的区块，加入到缓冲区Payloads Buffer，然后再从Payloads Buffer中提取区块，验证后写入对应的通道账本。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-12-spread-of-blocks-new.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-12-spread-of-blocks-new.png"></p>
 <p>后面，介绍区块同步某个通道区块的情况。</p>
 <h2 id="单通道区块同步"><a href="#单通道区块同步" class="headerlink" title="单通道区块同步"></a>单通道区块同步</h2><p><strong>Peer利用Deliver从Orderer获取区块</strong>，就像SDK利用Deliver从Peer获取区块一样，Deliver服务端的处理是一样的，Deliver客户端的处理就由SDK、Peer自行处理了。</p>
 <p>Deliver本质是一个事件订阅接口，Leading Peer启动后，会为每个通道，分别向Orderer节点注册<strong>区块事件</strong>，并且指定结束的区块高度为<code>uint</code>类型的最大值，这是为了不停的从orderer获取区块。</p>
@@ -325,7 +325,7 @@
 <li><code>deliverPayloads</code>为循环函数，不断<strong>消费</strong>Payloads Buffer中的区块，执行区块验证，添加区块剩余元数据，最后写入通道账本。</li>
 <li>写通道账本包含区块写入区块账本，修改世界状态数据库，历史索引等。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-12-orderer-to-peer.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-12-orderer-to-peer.png"></p>
 <h2 id="为何Peer从Orderer获取区块慢？"><a href="#为何Peer从Orderer获取区块慢？" class="headerlink" title="为何Peer从Orderer获取区块慢？"></a>为何Peer从Orderer获取区块慢？</h2><p>在性能测试过程中，我们发现Orderer排序完成后，Peer还在不断的从Orderer获取区块，而不是所有排序后的区块都先发送给Peer，Peer缓存起来，慢慢去验证？</p>
 <p>上面提到Orderer向Peer发送的区块，Peer收到后先存到Payloads Buffer中，Buffer有空闲位置的时候，Orderer发送的区块才能写入Buffer，deliverBlock 1次循环才能完成，才可以发送下一个区块。</p>
 <p>但Payloads Buffer大小是有限的，当Buffer满后，Orderer发送区块的操作也会收到阻塞。</p>

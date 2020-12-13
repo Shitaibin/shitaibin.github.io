@@ -29,15 +29,15 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="周末又到了，为大家准备了一份实用干货：如何使用channel和Mutex解决并发问题，利用周末的好时光，配上音乐，思考一下吧🤔。 来，问自己个问题：面对并发问题，是用channel解决，还是用Mutex解决？ 如果自己心里还没有清晰的答案，那就读下这篇文章，你会了解到：  使用channel解决并发问题的核心思路和示例 channel擅长解决什么样的并发问题，Mutex擅长解决什么样的并发问题">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-01-12-bank-user.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-01-12-bank_channel.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-01-12-bank-user.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-01-12-bank_channel.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-01-article_qrcode.jpg">
 <meta property="article:published_time" content="2019-01-14T13:43:41.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.787Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.386Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-01-12-bank-user.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-01-12-bank-user.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/01/14/golang-channel-and-mutex/">
@@ -289,7 +289,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -336,7 +336,7 @@
 <li>每个人都可以向银行发起请求，请求可以是存、取、查3种操作，并且包含操作时必要的数据，包含的数据只和自身相关。</li>
 <li>银行处理请求后给用户发送响应，包含的数据只和操作用户相关。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-01-12-bank-user.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-01-12-bank-user.png"></p>
 <p>你一定发现了上面的数据流动：</p>
 <ol>
 <li>请求数据：个人请求数据流向银行。</li>
@@ -348,7 +348,7 @@
 <li>retCh：传送响应的channel，把响应从银行发给个人。</li>
 </ol>
 <p>我们把channel添加到上图中，得到下面的图：</p>
-<p><img src="http://img.lessisbetter.site/2019-01-12-bank_channel.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-01-12-bank_channel.png"></p>
 <p>以上就是从数据流动的角度，发现如何使用channel解决并发问题。思路有了，再思考下代码层面需要怎么做：</p>
 <ol>
 <li>银行：<ol>
@@ -428,7 +428,7 @@
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>

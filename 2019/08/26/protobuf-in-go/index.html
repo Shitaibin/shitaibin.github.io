@@ -29,15 +29,15 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第一篇。 Protocol Buffers介绍Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：https:&#x2F;&#x2F;github.com">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-09-protoc.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-09-protoc.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-09-marshal-unmarshal.png">
 <meta property="article:published_time" content="2019-08-26T12:52:58.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.798Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.388Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta property="article:tag" content="RPC">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-protoc.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-09-protoc.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">
@@ -289,7 +289,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -318,11 +318,11 @@
 <p>我们介绍一下protobuf对多语言的支持原理。protobuf有个程序叫<strong>protoc</strong>，它是一个编译程序，<strong>负责把proto文件编译成对应语言的文件</strong>，它已经支持了C++、C#、Java、Python，而对于Go和Dart需要安装插件才能配合生成对于语言的文件。</p>
 <p>对于C++，protoc可以把<code>a.proto</code>，编译成<code>a.pb.h</code>和<code>a.pb.cc</code>。</p>
 <p>对于Go，protoc需要使用插件<strong>protoc-gen-go</strong>，把<code>a.proto</code>，编译成<code>a.pb.go</code>，其中包含了定义的数据类型，它的序列化和反序列化函数等。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-protoc.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-09-protoc.png"></p>
 <p>敲黑板，对Go语言，protoc只负责利用protoc-gen-go把proto文件编译成Go语言文件，并不负责序列化和反序列化，生成的Go语言文件中的序列化和反序列化操作都是只是wrapper。</p>
 <p>那Go语言对protobuf的序列化和反序列化，是由谁完成的？</p>
 <p>由<code>github.com/golang/protobuf/proto</code>完成，它负责把结构体等序列化成proto数据(<code>[]byte</code>)，把proto数据反序列化成Go结构体。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-09-marshal-unmarshal.png"></p>
 <p>OK，原理部分就铺垫这些，看一个简单样例，了解protoc和protoc-gen-go的使用，以及进行序列化和反序列化操作。</p>
 <h2 id="一个Hello-World样例"><a href="#一个Hello-World样例" class="headerlink" title="一个Hello World样例"></a>一个Hello World样例</h2><p>根据上面的介绍，Go语言使用protobuf我们要先安装2个工具：protoc和protoc-gen-go。</p>
 <h3 id="安装protoc和protoc-gen-go"><a href="#安装protoc和protoc-gen-go" class="headerlink" title="安装protoc和protoc-gen-go"></a>安装protoc和protoc-gen-go</h3><p>首先去<a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf/releases/tag/v3.9.1">下载页</a>下载符合你系统的protoc，本文示例版本如下：</p>

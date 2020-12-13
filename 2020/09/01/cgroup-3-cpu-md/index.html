@@ -29,19 +29,19 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="测试环境Ubuntu 18.04，内核版本4.15，机器拥有4核。 123456789[~]$ cat &#x2F;proc&#x2F;versionLinux version 4.15.0-112-generic (buildd@lcy01-amd64-027) (gcc version 7.5.0 (Ubuntu 7.5.0-3ubuntu1~18.04)) #113-Ubuntu SMP T">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpux.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpu-share.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpu-cfs.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpuacct.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpuset.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-09-cgroup-cpux.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-09-cgroup-cpu-share.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-09-cgroup-cpu-cfs.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-09-cgroup-cpuacct.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-09-cgroup-cpuset.png">
 <meta property="article:published_time" content="2020-09-01T15:00:24.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.766Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.385Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Docker">
 <meta property="article:tag" content="Kubernetes">
 <meta property="article:tag" content="Cgroup">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpux.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2020-09-cgroup-cpux.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2020/09/01/cgroup-3-cpu-md/">
@@ -293,7 +293,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -316,7 +316,7 @@
 <li>cpuset : 用来绑定cgroup到指定CPU的哪个核上和NUMA节点</li>
 </ul>
 <p>每个子系统都有多个配置项和指标文件，主要介绍下图常用的配置项：</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpux.png" alt="cpu、cpuacct、cpuset的指标"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpux.png" alt="cpu、cpuacct、cpuset的指标"></p>
 <h3 id="cpu"><a href="#cpu" class="headerlink" title="cpu"></a>cpu</h3><p>cpu子系统用来限制cgroup如何使用CPU的时间，也就是调度，它提供了3种调度办法，并且这3种调度办法都可以在启动容器时进行配置，分别是：</p>
 <ul>
 <li>share ：相对权重的CPU调度</li>
@@ -324,9 +324,9 @@
 <li>rt ：实时调度</li>
 </ul>
 <p>share调度的配置项和原理如下：</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpu-share.png" alt="cpu share调度"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpu-share.png" alt="cpu share调度"></p>
 <p>cfs 是Completely Fair Scheduler的缩写，代表完全公平调度，它利用 <code>cpu.cfs_quota_us</code> 和 <code>cpu.cfs_period_us</code> 实现公平调度，这两个文件内容组合使用可以限制进程在长度为 <code>cfs_period_us</code> 的时间内，只能被分配到总量为 <code>cfs_quota_us</code> 的 CPU 时间。CFS的指标如下：</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpu-cfs.png" alt="cpu cfs调度"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpu-cfs.png" alt="cpu cfs调度"></p>
 <p><strong>注意</strong>： </p>
 <ol>
 <li><code>cfs_period_us</code> 取值范围1000~1000000：1ms ~ 1s，<code>cfs_quota_us</code>的最小值为1000，当设置的值不在取值范围时，会报 <code>write xxx: invalid argument</code> 的错误。</li>
@@ -334,7 +334,7 @@
 </ol>
 <p>rt 是RealTime的缩写，它是实时调度，它与cfs调度的区别是cfs不会保证进程的CPU使用率一定要达到设置的比率，而rt会严格保证，让进程的占用率达到这个比率，适合实时性较强的任务，它包含 <code>cpu.rt_period_us</code> 和 <code>cpu.rt_runtime_us</code> 2个配置项。</p>
 <h3 id="cpuacct"><a href="#cpuacct" class="headerlink" title="cpuacct"></a>cpuacct</h3><p>cpuacct包含非常多的统计指标，常用的有以下4个文件：</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpuacct.png" alt="cpuacct常用指标文件"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpuacct.png" alt="cpuacct常用指标文件"></p>
 <h3 id="cpuset"><a href="#cpuset" class="headerlink" title="cpuset"></a>cpuset</h3><p>为啥需要cpuset？</p>
 <p>比如：</p>
 <ol>
@@ -342,7 +342,7 @@
 <li>一个服务器上部署多种应用，不同的应用不同的核。</li>
 </ol>
 <p>cpuset也包含居多的配置项，主要是分为cpu和mem 2类，mem与NUMA有关，其常用的配置项如下图:</p>
-<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpuset.png" alt="cpuset常用配置项"></p>
+<p><img src="https://lessisbetter.site/images/2020-09-cgroup-cpuset.png" alt="cpuset常用配置项"></p>
 <h2 id="利用Docker演示Cgroup-CPU限制"><a href="#利用Docker演示Cgroup-CPU限制" class="headerlink" title="利用Docker演示Cgroup CPU限制"></a>利用Docker演示Cgroup CPU限制</h2><h3 id="cpu-1"><a href="#cpu-1" class="headerlink" title="cpu"></a>cpu</h3><h4 id="不限制cpu的情况"><a href="#不限制cpu的情况" class="headerlink" title="不限制cpu的情况"></a>不限制cpu的情况</h4><p>stress为基于ubuntu:16.04安装stress做出来的镜像，利用stress来测试cpu限制。</p>
 <p>Dockerfile如下：</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">From</span> ubuntu:<span class="number">16.04</span></span><br><span class="line"><span class="comment"># Using Aliyun mirror</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mv /etc/apt/sources.list /root/sources.list.bak</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> sed -e s/security.ubuntu/mirrors.aliyun/ -e s/archive.ubuntu/mirrors.aliyun/ -e s/archive.canonical/mirrors.aliyun/ -e s/esm.ubuntu/mirrors.aliyun/ /root/sources.list.bak &gt; /etc/apt/sources.list</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get install -y stress</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /root</span></span><br></pre></td></tr></table></figure>

@@ -29,17 +29,17 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="channel是大家在Go中用的最频繁的特性，也是Go最自豪的特性之一，你有没有思考过：  Why：为什么要设计channel？ What：channel是什么样的？ How：channel是如何实现的？  这篇文章，就来回答这3个问题。 channel解决什么问题？在Golang诞生之前，各编程语言都使用多线程进行编程，但多线程复杂、混乱、难以管理，对开发者并不是多么友好。 Golang是Goo">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-03-pipeline.jpeg">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-03-channel_design.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-03-channel_design_qrcode.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-03-channel_source_qrcode.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-03-pipeline.jpeg">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-03-channel_design.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-03-channel_design_qrcode.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-03-channel_source_qrcode.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-01-article_qrcode.jpg">
 <meta property="article:published_time" content="2019-03-03T07:32:15.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.788Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.385Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-03-pipeline.jpeg">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-03-pipeline.jpeg">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/">
@@ -291,7 +291,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -320,9 +320,9 @@
 </blockquote>
 <p>Golang使用<code>goroutine</code>和<code>channel</code>简单、高效的解决并发问题，<strong>channel解决的是goroutine之间的通信</strong>。</p>
 <h3 id="channel是怎么设计的？"><a href="#channel是怎么设计的？" class="headerlink" title="channel是怎么设计的？"></a>channel是怎么设计的？</h3><p>我们以为channel是一个通道：</p>
-<p><img src="http://img.lessisbetter.site/2019-03-pipeline.jpeg"></p>
+<p><img src="https://lessisbetter.site/images/2019-03-pipeline.jpeg"></p>
 <p>实际上，channel的内在是这样的：</p>
-<p><img src="http://img.lessisbetter.site/2019-03-channel_design.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-03-channel_design.png"></p>
 <p>channel设计涉及的数据结构很简单，这就是<strong>channel的本质</strong>：</p>
 <ul>
 <li>基于数组的循环队列，有缓冲的channel用它暂存数据</li>
@@ -346,13 +346,13 @@
 <li>…</li>
 </ul>
 <p>PPT在此：<a target="_blank" rel="noopener" href="https://speakerdeck.com/kavya719/understanding-channels">Understanding Channels</a>，如果你有心，还可以在这个网站看到Kavya关于goroutine调度的PPT，福利哦😝。(访问不了请翻墙，或阅读原文从博客文章最下面看Github备份)</p>
-<p>微信二维码跳转：<br><img src="http://img.lessisbetter.site/2019-03-channel_design_qrcode.png"></p>
+<p>微信二维码跳转：<br><img src="https://lessisbetter.site/images/2019-03-channel_design_qrcode.png"></p>
 <h3 id="channel是怎么实现的？"><a href="#channel是怎么实现的？" class="headerlink" title="channel是怎么实现的？"></a>channel是怎么实现的？</h3><p><a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/chan.go">chan.go</a>是channel的主要实现文件，只有700行，十分佩服Go团队，<strong>实现的如此精简，却发挥如此大的作用</strong>！！！</p>
 <p>看完Kavya的PPT，你已经可以直接看channel的源码了，如果有任何问题，思考一下你也可以想通，如果有任何问题可博客文章留言或公众号私信进行讨论。</p>
 <p>另外，推荐一篇在Medium（国外高质量文章社区）上获得500+赞的源码分析文章，非常详细。</p>
 <p>文章链接：<a target="_blank" rel="noopener" href="https://codeburst.io/diving-deep-into-the-golang-channels-549fd4ed21a8">Diving deep into the golang channels</a></p>
 <p>微信二维码跳转：</p>
-<p><img src="http://img.lessisbetter.site/2019-03-channel_source_qrcode.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-03-channel_source_qrcode.png"></p>
 <h3 id="我学到了什么？"><a href="#我学到了什么？" class="headerlink" title="我学到了什么？"></a>我学到了什么？</h3><p>阅读channel源码我学到了一些东西，分享给大家。</p>
 <p>channel的4个特性的实现：</p>
 <ul>
@@ -391,7 +391,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
     </div>
 
     

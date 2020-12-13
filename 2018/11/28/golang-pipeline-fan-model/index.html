@@ -29,15 +29,15 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="前一篇文章《Golang并发模型：轻松入门流水线模型》，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。 FAN-IN和FAN-OUT模式Golang的">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-12-fan-in-fan-out.png">
-<meta property="og:image" content="http://img.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2018-12-fan-in-fan-out.png">
+<meta property="og:image" content="https://lessisbetter.site/images/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
 <meta property="article:published_time" content="2018-11-28T13:17:30.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.789Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.386Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta property="article:tag" content="Pipeline">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2018-12-fan-in-fan-out.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2018-12-fan-in-fan-out.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/">
@@ -289,7 +289,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -310,7 +310,7 @@
 <li><strong>FAN-OUT模式：多个goroutine从同一个通道读取数据，直到该通道关闭。</strong>OUT是一种张开的模式，所以又被称为扇出，可以用来分发任务。</li>
 <li><strong>FAN-IN模式：1个goroutine从多个通道读取数据，直到这些通道关闭。</strong>IN是一种收敛的模式，所以又被称为扇入，用来收集处理的结果。</li>
 </ul>
-<p><img src="http://img.lessisbetter.site/2018-12-fan-in-fan-out.png" alt="fan-in和fan-out.png"></p>
+<p><img src="https://lessisbetter.site/images/2018-12-fan-in-fan-out.png" alt="fan-in和fan-out.png"></p>
 <h3 id="FAN-IN和FAN-OUT实践"><a href="#FAN-IN和FAN-OUT实践" class="headerlink" title="FAN-IN和FAN-OUT实践"></a>FAN-IN和FAN-OUT实践</h3><p>我们这次试用FAN-OUT和FAN-IN，解决<a href="http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/">《Golang并发模型：轻松入门流水线模型》</a>中提到的问题：计算一个整数切片中元素的平方值并把它打印出来。</p>
 <ul>
 <li><code>producer()</code>保持不变，负责生产数据。</li>
@@ -402,7 +402,7 @@
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://img.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
+<img src="https://lessisbetter.site/images/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>

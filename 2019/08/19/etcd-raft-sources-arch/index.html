@@ -29,18 +29,18 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="序言Etcd提供了一个样例contrib&#x2F;raftexample，用来展示如何使用etcd raft。这篇文章通过raftexample介绍如何使用etcd raft。 raft服务raftexample是一个分布式KV数据库，客户端可以向集群的节点发送写数据和读数据，以及修改集群配置的请求，它使用etcd raft保持各集群之间数据的一致性。  etcd raftetcd raft实现了raft">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-08-cluster.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-08-etcd-raft.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-08-app-arch.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-08-raft-arch.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-08-cluster.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-08-etcd-raft.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-08-app-arch.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-08-raft-arch.png">
 <meta property="article:published_time" content="2019-08-19T01:42:37.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.770Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.387Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="一致性">
 <meta property="article:tag" content="共识">
 <meta property="article:tag" content="Raft">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-08-cluster.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-08-cluster.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/08/19/etcd-raft-sources-arch/">
@@ -292,7 +292,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -307,10 +307,10 @@
     <div class="post-body" itemprop="articleBody">
         <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p><a target="_blank" rel="noopener" href="https://github.com/etcd-io/etcd">Etcd</a>提供了一个样例<a target="_blank" rel="noopener" href="https://github.com/etcd-io/etcd/tree/master/contrib/raftexample">contrib/raftexample</a>，用来展示如何使用etcd raft。这篇文章通过raftexample介绍如何使用etcd raft。</p>
 <h2 id="raft服务"><a href="#raft服务" class="headerlink" title="raft服务"></a>raft服务</h2><p>raftexample是一个分布式KV数据库，客户端可以向集群的节点发送写数据和读数据，以及修改集群配置的请求，它使用etcd raft保持各集群之间数据的一致性。</p>
-<p><img src="http://img.lessisbetter.site/2019-08-cluster.png" alt="cluster"></p>
+<p><img src="https://lessisbetter.site/images/2019-08-cluster.png" alt="cluster"></p>
 <h2 id="etcd-raft"><a href="#etcd-raft" class="headerlink" title="etcd raft"></a>etcd raft</h2><p>etcd raft实现了raft论文的核心，所有的IO（磁盘存储、网络通信）它都没有实现，它做了解耦。</p>
 <p>它是一个状态机，有数据作为输入，经过当前状态和输入，得到确定性的输出，即每个节点上都是一样的。</p>
-<p><img src="http://img.lessisbetter.site/2019-08-etcd-raft.png" alt="etcd-raft"></p>
+<p><img src="https://lessisbetter.site/images/2019-08-etcd-raft.png" alt="etcd-raft"></p>
 <h2 id="raft应用架构"><a href="#raft应用架构" class="headerlink" title="raft应用架构"></a>raft应用架构</h2><p>raft集群会由多个节点组成，客户端的请求发送给raft leader，再由raft leader通过网络通信在集群之中对请求达成共识。</p>
 <p>集群中的每个节点从架构上都可以分为两层：</p>
 <ul>
@@ -318,7 +318,7 @@
 <li>共识层，负责相同和输入数据和状态，生成确定性的、一致的输出，</li>
 </ul>
 <p>共识层由etcd raft负责，应用层要负责业务逻辑，数据存储和网络通信不需要应用层实现，而是由不同的模块负责，应用层负责起<strong>衔接</strong>存储存储和网络通信即可。</p>
-<p><img src="http://img.lessisbetter.site/2019-08-app-arch.png" alt="app-arch"></p>
+<p><img src="https://lessisbetter.site/images/2019-08-app-arch.png" alt="app-arch"></p>
 <p>应用层有3个重要组成部分：http API、kv store和raftNode。</p>
 <h3 id="http-API"><a href="#http-API" class="headerlink" title="http API"></a>http API</h3><p>每个节点都会启动一个http API用来接受客户端请求，它只是接收请求，不对请求做处理。它会把客户端的写入请求PUT和查询请求GET都交给kv store。</p>
 <p>对于修改raft集群配置请求，它会生成<code>ConfChange</code>交给raftNode。</p>
@@ -351,7 +351,7 @@
 <h3 id="raft结构体"><a href="#raft结构体" class="headerlink" title="raft结构体"></a>raft结构体</h3><p>raft结构体（后续称为raft.raft）是raft算法的主要实现。</p>
 <p>raft.node把输入推给raft.raft，raft.raft根据输入和<strong>当前的状态数据</strong>生成输出，输出临时保存在raft内，raft.node会检查raft.raft是否有输出，如果有输出数据，就把输出生成Ready结构体，并传递给应用层。</p>
 <p>raft.raft应用层有一个storage，存放的是<strong>当前的状态数据</strong>，包含了保存在内存中的log entry，但这个storage并不是raft.raft的，是应用层的，raft.raft只从中读取数据，log entry的写入由应用层负责。</p>
-<p><img src="http://img.lessisbetter.site/2019-08-raft-arch.png" alt="raft-arch"></p>
+<p><img src="https://lessisbetter.site/images/2019-08-raft-arch.png" alt="raft-arch"></p>
 <h2 id="几个存储相关的概念"><a href="#几个存储相关的概念" class="headerlink" title="几个存储相关的概念"></a>几个存储相关的概念</h2><p><strong>WAL</strong>是Write Ahead Logs的缩写，存储的是log entry记录，即所有写请求的记录。</p>
 <p><strong>storage</strong>也是存的log entry，只不过是保存在内存中的。</p>
 <p><strong>kv db</strong>是保存了所有数据的最新值，而log entry是修改数据值的操作记录。</p>

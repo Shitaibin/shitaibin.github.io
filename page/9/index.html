@@ -281,7 +281,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -440,7 +440,7 @@
 </ol>
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
       
     </div>
@@ -498,7 +498,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -545,7 +545,7 @@
 <li>每个人都可以向银行发起请求，请求可以是存、取、查3种操作，并且包含操作时必要的数据，包含的数据只和自身相关。</li>
 <li>银行处理请求后给用户发送响应，包含的数据只和操作用户相关。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-01-12-bank-user.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-01-12-bank-user.png"></p>
 <p>你一定发现了上面的数据流动：</p>
 <ol>
 <li>请求数据：个人请求数据流向银行。</li>
@@ -557,7 +557,7 @@
 <li>retCh：传送响应的channel，把响应从银行发给个人。</li>
 </ol>
 <p>我们把channel添加到上图中，得到下面的图：</p>
-<p><img src="http://img.lessisbetter.site/2019-01-12-bank_channel.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-01-12-bank_channel.png"></p>
 <p>以上就是从数据流动的角度，发现如何使用channel解决并发问题。思路有了，再思考下代码层面需要怎么做：</p>
 <ol>
 <li>银行：<ol>
@@ -637,7 +637,7 @@
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
@@ -698,7 +698,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -788,7 +788,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -805,7 +805,7 @@
 <p>比如，我们有A、B两类工作，不想把太多资源花费在B类务上，而是花在A类任务上。对于A，我们可以来1个开一个goroutine去处理，对于B，我们可以使用一个协程池，协程池里有5个线程去处理B类任务，这样B消耗的资源就不会太多。</p>
 <p>控制使用资源并不是协程池目的，<strong>使用协程池是为了更好并发、程序鲁棒性、容错性等</strong>。废话少说，快速入门协程池才是这篇文章的目的。</p>
 <p><strong>协程池指的是预先分配固定数量的goroutine处理相同的任务</strong>，和线程池是类似的，不同点是协程池中处理任务的是协程，线程池中处理任务的是线程。</p>
-<h3 id="最简单的协程池模型"><a href="#最简单的协程池模型" class="headerlink" title="最简单的协程池模型"></a>最简单的协程池模型</h3><p><img src="http://img.lessisbetter.site/2018-12-simple-goroutine-pool.png" alt="简单协程池模型"></p>
+<h3 id="最简单的协程池模型"><a href="#最简单的协程池模型" class="headerlink" title="最简单的协程池模型"></a>最简单的协程池模型</h3><p><img src="https://lessisbetter.site/images/2018-12-simple-goroutine-pool.png" alt="简单协程池模型"></p>
 <p>上面这个图展示了最简单的协程池的样子。先<strong>把协程池作为一个整体看，它使用2个通道，左边的<code>jobCh</code>是任务通道，任务会从这个通道中流进来，右边的<code>retCh</code>是结果通道，协程池处理任务后得到的结果会写入这个通道</strong>。至于协程池中，有多少协程处理任务，这是外部不关心的。</p>
 <p>看一下协程池内部，图中画了5个goroutine，实际goroutine的数量是依具体情况而定的。<strong>协程池内每个协程都从<code>jobCh</code>读任务、处理任务，然后将结果写入到<code>retCh</code>。</strong></p>
 <h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>模型看懂了，看个小例子吧。</p>
@@ -844,7 +844,7 @@
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
+<img src="https://lessisbetter.site/images/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
 
 
 
@@ -907,7 +907,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -991,7 +991,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1061,7 +1061,7 @@
 <li>如果喜欢本文，随意转载，但请保留此原文链接：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg">https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg</a></li>
 </ol>
 </blockquote>
-<p><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" alt="一起学Golang-分享有料的Go语言技术"></p>
+<p><img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" alt="一起学Golang-分享有料的Go语言技术"></p>
 
       
     </div>
@@ -1119,7 +1119,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1207,7 +1207,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1291,7 +1291,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1371,7 +1371,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   

@@ -29,21 +29,21 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="最近解决了我们项目中的一个内存泄露问题，事实再次证明pprof是一个好工具，但掌握好工具的正确用法，才能发挥好工具的威力，不然就算你手里有屠龙刀，也成不了天下第一，本文就是带你用pprof定位内存泄露问题。 关于Go的内存泄露有这么一句话不知道你听过没有：  10次内存泄露，有9次是goroutine泄露。  我所解决的问题，也是goroutine泄露导致的内存泄露，所以这篇文章主要介绍Go程序的">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190516173924325-7999564.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190512111200988-7630721.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190512172935195-7653375.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190512114048868-7632448.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190512144150064-7643310.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190516143740567-7988660.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190516143537339-7988537.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-05-image-20190516173924325-7999564.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-05-image-20190512111200988-7630721.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-05-image-20190512172935195-7653375.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-05-image-20190512114048868-7632448.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-05-image-20190512144150064-7643310.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-05-image-20190516143740567-7988660.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-05-image-20190516143537339-7988537.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-01-article_qrcode.jpg">
 <meta property="article:published_time" content="2019-05-18T02:30:47.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.785Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.385Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta property="article:tag" content="内存">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-05-image-20190516173924325-7999564.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-05-image-20190516173924325-7999564.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/">
@@ -295,7 +295,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -325,7 +325,7 @@
 <p><em>文件：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/blob/master/pprof/pprof/demo.go">golang_step_by_step/pprof/pprof/demo.go</a></em></p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">	_ <span class="string">&quot;net/http/pprof&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 开启pprof，监听请求</span></span><br><span class="line">	ip := <span class="string">&quot;0.0.0.0:6060&quot;</span></span><br><span class="line">	<span class="keyword">if</span> err := http.ListenAndServe(ip, <span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;start pprof failed on %s\n&quot;</span>, ip)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><em>提醒：本文所有代码部分可左右滑动</em></p>
-<h3 id="浏览器方式"><a href="#浏览器方式" class="headerlink" title="浏览器方式"></a>浏览器方式</h3><p><img src="http://img.lessisbetter.site/2019-05-image-20190516173924325-7999564.png" alt="image-20190516173924325"></p>
+<h3 id="浏览器方式"><a href="#浏览器方式" class="headerlink" title="浏览器方式"></a>浏览器方式</h3><p><img src="https://lessisbetter.site/images/2019-05-image-20190516173924325-7999564.png" alt="image-20190516173924325"></p>
 <p>输入网址<code>ip:port/debug/pprof/</code>打开pprof主页，从上到下依次是<strong>5类profile信息</strong>：</p>
 <ol>
 <li><strong>block</strong>：goroutine的阻塞信息，本例就截取自一个goroutine阻塞的demo，但block为0，没掌握block的用法</li>
@@ -387,7 +387,7 @@
 </ol>
 <p>这2种方式分别介绍一下。</p>
 <h2 id="监控工具查看进程内在占用情况"><a href="#监控工具查看进程内在占用情况" class="headerlink" title="监控工具查看进程内在占用情况"></a>监控工具查看进程内在占用情况</h2><p><strong>如果使用云平台部署Go程序</strong>，云平台都提供了内存查看的工具，可以查看OS的内存占用情况和某个进程的内存占用情况，比如阿里云，我们在1个云主机上只部署了1个Go服务，所以OS的内存占用情况，基本是也反映了进程内存占用情况，OS内存占用情况如下，可以看到<strong>随着时间的推进，内存的占用率在不断的提高，这是内存泄露的最明显现象</strong>：</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190512111200988-7630721.png" alt="image-20190512111200988"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512111200988-7630721.png" alt="image-20190512111200988"></p>
 <p><strong>如果没有云平台这种内存监控工具，可以制作一个简单的内存记录工具。</strong></p>
 <p>1、建立一个脚本<code>prog_mem.sh</code>，获取进程占用的物理内存情况，脚本内容如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">prog_name=<span class="string">&quot;your_programe_name&quot;</span></span><br><span class="line">prog_mem=$(pidstat  -r -u -h -C <span class="variable">$prog_name</span> |awk <span class="string">&#x27;NR==4&#123;print $12&#125;&#x27;</span>)</span><br><span class="line">time=$(date <span class="string">&quot;+%Y-%m-%d %H:%M:%S&quot;</span>)</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$time</span><span class="string">&quot;\tmemory(Byte)\t&quot;</span><span class="variable">$prog_mem</span> &gt;&gt;~/record/prog_mem.log</span><br></pre></td></tr></table></figure>
@@ -396,13 +396,13 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*/1 * * * * ~/record/prog_mem.sh</span><br></pre></td></tr></table></figure>
 
 <p>脚本输出的内容保存在<code>prog_mem.log</code>，只要大体浏览一下就可以发现内存的增长情况，判断是否存在内存泄露。如果需要可视化，可以直接黏贴<code>prog_mem.log</code>内容到Excel等表格工具，绘制内存占用图。</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190512172935195-7653375.png" alt="image-20190512172935195"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512172935195-7653375.png" alt="image-20190512172935195"></p>
 <h2 id="go-pprof发现存在内存问题"><a href="#go-pprof发现存在内存问题" class="headerlink" title="go pprof发现存在内存问题"></a>go pprof发现存在内存问题</h2><blockquote>
 <p>有情提醒：如果对pprof不了解，可以先看[go pprof基本知识](#go pprof基本知识)，这是下一节，看完再倒回来看。</p>
 </blockquote>
 <p>如果你Google或者百度，Go程序内存泄露的文章，它总会告诉你使用<strong>pprof heap</strong>，能够生成漂亮的调用路径图，火焰图等等，然后你根据调用路径就能定位内存泄露问题，我最初也是对此深信不疑，尝试了若干天后，只是发现内存泄露跟某种场景有关，根本找不到内存泄露的根源，<strong>如果哪位朋友用heap就能定位内存泄露的线上问题，麻烦介绍下</strong>。</p>
 <p>后来读了Dave的<a target="_blank" rel="noopener" href="https://dave.cheney.net/high-performance-go-workshop/dotgo-paris.html#using_more_than_one_cpu">《High Performance Go Workshop》</a>，刷新了对heap的认识，内存pprof的简要内容如下：</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190512114048868-7632448.png" alt="image-20190512114048868"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512114048868-7632448.png" alt="image-20190512114048868"></p>
 <p>Dave讲了以下几点：</p>
 <ol>
 <li><strong>内存profiling记录的是堆内存分配的情况，以及调用栈信息</strong>，并不是进程完整的内存情况，猜测这也是在go pprof中称为heap而不是memory的原因。</li>
@@ -444,7 +444,7 @@
 <li>该goroutine的调用次数非常多，虽然每个协程调用过程中消耗的内存不多，但该调用路径上，协程数量巨大，造成消耗大量的内存，并且这些goroutine由于某种原因无法退出，占用的内存不会释放，<strong>内存泄露的原因在到g111调用路径上某段代码实现有问题，造成创建了大量的g111</strong>。</li>
 </ol>
 <p><strong>第2种情况，就是goroutine泄露，这是通过heap无法发现的，所以heap在定位内存泄露这件事上，发挥的作用不大</strong>。</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190512144150064-7643310.png" alt="image-20190512144150064"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512144150064-7643310.png" alt="image-20190512144150064"></p>
 <hr>
 <h1 id="goroutine泄露怎么导致内存泄露"><a href="#goroutine泄露怎么导致内存泄露" class="headerlink" title="goroutine泄露怎么导致内存泄露"></a>goroutine泄露怎么导致内存泄露</h1><h2 id="什么是goroutine泄露"><a href="#什么是goroutine泄露" class="headerlink" title="什么是goroutine泄露"></a>什么是goroutine泄露</h2><p>如果你启动了1个goroutine，但并没有符合预期的退出，直到程序结束，此goroutine才退出，这种情况就是goroutine泄露。</p>
 <blockquote>
@@ -496,7 +496,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ip:port&#x2F;debug&#x2F;pprof&#x2F;goroutine?debug&#x3D;1</span><br></pre></td></tr></table></figure>
 
 <p>效果如下：</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190516143740567-7988660.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190516143740567-7988660.png"></p>
 <p>看起来密密麻麻的，其实简单又十分有用，看上图标出来的部分，手机上图看起来可能不方便，那就放大图片，或直接看下面各字段的含义：</p>
 <ol>
 <li><code>goroutine profile: total 32023</code>：32023是<strong>goroutine的总数量</strong>，</li>
@@ -514,7 +514,7 @@
 <h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><p>url请求中设置debug=2：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ip:port&#x2F;debug&#x2F;pprof&#x2F;goroutine?debug&#x3D;2</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190516143537339-7988537.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190516143537339-7988537.png"></p>
 <p>第2种方式和第1种方式是互补的，它可以看到每个goroutine的信息：</p>
 <ol>
 <li><code>goroutine 20 [chan send, 2 minutes]</code>：20是goroutine id，<code>[]</code>中是当前goroutine的状态，阻塞在写channel，并且阻塞了2分钟，长时间运行的系统，你能看到阻塞时间更长的情况。</li>
@@ -577,7 +577,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
     </div>
 
     

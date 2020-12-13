@@ -29,14 +29,14 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="minikube很好，但某些原因造成国内用起来比较慢，要各种挂代理、Docker镜像加速。 minikube原理 kubectl和kube-apiserver是CS架构，kubectl是操作k8s集群的客户端，kube-apiserver是服务端。 minikube是创建了一个虚拟机minikube vm，然后在虚拟机里创建了1个单机的k8s集群，并把集群部署信息写到~&#x2F;.kube&#x2F;config文">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-08-minikube.jpeg">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-08-minikube.jpeg">
 <meta property="article:published_time" content="2020-08-27T13:30:41.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.797Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.385Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Docker">
 <meta property="article:tag" content="Kubernetes">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2020-08-minikube.jpeg">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2020-08-minikube.jpeg">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2020/08/27/play-minikube/">
@@ -288,7 +288,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -302,7 +302,7 @@
     
     <div class="post-body" itemprop="articleBody">
         <p>minikube很好，但某些原因造成国内用起来比较慢，要各种挂代理、Docker镜像加速。</p>
-<h2 id="minikube原理"><a href="#minikube原理" class="headerlink" title="minikube原理"></a>minikube原理</h2><p><img src="http://img.lessisbetter.site/2020-08-minikube.jpeg"></p>
+<h2 id="minikube原理"><a href="#minikube原理" class="headerlink" title="minikube原理"></a>minikube原理</h2><p><img src="https://lessisbetter.site/images/2020-08-minikube.jpeg"></p>
 <p>kubectl和kube-apiserver是CS架构，kubectl是操作k8s集群的客户端，kube-apiserver是服务端。</p>
 <p>minikube是创建了一个虚拟机<code>minikube vm</code>，然后在虚拟机里创建了1个单机的k8s集群，并把集群部署信息写到<code>~/.kube/config</code>文件，它是kubectl默认使用的配置文件。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[~]$ ls ~&#x2F;.kube&#x2F;config</span><br><span class="line">&#x2F;Users&#x2F;shitaibin&#x2F;.kube&#x2F;config</span><br><span class="line">[~]$ cat ~&#x2F;.kube&#x2F;config</span><br><span class="line">apiVersion: v1</span><br><span class="line">clusters:</span><br><span class="line">- cluster:</span><br><span class="line">    certificate-authority: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;ca.crt</span><br><span class="line">    server: https:&#x2F;&#x2F;192.168.99.103:8443</span><br><span class="line">  name: minikube</span><br><span class="line">contexts:</span><br><span class="line">- context:</span><br><span class="line">    cluster: minikube</span><br><span class="line">    user: minikube</span><br><span class="line">  name: minikube</span><br><span class="line">current-context: minikube</span><br><span class="line">kind: Config</span><br><span class="line">preferences: &#123;&#125;</span><br><span class="line">users:</span><br><span class="line">- name: minikube</span><br><span class="line">  user:</span><br><span class="line">    client-certificate: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.crt</span><br><span class="line">    client-key: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.key</span><br></pre></td></tr></table></figure>

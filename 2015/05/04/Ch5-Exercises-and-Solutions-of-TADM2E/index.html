@@ -29,21 +29,21 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http:&#x2F;&#x2F;www.algorithm.cs.sunysb.edu&#x2F;algowiki&#x2F;index.php&#x2F;Graphs-TADM2E 我的解答遍历5-6题目 In breadth-first and depth-first search, an undiscovered node is marked discovere">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/Figure_5.17.JPG">
-<meta property="og:image" content="http://img.lessisbetter.site/Ex-5-13b.jpg">
-<meta property="og:image" content="http://img.lessisbetter.site/Ex-5-13a.jpg">
-<meta property="og:image" content="http://img.lessisbetter.site/Ex-5-14.JPG">
-<meta property="og:image" content="http://img.lessisbetter.site/Ex-5-16-b.JPG">
-<meta property="og:image" content="http://img.lessisbetter.site/Ex-5-17.JPG">
+<meta property="og:image" content="https://lessisbetter.site/images/Figure_5.17.JPG">
+<meta property="og:image" content="https://lessisbetter.site/images/Ex-5-13b.jpg">
+<meta property="og:image" content="https://lessisbetter.site/images/Ex-5-13a.jpg">
+<meta property="og:image" content="https://lessisbetter.site/images/Ex-5-14.JPG">
+<meta property="og:image" content="https://lessisbetter.site/images/Ex-5-16-b.JPG">
+<meta property="og:image" content="https://lessisbetter.site/images/Ex-5-17.JPG">
 <meta property="article:published_time" content="2015-05-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.763Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.082Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="TADM">
 <meta property="article:tag" content="搜索">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="图论">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/Figure_5.17.JPG">
+<meta name="twitter:image" content="https://lessisbetter.site/images/Figure_5.17.JPG">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2015/05/04/Ch5-Exercises-and-Solutions-of-TADM2E/">
@@ -295,7 +295,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -352,7 +352,7 @@
 <p>遍历需要O(nm)，插入需要O(1)，故共需要O(nm)。</p>
 <h4 id="5-9"><a href="#5-9" class="headerlink" title="5-9"></a>5-9</h4><p>题目</p>
 <p>Suppose an arithmetic expression is given as a tree. Each leaf is an integer and each internal node is one of the standard arithmetical operations <code>(+,−,*,/)</code>. For example, the expression <code>2+3*4+(3*4)/5</code> is represented by the tree in Figure 5.17(a).<br>Give an O(n) algorithm for evaluating such an expression, where there are n nodes in the tree.</p>
-<p><img src="http://img.lessisbetter.site/Figure_5.17.JPG" alt="Figure 5.17"></p>
+<p><img src="https://lessisbetter.site/images/Figure_5.17.JPG" alt="Figure 5.17"></p>
 <p>解答</p>
 <p>采用递归的方式，获得左子树操作数和右子树操作数，然后做运算，每个节点都会访问一次，时间复杂度O(n)。</p>
 <p>假设树节点的定义为：</p>
@@ -402,7 +402,7 @@
 <li><p>删除p子树，就会得到一颗新的树。重复操作，直到得到空树或只有一个节点的树。</p>
 <p>怎么证明，该算法得到的就是最小的集合？<br>因为我们每次移去的子树，都尽量以一个中心节点，带走尽量多的边，那么最后得到的节点的集合，必然是最小的。</p>
 <p>插图如下(以2叉树做例子)：</p>
-<p><img src="http://img.lessisbetter.site/Ex-5-13b.jpg" alt="顶点覆盖1"><br><img src="http://img.lessisbetter.site/Ex-5-13a.jpg" alt="顶点覆盖2"></p>
+<p><img src="https://lessisbetter.site/images/Ex-5-13b.jpg" alt="顶点覆盖1"><br><img src="https://lessisbetter.site/images/Ex-5-13a.jpg" alt="顶点覆盖2"></p>
 </li>
 </ol>
 </li>
@@ -415,7 +415,7 @@
 <p>A <em>vertex cover</em> of a graph G=(V,E) is a subset of vertices V′∈V such that every edge in E contains at least one vertex from V′. Delete all the leaves from any depth-first search tree of G. Must the remaining vertices form a vertex cover of G? Give a proof or a counterexample.</p>
 <p>解答</p>
 <p>否定。反例：<br>下图得到的DFS序列可以是[1, 3, 2]，叶节点为2,3。那么V’={1}。并不是一个顶点覆盖。</p>
-<p><img src="http://img.lessisbetter.site/Ex-5-14.JPG" alt="5-14反例"></p>
+<p><img src="https://lessisbetter.site/images/Ex-5-14.JPG" alt="5-14反例"></p>
 <h4 id="5-15"><a href="#5-15" class="headerlink" title="5-15"></a>5-15</h4><p>题目</p>
 <p>A vertex cover of a graph G=(V,E) is a subset of vertices V′∈V such that every edge in E contains at least one vertex from V′. An independent set of graph G=(V,E) is a subset of vertices V′∈V such that no edge in E contains both vertices from V′.<br>An <em>independent vertex cover</em> is a subset of vertices that is both an independent set and a vertex cover of G. Give an efficient algorithm for testing whether G contains an independent vertex cover. What classical graph problem does this reduce to?</p>
 <p>解答</p>
@@ -435,7 +435,7 @@
 <li>着色方案是固定的：孩子与父亲是相反的颜色。</li>
 <li>题目要求找到最大的独立集合。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/Ex-5-16-b.JPG" alt="二叉树着色"></p>
+<p><img src="https://lessisbetter.site/images/Ex-5-16-b.JPG" alt="二叉树着色"></p>
 <p>先着色，进行一次遍历，将不同颜色的放入两个序列，取总度的和较大者。</p>
 <p>不进行着色的处理方案:设置root颜色为0，则其子为1。递归遍历左右子树，时间复杂度为O(n)。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">void classify(root, color):</span><br><span class="line">    if color &#x3D; 0 then</span><br><span class="line">        put root into list1</span><br><span class="line">    else</span><br><span class="line">        put root into list2</span><br><span class="line">    if root-&gt;left then</span><br><span class="line">        classify(root-&gt;left, !color)</span><br><span class="line">    if root-&gt;right then</span><br><span class="line">        classify(root-&gt;right, !color)</span><br></pre></td></tr></table></figure>
@@ -457,7 +457,7 @@
 <p>  DFS可以发现图中的环，那么当检测到环时，可以进进一步检测环的大小是否为3.采用的就是DFS一次遍历，因此时间复杂度是O(|V|+|E|)。</p>
   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">process_edge(v, y):</span><br><span class="line">    if parent[parent[x]] &#x3D; y then</span><br><span class="line">        is_triangle &#x3D; true</span><br><span class="line">        finish &#x3D; true</span><br></pre></td></tr></table></figure>
 
-<p>  <img src="http://img.lessisbetter.site/Ex-5-17.JPG" alt="5-17"></p>
+<p>  <img src="https://lessisbetter.site/images/Ex-5-17.JPG" alt="5-17"></p>
 <p>  github仓库源码及测试数据:<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/The-Algorithm-Design-Manual/blob/master/5.11/5-17.c">传送门–&gt;</a></p>
 </li>
 </ul>

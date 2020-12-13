@@ -281,7 +281,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -619,7 +619,7 @@
 </blockquote>
 <p>链码容器只是负责执行调用，不负责存储数据，所以不存在链码容器数据何时更新的问题。</p>
 <p>下面是调用链码的流程图，可以看到链码执行时，是通过Shim从fabric账本读取数据的，然后把执行结果返回。如果交易被peer节点验证有效，调用交易的结果会写入当fabric账本，如果无效，不会改变fabric账本，所以你现在是否理解<a href="#%E4%B8%8D%E6%BB%A1%E8%B6%B3%E8%83%8C%E4%B9%A6%E7%AD%96%E7%95%A5%E7%9A%84%E8%B0%83%E7%94%A8%E4%BA%A4%E6%98%93">不满足背书策略的调用交易</a>不会改变数据，而<a href="#%E6%9C%89%E6%95%88%E7%9A%84%E8%B0%83%E7%94%A8%E4%BA%A4%E6%98%93">有效的调用交易</a>会改变数据。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-chaincode_swimlane.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-chaincode_swimlane.png"></p>
 <h2 id="启动自定义网络"><a href="#启动自定义网络" class="headerlink" title="启动自定义网络"></a>启动自定义网络</h2><h3 id="利用byfn启动自定义网络"><a href="#利用byfn启动自定义网络" class="headerlink" title="利用byfn启动自定义网络"></a>利用byfn启动自定义网络</h3><p><code>./byfn.sh</code>不止<code>up</code>和<code>down</code>2个命令，还有其他命令，以及更多的参数，比如restart, generate和upgrade。</p>
 <p>在上一节，使用了完全默认的参数，启动了网络，这是完全傻瓜式的。基于对fabric的掌握，还可以设置更多的参数，比如使用参数可以指定channel名称，而不是使用默认的<code>mychannel</code>，可以设置超时时间，使用指定docker编排文件创建各容器，指定chaincode的语言是Go还是Java等，还有更多的参数自己探索吧，设置一些参数重新启动网络。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">➜  first-network git:(release-1.4) .&#x2F;byfn.sh help</span><br><span class="line">Usage:</span><br><span class="line">  byfn.sh &lt;mode&gt; [-c &lt;channel name&gt;] [-t &lt;timeout&gt;] [-d &lt;delay&gt;] [-f &lt;docker-compose-file&gt;] [-s &lt;dbtype&gt;] [-l &lt;language&gt;] [-o &lt;consensus-type&gt;] [-i &lt;imagetag&gt;] [-a] [-n] [-v]</span><br><span class="line">    &lt;mode&gt; - one of &#39;up&#39;, &#39;down&#39;, &#39;restart&#39;, &#39;generate&#39; or &#39;upgrade&#39;</span><br><span class="line">      - &#39;up&#39; - bring up the network with docker-compose up</span><br><span class="line">      - &#39;down&#39; - clear the network with docker-compose down</span><br><span class="line">      - &#39;restart&#39; - restart the network</span><br><span class="line">      - &#39;generate&#39; - generate required certificates and genesis block</span><br><span class="line">      - &#39;upgrade&#39;  - upgrade the network from version 1.3.x to 1.4.0</span><br><span class="line">    -c &lt;channel name&gt; - channel name to use (defaults to &quot;mychannel&quot;)</span><br><span class="line">    -t &lt;timeout&gt; - CLI timeout duration in seconds (defaults to 10)</span><br><span class="line">    -d &lt;delay&gt; - delay duration in seconds (defaults to 3)</span><br><span class="line">    -f &lt;docker-compose-file&gt; - specify which docker-compose file use (defaults to docker-compose-cli.yaml)</span><br><span class="line">    -s &lt;dbtype&gt; - the database backend to use: goleveldb (default) or couchdb</span><br><span class="line">    -l &lt;language&gt; - the chaincode language: golang (default) or node</span><br><span class="line">    -o &lt;consensus-type&gt; - the consensus-type of the ordering service: solo (default), kafka, or etcdraft</span><br><span class="line">    -i &lt;imagetag&gt; - the tag to be used to launch the network (defaults to &quot;latest&quot;)</span><br><span class="line">    -a - launch certificate authorities (no certificate authorities are launched by default)</span><br><span class="line">    -n - do not deploy chaincode (abstore chaincode is deployed by default)</span><br><span class="line">    -v - verbose mode</span><br><span class="line">  byfn.sh -h (print this message)</span><br><span class="line"></span><br><span class="line">Typically, one would first generate the required certificates and</span><br><span class="line">genesis block, then bring up the network. e.g.:</span><br><span class="line"></span><br><span class="line">	byfn.sh generate -c mychannel</span><br><span class="line">	byfn.sh up -c mychannel -s couchdb</span><br><span class="line">        byfn.sh up -c mychannel -s couchdb -i 1.4.0</span><br><span class="line">	byfn.sh up -l node</span><br><span class="line">	byfn.sh down -c mychannel</span><br><span class="line">        byfn.sh upgrade -c mychannel</span><br><span class="line"></span><br><span class="line">Taking all defaults:</span><br><span class="line">	byfn.sh generate</span><br><span class="line">	byfn.sh up</span><br><span class="line">	byfn.sh down</span><br></pre></td></tr></table></figure>
@@ -682,7 +682,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -707,11 +707,11 @@
 <h3 id="网络文章"><a href="#网络文章" class="headerlink" title="网络文章"></a>网络文章</h3><p><a target="_blank" rel="noopener" href="https://blog.51cto.com/9291927/category29.html">天山老妖S：HyperLeger Fabric SDK开发系列文章</a></p>
 <p><a target="_blank" rel="noopener" href="http://www.taohui.pub/2018/05/26/%e5%8c%ba%e5%9d%97%e9%93%be%e5%bc%80%e6%ba%90%e5%ae%9e%e7%8e%b0hyperledger-fabric%e6%9e%b6%e6%9e%84%e8%af%a6%e8%a7%a3/">陶辉：区块链开源实现hyperledger fabric架构详解</a></p>
 <p><a target="_blank" rel="noopener" href="https://shanma.pro/tutorial/hyperledger/16632.html">Hyperledger Fabric 开发系列文章</a></p>
-<h2 id="笔记摘录"><a href="#笔记摘录" class="headerlink" title="笔记摘录"></a>笔记摘录</h2><h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p><img src="http://img.lessisbetter.site/2019-07-fabric-arch.png" alt="HyperLeger Fabric架构"></p>
+<h2 id="笔记摘录"><a href="#笔记摘录" class="headerlink" title="笔记摘录"></a>笔记摘录</h2><h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p><img src="https://lessisbetter.site/images/2019-07-fabric-arch.png" alt="HyperLeger Fabric架构"></p>
 <p> Fabric网络是通过组织（organization）来划分的，每个组织内都包含承担不同功能的Peer 节点，每个Peer节点又可以担任多种角色。<strong>所有的组织共用一个统一的Orderer排序服务集群</strong>。基于Hyperledger Fabric区块链网络的设计时需要考虑组织之间的业务关系以及内部每个模块之间的联系，统一进行规划。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-network.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-network.png"></p>
 <p>每个组织通常拥有自己的客户端、Peer节点和CA节点，并且可以根据需要创建一个或多个不同的类型节点。Orderer节点不属于某个组织的实体，属于组织共同维护的节点。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-fabirc-org.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabirc-org.png"></p>
 <h3 id="排序节点"><a href="#排序节点" class="headerlink" title="排序节点"></a>排序节点</h3><p>orderer负责排序和打包区块。排序服务节点只是决定交易处理的顺序，并不对交易的合法性进行校验，也无需去管之前的交易是否合法，也不负责维护账本信息，只有记账节点才有账本写入权限。peer验证交易后会给交易打上交易是否合法。</p>
 <p>排序服务节点接收包含背书签名的交易，对未打包的交易进行排序生成区块，广播给Peer节点中的主节点。排序服务提供的是原子广播，保证同一个链上的节点接收到相同的消息，并且有相同的逻辑顺序。排序服务独立于Peer进程存在并且以先来先服务的方式对Fabric网络上的所有通道进行排序交易。</p>
 <p>Tx排序的依据是什么？根据每个通道按时间顺序调用，创建每个通道的交易区块。</p>
@@ -786,7 +786,7 @@
 <p><strong>这样容易记：一共5个SCC，前2个与配置相关，后3个与操作相关，配置有生命周期和配置，操作有背书、验证和查询</strong>。</p>
 <p>在修改或者替换系统链码（LSCC、ESCC、VSCC）时必须注意，因为系统链码在主交易执行的路径中。VSCC在将区块提交至账本前，所有在通道的Peer节点会计算相同的验证以避免账本分歧（不确定性）。如果VSCC被改变或者替换，需要特别小心。</p>
 <h4 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h4><p>通过install安装链码，通过instantiate实例化链码，然后可以通过invoke、query调用链码和查询链码。<br>如果需要升级链码，则需要先install安装新版本的链码，通过upgrade升级链码。在install安装链码前，可以通过package打包并签名生成打包文件，然后再通过install安装。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-chaincode-lifecycle.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-chaincode-lifecycle.png"></p>
 <h4 id="链码管理"><a href="#链码管理" class="headerlink" title="链码管理"></a>链码管理</h4><p><code>peer chaincode -h</code>可以列出链码的几种操作：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">install     Package the specified chaincode into a deployment spec and save it on the peer&#39;s path.</span><br><span class="line">instantiate Deploy the specified chaincode to the network.</span><br><span class="line">invoke      Invoke the specified chaincode.</span><br><span class="line">list        Get the instantiated chaincodes on a channel or installed chaincodes on a peer.</span><br><span class="line">package     Package the specified chaincode into a deployment spec.</span><br><span class="line">query       Query using the specified chaincode.</span><br><span class="line">signpackage Sign the specified chaincode package</span><br><span class="line">upgrade     Upgrade chaincode.</span><br></pre></td></tr></table></figure>
 
@@ -892,8 +892,8 @@
 <li>链码调用Invoke方法，通过发送获取数据（GetState）和写入数据（PutState）消息，向Peer节点获取账本状态信息和发送预提交状态。</li>
 <li>链码发送模拟执行结果给Peer节点，Peer节点对交易提案和模拟执行结果进行背书签名。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-invoke-chaincode.png"></p>
-<p><img src="http://img.lessisbetter.site/2019-07-chaincode_swimlane.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-invoke-chaincode.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-chaincode_swimlane.png"></p>
 <h4 id="升级链码"><a href="#升级链码" class="headerlink" title="升级链码"></a>升级链码</h4><p>链码的升级通过改变其版本号（作为SignedCDS的一部分）。SignedCDS另外的部分，如所有者及实例化策略都是可选的。然而，<strong>链码的名称必须是一致的，否则会被当做另外一个新的链码</strong>。<br>在升级前，必须将新版本的链码安装到有需求的背书节点上。升级也是一种交易，会把新版本的链码绑定到通道中。<strong>升级只能在一个时间点对一个通道产生影响，其它通道仍然运行旧版本的链码</strong>。<br>由于可能存在多个版本的链码同时存在，<strong>升级过程不会自动删除老版本链码，用户必须手动操作删除过程</strong>。<br>升级与实例化transaction有一点不同的是：通过现有的chaincode实例化策略检查升级transaction，而不是用新的策略检查。这是为了确保只有当前实例化策略中指定的成员能够升级chaincode。<br>在升级期间，链码的Init函数也会被调用，执行有关升级的数据或者使用数据重新进行初始化，在升级链码的期间避免对状态进行重置。<br>安装新版本的链码<br><code>peer chaincode install -n sacc -v 1 -p path/to/my/chaincode/v1</code><br>upgrade升级链码<br><code>peer chaincode upgrade -n sacc -v 1 -c &#39;&#123;&quot;Args&quot;:[&quot;d&quot;, &quot;e&quot;, &quot;f&quot;]&#125;&#39; -C mychannel</code></p>
 <h4 id="都是交易"><a href="#都是交易" class="headerlink" title="都是交易"></a>都是交易</h4><p>安装、实例化、调用、升级链码，都是创建一笔交易，通过交易实现。</p>
 <h4 id="链码开发"><a href="#链码开发" class="headerlink" title="链码开发"></a>链码开发</h4><p><code>github.com/hyperledger/fabric/core/chaincode/shim</code>包是开发Go语言链码的API。shim 包提供了链码与账本交互的中间层。链码通过 shim.ChaincodeStub 提供的方法来读取和修改账本的状态。</p>
@@ -925,7 +925,7 @@
 <p>调用交易是客户端应用程序通过Fabric提供的API调用先前已部署好的某个链码的某个函数执行交易，并相应地读取和写入KV数据库，返回是否成功或者失败。</p>
 <h4 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h4><p>详读这篇文档：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/txflow.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/txflow.html</a></p>
 <p>背书节点校验客户端的签名，然后执行智能合约代码模拟交易。交易处理完成后，对交易信息签名，返回给客户端。客户端收到签名后的交易信息后，发给排序服务节点排序。排序服务节点将交易信息排序打包成区块后，广播发给确认节点，写入区块链中。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-tx-flow.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-tx-flow.png"></p>
 <h5 id="客户端提案"><a href="#客户端提案" class="headerlink" title="客户端提案"></a>客户端提案</h5><p>客户端应用程序利用SDK（Node.js，Java，Python）构造交易提案（Proposal），提案有2种：</p>
 <ol>
 <li>实例化chaincode。</li>
@@ -933,17 +933,17 @@
 </ol>
 <p>客户端把交易提案（<strong>Proposal</strong>）根据背书策略发送给一个或多个背书节点，<strong>交易提案中包含本次交易要调用的合约标识、合约方法和参数信息以及客户端签名</strong>等。<br>SDK将交易提案打包为可识别的格式（如gRPC上的protobuf），并使用用户的加密凭证为该交易提案生成唯一的签名。</p>
 <p>背书策略定义需要哪些节点背书交易才有效，例如需要5个成员的背书节点中至少3个同意；或者某个特殊身份的成员支持等。客户端只有在收集足够多的背书节点的交易提案签名，交易才能被视为有效。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-txflow-step1.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-txflow-step1.png"></p>
 <h5 id="背书节点为提案背书"><a href="#背书节点为提案背书" class="headerlink" title="背书节点为提案背书"></a>背书节点为提案背书</h5><p>背书节点（endorser）收到交易提案后，<strong>验证签名</strong>并确定提交者是否有权执行操作。背书节点将交易提案的参数作为输入，在当前状态KV数据库上执行交易，生成响应返回给客户端，响应包<strong>含执行返回值、读写集的交易结果（此时不会更新账本），交易结果集、背书节点的签名和背书结果（YES/NO）作为提案的结果</strong>，客户端SDK解析信息判断是否应用于后续的交易。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-txflow-step2.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-txflow-step2.png"></p>
 <p>在所有合法性校验通过后，背书节点按照交易提案调用链码模拟执行交易。链码执行时，读取的数据（键值对）是背书节点中本地的状态数据库，链码读取过的数据回被归总到读集（Read Set）；链码对状态数据库的写操作并不会对账本做改变，所有的写操作将归总到一个写入集（Write Set）中记录下来。读集和写集将在确认节点中用于确定交易是否最终写入账本。</p>
 <p>资料：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#endorsement">https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#endorsement</a></p>
 <h5 id="客户端收集提案背书"><a href="#客户端收集提案背书" class="headerlink" title="客户端收集提案背书"></a>客户端收集提案背书</h5><p>客户端验证背书节点签名，并比较各节点返回的提案结果，判断提案结果是否一致以及是否参照指定的背书策略执行。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-txflow-step3.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-txflow-step3.png"></p>
 <p>当背书结果都通过验证，并且满足背书策略时，客户端生成一笔交易发送给排序节点。<strong>交易包含交易签名、proposal、读写集、背书结果和通道ID。</strong></p>
-<p><img src="http://img.lessisbetter.site/2019-07-txflow-step4.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-txflow-step4.png"></p>
 <h5 id="orderer排序交易"><a href="#orderer排序交易" class="headerlink" title="orderer排序交易"></a>orderer排序交易</h5><p>排序服务节点对接收到的交易进行共识排序，然后按照区块生成策略，将一批交易打包到一起，生成新的区块，调用deliver API投递消息，发送给确认节点。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-txflow-step5.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-txflow-step5.png"></p>
 <p><strong>区块的广播有两种触发条件</strong>，一种是当通道的交易数量达到某个预设的阈值，另一种是在交易数量没有超过阈值但距离上次广播的时间超过某个特定阈值，也可触发广播数据块。两种方式相结合，使得经过排序的交易及时生成区块并广播给通道的Leader节点（记账节点），Leader节点验证后，再发送给同channel同组织的其他记账节点。</p>
 <h5 id="peer验证区块"><a href="#peer验证区块" class="headerlink" title="peer验证区块"></a>peer验证区块</h5><p>peer需要对区块内的所有交易进行验证，验证交易是否按背书策略执行以及根据读写集把交易打上有效或者无效的标签。最后把区块追加到本地的区块链，修改世界状态。</p>
 <p>记账节点收到排序服务节点发来的区块后，逐笔检查区块中的交易：</p>
@@ -954,18 +954,18 @@
 <li>记账节点对交易进行<strong>多版本并发控制（MVCC）</strong>检查，即校验交易的读集（Read Set）是否和当前账本中的版本一致（即没有变化）。如果没有改变，说明交易写集（Write Set）中对数据的修改有效，把该交易标注为有效，交易的写集更新到状态数据库中。如果当前账本的数据和读集版本不一致，则该交易被标注为无效，不更新状态数据库。</li>
 </ol>
 <p>交易流程中，采用<strong>MVCC的乐观锁模型，提高了系统的并发能力。但MVCC也带来了一些局限性。例如，在同一个区块中若有两个交易先后对某个数据项做更新，顺序在后的交易将失败，因为后序交易的读集版本和当前数据项版本已经不一致。</strong></p>
-<p><img src="http://img.lessisbetter.site/2019-07-blocks-3.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-blocks-3.png"></p>
 <h5 id="区块写入账本"><a href="#区块写入账本" class="headerlink" title="区块写入账本"></a>区块写入账本</h5><p>每个peer都把区块追加到对应channel的账本上，每个有效交易的write set会被提交到状态数据库。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-txflow-step6.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-txflow-step6.png"></p>
 <h5 id="客户端获取交易结果"><a href="#客户端获取交易结果" class="headerlink" title="客户端获取交易结果"></a>客户端获取交易结果</h5><p>客户端可以通过事件订阅交易的结果：是否添加到数据库，是否有效。</p>
-<h4 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h4><p><img src="http://img.lessisbetter.site/2019-07-fabric-storage.png"></p>
+<h4 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h4><p><img src="https://lessisbetter.site/images/2019-07-fabric-storage.png"></p>
 <h3 id="账本"><a href="#账本" class="headerlink" title="账本"></a>账本</h3><p><strong>账本由区块链和状态数据库两部分组成</strong>。</p>
 <ol>
 <li>区块链是一组不可更改的有序的区块（数据块），记录着全部交易的日志。</li>
 <li>状态数据库记录了账本中所有键值对的当前值（世界状态），相当于对当前账本的交易日志做了索引。链码执行交易的时候需要读取账本的当前状态，从状态数据库可以迅速获取键值的最新状态。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-storage.png"></p>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-storage-flow.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-storage.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-storage-flow.png"></p>
 <h4 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h4><p>Fabric区块链网络中，每个通道都有其账本，每个Peer节点都保存着其所加入通道的账本，Peer节点的账本包含如下数据：</p>
 <ol>
 <li>账本编号，用于快速查询存在哪些账本</li>
@@ -979,7 +979,7 @@
 <p><strong>状态数据库</strong>存储的是所有曾经在交易中出现的键值对的最新值（世界状态）。调用链码执行交易可以改变状态数据，为了高效的执行链码调用，所有数据的最新值都被存放在状态数据库中；状态数据库是有序交易日志的快照，任何时候都可以根据交易日志重新生成状态数据库；状态数据库会在Peer节点启动的时候自动恢复或重构，未完备前，本Peer节点不会接受新的交易；状态数据库可以使用LevelDB或者CouchDB，CouchDB能够存储任意的二进制数据，支持富文本查询。链接：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#world-state">https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#world-state</a> 。</p>
 <p><strong>历史状态数据库</strong>用于查询某个key的历史修改记录，历史状态数据库并不存储key具体的值，而只记录在某个区块的某个交易里，某key变动了一次。后续需要查询的时候，根据变动历史去查询实际变动的值。</p>
 <p><strong>ledgerID数据库</strong>存储chainID，用于快速查询节点存在哪些账本。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-storage-file.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-storage-file.png"></p>
 <p>ledgersData是Peer节点账本的根目录，Peer节点的账本存储在Peer节点容器的<code>/var/hyperledger/production/ledgersData</code>目录下，通过命令行可以进入Peer节点容器进行查看，命令如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it peer0.org1.example.com bash</span><br></pre></td></tr></table></figure>
 
@@ -1002,7 +1002,7 @@
 <h4 id="kafka"><a href="#kafka" class="headerlink" title="kafka"></a>kafka</h4><p>共识集群由多个排序服务节点（OSN）和一个Kafka集群组成。排序节点之间不直接通信，仅仅与Kafka集群通信。</p>
 <p>在排序节点的实现里，通道(Channel)在Kafka中是以主题topic的形式隔离。</p>
 <p><strong>每个排序节点内部，针对每个通道都会建立与Kafka集群对应topic的生产者及消费者</strong>。生产者将排序节点收到的交易发送到Kafka集群进行排序，在生产的同时，消费者也同步消费排序后的交易。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-kafka.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-kafka.png"></p>
 <h4 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h4><p>fabric的raft基于etcd的raft，raft是CFT，是leader-follower模型。</p>
 <p>需要注意的一点是，所有channel共用排序集群，但每个channel都有各自的Raft实例，所以每个channel可以选举自己的leader。</p>
 <p>虽然所有的 Raft 节点都必须包含在系统通道中，但他们并不需要都包含在应用通道中。通道创建者(和通道管理员)拥有选择可用排序节点子集的能力并且可以根据需要增加或移除排序节点(只要每次只增加会移除一个节点)。</p>
@@ -1024,19 +1024,19 @@
 <li>接收到信息的节点处理它接收到的数据</li>
 <li>接收到数据的节点再从第一步开始重复执行</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-gossip-push.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-gossip-push.png"></p>
 <h5 id="拉去数据"><a href="#拉去数据" class="headerlink" title="拉去数据"></a>拉去数据</h5><ol>
 <li>某个节点<strong>周期性</strong>地选择随机N个节点询问有没有最新的信息</li>
 <li>收到请求的节点回复请求节点其最近未收到的信息</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-gossip-pull.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-gossip-pull.png"></p>
 <h4 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h4><p>节点之间使用数据同步保证账本数据和状态数据的即使更新，数据同步主要有2类：</p>
 <ol>
 <li>主动广播，比如广播新打包的区块，排序节点把区块发送给主节点，它基于Gossip的推送数据</li>
 <li>主动请求，比如新加入的节点，向已存在的其他组织锚节点请求数据，锚节点给他响应，它基于Gossip的拉去数据</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-deliver-data.png"></p>
-<p><img src="http://img.lessisbetter.site/2019-07-fabric-request-data.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-deliver-data.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-fabric-request-data.png"></p>
 <h3 id="应用开发"><a href="#应用开发" class="headerlink" title="应用开发"></a>应用开发</h3><p>文档：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/developing_applications.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/developing_applications.html</a></p>
 <h3 id="Fabric网络"><a href="#Fabric网络" class="headerlink" title="Fabric网络"></a>Fabric网络</h3><p>文档：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/network/network.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/network/network.html</a></p>
 <p>文档里介绍了以上各种概念在网络中的位置。</p>
@@ -1301,7 +1301,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1324,26 +1324,26 @@
 <p><strong>3. 不知道log多了会影响性能</strong>，log自身涉及格式化和文件读写，虽然现在各log库都已经比较高效了，但是，这也扛不住“海量”的log啊，积少成多，势必影响程序性能。</p>
 <p><strong>4. 对log级别错误的认知</strong>：日志级别设置为Info，Debug、Trace级别的日志不会打印，Debug、Trace级别日志多没关系。虽然日志不会输出，并不代表相关代码没执行啊。</p>
 <p>第4点重点解释一下：</p>
-<p><img src="http://img.lessisbetter.site/2019-07-debug-demo.png" alt="debug-demo"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-debug-demo.png" alt="debug-demo"></p>
 <p>这是一个打印Debug级别的日志，它还有1项日志信息，是来自<code>func()</code>的结果，请问：</p>
 <ol>
 <li>日志级别设置为Info，log.Debug会执行吗？<code>func()</code>还会执行吗？</li>
 <li>如果这行日志频繁被执行，是不是浪费了CPU做无用功？</li>
 </ol>
 <p>如果你认为不会执行，看下面的Demo，log使用zap。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-test.png" alt="log-test"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-test.png" alt="log-test"></p>
 <p>结果：</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-ret.png" alt="log-ret"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-ret.png" alt="log-ret"></p>
 <p>事实证明无论限制的日志级别是什么，<code>log.***</code>一定会被调用，它入参中的函数也一定会被调用，只不过是日记级别不满足打印时，不会打印而已。被调函数的结果只被这条<code>log.***</code>使用，结果这个日志根本不打印，这就浪费了CPU。</p>
 <p>日志级别都设置为Info了，Debug级别的日志为何还会打印？</p>
 <p>如果你有这个问题，你可能没有理解2个地方。</p>
 <p>日志级别设置为Info，不代表<code>log.Debug</code>函数不执行。<code>log.Debug</code>函数一定会执行，看下图，<code>log.Info，Error</code>等接口会调用相同的真实实现函数<code>log.log</code>，<code>log.log</code>的入参包含了<code>log.Info</code>等接口的入参，以及当前的<code>log_level</code>，比如以下2种是等价的：</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-log.png" alt="log-log"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-log.png" alt="log-log"></p>
 <p>所以，无论设置的是什么日志级别控制，<code>log.Debug</code>一定会被执行，至于当前日志是否会打印，会在<code>log.log</code>里决定。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-call.png" alt="image-20190712072742045"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-call.png" alt="image-20190712072742045"></p>
 <p>日志为Warn级别，Debug日志不会打印，<code>func()</code>会不会执行？</p>
 <p>日志打印本质是函数调用，会先计算入参，再调用函数。比如：</p>
-<p><img src="http://img.lessisbetter.site/2019-07-log-debug.png" alt="log-debug"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-log-debug.png" alt="log-debug"></p>
 <p>所以<code>func()</code>一定会被调用。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>针对滥用日志的情况给几点建议：</p>
 <ol>
@@ -1359,7 +1359,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
       
     </div>
 
@@ -1416,7 +1416,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1557,7 +1557,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
       
     </div>
 
@@ -1614,7 +1614,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1630,7 +1630,7 @@
           <p>新老朋友好久不见，我是大彬，这篇文章准备了很久，不是在拖延，而是中间做了一些其他事情，耽搁了一些。</p>
 <p>这篇文章<strong>主要介绍Go内存分配和Go内存管理</strong>，会轻微涉及内存申请和释放，以及Go垃圾回收。</p>
 <p>从非常宏观的角度看，Go的内存管理就是下图这个样子，我们今天主要关注其中标红的部分。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-manage.png" alt="Go内存管理"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-manage.png" alt="Go内存管理"></p>
 <blockquote>
 <p>友情提醒：</p>
 <p>文章有点长，建议先收藏，后阅读，绝对是学习内存管理的好资料。</p>
@@ -1641,7 +1641,7 @@
 <p><strong>这篇文章采用层层递进的方式，依次会介绍关于存储的基本知识，Go内存管理的“前辈”TCMalloc，然后是Go的内存管理和分配，最后是总结。这么做的目的是，希望各位能通过全局的认识和思考，拥有更好的编码思维和架构思维。</strong></p>
 <p>最后，这不是一篇源码分析文章，因为Go源码分析的文章已经有很多了，这些源码文章能够帮助你去学习具体的工程实践和奇淫巧计了，文章的末尾会推荐一些优秀文章，如果你对内存感兴趣，建议每一篇都去看一下，挑出自己喜欢的，多花时间研究下。</p>
 <h2 id="1-存储基础知识回顾"><a href="#1-存储基础知识回顾" class="headerlink" title="1. 存储基础知识回顾"></a>1. 存储基础知识回顾</h2><p>这部分我们简单回顾一下计算机存储体系、虚拟内存、栈和堆，以及堆内存的管理，这部分内容对理解和掌握Go内存管理比较重要，建议忘记或不熟悉的朋友不要跳过。</p>
-<h3 id="存储金字塔"><a href="#存储金字塔" class="headerlink" title="存储金字塔"></a>存储金字塔</h3><p><img src="http://img.lessisbetter.site/2019-07-data-heirarchy.jpg" alt="img"></p>
+<h3 id="存储金字塔"><a href="#存储金字塔" class="headerlink" title="存储金字塔"></a>存储金字塔</h3><p><img src="https://lessisbetter.site/images/2019-07-data-heirarchy.jpg" alt="img"></p>
 <p>这幅图表达了计算机的存储体系，从上至下依次是：</p>
 <ul>
 <li>CPU寄存器</li>
@@ -1657,21 +1657,21 @@
 <li>如果CPU直接访问内存，CPU能充分利用吗？</li>
 </ol>
 <p>CPU速度很快，但硬盘等持久存储很慢，如果CPU直接访问磁盘，磁盘可以拉低CPU的速度，机器整体性能就会低下，为了弥补这2个硬件之间的速率差异，所以在CPU和磁盘之间增加了比磁盘快很多的内存。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-CPU-DRAM.png" alt="CPU和内存速率差异"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-CPU-DRAM.png" alt="CPU和内存速率差异"></p>
 <p>然而，CPU跟内存的速率也不是相同的，从上图可以看到，CPU的速率提高的很快（摩尔定律），然而内存速率增长的很慢，<em>虽然CPU的速率现在增加的很慢了，但是内存的速率也没增加多少，速率差距很大</em>，从1980年开始CPU和内存速率差距在不断拉大，为了弥补这2个硬件之间的速率差异，所以在CPU跟内存之间增加了比内存更快的Cache，Cache是内存数据的缓存，可以降低CPU访问内存的时间。</p>
 <p>不要以为有了<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/CPU%E7%BC%93%E5%AD%98">Cache</a>就万事大吉了，CPU的速率还在不断增大，Cache也在不断改变，从最初的1级，到后来的2级，到当代的3级Cache，*<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/CPU%E7%BC%93%E5%AD%98#%E5%8E%86%E5%8F%B2%E5%92%8C%E6%9C%AA%E6%9D%A5">（有兴趣看cache历史）</a>*。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-mbp-memory.png" alt="MBP的CPU和Cache信息"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-mbp-memory.png" alt="MBP的CPU和Cache信息"></p>
 <p>三级Cache分别是L1、L2、L3，它们的速率是三个不同的层级，L1速率最快，与CPU速率最接近，是RAM速率的100倍，L2速率就降到了RAM的25倍，L3的速率更靠近RAM的速率。</p>
 <p>看到这了，你有没有Get到整个<strong>存储体系的分层设计</strong>？<strong>自顶向下，速率越来越低，访问时间越来越长，从磁盘到CPU寄存器，上一层都可以看做是下一层的缓存。</strong></p>
 <p>看了分层设计，我们看一下内存，毕竟我们是介绍内存管理的文章。</p>
 <h3 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h3><p>虚拟内存是当代操作系统必备的一项重要功能了，它向进程屏蔽了底层了RAM和磁盘，并向进程提供了远超物理内存大小的内存空间。我们看一下虚拟内存的<strong>分层设计</strong>。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-Virtual-Memory-in-OS-Operating-System.png" alt="虚拟内存原理"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-Virtual-Memory-in-OS-Operating-System.png" alt="虚拟内存原理"></p>
 <p>上图展示了某进程访问数据，当Cache没有命中的时候，访问虚拟内存获取数据的过程。</p>
 <p>访问内存，实际访问的是虚拟内存，虚拟内存通过页表查看，当前要访问的虚拟内存地址，是否已经加载到了物理内存，如果已经在物理内存，则取物理内存数据，如果没有对应的物理内存，则从磁盘加载数据到物理内存，并把物理内存地址和虚拟内存地址更新到页表。</p>
 <p>有没有Get到：<strong>物理内存就是磁盘存储缓存层</strong>。</p>
 <p>另外，在没有虚拟内存的时代，物理内存对所有进程是共享的，多进程同时访问同一个物理内存存在并发访问问题。<strong>引入虚拟内存后，每个进程都要各自的虚拟内存，内存的并发访问问题的粒度从多进程级别，可以降低到多线程级别</strong>。</p>
 <h3 id="栈和堆"><a href="#栈和堆" class="headerlink" title="栈和堆"></a>栈和堆</h3><p>我们现在从虚拟内存，再进一层，看虚拟内存中的栈和堆，也就是进程对内存的管理。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-figure_6-1.png" alt="虚拟内存布局"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-figure_6-1.png" alt="虚拟内存布局"></p>
 <p>上图展示了一个进程的虚拟内存划分，代码中使用的内存地址都是虚拟内存地址，而不是实际的物理内存地址。栈和堆只是虚拟内存上2块不同功能的内存区域：</p>
 <ul>
 <li><p>栈在高地址，从高地址向低地址增长。</p>
@@ -1685,12 +1685,12 @@
 <li>栈的内存不需要回收，而堆需要，无论是主动free，还是被动的垃圾回收，这都需要花费额外的CPU。</li>
 <li>栈上的内存有更好的局部性，堆上内存访问就不那么友好了，CPU访问的2块数据可能在不同的页上，CPU访问数据的时间可能就上去了。</li>
 </ol>
-<h3 id="堆内存管理"><a href="#堆内存管理" class="headerlink" title="堆内存管理"></a>堆内存管理</h3><p><img src="http://img.lessisbetter.site/2019-07-Mutator-Allocator-Collector.png" alt="内存管理"></p>
+<h3 id="堆内存管理"><a href="#堆内存管理" class="headerlink" title="堆内存管理"></a>堆内存管理</h3><p><img src="https://lessisbetter.site/images/2019-07-Mutator-Allocator-Collector.png" alt="内存管理"></p>
 <p>我们再进一层，当我们说内存管理的时候，主要是指堆内存的管理，因为栈的内存管理不需要程序去操心。这小节看下堆内存管理干的是啥，如上图所示主要是3部分：<strong>分配内存块，回收内存块和组织内存块</strong>。</p>
 <p>在一个最简单的内存管理中，堆内存最初会是一个完整的大块，即未分配内存，当来申请的时候，就会从未分配内存，分割出一个小内存块(block)，然后用链表把所有内存块连接起来。需要一些信息描述每个内存块的基本信息，比如大小(size)、是否使用中(used)和下一个内存块的地址(next)，内存块实际数据存储在data中。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-Memory_Blocks.png" alt="内存块链表"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-Memory_Blocks.png" alt="内存块链表"></p>
 <p>一个内存块包含了3类信息，如下图所示，元数据、用户数据和对齐字段，内存对齐是为了提高访问效率。下图申请5Byte内存的时候，就需要进行内存对齐。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-Alignment-Header.png" alt="内存块和对齐"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-Alignment-Header.png" alt="内存块和对齐"></p>
 <p>释放内存实质是把使用的内存块从链表中取出来，然后标记为未使用，当分配内存块的时候，可以从未使用内存块中有先查找大小相近的内存块，如果找不到，再从未分配的内存中分配内存。</p>
 <p>上面这个简单的设计中还没考虑内存碎片的问题，因为随着内存不断的申请和释放，内存上会存在大量的碎片，降低内存的使用率。为了解决内存碎片，可以将2个连续的未使用的内存块合并，减少碎片。</p>
 <p>以上就是内存管理的基本思路，关于基本的内存管理，想了解更多，可以阅读这篇文章《<a target="_blank" rel="noopener" href="http://dmitrysoshnikov.com/compilers/writing-a-memory-allocator/">Writing a Memory Allocator</a>》，本节的3张图片也是来自这片文章。</p>
@@ -1713,7 +1713,7 @@
 <blockquote>
 <p>声明：我没有研究过TCMalloc，以下介绍根据TCMalloc官方资料和其他博主资料总结而来，错误之处请朋友告知我。</p>
 </blockquote>
-<p><img src="http://img.lessisbetter.site/2019-07-tcmalloc-Overview.svg" alt="TCMalloc概要图"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-tcmalloc-Overview.svg" alt="TCMalloc概要图"></p>
 <p>结合上图，介绍TCMalloc的几个重要概念：</p>
 <ol>
 <li><strong>Page</strong>：操作系统对内存管理以页为单位，TCMalloc也是这样，只不过TCMalloc里的Page大小与操作系统里的大小并不一定相等，而是倍数关系。《<a target="_blank" rel="noopener" href="https://wallenwang.com/2018/11/tcmalloc/">TCMalloc解密</a>》里称x64下Page大小是8KB。</li>
@@ -1722,7 +1722,7 @@
 <li><strong>CentralCache</strong>：是所有线程共享的缓存，也是保存的空闲内存块链表，链表的数量与ThreadCache中链表数量相同，当ThreadCache内存块不足时，可以从CentralCache取，当ThreadCache内存块多时，可以放回CentralCache。由于CentralCache是共享的，所以它的访问是要加锁的。</li>
 <li><strong>PageHeap</strong>：PageHeap是堆内存的抽象，PageHeap存的也是若干链表，链表保存的是Span，当CentralCache没有内存的时，会从PageHeap取，把1个Span拆成若干内存块，添加到对应大小的链表中，当CentralCache内存多的时候，会放回PageHeap。如下图，分别是1页Page的Span链表，2页Page的Span链表等，最后是large span set，这个是用来保存中大对象的。毫无疑问，PageHeap也是要加锁的。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-07-tcmalloc-PageHeap.svg" alt="PageHeap"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-tcmalloc-PageHeap.svg" alt="PageHeap"></p>
 <p>上文提到了小、中、大对象，Go内存管理中也有类似的概念，我们瞄一眼TCMalloc的定义：</p>
 <ol>
 <li>小对象大小：0~256KB</li>
@@ -1752,7 +1752,7 @@
 <p>这一大章节，我们先介绍Go内存管理和Go内存分配，最后涉及一点垃圾回收和内存释放。</p>
 <h3 id="Go内存管理的基本概念"><a href="#Go内存管理的基本概念" class="headerlink" title="Go内存管理的基本概念"></a>Go内存管理的基本概念</h3><p>前面计算机基础知识回顾，是一种自上而下，从宏观到微观的介绍方式，把目光引入到今天的主题。</p>
 <p>Go内存管理的许多概念在TCMalloc中已经有了，含义是相同的，只是名字有一些变化。先给大家上一幅宏观的图，借助图一起来介绍。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
 <h4 id="Page"><a href="#Page" class="headerlink" title="Page"></a>Page</h4><p>与TCMalloc中的Page相同，x64下1个Page的大小是8KB。上图的最下方，1个浅蓝色的长方形代表1个Page。</p>
 <h4 id="Span"><a href="#Span" class="headerlink" title="Span"></a>Span</h4><p>与TCMalloc中的Span相同，<strong>Span是内存管理的基本单位</strong>，代码中为<code>mspan</code>，<strong>一组连续的Page组成1个Span</strong>，所以上图一组连续的浅蓝色长方形代表的是一组Page组成的1个Span，另外，1个淡紫色长方形为1个Span。</p>
 <h4 id="mcache"><a href="#mcache" class="headerlink" title="mcache"></a>mcache</h4><p>mcache与TCMalloc中的ThreadCache类似，<strong>mcache保存的是各种大小的Span，并按Span class分类，小对象直接从mcache分配内存，它起到了缓存的作用，并且可以无锁访问</strong>。</p>
@@ -1762,7 +1762,7 @@
 <h4 id="mheap"><a href="#mheap" class="headerlink" title="mheap"></a>mheap</h4><p>mheap与TCMalloc中的PageHeap类似，<strong>它是堆内存的抽象，把从OS申请出的内存页组织成Span，并保存起来</strong>。当mcentral的Span不够用时会向mheap申请，mheap的Span不够用时会向OS申请，向OS的内存申请是按页来的，然后把申请来的内存页生成Span组织起来，同样也是需要加锁访问的。</p>
 <p>但mheap与PageHeap也有不同点：mheap把Span组织成了树结构，而不是链表，并且还是2棵树，然后把Span分配到heapArena进行管理，它包含地址映射和span是否包含指针等位图，这样做的主要原因是为了更高效的利用内存：分配、回收和再利用。</p>
 <h4 id="大小转换"><a href="#大小转换" class="headerlink" title="大小转换"></a>大小转换</h4><p>除了以上内存块组织概念，还有几个重要的大小概念，一定要拿出来讲一下，不要忽视他们的重要性，他们是内存分配、组织和地址转换的基础。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-sizes.png" alt="Go内存大小转换"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-sizes.png" alt="Go内存大小转换"></p>
 <ol>
 <li><strong>object size</strong>：代码里简称<code>size</code>，指申请内存的对象大小。</li>
 <li><strong>size class</strong>：代码里简称<code>class</code>，它是size的级别，相当于把size归类到一定大小的区间段，比如size[1,8]属于size class 1，size(8,16]属于size class 2。</li>
@@ -1772,9 +1772,9 @@
 <p>在介绍这几个大小之间的换算前，我们得先看下图这个表，这个表决定了映射关系。</p>
 <p>最上面2行是我手动加的，前3列分别是size class，object size和span size，根据这3列做size、size class和num of page之间的转换。</p>
 <p>仔细看一遍这个表，再向下看转换是如何实现的。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-sizetable.png" alt="Go内存分配表"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-sizetable.png" alt="Go内存分配表"></p>
 <p>在Go内存大小转换那幅图中已经标记各大小之间的转换，分别是数组：<code>class_to_size</code>，<code>size_to_class*</code>和<code>class_to_allocnpages</code>，这3个数组内容，就是跟上表的映射关系匹配的。比如<code>class_to_size</code>，从上表看class 1对应的保存对象大小为8，所以<code>class_to_size[1]=8</code>，span大小为8192Byte，即8KB，为1页，所以<code>class_to_allocnpages[1]=1</code>。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-size_tranform.png" alt="Size转换"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-size_tranform.png" alt="Size转换"></p>
 <p><strong>为何不使用函数计算各种转换，而是写成数组？</strong></p>
 <p>有1个很重要的原因：<strong>空间换时间</strong>。你如果仔细观察了，上表中的转换，并不能通过简单的公式进行转换，比如size和size class的关系，并不是正比的。这些数据是使用较复杂的公式计算出来的，公式在<code>makesizeclass.go</code>中，这其中存在指数运算与for循环，造成每次大小转换的时间复杂度为O(N*2^N)。另外，对一个程序而言，内存的申请和管理操作是很多的，如果不能快速完成，就是非常的低效。把以上大小转换写死到数组里，做到了把大小转换的时间复杂度直接降到O(1)。</p>
 <h4 id="其他转换表字段"><a href="#其他转换表字段" class="headerlink" title="其他转换表字段"></a>其他转换表字段</h4><p>第4列num of objects代表是当前size class级别的Span可以保存多少对象数量，第5列tail waste是<code>span%obj</code>计算的结果，因为span的大小并不一定是对象大小的整数倍。</p>
@@ -1785,15 +1785,15 @@
 <blockquote>
 <p>((c.size - (preSize+1)) * objects + tailWaste) / spanSize</p>
 </blockquote>
-<p><img src="http://img.lessisbetter.site/2019-07-span-objects.png" alt="Span内object分布情况"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-span-objects.png" alt="Span内object分布情况"></p>
 <blockquote>
 <p>感谢<a target="_blank" rel="noopener" href="https://github.com/foobar">foobar</a>的提醒max waste的计算。</p>
 </blockquote>
 <h3 id="Go内存分配"><a href="#Go内存分配" class="headerlink" title="Go内存分配"></a>Go内存分配</h3><p>涉及的概念已经讲完了，我们看下Go内存分配原理。</p>
 <p>Go中的内存分类并不像TCMalloc那样分成小、中、大对象，但是它的小对象里又细分了一个Tiny对象，Tiny对象指大小在1Byte到16Byte之间并且不包含指针的对象。小对象和大对象只用大小划定，无其他区分。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-classify.png" alt="Go内存对象分类"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-classify.png" alt="Go内存对象分类"></p>
 <p>小对象是在mcache中分配的，而大对象是直接从mheap分配的，从小对象的内存分配看起。</p>
-<h4 id="小对象分配"><a href="#小对象分配" class="headerlink" title="小对象分配"></a>小对象分配</h4><p><img src="http://img.lessisbetter.site/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
+<h4 id="小对象分配"><a href="#小对象分配" class="headerlink" title="小对象分配"></a>小对象分配</h4><p><img src="https://lessisbetter.site/images/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
 <p><a href="#%E5%A4%A7%E5%B0%8F%E8%BD%AC%E6%8D%A2">大小转换</a>这一小节，我们介绍了转换表，size class从1到66共66个，代码中<code>_NumSizeClasses=67</code>代表了实际使用的size class数量，即67个，从0到66，size class 0实际并未使用到。</p>
 <p>上文提到1个size class对应2个span class：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">numSpanClasses = _NumSizeClasses * <span class="number">2</span></span><br></pre></td></tr></table></figure>
@@ -1818,7 +1818,7 @@
 
 <p>所以该对象需要的是span class 7指向的span。</p>
 <h5 id="从span分配对象空间"><a href="#从span分配对象空间" class="headerlink" title="从span分配对象空间"></a>从span分配对象空间</h5><p>Span可以按对象大小切成很多份，这些都可以从映射表上计算出来，以size class 3对应的span为例，span大小是8KB，每个对象实际所占空间为32Byte，这个span就被分成了256块，可以根据span的起始地址计算出每个对象块的内存地址。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-memory-objs.png" alt="Span内对象"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-memory-objs.png" alt="Span内对象"></p>
 <p>随着内存的分配，span中的对象内存块，有些被占用，有些未被占用，比如上图，整体代表1个span，蓝色块代表已被占用内存，绿色块代表未被占用内存。</p>
 <p>当分配内存时，只要快速找到第一个可用的绿色块，并计算出内存地址即可，如果需要还可以对内存块数据清零。</p>
 <h5 id="span没有空间怎么分配对象"><a href="#span没有空间怎么分配对象" class="headerlink" title="span没有空间怎么分配对象"></a>span没有空间怎么分配对象</h5><p>span内的所有内存块都被占用时，没有剩余空间继续分配对象，mcache会向mcentral申请1个span，mcache拿到span后继续分配对象。</p>
@@ -1828,7 +1828,7 @@
 <li><code>empty</code>：这个链表里的span，所有的span都不确定里面是否有空闲的对象空间。当一个span交给mcache的时候，就会加入到empty链表。</li>
 </ol>
 <p>这2个东西名称一直有点绕，建议直接把empty理解为没有对象空间就好了。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-mcentral.png" alt="mcentral"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-mcentral.png" alt="mcentral"></p>
 <p><em>实际代码中每1个span class对应1个mcentral，图里把所有mcentral抽象成1个整体了。</em></p>
 <p>mcache向mcentral要span时，mcentral会先从<code>nonempty</code>搜索满足条件的span，如果没有找到再从<code>emtpy</code>搜索满足条件的span，然后把找到的span交给mcache。</p>
 <h5 id="mheap的span管理"><a href="#mheap的span管理" class="headerlink" title="mheap的span管理"></a>mheap的span管理</h5><p>mheap里保存了2棵<strong>二叉排序树</strong>，按span的page数量进行排序：</p>
@@ -1837,7 +1837,7 @@
 <li><code>scav</code>：scav中保存的是空闲并且已经垃圾回收的span。</li>
 </ol>
 <p>如果是垃圾回收导致的span释放，span会被加入到<code>scav</code>，否则加入到<code>free</code>，比如刚从OS申请的的内存也组成的Span。</p>
-<p><img src="http://img.lessisbetter.site/2019-07-go-mheap.png" alt="mheap"></p>
+<p><img src="https://lessisbetter.site/images/2019-07-go-mheap.png" alt="mheap"></p>
 <p>mheap中还有arenas，有一组heapArena组成，每一个heapArena都包含了连续的<code>pagesPerArena</code>个span，这个主要是为mheap管理span和垃圾回收服务。</p>
 <p>mheap本身是一个全局变量，它其中的数据，也都是从OS直接申请来的内存，并不在mheap所管理的那部分内存内。</p>
 <h5 id="mcentral向mheap要span"><a href="#mcentral向mheap要span" class="headerlink" title="mcentral向mheap要span"></a>mcentral向mheap要span</h5><p>mcentral向mcache提供span时，如果<code>emtpy</code>里也没有符合条件的span，mcentral会向mheap申请span。</p>
@@ -1880,7 +1880,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 
 
 
@@ -1940,7 +1940,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1953,34 +1953,34 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p><img src="http://img.lessisbetter.site/2019-06-09-photo.jpeg" alt="合照"></p>
+          <p><img src="https://lessisbetter.site/images/2019-06-09-photo.jpeg" alt="合照"></p>
 <p>6月2日Go语言中文网在杭州举办了线下的MeetUp活动，这次活动办很成功，感谢站长polaris在杭州举办活动的提议，感谢Seekload的筹备与主持，感谢Aaron提供场地，感谢所有到场者的技术经验分享，没有你们就没有这次精彩的活动。</p>
 <p>在活动上，我做了个主题分享，今天把分享整理成文章，分享给学习Go语言的各位朋友。</p>
 <p>参加本次活动的朋友，大多是刚接触Go，少数几个朋友把玩Go 2~3年了，所以我把主题定位到能让所有人听懂的主题。另外，大家所处行业各有不同，这就要求专注介绍Go本身的特性，这才是大家通用的地方。</p>
 <p>最后选题为First class function in Go，这次没有做中文翻译，避免翻译后有误解。这个特性浅显易懂，但掌握Go语言的思维，才能把它用好。</p>
 <p>线下分享后，证明选题选对了，大家都能听懂，所以现在不了解First class function的朋友不用着急，后面我会层层推进的方式介绍，相信你一定能理解，那就进入正文吧。</p>
-<h1 id="First-class-function-in-Go"><a href="#First-class-function-in-Go" class="headerlink" title="First class function in Go"></a>First class function in Go</h1><h2 id="概念介绍"><a href="#概念介绍" class="headerlink" title="概念介绍"></a>概念介绍</h2><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8704.png" alt="幻灯片04"></p>
+<h1 id="First-class-function-in-Go"><a href="#First-class-function-in-Go" class="headerlink" title="First class function in Go"></a>First class function in Go</h1><h2 id="概念介绍"><a href="#概念介绍" class="headerlink" title="概念介绍"></a>概念介绍</h2><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8704.png" alt="幻灯片04"></p>
 <p>某个编程语言拥有First class function特性指可以把函数作为变量对待。也就说，函数与变量没有差别，它们是一样的，变量出现的地方都可以替换成函数，并且编译也是可以通过的，没有任何语法问题。</p>
 <p>在Go里，变量可以存在于哪些地方？</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8705.png" alt="幻灯片05"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8705.png" alt="幻灯片05"></p>
 <p>变量可以被声明、定义，可以使用<code>type</code>创建变量的类型，可以作为函数的入参和返回值，可以存在<code>slice</code>, <code>array</code>, <code>map</code>等数据结构里，可以被动态的创建。</p>
 <p>在Go中，函数也可以被声明、定义，可以使用<code>type</code>创建一个函数类型，可以作为其他函数的入参和返回值，可以保存在其他类型的数据结构里，最后，函数是可以被动态创建的。</p>
 <p>简要归类一下就是下图的样子，除了上面提到的内容，还有匿名函数和闭包，将按下图顺序介绍每一个小特性。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8706.png" alt="幻灯片06"></p>
-<h2 id="定义函数类型"><a href="#定义函数类型" class="headerlink" title="定义函数类型"></a>定义函数类型</h2><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8707.png" alt="幻灯片07"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8706.png" alt="幻灯片06"></p>
+<h2 id="定义函数类型"><a href="#定义函数类型" class="headerlink" title="定义函数类型"></a>定义函数类型</h2><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8707.png" alt="幻灯片07"></p>
 <p>使用<code>type</code>定义一个函数类型，<code>type</code>后是类型名称，本例中是<code>Operation</code>，再后面是类型的定义，对于函数而言，被称为signature，即函数签名，这个函数签名表示：Operation类型的函数，它以2个int类型为入参，以1个int为返回值。所有满足该函数签名的函数，都是Operation类型的函数。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8708.png" alt="幻灯片08"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8708.png" alt="幻灯片08"></p>
 <p>函数<code>Add</code>和<code>Sub</code>都符合<code>Operation</code>的签名，所以<code>Add</code>和<code>Sub</code>都是<code>Operation</code>类型。</p>
-<h2 id="声明函数类型的变量和为变量赋值"><a href="#声明函数类型的变量和为变量赋值" class="headerlink" title="声明函数类型的变量和为变量赋值"></a>声明函数类型的变量和为变量赋值</h2><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8709.png" alt="幻灯片09"></p>
+<h2 id="声明函数类型的变量和为变量赋值"><a href="#声明函数类型的变量和为变量赋值" class="headerlink" title="声明函数类型的变量和为变量赋值"></a>声明函数类型的变量和为变量赋值</h2><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8709.png" alt="幻灯片09"></p>
 <p>变量<code>op</code>是<code>Operation</code>类型的，可以把<code>Add</code>作为值赋值给变量<code>op</code>，执行<code>op</code>等价于执行<code>Add</code>。</p>
 <h2 id="高阶函数"><a href="#高阶函数" class="headerlink" title="高阶函数"></a>高阶函数</h2><p>高阶函数分为函数作为入参和函数作为返回值2部分。</p>
-<h3 id="函数作为其他函数入参"><a href="#函数作为其他函数入参" class="headerlink" title="函数作为其他函数入参"></a>函数作为其他函数入参</h3><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8710.png" alt="幻灯片10"></p>
+<h3 id="函数作为其他函数入参"><a href="#函数作为其他函数入参" class="headerlink" title="函数作为其他函数入参"></a>函数作为其他函数入参</h3><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8710.png" alt="幻灯片10"></p>
 <p>定义一个<code>Calculator</code>结构体，它始终保持计算后的结果。</p>
 <p>它有一个方法<code>Do</code>，入参为一个<code>Operation</code>类型的函数<code>op</code>和1个<code>int</code>类型的变量a，使用计算器的值<code>c.v</code>和<code>a</code>作为<code>op</code>的入参，进行指定运算，并把结果保存会<code>c.v</code>。</p>
 <p><code>main</code>中，声明了一个变量<code>calc</code>，<code>calc.v</code>初始值为0，然后运行了加1和减2的操作，加减法的完成使用的我们之前定义的函数<code>Add</code>和<code>Sub</code>。操作等价于：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">calc.v = Add(calc.v, <span class="number">1</span>)</span><br><span class="line">calc.v = Sub(calc.v, <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
 
-<h3 id="函数作为返回值-动态创建"><a href="#函数作为返回值-动态创建" class="headerlink" title="函数作为返回值+动态创建"></a>函数作为返回值+动态创建</h3><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8711.png" alt="幻灯片11"></p>
+<h3 id="函数作为返回值-动态创建"><a href="#函数作为返回值-动态创建" class="headerlink" title="函数作为返回值+动态创建"></a>函数作为返回值+动态创建</h3><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8711.png" alt="幻灯片11"></p>
 <p>这次，改变<code>Operation</code>的定义，修改为接收1个<code>int</code>类型的入参，返回1个<code>int</code>类型的返回值。</p>
 <p>同时修改函数<code>Add</code>和<code>Sub</code>，它们接收1个<code>int</code>类型的入参，返回1个<code>Operation</code>类型的函数，这个函数是动态创建出来的。</p>
 <p>以<code>Add</code>为例介绍，在<code>Add</code>里动态创建了一个函数，</p>
@@ -1988,7 +1988,7 @@
 
 <p>该函数实现了在变量a基础上加b的操作，并返回结果，我们把这个函数赋值给**变量<code>addB</code>**，把<code>addB</code>作为返回值返回。</p>
 <p>所以本例实现了以函数作为返回值和动态创建函数。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8712.png" alt="幻灯片12"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8712.png" alt="幻灯片12"></p>
 <p><code>Operation</code>，<code>Add</code>和<code>Sub</code>修改后，<code>Calculator</code>也要同步修改，方法<code>Do</code>修改为只接收<code>Operation</code>类型的函数。</p>
 <p><code>main</code>函数里，注意<code>Do</code>的入参：<code>Add(1)</code>，它实现的效果是，创建了1个函数，该函数接收1个值，然后把这个值+1返回，如果用数学表示就是这样：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Add(1)</span></span><br><span class="line">add1(x) = x + <span class="number">1</span></span><br></pre></td></tr></table></figure>
@@ -1999,28 +1999,28 @@
 <p>所以2次<code>Do</code>操作等价于：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// calc.Do(Add(1))</span></span><br><span class="line">calc.v = add1(calc.v)</span><br><span class="line"><span class="comment">// calc.Do(Sub(2))</span></span><br><span class="line">calc.v = sub2(calc.v)</span><br></pre></td></tr></table></figure>
 
-<h2 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h2><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8713.png" alt="幻灯片13"></p>
+<h2 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h2><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8713.png" alt="幻灯片13"></p>
 <p>上图左边是普通函数，<code>func</code>后为函数名，然后为函数签名。右边只有<code>func</code>和函数签名，缺少函数名，右边的情况为匿名函数。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8714.png" alt="幻灯片14"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8714.png" alt="幻灯片14"></p>
 <p>以<code>Add</code>函数其中定义的函数为例：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span><span class="params">(a <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这就是1个匿名函数，它没有名字。**<code>addB</code>并不是函数的名字，只是1个变量名而已，只不过这个变量名的类型是没有显示定义出来的**。</p>
 <p><code>Add</code>通常简写为右边的形式。</p>
-<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8715.png" alt="幻灯片15"></p>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8715.png" alt="幻灯片15"></p>
 <p>很多人搞不清什么是匿名函数，什么是闭包，所以这里分开介绍这2个概念。</p>
 <p><strong>闭包指有权访问另一个函数作用域中的变量的函数</strong>。大白话就是，可以创建1个函数，它可以访问其他函数遍历，但不需要传值。</p>
 <p>仍然是<code>Add</code>函数为例，比如匿名函数里直接使用了变量b，该匿名函数也是闭包函数。</p>
 <p>闭包的特性注定了，闭包函数要定义在一个函数里面，定义在一个函数里面又只能是匿名函数。</p>
 <p><strong>那，匿名函数和闭包是不是就等价了？</strong></p>
 <p><strong>No，一个函数可以是匿名函数，但不是闭包函数，因为闭包有时是有副作用的。</strong></p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8716.png" alt="幻灯片16"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8716.png" alt="幻灯片16"></p>
 <p>我们想并发的把sl中的值打印出来，结果为何会是右边这样？</p>
 <p>因为并发的匿名函数，使用的是<code>test1</code>中的<code>i,v</code>，即这是闭包函数，所有的goroutine都共享这2个值，并且启动1个goroutine后，这2个值变为下一个位置的值。你运行的结果也许不是9 9 9….，因为这个goroutine的调度有关。</p>
 <p>如何才能符合预期的打印？只使用匿名函数进行传值，不使用闭包。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8717.png" alt="幻灯片17"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8717.png" alt="幻灯片17"></p>
 <h1 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h1><p>接下来以一个实际的场景，和3种实现版本看如何用Go的思维去解决问题。</p>
-<h2 id="场景介绍"><a href="#场景介绍" class="headerlink" title="场景介绍"></a>场景介绍</h2><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8719.png" alt="幻灯片19"></p>
+<h2 id="场景介绍"><a href="#场景介绍" class="headerlink" title="场景介绍"></a>场景介绍</h2><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8719.png" alt="幻灯片19"></p>
 <p>做Go语言工作，尤其是跟网络打交道的工作，连接管理是逃不开的。我做区块链相关的技术工作，区块链中也有网络管理，所以我就以区块链的网络管理为场景进行介绍，但不涉及具体的技术细节，大家莫慌，只需要理解2个概念就行。</p>
 <p>区块链是构建在P2P网络之上，在P2P网络中：</p>
 <ol>
@@ -2029,15 +2029,15 @@
 </ol>
 <p><strong>具体的场景是：Host需要保存所有建立连接的Peer，并对这些Peer进行维护：增加和删除Peer，并且提供Peer的查询和向所有Peer广播消息的接口</strong>。</p>
 <p>针对这个问题场景，我写了3个版本的Demo，我们依次来介绍，再看的时候，可以思考其中的不同。</p>
-<h2 id="版本1"><a href="#版本1" class="headerlink" title="版本1"></a>版本1</h2><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8720.png" alt="幻灯片20"></p>
+<h2 id="版本1"><a href="#版本1" class="headerlink" title="版本1"></a>版本1</h2><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8720.png" alt="幻灯片20"></p>
 <p>先看<code>Peer</code>定义，<code>Peer</code>中保存了<code>ID</code>，我们可以通过<code>ID</code>来表示全网中所有的节点，<code>Peer</code>中还有其他字段，比如网络连接、地址、协议版本等信息，此处已经省略掉。</p>
 <p><code>Peer</code>有一个<code>WriteMsg</code>的方法，实现向该<code>Peer</code>发送消息的功能，例子中使用打印替代。</p>
 <p><strong>Peer的定义在3个版本中都不会发生变化，所以后面就不再展示</strong>。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8721.png" alt="幻灯片21"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8721.png" alt="幻灯片21"></p>
 <p><code>Host</code>通过<code>peers</code>保存了所有连接的Peer，可以通过<code>Peer.ID</code>对Peer进行索引。Peer的管理是并发场景，比如，我们可能同时接收到多个Peer的连接，又同时需要向所有Peer广播消息，需要对<code>peers</code>加锁保护。最后，我们省略了<code>Host</code>的其他字段。</p>
 <p><code>NewHost()</code>用来创建一个<code>Host</code>对象，用来代表当前节点。</p>
 <p><em>友情提醒：<code>Host</code>在每一个版本都会不同。</em></p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8722.png" alt="幻灯片22"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8722.png" alt="幻灯片22"></p>
 <p><code>Host</code>有4个方法，分别是：</p>
 <ol>
 <li><code>AddPeer</code>: 增加1个Peer。</li>
@@ -2047,61 +2047,61 @@
 </ol>
 <p>每一个方法都需要获取<code>lock</code>，然后访问<code>peers</code>，如果只读取<code>peers</code>则使用读锁。</p>
 <p><strong>第1个版本已经介绍完了，大家可以思考一下版本1的缺点。</strong></p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8723.png" alt="幻灯片23"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8723.png" alt="幻灯片23"></p>
 <p>第1个版本跟其他语言实现其实没有本质区别，用C++、Java等也能写出上面逻辑的代码，只不过这个是Go语言实现的罢了。</p>
 <p><strong>这个版本是一个communicate by sharing memory的体现</strong>，具体来讲，每个goroutine都是1个实体，它们同时运行，调用<code>Host</code>的不同方法来访问<code>peers</code>，只有拿到当前<code>lock</code>的goroutine才能访问peers，仿佛当前goroutine在同其他goroutine讲：我现在有访问权，你们等一下。本质上就是，通过共享<code>Host.lock</code>这块内存，各goroutine进行交流（表明自己拥有访问权）。</p>
-<h2 id="版本2"><a href="#版本2" class="headerlink" title="版本2"></a>版本2</h2><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8724.png" alt="幻灯片24"></p>
+<h2 id="版本2"><a href="#版本2" class="headerlink" title="版本2"></a>版本2</h2><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8724.png" alt="幻灯片24"></p>
 <p>很多Go老手都听过这句话了，这是Go的“联合创始人”<strong>Rob Pike</strong>某个会议上说的。</p>
 <p><strong>在Go中，推荐使用CSP实现并发，而不是习惯性的使用Lock，使用channel传递数据，达到多goroutine间共享数据的目的，也就是share memory by communicating</strong>。</p>
 <p>所以，我们版本2，就使用channel的方式，来实现Peer的管理。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8725.png" alt="幻灯片25"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8725.png" alt="幻灯片25"></p>
 <p>在版本1中，<code>peers</code>是大家都想访问的，并且Host有4个方法，画到了上面的图中，我们看下怎么用CSP实现。</p>
 <p><code>peers</code>需要在单独的goroutine中，其他的4个方法在其他的goroutine中调用，它们之间进行通信。</p>
 <p>我对使用CSP有一个好的实践，就是把数据流动画出来，并把要流动的数据标上，然后那些数据流动的线条，就是channel，线条上的数据就是channel要传递的数据，图中也把这些线条和数据标上了。具体的细节，可以识别图片中的二维码，看看这篇老文，还有就是并不是所有的并发场景都适合使用channel，有些用锁更好，这篇文章也有介绍。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8726.png" alt="幻灯片26"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8726.png" alt="幻灯片26"></p>
 <p>重新定义Host，增加了4个channel，从上到下分别用于增加Peer、广播消息、删除Peer和停止Host。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8727.png" alt="幻灯片27"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8727.png" alt="幻灯片27"></p>
 <p>Host增加了2个方法：</p>
 <ol>
 <li><code>Start()</code>用于启动1个goroutine运行<code>loop()</code>，<code>loop</code>保存所有的<code>peers</code>。</li>
 <li><code>Stop()</code>用于关闭Host，让<code>loop</code>退出。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8728.png" alt="幻灯片28"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8728.png" alt="幻灯片28"></p>
 <p>左边是<code>loop()</code>的实现，它从4个channel里接收数据，然后做不同的操作。</p>
 <p>右边是<code>AddPeer</code>， <code>RemovePeer</code>, <code>BroadcastMsg</code>的实现。</p>
 <p>利用1分钟的事件，左右两边对照着看，理解增加1个Peer的全过程。</p>
 <p>这就是版本2的全部实现了，思考一下版本2有什么问题，原因是啥？</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8729.png" alt="幻灯片29"></p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8730.png" alt="幻灯片30"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8729.png" alt="幻灯片29"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8730.png" alt="幻灯片30"></p>
 <p>问题就是我们没有实现<code>GetPeer</code>这个方法，聪明的你一定在Host的定义就发现了，只有增加、删除和广播消息的channel。</p>
 <p><strong>没能实现<code>GetPeer</code>的原因下图中进行了介绍，你有没有解决办法？</strong></p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8731.png" alt="幻灯片31"></p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8732.png" alt="幻灯片32"></p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8733.png" alt="幻灯片33"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8731.png" alt="幻灯片31"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8732.png" alt="幻灯片32"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8733.png" alt="幻灯片33"></p>
 <p>可能会有很多goroutine调用<code>GetPeer</code>，我们需要向每一个goroutine发送结果，这就需要每一个goroutine都需要对应的1个接收结果的channel。</p>
 <p>所以<strong>我们可以增加1个query channel，channel里传递Peer.ID和接收结果的channel。</strong></p>
 <p><strong>还有没有其他办法？</strong>我们今天的主题<code>First class function</code>还有入场，你有办法用这个特性实现吗？</p>
-<h2 id="版本3"><a href="#版本3" class="headerlink" title="版本3"></a>版本3</h2><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8734.png" alt="幻灯片34"></p>
+<h2 id="版本3"><a href="#版本3" class="headerlink" title="版本3"></a>版本3</h2><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8734.png" alt="幻灯片34"></p>
 <p>First class function: 函数可以向变量一样使用。那channel里面是不是可以传递函数呢？当然可以。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8735.png" alt="幻灯片35"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8735.png" alt="幻灯片35"></p>
 <p>我们可以建立一个channel，用这个channel向<code>loop</code>传递操作<code>peers</code>的函数，所以函数的入参是<code>peers map[string]*Peer</code>，无需返回值，因为函数是在<code>loop</code>里面调用的，调用<code>AddPeer</code>等函数的goroutine是接收不到返回值的。我们把这个类型的函数定义为<code>Operation</code>。</p>
 <p><code>Host</code>修改为只有2个channel，<code>stop</code>功能如版本2，<code>opCh</code>用来传递<code>Operation</code>类型的函数。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8736.png" alt="幻灯片36"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8736.png" alt="幻灯片36"></p>
 <p><code>loop</code>函数可以简化为左边的形式了，右边是<code>AddPeer</code>和<code>RemovePeer</code>，以<code>AddPeer</code>为例进行介绍，创建了一个匿名函数，向<code>peers</code>里增加<code>p</code>，然后把函数发送到<code>opCh</code>。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8737.png" alt="幻灯片37"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8737.png" alt="幻灯片37"></p>
 <p><code>BroadcastMsg</code>与<code>AddPeer</code>类似。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8738.png" alt="幻灯片38"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8738.png" alt="幻灯片38"></p>
 <p>我们重点看一下<code>GetPeer</code>，创建了<code>retCh</code>用于接收查询的结果，创建了匿名函数进行查询，并把查询结果发送到<code>retCh</code>，然后启动1个goroutine把匿名函数写入到<code>opCh</code>，最后等待从<code>retCh</code>读取查询结果。</p>
 <p>这样就实现了向每个调用<code>GetPeer</code>的goroutine发送查询结果。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8740.png" alt="幻灯片40"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8740.png" alt="幻灯片40"></p>
 <p>总结都在上面了，不多说了。</p>
 <p><strong>友情提醒：这3种方式本身并无优劣之分，具体要用那种实现，要依赖自身的实际场景进行取舍。</strong></p>
 <h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><p>识别下图二维码。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8741.png" alt="幻灯片41"></p>
-<h2 id="PPT下载"><a href="#PPT下载" class="headerlink" title="PPT下载"></a>PPT下载</h2><p>下载链接：<a target="_blank" rel="noopener" href="http://img.lessisbetter.site/Go%E8%AF%AD%E8%A8%80%E6%80%9D%E7%BB%B4First-class-function.pdf">http://img.lessisbetter.site/Go%E8%AF%AD%E8%A8%80%E6%80%9D%E7%BB%B4First-class-function.pdf</a></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8741.png" alt="幻灯片41"></p>
+<h2 id="PPT下载"><a href="#PPT下载" class="headerlink" title="PPT下载"></a>PPT下载</h2><p>下载链接：<a href="https://lessisbetter.site/images/Go%E8%AF%AD%E8%A8%80%E6%80%9D%E7%BB%B4First-class-function.pdf">https://lessisbetter.site/images/Go%E8%AF%AD%E8%A8%80%E6%80%9D%E7%BB%B4First-class-function.pdf</a></p>
 <p>或<strong>阅读原文</strong>下载。</p>
 <h1 id="云象介绍"><a href="#云象介绍" class="headerlink" title="云象介绍"></a>云象介绍</h1><p>广告时间，云象区块链持续招人，欢迎来撩。</p>
-<p><img src="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8742.png" alt="幻灯片42"></p>
+<p><img src="https://lessisbetter.site/images/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8742.png" alt="幻灯片42"></p>
 <h1 id="活动总结"><a href="#活动总结" class="headerlink" title="活动总结"></a>活动总结</h1><p>最后奉上Seekload关于本次活动的总结：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/wfDW4cKjzuEE1K94anuImA">Gopher杭州线下面基第一期</a>。</p>
 
       
@@ -2160,7 +2160,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -2218,7 +2218,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
       
     </div>
 
@@ -2275,7 +2275,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -2305,7 +2305,7 @@
 <p><em>文件：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/blob/master/pprof/pprof/demo.go">golang_step_by_step/pprof/pprof/demo.go</a></em></p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">	_ <span class="string">&quot;net/http/pprof&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 开启pprof，监听请求</span></span><br><span class="line">	ip := <span class="string">&quot;0.0.0.0:6060&quot;</span></span><br><span class="line">	<span class="keyword">if</span> err := http.ListenAndServe(ip, <span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;start pprof failed on %s\n&quot;</span>, ip)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><em>提醒：本文所有代码部分可左右滑动</em></p>
-<h3 id="浏览器方式"><a href="#浏览器方式" class="headerlink" title="浏览器方式"></a>浏览器方式</h3><p><img src="http://img.lessisbetter.site/2019-05-image-20190516173924325-7999564.png" alt="image-20190516173924325"></p>
+<h3 id="浏览器方式"><a href="#浏览器方式" class="headerlink" title="浏览器方式"></a>浏览器方式</h3><p><img src="https://lessisbetter.site/images/2019-05-image-20190516173924325-7999564.png" alt="image-20190516173924325"></p>
 <p>输入网址<code>ip:port/debug/pprof/</code>打开pprof主页，从上到下依次是<strong>5类profile信息</strong>：</p>
 <ol>
 <li><strong>block</strong>：goroutine的阻塞信息，本例就截取自一个goroutine阻塞的demo，但block为0，没掌握block的用法</li>
@@ -2367,7 +2367,7 @@
 </ol>
 <p>这2种方式分别介绍一下。</p>
 <h2 id="监控工具查看进程内在占用情况"><a href="#监控工具查看进程内在占用情况" class="headerlink" title="监控工具查看进程内在占用情况"></a>监控工具查看进程内在占用情况</h2><p><strong>如果使用云平台部署Go程序</strong>，云平台都提供了内存查看的工具，可以查看OS的内存占用情况和某个进程的内存占用情况，比如阿里云，我们在1个云主机上只部署了1个Go服务，所以OS的内存占用情况，基本是也反映了进程内存占用情况，OS内存占用情况如下，可以看到<strong>随着时间的推进，内存的占用率在不断的提高，这是内存泄露的最明显现象</strong>：</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190512111200988-7630721.png" alt="image-20190512111200988"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512111200988-7630721.png" alt="image-20190512111200988"></p>
 <p><strong>如果没有云平台这种内存监控工具，可以制作一个简单的内存记录工具。</strong></p>
 <p>1、建立一个脚本<code>prog_mem.sh</code>，获取进程占用的物理内存情况，脚本内容如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">prog_name=<span class="string">&quot;your_programe_name&quot;</span></span><br><span class="line">prog_mem=$(pidstat  -r -u -h -C <span class="variable">$prog_name</span> |awk <span class="string">&#x27;NR==4&#123;print $12&#125;&#x27;</span>)</span><br><span class="line">time=$(date <span class="string">&quot;+%Y-%m-%d %H:%M:%S&quot;</span>)</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$time</span><span class="string">&quot;\tmemory(Byte)\t&quot;</span><span class="variable">$prog_mem</span> &gt;&gt;~/record/prog_mem.log</span><br></pre></td></tr></table></figure>
@@ -2376,13 +2376,13 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*/1 * * * * ~/record/prog_mem.sh</span><br></pre></td></tr></table></figure>
 
 <p>脚本输出的内容保存在<code>prog_mem.log</code>，只要大体浏览一下就可以发现内存的增长情况，判断是否存在内存泄露。如果需要可视化，可以直接黏贴<code>prog_mem.log</code>内容到Excel等表格工具，绘制内存占用图。</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190512172935195-7653375.png" alt="image-20190512172935195"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512172935195-7653375.png" alt="image-20190512172935195"></p>
 <h2 id="go-pprof发现存在内存问题"><a href="#go-pprof发现存在内存问题" class="headerlink" title="go pprof发现存在内存问题"></a>go pprof发现存在内存问题</h2><blockquote>
 <p>有情提醒：如果对pprof不了解，可以先看[go pprof基本知识](#go pprof基本知识)，这是下一节，看完再倒回来看。</p>
 </blockquote>
 <p>如果你Google或者百度，Go程序内存泄露的文章，它总会告诉你使用<strong>pprof heap</strong>，能够生成漂亮的调用路径图，火焰图等等，然后你根据调用路径就能定位内存泄露问题，我最初也是对此深信不疑，尝试了若干天后，只是发现内存泄露跟某种场景有关，根本找不到内存泄露的根源，<strong>如果哪位朋友用heap就能定位内存泄露的线上问题，麻烦介绍下</strong>。</p>
 <p>后来读了Dave的<a target="_blank" rel="noopener" href="https://dave.cheney.net/high-performance-go-workshop/dotgo-paris.html#using_more_than_one_cpu">《High Performance Go Workshop》</a>，刷新了对heap的认识，内存pprof的简要内容如下：</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190512114048868-7632448.png" alt="image-20190512114048868"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512114048868-7632448.png" alt="image-20190512114048868"></p>
 <p>Dave讲了以下几点：</p>
 <ol>
 <li><strong>内存profiling记录的是堆内存分配的情况，以及调用栈信息</strong>，并不是进程完整的内存情况，猜测这也是在go pprof中称为heap而不是memory的原因。</li>
@@ -2424,7 +2424,7 @@
 <li>该goroutine的调用次数非常多，虽然每个协程调用过程中消耗的内存不多，但该调用路径上，协程数量巨大，造成消耗大量的内存，并且这些goroutine由于某种原因无法退出，占用的内存不会释放，<strong>内存泄露的原因在到g111调用路径上某段代码实现有问题，造成创建了大量的g111</strong>。</li>
 </ol>
 <p><strong>第2种情况，就是goroutine泄露，这是通过heap无法发现的，所以heap在定位内存泄露这件事上，发挥的作用不大</strong>。</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190512144150064-7643310.png" alt="image-20190512144150064"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512144150064-7643310.png" alt="image-20190512144150064"></p>
 <hr>
 <h1 id="goroutine泄露怎么导致内存泄露"><a href="#goroutine泄露怎么导致内存泄露" class="headerlink" title="goroutine泄露怎么导致内存泄露"></a>goroutine泄露怎么导致内存泄露</h1><h2 id="什么是goroutine泄露"><a href="#什么是goroutine泄露" class="headerlink" title="什么是goroutine泄露"></a>什么是goroutine泄露</h2><p>如果你启动了1个goroutine，但并没有符合预期的退出，直到程序结束，此goroutine才退出，这种情况就是goroutine泄露。</p>
 <blockquote>
@@ -2476,7 +2476,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ip:port&#x2F;debug&#x2F;pprof&#x2F;goroutine?debug&#x3D;1</span><br></pre></td></tr></table></figure>
 
 <p>效果如下：</p>
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190516143740567-7988660.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190516143740567-7988660.png"></p>
 <p>看起来密密麻麻的，其实简单又十分有用，看上图标出来的部分，手机上图看起来可能不方便，那就放大图片，或直接看下面各字段的含义：</p>
 <ol>
 <li><code>goroutine profile: total 32023</code>：32023是<strong>goroutine的总数量</strong>，</li>
@@ -2494,7 +2494,7 @@
 <h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><p>url请求中设置debug=2：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ip:port&#x2F;debug&#x2F;pprof&#x2F;goroutine?debug&#x3D;2</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2019-05-image-20190516143537339-7988537.png"></p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190516143537339-7988537.png"></p>
 <p>第2种方式和第1种方式是互补的，它可以看到每个goroutine的信息：</p>
 <ol>
 <li><code>goroutine 20 [chan send, 2 minutes]</code>：20是goroutine id，<code>[]</code>中是当前goroutine的状态，阻塞在写channel，并且阻塞了2分钟，长时间运行的系统，你能看到阻塞时间更长的情况。</li>
@@ -2557,7 +2557,7 @@
 </ol>
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
       
     </div>
 

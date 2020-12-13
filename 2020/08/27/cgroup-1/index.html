@@ -29,15 +29,15 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="什么是CgroupCgroup 是 Control Group 的缩写，提供对一组进程，及未来子进程的资源限制、控制、统计能力，包括CPU、内存、磁盘、网络。  限制：限制的资源最大使用量阈值。比如不能超过128MB内存，CPU使用率不得超过50%，或者只能是否CPU的某哪几个核。 控制：超过资源使用最大阈值时，进程会被控制，不任由它发展。比如cgroup内所有tasks的内存使用量超过阈值的结果">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-08-30-cgroup-subsystem.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-08-30-cgroup-subsystem.png">
 <meta property="article:published_time" content="2020-08-27T13:43:52.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.766Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.082Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Docker">
 <meta property="article:tag" content="Kubernetes">
 <meta property="article:tag" content="Cgroup">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2020-08-30-cgroup-subsystem.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2020-08-30-cgroup-subsystem.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2020/08/27/cgroup-1/">
@@ -289,7 +289,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -358,7 +358,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup]$ ll</span><br><span class="line">total 0</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 blkio</span><br><span class="line">lrwxrwxrwx 1 root root 11 Aug 30 09:30 cpu -&gt; cpu,cpuacct</span><br><span class="line">lrwxrwxrwx 1 root root 11 Aug 30 09:30 cpuacct -&gt; cpu,cpuacct</span><br><span class="line">dr-xr-xr-x 7 root root  0 Aug 30 09:30 cpu,cpuacct</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 cpuset</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 devices</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 freezer</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 hugetlb</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 memory</span><br><span class="line">lrwxrwxrwx 1 root root 16 Aug 30 09:30 net_cls -&gt; net_cls,net_prio</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 net_cls,net_prio</span><br><span class="line">lrwxrwxrwx 1 root root 16 Aug 30 09:30 net_prio -&gt; net_cls,net_prio</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 perf_event</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 pids</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 systemd</span><br></pre></td></tr></table></figure>
 
 <p>发现cpu、cpuacct都指向了 <code>cpu,cpuacct</code> 目录，把它们合成了1个cgroup节点。另外 net_cls 和 net_prio 也都合到了 <code>net_cls,net_prio</code> 节点，也就形成了下面这幅图的样子，并把资源控制分成了5个类别：CPU、内存、网络、进程控制、设备，另外的<code>perf_event</code>是cgroup对自身的监控，不归于资源控制。</p>
-<p><img src="http://img.lessisbetter.site/2020-08-30-cgroup-subsystem.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-08-30-cgroup-subsystem.png"></p>
 <p>子系统挂载到cgroup的虚拟文件系统是通过mount命令实现的，系统启动时自动挂载subsystem到cgroup，查看已经挂载的Cgroup：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[~]$ mount -t cgroup</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,release_agent&#x3D;&#x2F;lib&#x2F;systemd&#x2F;systemd-cgroups-agent,name&#x3D;systemd)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;pids type cgroup (rw,nosuid,nodev,noexec,relatime,pids)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpu,cpuacct)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;freezer type cgroup (rw,nosuid,nodev,noexec,relatime,freezer)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,net_cls,net_prio)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;devices type cgroup (rw,nosuid,nodev,noexec,relatime,devices)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,hugetlb)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,perf_event)</span><br></pre></td></tr></table></figure>
 

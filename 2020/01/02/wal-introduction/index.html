@@ -29,14 +29,14 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="引言Write Ahead Logging，简称WAL，也被翻译成预写式日志，是数据库技术中实现事务日志(Transaction Journal)的一种标准方法，可以实现单机事务的原子性，同时可以提高数据库的写入效率。 思考如下场景，如何确保原子性：写操作修改数据库中a和b的值，二者是一个事务，需要把a和b的最新值持久化到磁盘，假如保存完a的值，系统宕机了，重新启动后，a的值已经写入，但b待写入的">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-12-wal.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2019-12-wal.png">
 <meta property="article:published_time" content="2020-01-02T12:56:32.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.801Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.387Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="分布式">
 <meta property="article:tag" content="存储">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-12-wal.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2019-12-wal.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2020/01/02/wal-introduction/">
@@ -288,7 +288,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -309,7 +309,7 @@
 <blockquote>
 <p>本文的日志指事务的操作日志，本文提到的日志都是指事务日志，不再特殊声明。</p>
 </blockquote>
-<p><img src="http://img.lessisbetter.site/2019-12-wal.png" alt="WAL"></p>
+<p><img src="https://lessisbetter.site/images/2019-12-wal.png" alt="WAL"></p>
 <p>我们看WAL怎么<strong>解决宕机和恢复的问题</strong>：</p>
 <ul>
 <li>写WAL前宕机了，重启后，数据处于事务未执行的状态。</li>

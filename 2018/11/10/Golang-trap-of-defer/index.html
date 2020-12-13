@@ -29,15 +29,15 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="你是不是觉得defer很简单、很好用，但也许你掉坑里了都不知道！ 这篇文章不介绍defer的常用功能，而是介绍你在用defer时，也许会踩的坑。 defer允许我们进行一些函数执行完成后的收尾工作，并且代码更加简洁，例如：   关闭文件流：  12&#x2F;&#x2F; open a filedefer file.Close()">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-12-misleading-defer-1.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-12-misleading-defer-2.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-12-misleading-defer-3.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2018-12-misleading-defer-1.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2018-12-misleading-defer-2.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2018-12-misleading-defer-3.png">
 <meta property="article:published_time" content="2018-11-10T12:23:37.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.764Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.386Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2018-12-misleading-defer-1.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2018-12-misleading-defer-1.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2018/11/10/Golang-trap-of-defer/">
@@ -289,7 +289,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -356,9 +356,9 @@
 <p><strong>test3</strong>：defer后跟的是一个匿名函数，匿名函数能访问外部函数的变量，这里访问的是test3的x，defer执行时，匿名函数没有入参，所以把<code>func()()</code>压入到栈，return语句之后，执行<code>func()()</code>，此时匿名函数获得x的值是9，所以结果是<code>in defer: x = 9</code>。</p>
 <p><strong>test4</strong>：与test3的不同是，匿名函数有一个入参n，我们把x作为入参打印，还有就是匿名函数访问外部打印x。defer执行时，<code>x=0</code>，所以入栈的函数是<code>func(int)(0)</code>，return语句之后执行<code>func(int)(0)</code>，即<code>n=0</code>，x在匿名函数内没有定义，依然访问test4中的x，此时<code>x=9</code>，所以结果为：<code>in defer x as parameter: x = 0, in defer x after return: x = 9</code>。</p>
 <h1 id="误解文章截图"><a href="#误解文章截图" class="headerlink" title="误解文章截图"></a>误解文章截图</h1><p>最后，看下误解读者文章的截图，看看你能不能发现那篇文章作者的思路问题。</p>
-<p><img src="http://img.lessisbetter.site/2018-12-misleading-defer-1.png" alt="截图1.png"></p>
-<p><img src="http://img.lessisbetter.site/2018-12-misleading-defer-2.png" alt="截图2.png"></p>
-<p><img src="http://img.lessisbetter.site/2018-12-misleading-defer-3.png" alt="截图3.png"></p>
+<p><img src="https://lessisbetter.site/images/2018-12-misleading-defer-1.png" alt="截图1.png"></p>
+<p><img src="https://lessisbetter.site/images/2018-12-misleading-defer-2.png" alt="截图2.png"></p>
+<p><img src="https://lessisbetter.site/images/2018-12-misleading-defer-3.png" alt="截图3.png"></p>
 <p>上文的作者的目的想知道defer是在return之前，还是之后执行，所以做了这么个测试，他把上面的代码和修改成下面的代码，发现等效后，就给出了错误结论：defer确实是在return之前调用的。</p>
 <p><strong>等效的能证明，顺序吗？</strong>请各位自行思考吧。</p>
 <h1 id="defer的核心"><a href="#defer的核心" class="headerlink" title="defer的核心"></a>defer的核心</h1><p><a href="(https://golang.org/ref/spec#Defer_statements)">Golang对于defer的介绍</a>很精简，但是把上面提到的问题都说清楚了，我也是读了几遍和其他人交流，才完全理解透，不妨好好读读，最核心的一句：</p>

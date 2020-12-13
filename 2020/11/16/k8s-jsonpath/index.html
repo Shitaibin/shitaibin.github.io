@@ -29,19 +29,19 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="JSONPath基础XML有一个非常强大的解析工具是XPath，用于提取XML中的内容。之后也出现了一种高效提取JSON内容的工具，它被称为JSONPath。 JSONPath现在有很多不同的实现，不同的实现支持的提取语法略有不同，比如Goessner的JSONPath如下：  fastjson的JSONPath支持的更加丰富。 示例JSON内容： 123456789101112131415161">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-11-goessner-jsonpath.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-11-1-pod-name.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-11-2-pod-name-range.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-11-3-pod-containers.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-11-4-pod-contianers-image.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-11-5-simplify-pod-containers.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-11-6-pod-filter.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-11-goessner-jsonpath.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-11-1-pod-name.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-11-2-pod-name-range.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-11-3-pod-containers.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-11-4-pod-contianers-image.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-11-5-simplify-pod-containers.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-11-6-pod-filter.png">
 <meta property="article:published_time" content="2020-11-16T08:52:00.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.795Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.082Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Kubernetes">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2020-11-goessner-jsonpath.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2020-11-goessner-jsonpath.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2020/11/16/k8s-jsonpath/">
@@ -293,7 +293,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -308,7 +308,7 @@
     <div class="post-body" itemprop="articleBody">
         <h3 id="JSONPath基础"><a href="#JSONPath基础" class="headerlink" title="JSONPath基础"></a>JSONPath基础</h3><p>XML有一个非常强大的解析工具是XPath，用于提取XML中的内容。之后也出现了一种高效提取JSON内容的工具，它被称为JSONPath。</p>
 <p>JSONPath现在有很多不同的实现，不同的实现支持的提取语法略有不同，比如Goessner的JSONPath如下：</p>
-<p><img src="http://img.lessisbetter.site/2020-11-goessner-jsonpath.png" alt="goessner jsonpath"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-goessner-jsonpath.png" alt="goessner jsonpath"></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson/wiki/JSONPath#3-%E6%94%AF%E6%8C%81%E8%AF%AD%E6%B3%95">fastjson的JSONPath</a>支持的更加丰富。</p>
 <p>示例JSON内容：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;store&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;book&quot;</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;reference&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;Nigel Rees&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Sayings of the Century&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">8.95</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;fiction&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;Evelyn Waugh&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Sword of Honour&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">12.99</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;fiction&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;Herman Melville&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Moby Dick&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;isbn&quot;</span>: <span class="string">&quot;0-553-21311-3&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">8.99</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;fiction&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;J. R. R. Tolkien&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;The Lord of the Rings&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;isbn&quot;</span>: <span class="string">&quot;0-395-19395-8&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">22.99</span></span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        <span class="attr">&quot;bicycle&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;color&quot;</span>: <span class="string">&quot;red&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;price&quot;</span>: <span class="number">19.95</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;expensive&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -408,27 +408,27 @@
 <p>刚开始使用jsonpath时，有种眼花缭乱的感觉，我们就拆解下上面的样例jsonpath。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;.items[*].metadata.name&#125;&#39;</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-1-pod-name.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-1-pod-name.png"></p>
 <p>先提取每个pod的名称，这个还和原生的jsonpath一样。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-2-pod-name-range.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-2-pod-name-range.png"></p>
 <p>因为每个pod还要取容器名称和镜像，所以最好每个pod占一行，我们需要使用<code>range .. end</code>处理每一个pod，列pod所含的容器。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125;&#123;&quot;\n&quot;&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.spec.containers[*].name&#125;, &#123;.spec.containers[*].image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#39;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-3-pod-containers.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-3-pod-containers.png"></p>
 <p>可以看到每个pod内可能包含多个容器，所以也得用<code>range .. end</code>去处理pod的每一个container。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range .spec.containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-4-pod-contianers-image.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-4-pod-contianers-image.png"></p>
 <p>上面提到使用jsonpath可以简化层级，因为<code>containers</code>这个名词在层级中是独有的，不像<code>name</code>可能是存在于多个层级，所以可以使用<code>..</code>简化：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range ..containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-5-simplify-pod-containers.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-5-simplify-pod-containers.png"></p>
 <p>最后看一下过滤的使用，只想列出<code>weave</code>的pod的容器和镜像：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[?(@.metadata.name&#x3D;&#x3D;&quot;weave-net-sqjzh&quot;)]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range ..containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
 
-<p><img src="http://img.lessisbetter.site/2020-11-6-pod-filter.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-11-6-pod-filter.png"></p>
 <h3 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h3><p>使用JSONPath获取：</p>
 <ol>
 <li>Pod的名称和IP</li>

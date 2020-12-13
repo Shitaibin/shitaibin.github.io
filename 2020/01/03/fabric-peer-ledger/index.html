@@ -29,17 +29,17 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="区块链最核心的是可信数据，所有的功能与设计根源都是数据。本次从数据存储的角度，看一看Peer。 账本区块链的数据存储在账本中，账本包含：  区块存储 区块文件 区块索引数据库   世界状态数据库 历史数据库 私有数据数据库  关于账本以上各数据库的工具，官方文档中对区块存储和世界状态数据库介绍的比较详细了，但我们介绍下它没有提到的。 区块文件和区块索引数据库区块是保存在文件中的，为了快速查找区块、">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-01-blockfile-index.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-01-peer-ledger-storage.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-01-03-usage-of-peer-ledger.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2020-01-mvcc-read-write.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-01-blockfile-index.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-01-peer-ledger-storage.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-01-03-usage-of-peer-ledger.png">
+<meta property="og:image" content="https://lessisbetter.site/images/2020-01-mvcc-read-write.png">
 <meta property="article:published_time" content="2020-01-03T12:58:03.000Z">
-<meta property="article:modified_time" content="2020-12-13T08:11:59.780Z">
+<meta property="article:modified_time" content="2020-12-13T08:44:06.386Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="区块链">
 <meta property="article:tag" content="Fabric">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2020-01-blockfile-index.png">
+<meta name="twitter:image" content="https://lessisbetter.site/images/2020-01-blockfile-index.png">
 
 
 <link rel="canonical" href="http://lessisbetter.site/2020/01/03/fabric-peer-ledger/">
@@ -291,7 +291,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -318,7 +318,7 @@
 </ul>
 <p>关于账本以上各数据库的工具，<a target="_blank" rel="noopener" href="https://hyperledger-fabric-cn.readthedocs.io/zh/latest/ledger/ledger.html">官方文档</a>中对区块存储和世界状态数据库介绍的比较详细了，但我们介绍下它没有提到的。</p>
 <h3 id="区块文件和区块索引数据库"><a href="#区块文件和区块索引数据库" class="headerlink" title="区块文件和区块索引数据库"></a>区块文件和区块索引数据库</h3><p>区块是保存在文件中的，<strong>为了快速查找区块、交易</strong>，Fabric建立了索引，指明某通道某区块高度的第x个交易，是存在哪个文件，偏移量是多少。当然，索引还包含了区块高度、区块hash等，方便根据高度、hash查询区块。</p>
-<p><img src="http://img.lessisbetter.site/2020-01-blockfile-index.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-01-blockfile-index.png"></p>
 <p>上图展示了一个区块文件存储区块的情况，每个区块包含：</p>
 <ul>
 <li>区块长度</li>
@@ -334,7 +334,7 @@
 <h2 id="各数据库实现"><a href="#各数据库实现" class="headerlink" title="各数据库实现"></a>各数据库实现</h2><p><strong>区块文件使用文件直接存储区块，没有使用数据库的原因</strong>是：区块是一种自然的追加操作，写入后不再修改，即不会覆盖历史区块，使用文件系统直接存储区块，可以达到区块最快落盘的目的，因为向文件写区块是顺序写，而写数据库是随机写，磁盘（包含HD、SSD）的顺序写性能要高于随机写。</p>
 <p>世界状态数据库可以使用leveldb或者CouchDB，CouchDB支持富查询功能，当链码数据按JSON建模时，CouchDB可以提供更好的数据查询，更多CouchDB的信息见文档<a target="_blank" rel="noopener" href="https://stone-fabric.readthedocs.io/zh/latest/couchdb_tutorial.html">使用 CouchDB</a>。</p>
 <p>其他数据库都使用leveldb作为底层存储。</p>
-<p><img src="http://img.lessisbetter.site/2020-01-peer-ledger-storage.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-01-peer-ledger-storage.png"></p>
 <p><strong>提醒</strong>：Fabric支持多通道，逻辑上每个通道拥有一个账本。实现上区块文件是按通道名隔离开了，使用leveldb的各数据库，被各通道共用。</p>
 <h2 id="从数据看Peer功能"><a href="#从数据看Peer功能" class="headerlink" title="从数据看Peer功能"></a>从数据看Peer功能</h2><p>和账本相关的概念还有<strong>区块、交易和状态</strong>，从账本的角度看，账本向上支撑了2类功能：</p>
 <ol>
@@ -342,7 +342,7 @@
 <li>交易背书：模拟执行交易</li>
 </ol>
 <p>在下图中，数据同步和交易背书分别使用蓝色和橙色的线圈出，底部剩下的2层为账本。</p>
-<p><img src="http://img.lessisbetter.site/2020-01-03-usage-of-peer-ledger.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-01-03-usage-of-peer-ledger.png"></p>
 <h3 id="账本-1"><a href="#账本-1" class="headerlink" title="账本"></a>账本</h3><p><code>core/ledger</code>实现了Peer的账本功能，包含了账本中的各项数据库，它依赖<code>common/ledger</code>实现区块文件存储，区块文件存储包含3类：</p>
 <ul>
 <li><code>File</code>：把区块保存在文件中，生产环境使用，orderer和peer皆可使用</li>
@@ -414,7 +414,7 @@
 <p>MVCC是多版本并发控制的缩写，它是一种思想，而不是一种具体的算法，所以不同的数据库实现的MVCC不同。</p>
 <p>在MVCC的数据存储中，数据有版本的概念，写一个数据的值，实际上是创建了一个新的版本来保存数据。</p>
 <p>MVCC可以实现并发读写的能力，当读数据时，先确定待读数据的版本，然后从该版本读取数据，写数据时，创建新的版本保存数据。读数据必然是已经存在的版本，而写数据是新的版本，因此读写可以并行。</p>
-<p><img src="http://img.lessisbetter.site/2020-01-mvcc-read-write.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-01-mvcc-read-write.png"></p>
 <h4 id="Fabric对MVCC的使用"><a href="#Fabric对MVCC的使用" class="headerlink" title="Fabric对MVCC的使用"></a>Fabric对MVCC的使用</h4><p>背书节点在模拟执行交易的过程中，会生成读写集，<strong>读集和写集分别是所有待写key读出来时的版本和待写入的新值</strong>。</p>
 <p>交易并发执行到写入区块的过程中存在2种<strong>读写冲突</strong>的情况：</p>
 <ol>

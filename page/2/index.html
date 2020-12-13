@@ -281,7 +281,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -350,7 +350,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup]$ ll</span><br><span class="line">total 0</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 blkio</span><br><span class="line">lrwxrwxrwx 1 root root 11 Aug 30 09:30 cpu -&gt; cpu,cpuacct</span><br><span class="line">lrwxrwxrwx 1 root root 11 Aug 30 09:30 cpuacct -&gt; cpu,cpuacct</span><br><span class="line">dr-xr-xr-x 7 root root  0 Aug 30 09:30 cpu,cpuacct</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 cpuset</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 devices</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 freezer</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 hugetlb</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 memory</span><br><span class="line">lrwxrwxrwx 1 root root 16 Aug 30 09:30 net_cls -&gt; net_cls,net_prio</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 net_cls,net_prio</span><br><span class="line">lrwxrwxrwx 1 root root 16 Aug 30 09:30 net_prio -&gt; net_cls,net_prio</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 perf_event</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 pids</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 systemd</span><br></pre></td></tr></table></figure>
 
 <p>发现cpu、cpuacct都指向了 <code>cpu,cpuacct</code> 目录，把它们合成了1个cgroup节点。另外 net_cls 和 net_prio 也都合到了 <code>net_cls,net_prio</code> 节点，也就形成了下面这幅图的样子，并把资源控制分成了5个类别：CPU、内存、网络、进程控制、设备，另外的<code>perf_event</code>是cgroup对自身的监控，不归于资源控制。</p>
-<p><img src="http://img.lessisbetter.site/2020-08-30-cgroup-subsystem.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-08-30-cgroup-subsystem.png"></p>
 <p>子系统挂载到cgroup的虚拟文件系统是通过mount命令实现的，系统启动时自动挂载subsystem到cgroup，查看已经挂载的Cgroup：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[~]$ mount -t cgroup</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,release_agent&#x3D;&#x2F;lib&#x2F;systemd&#x2F;systemd-cgroups-agent,name&#x3D;systemd)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;pids type cgroup (rw,nosuid,nodev,noexec,relatime,pids)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpu,cpuacct)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;freezer type cgroup (rw,nosuid,nodev,noexec,relatime,freezer)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,net_cls,net_prio)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;devices type cgroup (rw,nosuid,nodev,noexec,relatime,devices)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,hugetlb)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,perf_event)</span><br></pre></td></tr></table></figure>
 
@@ -436,7 +436,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -450,7 +450,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <p>minikube很好，但某些原因造成国内用起来比较慢，要各种挂代理、Docker镜像加速。</p>
-<h2 id="minikube原理"><a href="#minikube原理" class="headerlink" title="minikube原理"></a>minikube原理</h2><p><img src="http://img.lessisbetter.site/2020-08-minikube.jpeg"></p>
+<h2 id="minikube原理"><a href="#minikube原理" class="headerlink" title="minikube原理"></a>minikube原理</h2><p><img src="https://lessisbetter.site/images/2020-08-minikube.jpeg"></p>
 <p>kubectl和kube-apiserver是CS架构，kubectl是操作k8s集群的客户端，kube-apiserver是服务端。</p>
 <p>minikube是创建了一个虚拟机<code>minikube vm</code>，然后在虚拟机里创建了1个单机的k8s集群，并把集群部署信息写到<code>~/.kube/config</code>文件，它是kubectl默认使用的配置文件。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[~]$ ls ~&#x2F;.kube&#x2F;config</span><br><span class="line">&#x2F;Users&#x2F;shitaibin&#x2F;.kube&#x2F;config</span><br><span class="line">[~]$ cat ~&#x2F;.kube&#x2F;config</span><br><span class="line">apiVersion: v1</span><br><span class="line">clusters:</span><br><span class="line">- cluster:</span><br><span class="line">    certificate-authority: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;ca.crt</span><br><span class="line">    server: https:&#x2F;&#x2F;192.168.99.103:8443</span><br><span class="line">  name: minikube</span><br><span class="line">contexts:</span><br><span class="line">- context:</span><br><span class="line">    cluster: minikube</span><br><span class="line">    user: minikube</span><br><span class="line">  name: minikube</span><br><span class="line">current-context: minikube</span><br><span class="line">kind: Config</span><br><span class="line">preferences: &#123;&#125;</span><br><span class="line">users:</span><br><span class="line">- name: minikube</span><br><span class="line">  user:</span><br><span class="line">    client-certificate: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.crt</span><br><span class="line">    client-key: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.key</span><br></pre></td></tr></table></figure>
@@ -645,7 +645,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -659,7 +659,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <p>字符串格式日期、time.Time类型、整形时间戳三者之间的转换如下图：</p>
-<p><img src="http://img.lessisbetter.site/2020-07-go-time-date-transform.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-07-go-time-date-transform.png"></p>
 <p>有2点要注意：</p>
 <ol>
 <li>字符串日期和时间戳之间不能直接转换，需要通过time.Time完成。</li>
@@ -810,7 +810,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -829,8 +829,8 @@
 <li>要做的事情，是否满足开源项目的License。</li>
 <li>开源一个项目，该如何选择License。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2020-05-license-choose.jpg"><br>来源：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/28292322/answer/656121132">https://www.zhihu.com/question/28292322/answer/656121132</a></p>
-<p><img src="http://img.lessisbetter.site/2020-05-license-2.jpg"><br>来源：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/28292322/answer/840556759">https://www.zhihu.com/question/28292322/answer/840556759</a><br>从左到右，是从宽松到严格。</p>
+<p><img src="https://lessisbetter.site/images/2020-05-license-choose.jpg"><br>来源：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/28292322/answer/656121132">https://www.zhihu.com/question/28292322/answer/656121132</a></p>
+<p><img src="https://lessisbetter.site/images/2020-05-license-2.jpg"><br>来源：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/28292322/answer/840556759">https://www.zhihu.com/question/28292322/answer/840556759</a><br>从左到右，是从宽松到严格。</p>
 <p>举例：</p>
 <ol>
 <li>以太坊采License用的是LGPLv3，修改源码后如果提供给外部使用必须开源，不要求新增代码采用相同的License，也不要求对新增代码进行文档说明，后来我们项目同样采用了LGPLv3。</li>
@@ -893,7 +893,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -913,7 +913,7 @@
 <p><code>bccsp</code>模块它为Fabric的上层模块提供密码学服务，它包含的具体功能有：对称加密和非对称加密的密钥生成、导如、导出，数字签名和验证，对称加密和解密、摘要计算。</p>
 <p><code>bccsp</code>模块为了密码服务的扩展性，定义了<code>BCCSP</code>接口，上层模块调用<code>BCCSP</code>接口中定义的方法，而不直接调用具体的实现函数，实现和具体密码学实现的解耦，当<code>bccsp</code>使用不同密码学实现时，上层模块无需修改，这种解耦是通过<strong>依赖反转</strong>实现的。</p>
 <p>bccsp模块中当前有2种密码实现，它们都是bccsp中的密码学插件：SW和PKCS11，SW代表的是国际标准加密的软实现，SW是software的缩写，PKCS11代指硬实现。</p>
-<p><img src="http://img.lessisbetter.site/2020-04-fabric-bccsp.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-04-fabric-bccsp.png"></p>
 <blockquote>
 <p>扩展阅读：PKCS11是PKCS系列标准中的第11个，它定义了应用层和底层加密设备的交互标准，比如过去在电脑上，插入USBKey用网银转账时，就需要走USBKey中的硬件进行数字签名，这个过程就需要使用PCKS11。</p>
 </blockquote>
@@ -934,13 +934,13 @@
 <li><code>Decrypt</code>：数据解密，包含对称和非对称加密</li>
 </ul>
 <p>SW要做的是，把ECDSA、RSA、AES、SHA中的各种函数，对应到以上各种分类中，主要的分类如下图所示。</p>
-<p><img src="http://img.lessisbetter.site/2020-04-12-bccsp-sw.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-04-12-bccsp-sw.png"></p>
 <p>从上图可以看出，密钥生成、派生、导入都包含了ECDSA、RSA、AES，签名和延签包含了ECDSA和RSA，摘要计算包含了SHA系列，加密解密包含了AES，但没有包含RSA，是因为非对称加密耗时，并不常用。</p>
 <h2 id="可插拔国密"><a href="#可插拔国密" class="headerlink" title="可插拔国密"></a>可插拔国密</h2><p>Fabric支持国密并非仅仅在bccsp中增加1个国密实现这么简单，还需要让数字证书支持国密，让数字证书的操作符合X.509。各语言的标准库<code>x509</code>都是适配标准加密的，并不能直接用来操作国密证书。</p>
 <p>在数字证书支持国密后，还可能需要进一步考虑，是否需要TLS证书使用国密数字证书，让通信过程使用国密算法。</p>
 <p>另外，国密的实现有很多版本，如果需要适配不同的国密实现，就需要保证国密的可插拔和可扩展。</p>
 <p>综上情况，你需要一个中间件，中间件中包含定义好国密接口、国密数字证书接口等，用这些接口去适配Fabric，然后当采用不同国密实现时，只需要对具体实现进行封装，去适配中间件中定义好的接口。</p>
-<p><img src="http://img.lessisbetter.site/2020-04-fabric-gm.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-04-fabric-gm.png"></p>
 <h2 id="社区对Fabric支持国密的态度"><a href="#社区对Fabric支持国密的态度" class="headerlink" title="社区对Fabric支持国密的态度"></a>社区对Fabric支持国密的态度</h2><p>国密有很多基于Fabric的项目，金融业是区块链场景最多的行业，金融行业又必须使用国密，所以国内对Fabric国密的改造是必须的，在《金融分布式账本安全规范》发布之后，社区也计划让Fabric支持国密，但方式是不提供具体国密实现，而是定义好接口，项目方使用哪种国密实现，去适配定义好的接口即可，这样保留了好的扩展性，与<a href="#%E5%8F%AF%E6%8F%92%E6%8B%94%E5%9B%BD%E5%AF%86">可插拔国密</a>的目的是一致的，选择权交给企业。</p>
 <p>社区支持Fabric国密的版本，预计在2.x版本发布。</p>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>密码学在区块链中的地位是相当高的，从区块链使用最基础的密码学，到现在还在不断融入同态加密、零知识证明等前言的加密技术，未来可以在区块链上保护数据隐私的情况，提供更好的服务，区块链也可以有更多的应用场景。</p>
@@ -1108,7 +1108,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1128,7 +1128,7 @@
 <li>safety ：原意指不会出现错误情况，一致性中指操作是正确的，得到相同的结果。</li>
 <li>liveness ：操作过程能在有限时间内完成。</li>
 </ul>
-<p><img src="http://img.lessisbetter.site/2020-03-consistency-property.png" alt="一致性协议需要满足的特性"></p>
+<p><img src="https://lessisbetter.site/images/2020-03-consistency-property.png" alt="一致性协议需要满足的特性"></p>
 <p><strong>safety通常称为一致性，liveness通常称为可用性</strong>，没有liveness的一致性算法无法长期提供一致性服务，没有safety的一致性算法称不上一致性算法，所以，所有的一致性算法都在做二者之间的折中。</p>
 <p>所以对一致性和可用性不同的要求，就出现了你常听见的ACID原理、CAP理论、BASE理论。</p>
 <p>PBFT作为一个一致性算法，它也需要提供一致性和可用性。在<a href="https://lessisbetter.site/2020/03/15/why-pbft-needs-3-phase-message/">为什么PBFT需要3个阶段消息</a>中，介绍了PBFT算法的如何达成一致性，并且请求可以在有限时间内达成一致，客户端得到响应，也满足可用性。</p>
@@ -1166,7 +1166,7 @@
 <li>View Changes的中间过程，以及View Changes的结束，切换到正常流程</li>
 </ul>
 <p>这2部分分别占据了下图的左右两部分。实线代表流程线，虚线代表网络消息。蓝色代表正常操作流程（三阶段消息：Preprepare、Prepare、Commit），青色代表View Changes流程，蓝青相接就是正常流程和View Changes流程切换的地方。</p>
-<p><img src="http://img.lessisbetter.site/2020-04-09-blueprint-view-changes.png"></p>
+<p><img src="https://lessisbetter.site/images/2020-04-09-blueprint-view-changes.png"></p>
 <p>View Changes的开端流程是通用的，主节点和副本节点都遵守这一流程：<code>新视图：v=v+1</code>，代表一个新的View开始，指向它的每一个箭头，都是视图切换的一种原因。某个副本节点，新视图的开始，还伴随着广播<code>view-change</code>消息，告诉其他节点，本节点开启了一个新的视图。</p>
 <p>主节点是通过公式算出来的，其余为副本节点，在View Changes流程中，副本节点会和主节点交互，共同完成View Changes过程。副本节点会对收到的<code>view-change</code>消息进行检查，然后把一条对应的<code>view-change-ack</code>消息发送给主节点，主节点会依赖收到的<code>view-change</code>消息和<code>view-change-ack</code>消息数量和内容，产生能让所有节点移动到统一状态的<code>new-view</code>消息，并且对<code>new-view</code>消息进行3阶段共识，即对<code>new-view</code>消息达成一致，从而让至少<code>f+1</code>个非拜占庭节点达成一致。</p>
 <h3 id="View-Changes的开端"><a href="#View-Changes的开端" class="headerlink" title="View Changes的开端"></a>View Changes的开端</h3><p>View Change的核心因素只有一个：怀疑当前的主节点在有限的时间内，无法达成一致。</p>
@@ -1294,7 +1294,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
       </span>
 
   
@@ -1341,7 +1341,7 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// gopsconfig为设置的ConfigDir目录，2051为pid，8848为端口号。</span><br><span class="line">➜  ~ cat gopsconfig/2051</span><br><span class="line">8848%</span><br><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">tcp6       0      0 :::8848                 :::*                    LISTEN      2051/./gopsexample</span><br></pre></td></tr></table></figure>
 
 <h2 id="gops原理"><a href="#gops原理" class="headerlink" title="gops原理"></a>gops原理</h2><p>gops的原理是，代码中导入<code>gops/agent</code>，建立agent服务，gops命令连接<code>agent</code>读取进程信息。</p>
-<p><img src="http://img.lessisbetter.site/2020-03-gops.png" alt="gops"></p>
+<p><img src="https://lessisbetter.site/images/2020-03-gops.png" alt="gops"></p>
 <p><code>agent</code>的实现原理可以查看<code>agent/handle</code><a target="_blank" rel="noopener" href="https://github.com/google/gops/blob/master/agent/agent.go#L182">函数</a>。</p>
 <p>使用go标准库中原生接口实现相关功能，如同你要在自己的程序中开启pprof类似，只不过这部分功能由<code>gops/agent</code>实现了：</p>
 <ul>

@@ -1,5 +1,5 @@
 ---
-title: 重新安装Hexo博客的流程
+title: 重新安装Hexo博客的流程 & 配置汇总
 date: 2018-06-02 08:45:31
 tags: ['Hexo']
 ---
@@ -42,3 +42,7 @@ git push origin hexo_resource
 hexo d
 ```
 
+## 图床
+
+- [ ] 七牛：免费，但使用https需要费用，已暂停使用。
+- [x] Github：放到了hexo的`source/images/`目录，hexo部署时自动生成到网站`images/`目录，直接使用`https://domain_name/images/image_example.png`即可。

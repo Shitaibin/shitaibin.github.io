@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="序言密码学是当代数字信息化时代的基础技术，没有密码学，网络上的传输信息的可靠性就无法保证，比如你输入的密码会被窃取，你存在网络上的照片、文档如果没有加密，就有可能泄露。 密码学也是区块链的一项基础技术，使用密码学实现区块链中的：身份验证、数据可信、权限管理、零知识证明、可信计算等等。 Fabric提供了模块化的、可插拔的密码服务，该服务由bccsp模块提供，本文就谈一下BCCSP插件化设计，另外F">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fabric 1.4源码解读 10：可扩展密码服务提供者BCCSP，以及可扩展国密">
+<meta property="og:url" content="http://lessisbetter.site/2020/04/12/fabric-bccsp/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="序言密码学是当代数字信息化时代的基础技术，没有密码学，网络上的传输信息的可靠性就无法保证，比如你输入的密码会被窃取，你存在网络上的照片、文档如果没有加密，就有可能泄露。 密码学也是区块链的一项基础技术，使用密码学实现区块链中的：身份验证、数据可信、权限管理、零知识证明、可信计算等等。 Fabric提供了模块化的、可插拔的密码服务，该服务由bccsp模块提供，本文就谈一下BCCSP插件化设计，另外F">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-04-fabric-bccsp.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-04-12-bccsp-sw.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-04-fabric-gm.png">
+<meta property="article:published_time" content="2020-04-12T06:32:33.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.775Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="Fabric">
+<meta property="article:tag" content="密码学">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2020-04-fabric-bccsp.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2020/04/12/fabric-bccsp/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Fabric 1.4源码解读 10：可扩展密码服务提供者BCCSP，以及可扩展国密 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%8F%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">序言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BCCSP%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">BCCSP介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SW%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.</span> <span class="nav-text">SW介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E6%8F%92%E6%8B%94%E5%9B%BD%E5%AF%86"><span class="nav-number">4.</span> <span class="nav-text">可插拔国密</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BE%E5%8C%BA%E5%AF%B9Fabric%E6%94%AF%E6%8C%81%E5%9B%BD%E5%AF%86%E7%9A%84%E6%80%81%E5%BA%A6"><span class="nav-number">5.</span> <span class="nav-text">社区对Fabric支持国密的态度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">6.</span> <span class="nav-text">结语</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/04/12/fabric-bccsp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Fabric 1.4源码解读 10：可扩展密码服务提供者BCCSP，以及可扩展国密
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-04-12 14:32:33" itemprop="dateCreated datePublished" datetime="2020-04-12T14:32:33+08:00">2020-04-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>密码学是当代数字信息化时代的基础技术，没有密码学，网络上的传输信息的可靠性就无法保证，比如你输入的密码会被窃取，你存在网络上的照片、文档如果没有加密，就有可能泄露。</p>
+<p>密码学也是区块链的一项基础技术，使用密码学实现区块链中的：身份验证、数据可信、权限管理、零知识证明、可信计算等等。</p>
+<p>Fabric提供了模块化的、可插拔的密码服务，该服务由<code>bccsp</code>模块提供，本文就谈一下BCCSP插件化设计，另外Fabric国密化也是最近2年必做的事情，所以同时介绍实现可扩展国密的思路，最后介绍一下Hyperledger社区对Fabric支持国密的开发。</p>
+<h2 id="BCCSP介绍"><a href="#BCCSP介绍" class="headerlink" title="BCCSP介绍"></a>BCCSP介绍</h2><p>BCCSP是Block Chain Crypto Service Provider的缩写。</p>
+<p><code>bccsp</code>模块它为Fabric的上层模块提供密码学服务，它包含的具体功能有：对称加密和非对称加密的密钥生成、导如、导出，数字签名和验证，对称加密和解密、摘要计算。</p>
+<p><code>bccsp</code>模块为了密码服务的扩展性，定义了<code>BCCSP</code>接口，上层模块调用<code>BCCSP</code>接口中定义的方法，而不直接调用具体的实现函数，实现和具体密码学实现的解耦，当<code>bccsp</code>使用不同密码学实现时，上层模块无需修改，这种解耦是通过<strong>依赖反转</strong>实现的。</p>
+<p>bccsp模块中当前有2种密码实现，它们都是bccsp中的密码学插件：SW和PKCS11，SW代表的是国际标准加密的软实现，SW是software的缩写，PKCS11代指硬实现。</p>
+<p><img src="http://img.lessisbetter.site/2020-04-fabric-bccsp.png"></p>
+<blockquote>
+<p>扩展阅读：PKCS11是PKCS系列标准中的第11个，它定义了应用层和底层加密设备的交互标准，比如过去在电脑上，插入USBKey用网银转账时，就需要走USBKey中的硬件进行数字签名，这个过程就需要使用PCKS11。</p>
+</blockquote>
+<p>密码学通常有软实现和硬实现，软实现就是常用的各种加密库，比如Go中<code>crypto</code>包，硬实现是使用加密机提供的一套加密服务。软实现和硬实现的重要区别是，密码算法的安全性强依赖随机数，软实现利用的是OS的伪随机数，而硬实现利用的是加密机生成的随机数，所以硬实现的安全强度要高于软实现。</p>
+<p>让Fabric支持国密时，就需要在bccsp中新增一个国密插件<code>GM</code>，只在bccsp中增加GM并不是完成的Fabric国密改造，下文再详细介绍。</p>
+<h2 id="SW介绍"><a href="#SW介绍" class="headerlink" title="SW介绍"></a>SW介绍</h2><p>SW是国际标准加密的软实现插件，它包含了ECDSA算法、RSA算法、AES算法，以及SHA系列的摘要算法。</p>
+<p><code>BCCSP</code>接口定义了以下方法，其实对密码学中的函数进行了一个功能分类：</p>
+<ul>
+<li><code>KeyGen</code>：密钥生成，包含对称和非对称加密</li>
+<li><code>KeyDeriv</code>：密钥派生</li>
+<li><code>KeyImport</code>：密钥导入，从文件、内存、数字证书中导入</li>
+<li><code>GetKey</code>：获取密钥</li>
+<li><code>Hash</code>：计算摘要</li>
+<li><code>GetHash</code>：获取摘要计算实例</li>
+<li><code>Sign</code>：数字签名</li>
+<li><code>Verify</code>：签名验证</li>
+<li><code>Encrypt</code>：数据加密，包含对称和非对称加密</li>
+<li><code>Decrypt</code>：数据解密，包含对称和非对称加密</li>
+</ul>
+<p>SW要做的是，把ECDSA、RSA、AES、SHA中的各种函数，对应到以上各种分类中，主要的分类如下图所示。</p>
+<p><img src="http://img.lessisbetter.site/2020-04-12-bccsp-sw.png"></p>
+<p>从上图可以看出，密钥生成、派生、导入都包含了ECDSA、RSA、AES，签名和延签包含了ECDSA和RSA，摘要计算包含了SHA系列，加密解密包含了AES，但没有包含RSA，是因为非对称加密耗时，并不常用。</p>
+<h2 id="可插拔国密"><a href="#可插拔国密" class="headerlink" title="可插拔国密"></a>可插拔国密</h2><p>Fabric支持国密并非仅仅在bccsp中增加1个国密实现这么简单，还需要让数字证书支持国密，让数字证书的操作符合X.509。各语言的标准库<code>x509</code>都是适配标准加密的，并不能直接用来操作国密证书。</p>
+<p>在数字证书支持国密后，还可能需要进一步考虑，是否需要TLS证书使用国密数字证书，让通信过程使用国密算法。</p>
+<p>另外，国密的实现有很多版本，如果需要适配不同的国密实现，就需要保证国密的可插拔和可扩展。</p>
+<p>综上情况，你需要一个中间件，中间件中包含定义好国密接口、国密数字证书接口等，用这些接口去适配Fabric，然后当采用不同国密实现时，只需要对具体实现进行封装，去适配中间件中定义好的接口。</p>
+<p><img src="http://img.lessisbetter.site/2020-04-fabric-gm.png"></p>
+<h2 id="社区对Fabric支持国密的态度"><a href="#社区对Fabric支持国密的态度" class="headerlink" title="社区对Fabric支持国密的态度"></a>社区对Fabric支持国密的态度</h2><p>国密有很多基于Fabric的项目，金融业是区块链场景最多的行业，金融行业又必须使用国密，所以国内对Fabric国密的改造是必须的，在《金融分布式账本安全规范》发布之后，社区也计划让Fabric支持国密，但方式是不提供具体国密实现，而是定义好接口，项目方使用哪种国密实现，去适配定义好的接口即可，这样保留了好的扩展性，与<a href="#%E5%8F%AF%E6%8F%92%E6%8B%94%E5%9B%BD%E5%AF%86">可插拔国密</a>的目的是一致的，选择权交给企业。</p>
+<p>社区支持Fabric国密的版本，预计在2.x版本发布。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>密码学在区块链中的地位是相当高的，从区块链使用最基础的密码学，到现在还在不断融入同态加密、零知识证明等前言的加密技术，未来可以在区块链上保护数据隐私的情况，提供更好的服务，区块链也可以有更多的应用场景。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/Fabric/" rel="tag"># Fabric</a>
+              <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag"># 密码学</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/03/23/markdown-mermaid/" rel="prev" title="提高画时序图的效率">
+                  <i class="fa fa-chevron-left"></i> 提高画时序图的效率
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/05/05/open-source-license/" rel="next" title="如何选择开源协议">
+                  如何选择开源协议 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'a659feaa3bf6805944197ad3092c19ae',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

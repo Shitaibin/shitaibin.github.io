@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="搜索题目的时候发现一道大数减法的题目，觉得有点意思，以前看到的都是大数加法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="有符号数的大数减法">
+<meta property="og:url" content="http://lessisbetter.site/2016/06/21/Big-Number-Add-for-Signed-Number/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="搜索题目的时候发现一道大数减法的题目，觉得有点意思，以前看到的都是大数加法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-06-21T02:36:44.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.784Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="机试">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2016/06/21/Big-Number-Add-for-Signed-Number/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>有符号数的大数减法 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2016/06/21/Big-Number-Add-for-Signed-Number/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          有符号数的大数减法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-06-21 10:36:44" itemprop="dateCreated datePublished" datetime="2016-06-21T10:36:44+08:00">2016-06-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>搜索题目的时候发现一道大数减法的题目，觉得有点意思，以前看到的都是大数加法。</p>
+<a id="more"></a>
+
+<ol>
+<li>实现了有符号数加法。</li>
+<li>支持移除前置多余的0。</li>
+</ol>
+<p>对于有符号数而言，加法和减法是可以互换的，所以只去考虑有符号数的加法就可以了。有符号的数的加法本质是，需要转化为无符号数的加减法。无论加法还是减法，都需要从个位开始，所以逆序后会容易处理。</p>
+<ol>
+<li>无符号数加法，直接进行模拟就可以了，处理最后的进位和最后结果为0的情况，如果用户输入合法，即无”000”的形式，是不会存在边界0的情况。</li>
+<li>无符号数减法，逻辑稍微复杂一些，需要使用大数减去小数，小数减大数需要增加一个负号。大数减小数，最后必然carry为0，但是边界情况是两个相同的数相减，结果为0，这个可以提前处理。前提是输入数据合法，无前置多余的0.</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEBUG</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">undef</span> DEBUG</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">char</span> <span class="title">toChar</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> x + <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">toInt</span><span class="params">(<span class="keyword">char</span> ch)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> ch - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// substraction operation for Unsigned number</span></span><br><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">subUnsigned</span><span class="params">(<span class="built_in">string</span> a, <span class="built_in">string</span> b)</span> </span>&#123;</span><br><span class="line">	<span class="built_in">string</span> ret = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Boundary</span></span><br><span class="line">	<span class="keyword">if</span> (a == b) <span class="keyword">return</span> <span class="string">&quot;0&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> sign = <span class="number">1</span>;</span><br><span class="line">	<span class="comment">// Make a is bigger</span></span><br><span class="line">	<span class="keyword">if</span> (a.size() &lt; b.size() ||</span><br><span class="line">		(a.size() == b.size() &amp;&amp; a &lt; b))&#123;</span><br><span class="line">		sign = <span class="number">-1</span>;</span><br><span class="line">		swap(a, b);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Reverse them</span></span><br><span class="line">	reverse(a.begin(), a.end());</span><br><span class="line">	reverse(b.begin(), b.end());</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> carry = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> len = a.size();</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">		<span class="keyword">int</span> x = toInt(a[i]);</span><br><span class="line">		<span class="keyword">int</span> y = (i &lt; b.size()) ? toInt(b[i]) : <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">		x = x - carry - y;</span><br><span class="line">		<span class="keyword">if</span> (x &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			carry = <span class="number">1</span>;</span><br><span class="line">			ret += toChar(x + <span class="number">10</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			carry = <span class="number">0</span>;</span><br><span class="line">			ret += toChar(x);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Check carry</span></span><br><span class="line">	<span class="keyword">if</span> (carry == <span class="number">1</span>) &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;Carry error in subtraction unsigned&quot;</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Remove 0s</span></span><br><span class="line">	<span class="comment">// 124-123 = 001</span></span><br><span class="line">	<span class="comment">// 000-000 = 000, keep at least one zero</span></span><br><span class="line">	<span class="keyword">while</span> (ret.size() &gt; <span class="number">1</span> &amp;&amp; ret.back() == <span class="string">&#x27;0&#x27;</span>) &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> DEBUG</span></span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;@ remove 0 in subtraction&quot;</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">		ret.pop_back();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Check sign</span></span><br><span class="line">	<span class="keyword">if</span> (sign == <span class="number">-1</span>) &#123;</span><br><span class="line">		ret += <span class="string">&#x27;-&#x27;</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Reverse ret</span></span><br><span class="line">	reverse(ret.begin(), ret.end());</span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// addUnsigned for Unsigned number</span></span><br><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">addUnsigned</span><span class="params">(<span class="built_in">string</span> a, <span class="built_in">string</span> b)</span> </span>&#123;</span><br><span class="line">	<span class="built_in">string</span> ret = <span class="string">&quot;&quot;</span>;</span><br><span class="line">	<span class="comment">// add two positive number a and b</span></span><br><span class="line">	<span class="comment">// Reverse them</span></span><br><span class="line">	reverse(a.begin(), a.end());</span><br><span class="line">	reverse(b.begin(), b.end());</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> carry = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> len = max(a.size(), b.size());</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">		<span class="keyword">int</span> x = (i &lt; a.size()) ? a[i] - <span class="string">&#x27;0&#x27;</span> : <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">int</span> y = (i &lt; b.size()) ? b[i] - <span class="string">&#x27;0&#x27;</span> : <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">		x += y + carry;</span><br><span class="line">		<span class="keyword">if</span> (x &gt; <span class="number">9</span>) &#123;</span><br><span class="line">			ret += (x - <span class="number">10</span>) + <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">			carry = <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			ret += x + <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">			carry = <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Final carry</span></span><br><span class="line">	<span class="keyword">if</span> (carry) &#123;</span><br><span class="line">		ret += carry + <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Reverse result</span></span><br><span class="line">	reverse(ret.begin(), ret.end());</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Boundary</span></span><br><span class="line">	<span class="comment">// 0000 + 0000 = 0</span></span><br><span class="line">	<span class="keyword">if</span> (ret[<span class="number">0</span>] == <span class="number">0</span>) <span class="keyword">return</span> <span class="string">&quot;0&quot;</span>;</span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// add for signed number, so subtraction is also included</span></span><br><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">add</span><span class="params">(<span class="built_in">string</span> a, <span class="built_in">string</span> b)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (a.empty()) <span class="keyword">return</span> b;</span><br><span class="line">	<span class="keyword">if</span> (b.empty()) <span class="keyword">return</span> a;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> signa = <span class="number">1</span>, signb = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">if</span> (a[<span class="number">0</span>] == <span class="string">&#x27;-&#x27;</span>) &#123;</span><br><span class="line">		signa = <span class="number">-1</span>;</span><br><span class="line">		a = a.substr(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (b[<span class="number">0</span>] == <span class="string">&#x27;-&#x27;</span>) &#123;</span><br><span class="line">		signb = <span class="number">-1</span>;</span><br><span class="line">		b = b.substr(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (signa == signb) &#123;</span><br><span class="line">		<span class="comment">// Same sign</span></span><br><span class="line">		<span class="built_in">string</span> ret;</span><br><span class="line">		<span class="keyword">if</span> (signa == <span class="number">-1</span>) ret = <span class="string">&quot;-&quot;</span>;</span><br><span class="line">		<span class="comment">// Call addUnsigned </span></span><br><span class="line">		ret += addUnsigned(a, b);</span><br><span class="line">		<span class="keyword">return</span> ret;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// Call subtractionUnsigned</span></span><br><span class="line">		<span class="keyword">if</span> (signa == <span class="number">-1</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> subUnsigned(b, a); <span class="comment">// b - a</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> subUnsigned(a, b); <span class="comment">// a - b</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">&quot;false&quot;</span>; <span class="comment">// Error</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">testAdd</span><span class="params">(<span class="built_in">string</span> a, <span class="built_in">string</span> b, <span class="built_in">string</span> ret)</span> </span>&#123;</span><br><span class="line">	<span class="built_in">string</span> fakeRet = add(a, b);</span><br><span class="line">	<span class="keyword">if</span> (ret != fakeRet) &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; a &lt;&lt; <span class="string">&quot;+&quot;</span> &lt;&lt; <span class="built_in">endl</span> &lt;&lt; b &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;true = &quot;</span> &lt;&lt; ret &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;false = &quot;</span> &lt;&lt; fakeRet &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// Positive</span></span><br><span class="line">	testAdd(<span class="string">&quot;1&quot;</span>, <span class="string">&quot;2&quot;</span>, <span class="string">&quot;3&quot;</span>);</span><br><span class="line">	testAdd(<span class="string">&quot;12&quot;</span>, <span class="string">&quot;9&quot;</span>, <span class="string">&quot;21&quot;</span>);	<span class="comment">// carry</span></span><br><span class="line">	testAdd(<span class="string">&quot;99&quot;</span>, <span class="string">&quot;2&quot;</span>, <span class="string">&quot;101&quot;</span>);	<span class="comment">// final carry</span></span><br><span class="line">	testAdd(<span class="string">&quot;9&quot;</span>, <span class="string">&quot;12&quot;</span>, <span class="string">&quot;21&quot;</span>);	<span class="comment">// swap a, b order</span></span><br><span class="line">	<span class="comment">// Big number</span></span><br><span class="line">	testAdd(<span class="string">&quot;10012343400&quot;</span>, <span class="string">&quot;239384230883&quot;</span>, <span class="string">&quot;249396574283&quot;</span>);</span><br><span class="line">	testAdd(<span class="string">&quot;995678201923&quot;</span>, <span class="string">&quot;193739499999&quot;</span>, <span class="string">&quot;1189417701922&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Negtive</span></span><br><span class="line">	testAdd(<span class="string">&quot;3&quot;</span>, <span class="string">&quot;-2&quot;</span>, <span class="string">&quot;1&quot;</span>);		<span class="comment">// Normal test</span></span><br><span class="line">	testAdd(<span class="string">&quot;123&quot;</span>, <span class="string">&quot;-122&quot;</span>, <span class="string">&quot;1&quot;</span>);	<span class="comment">// Remove 0</span></span><br><span class="line">	testAdd(<span class="string">&quot;123&quot;</span>, <span class="string">&quot;-124&quot;</span>, <span class="string">&quot;-1&quot;</span>);	<span class="comment">// Remove 0</span></span><br><span class="line">	testAdd(<span class="string">&quot;9&quot;</span>, <span class="string">&quot;-1000&quot;</span>, <span class="string">&quot;-991&quot;</span>);	<span class="comment">// Both direction test</span></span><br><span class="line">	testAdd(<span class="string">&quot;-1000&quot;</span>, <span class="string">&quot;9&quot;</span>, <span class="string">&quot;-991&quot;</span>);	<span class="comment">// Both direction test</span></span><br><span class="line">	testAdd(<span class="string">&quot;-1&quot;</span>, <span class="string">&quot;-1&quot;</span>, <span class="string">&quot;-2&quot;</span>);		<span class="comment">// final carry</span></span><br><span class="line">	testAdd(<span class="string">&quot;-99&quot;</span>, <span class="string">&quot;-10&quot;</span>, <span class="string">&quot;-109&quot;</span>);	<span class="comment">// final carry</span></span><br><span class="line">	<span class="comment">// Big number</span></span><br><span class="line">	testAdd(<span class="string">&quot;995678201923&quot;</span>, <span class="string">&quot;-193739499999&quot;</span>, <span class="string">&quot;801938701924&quot;</span>);</span><br><span class="line">	testAdd(<span class="string">&quot;-995678201923&quot;</span>, <span class="string">&quot;193739499999&quot;</span>, <span class="string">&quot;-801938701924&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Abnormal input</span></span><br><span class="line">	testAdd(<span class="string">&quot;000&quot;</span>, <span class="string">&quot;-000&quot;</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">	testAdd(<span class="string">&quot;000123&quot;</span>, <span class="string">&quot;0000000000000000000000000000001&quot;</span>, <span class="string">&quot;124&quot;</span>);</span><br><span class="line">	testAdd(<span class="string">&quot;000123&quot;</span>, <span class="string">&quot;-0000000000000000000000000000001&quot;</span>, <span class="string">&quot;122&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E8%AF%95/" rel="tag"># 机试</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/06/05/why-insight-to-tools/" rel="prev" title="为什么要深入理解库/包/框架等工具">
+                  <i class="fa fa-chevron-left"></i> 为什么要深入理解库/包/框架等工具
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/07/01/story-about-me-and-lanshiren/" rel="next" title="我和烂诗人">
+                  我和烂诗人 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'fbbcc241b5a6022976eda1ea4595b256',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="云原生、Go语言、区块链">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Go语言充电站">
+<meta property="og:url" content="http://lessisbetter.site/page/12/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="云原生、Go语言、区块链">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="云原生 k8s kubernetes 区块链 Go语言 后端 技术 人生 编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/page/12/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/06/02/Goland/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/06/02/Goland/" class="post-title-link" itemprop="url">VSCode && Goland</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-06-02 18:40:01" itemprop="dateCreated datePublished" datetime="2018-06-02T18:40:01+08:00">2018-06-02</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>大项目选Goland，小项目选VSCode。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/06/02/Goland/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/06/02/redeploy-hexo-blog/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/06/02/redeploy-hexo-blog/" class="post-title-link" itemprop="url">重新安装Hexo博客的流程</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-06-02 08:45:31" itemprop="dateCreated datePublished" datetime="2018-06-02T08:45:31+08:00">2018-06-02</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:05:58" itemprop="dateModified" datetime="2020-12-13T16:05:58+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><p>安装：</p>
+<ol>
+<li>官网下载最新的node，然后安装。</li>
+<li>安装官网安装Hexo： <code>npm install -g hexo-cli</code>。</li>
+<li>新建文件夹<code>blog</code>，然后进入。</li>
+<li><code>hexo init</code>。</li>
+</ol>
+<p>设置博客：</p>
+<ol>
+<li>把备份（老博客）的md文件放到新的post的地址：<code>cp -r old/blogDir/source/* ./source</code>。</li>
+<li>把备份的<code>_config.yaml</code>配置文件中<strong>有用的选项</strong>放到新的配置文件中，不要覆盖进新版本的Hexo。</li>
+<li>建立<code>hexo_resource</code>分支，该分支用来存放hexo的配置和博文等文件。master分支留着给博客使用，存放的是博客的静态文件。</li>
+<li>配置Hexo的Next主题：<br>a. <code>cd themes &amp;&amp; git clone https://github.com/next-theme/hexo-theme-next</code>，可以看下<a target="_blank" rel="noopener" href="https://theme-next.org/">Next主题官网</a>最新的操作。<br>b. 下载<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/hexo-next-theme-for-stb">备份的Next主题配置文件</a>，有用的项目拷贝到新的配置文件。</li>
+<li> 安装插件：pdf插件：<code>npm install --save hexo-pdf</code> 。</li>
+<li><code>hexo g &amp;&amp; hexo s</code>，本地预览效果。</li>
+<li>执行<code>hexo d</code>，生成的博客文件会上传到Github。</li>
+<li>在<code>hexo_resource</code>分支下工作即可，写完文章后，执行<code>sh deploy_and_backup_hexo_br.sh</code>，备份好分支，博客推送到远端。</li>
+</ol>
+<p>其他信息看老文章：<a href="https://lessisbetter.site/2015/05/01/blog-with-hexo/">https://lessisbetter.site/2015/05/01/blog-with-hexo/</a></p>
+<h1 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h1><ul>
+<li>deploy_and_backup_hexo_br.sh:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">git add .</span><br><span class="line">git commit -m &#39;auto backup&#39;</span><br><span class="line">git push origin hexo_resource</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/06/01/Mac-software-and-Chrome-app/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/06/01/Mac-software-and-Chrome-app/" class="post-title-link" itemprop="url">必备Mac软件&Chrome应用</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-06-01 21:02:19" itemprop="dateCreated datePublished" datetime="2018-06-01T21:02:19+08:00">2018-06-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="必备的Mac软件"><a href="#必备的Mac软件" class="headerlink" title="必备的Mac软件"></a>必备的Mac软件</h1><h3 id="编程"><a href="#编程" class="headerlink" title="编程"></a>编程</h3><ul>
+<li>Dash：开发必备，秒差各语言API</li>
+<li>VSCode：必备。</li>
+<li>Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。</li>
+<li>iTerm2：The Best Terminal，用好快捷键</li>
+<li>Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000。发现没有Sketch好用。</li>
+<li>Dash：快速查文档。</li>
+<li>Goland：必备。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/06/01/Mac-software-and-Chrome-app/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2017/03/07/7days-pthread/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2017/03/07/7days-pthread/" class="post-title-link" itemprop="url">7天掌握pthread</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-03-07 20:25:09" itemprop="dateCreated datePublished" datetime="2017-03-07T20:25:09+08:00">2017-03-07</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>纸上得来终觉浅，绝知此事要躬行。</p>
+</blockquote>
+<p>对于入门/掌握/认知/学习某个东西/项技能，最好的方法是顶一个小目标，虽然我们这个目标与王首富的目标差距有点大，仍然需要付出持续的努力，然后完成它。所以有了这个7天掌握pthread的小目标，然后每天利用碎片时间去完成它。为何用碎片的时间呢？因为工作时间是属于公司的，只能利用碎片时间提升工作以外的技能。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/03/07/7days-pthread/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2016/07/01/story-about-me-and-lanshiren/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2016/07/01/story-about-me-and-lanshiren/" class="post-title-link" itemprop="url">我和烂诗人</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-07-01 21:45:31" itemprop="dateCreated datePublished" datetime="2016-07-01T21:45:31+08:00">2016-07-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>溪水流于山石间，岁月流转手指间。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/07/01/story-about-me-and-lanshiren/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2016/06/21/Big-Number-Add-for-Signed-Number/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2016/06/21/Big-Number-Add-for-Signed-Number/" class="post-title-link" itemprop="url">有符号数的大数减法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-06-21 10:36:44" itemprop="dateCreated datePublished" datetime="2016-06-21T10:36:44+08:00">2016-06-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>搜索题目的时候发现一道大数减法的题目，觉得有点意思，以前看到的都是大数加法。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/06/21/Big-Number-Add-for-Signed-Number/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2016/06/05/why-insight-to-tools/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2016/06/05/why-insight-to-tools/" class="post-title-link" itemprop="url">为什么要深入理解库/包/框架等工具</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-06-05 17:33:44" itemprop="dateCreated datePublished" datetime="2016-06-05T17:33:44+08:00">2016-06-05</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>以前太简单，太SB。认为学会使用一个工具就好了，干嘛非得了解这个工具是怎么构建的，理解他的原理呢？</p>
+<p>有段时间我想通了，但没有记录下来。许多事情运作的原理是相似的，举个车的例子吧。</p>
+<p>汽车是一个工具，你努力学会了开车，你开车上路的时候，兴奋的不得了，开车上路了，感觉还不错，你飚到了200码，简直爽翻了。有一天，你的车子在路上抛锚了，但是你不了解汽车是怎么运作的，你也不会修车呀，只能打个电话联系修车厂，把你的车子运回去。但是，这个修车厂的效率太低了，修的很慢，你还想到，万一你在沙漠里面开车子，找不到修车厂怎么办？所以，你学了汽车的一些原理，了解了构造，跟着学修车，有一天你出师了，汽车常见的问题，你基本可以解决了。这下把你乐坏了，开车去旅行，出了山海关，东北溜一圈，一路上各种小问题你都解决了。但你还是发现了很多问题，比如车子在雪地上跑的不行，上坡时也比较吃力。你觉得你必须学习改造这个车子了，在不同的环境下，让他发挥最好的性能。掌握了改造技术，进入内蒙古改造车子，让它在草原上飞起，到沙漠地带，你又改造车子，沙漠驰骋。这一路上，你看了许多美景，也学会了，开车、修车、改造车。</p>
+<p>以上故事，纯属瞎BB，如有雷同，纯属巧合。</p>
+<p>对我们使用的库、包、框架而言，他们也是工具，编程语言也是工具，服务器、PC、手机等等，都是工具。</p>
+<p>有些东西你需要掌握使用它的常用功能。但有些，需要你去改造它，让它适应不同的场景需求。所以我觉得，对于一门工具，应当有以下几个境界：</p>
+<ol>
+<li>掌握常用功能。</li>
+<li>见识一些奇淫巧计。</li>
+<li>掌握工具架构（骨骼）。</li>
+<li>洞察工具血肉。</li>
+<li>根据场景需求定制工具。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2016/05/17/design-fork-with-COW-in-JOS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2016/05/17/design-fork-with-COW-in-JOS/" class="post-title-link" itemprop="url">JOS中具有写时拷贝的fork设计</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-05-17 13:44:39" itemprop="dateCreated datePublished" datetime="2016-05-17T13:44:39+08:00">2016-05-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>如果不高清fork的设计思想，是无法实现正确高效的fork。</p>
+<h1 id="JOS中写时拷贝的fork设计"><a href="#JOS中写时拷贝的fork设计" class="headerlink" title="JOS中写时拷贝的fork设计"></a>JOS中写时拷贝的fork设计</h1><p><img src="http://img.lessisbetter.site/fork-design.jpg" alt="JOS中写时拷贝的fork设计"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/05/17/design-fork-with-COW-in-JOS/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2016/04/26/why-from-right-to-left-push-variables-into-stack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2016/04/26/why-from-right-to-left-push-variables-into-stack/" class="post-title-link" itemprop="url">为什么参数从右到左进栈</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-04-26 11:39:39" itemprop="dateCreated datePublished" datetime="2016-04-26T11:39:39+08:00">2016-04-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>原因是由于可变长参数。</p>
+<blockquote>
+<p>如今GCC已经支持按声明顺序进栈，这里分析传统的函数调用入栈。</p>
+</blockquote>
+<h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>了解函数调用，所涉及栈帧分配，见下图1：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/04/26/why-from-right-to-left-push-variables-into-stack/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2016/04/14/a-malloc-tutorial/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2016/04/14/a-malloc-tutorial/" class="post-title-link" itemprop="url">malloc的故事</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-04-14 19:05:37" itemprop="dateCreated datePublished" datetime="2016-04-14T19:05:37+08:00">2016-04-14</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>读了张洋的《如何实现一个malloc》和Marwan Burlle的《A Malloc Turorial》，张洋的博文是对Marwan Burlle的理解、翻译和补充，缺失了一些细节。但读了张洋的文章后，再读《A Malloc Turorial》会快很多。</p>
+<p>#A Malloc Tutorial</p>
+<h3 id="讲了什么"><a href="#讲了什么" class="headerlink" title="讲了什么"></a>讲了什么</h3><ol>
+<li>什么是malloc</li>
+<li>堆的内存模型</li>
+<li>如何通过系统调用操纵堆</li>
+<li>什么是块、块的数据结构</li>
+<li>结构体的本质（虽然变量data属于结构体，但只是想获取数据区的指针，而数据区不属于meta结构体）</li>
+<li>如何实现内存对齐</li>
+<li>基本的堆管理需要哪些功能/函数</li>
+<li>如何创建、选择、分割块</li>
+<li>碎片整理（融合块）</li>
+<li>free要做什么，如何实现</li>
+<li>如何实现calloc</li>
+<li>何时把块“还给系统”</li>
+<li>realloc的原理，及优化</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/04/14/a-malloc-tutorial/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+</body>
+</html>

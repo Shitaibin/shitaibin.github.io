@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http:&#x2F;&#x2F;www.algorithm.cs.sunysb.edu&#x2F;algowiki&#x2F;index.php&#x2F;Search-TADM2E 该页面答案，也是由用户编辑的，不确定是完全的正确。 Backtracking7-1 permutations题目 A derangement is a permutation p of">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法设计手册第二版第七章课后习题解答">
+<meta property="og:url" content="http://lessisbetter.site/2015/05/07/Ch7-Exercises-and-Solutions-of-TADM2E/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http:&#x2F;&#x2F;www.algorithm.cs.sunysb.edu&#x2F;algowiki&#x2F;index.php&#x2F;Search-TADM2E 该页面答案，也是由用户编辑的，不确定是完全的正确。 Backtracking7-1 permutations题目 A derangement is a permutation p of">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-05-07T12:36:44.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.819Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="TADM">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2015/05/07/Ch7-Exercises-and-Solutions-of-TADM2E/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>算法设计手册第二版第七章课后习题解答 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AEWiki%E5%8F%8A%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88"><span class="nav-number">1.</span> <span class="nav-text">题目Wiki及参考答案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Backtracking"><span class="nav-number">2.</span> <span class="nav-text">Backtracking</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-permutations"><span class="nav-number">2.1.</span> <span class="nav-text">7-1 permutations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-Multisets"><span class="nav-number">2.2.</span> <span class="nav-text">7-2 Multisets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-%E5%9B%BE%E7%9A%84%E5%90%8C%E6%9E%84"><span class="nav-number">2.3.</span> <span class="nav-text">7-3 图的同构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-4"><span class="nav-number">2.4.</span> <span class="nav-text">7-4</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2015/05/07/Ch7-Exercises-and-Solutions-of-TADM2E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法设计手册第二版第七章课后习题解答
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-05-07 20:36:44" itemprop="dateCreated datePublished" datetime="2015-05-07T20:36:44+08:00">2015-05-07</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>列出的解答仅为自己的思路，仅供参考，欢迎指出错误。</p>
+</blockquote>
+<h2 id="题目Wiki及参考答案"><a href="#题目Wiki及参考答案" class="headerlink" title="题目Wiki及参考答案"></a>题目Wiki及参考答案</h2><p><a target="_blank" rel="noopener" href="http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Search-TADM2E">http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Search-TADM2E</a></p>
+<p>该页面答案，也是由用户编辑的，不确定是完全的正确。</p>
+<h2 id="Backtracking"><a href="#Backtracking" class="headerlink" title="Backtracking"></a>Backtracking</h2><h3 id="7-1-permutations"><a href="#7-1-permutations" class="headerlink" title="7-1 permutations"></a>7-1 permutations</h3><p>题目</p>
+<p>A derangement is a permutation p of {1,…,n} such that no item is in its proper position, i.e. pi≠i for all 1≤i≤n. derangement Write an efficient backtracking program with pruning that constructs all the derangements of n items.</p>
+<a id="more"></a>
+
+<p>解答</p>
+<p>剪枝就是构建合适的候选者。只需增加一个限制条件<code>i != k</code>。<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/The-Algorithm-Design-Manual/blob/master/7.11/7_1_permutations.c">完整代码</a>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">void construct_candidates(int a\[\], int k, int n, int c\[\], int *ncandidates)  </span><br><span class="line">&#123;  </span><br><span class="line"> int i;  </span><br><span class="line"> bool in_perm\[NMAX\];  </span><br><span class="line">  </span><br><span class="line"> for (i&#x3D;1; i&lt;NMAX; ++i) in_perm\[i\] &#x3D; FALSE;  </span><br><span class="line"> for (i&#x3D;1; i&lt;k; ++i) in_perm\[a\[i\]\] &#x3D; TRUE;  </span><br><span class="line"> *ncandidates &#x3D; 0;  </span><br><span class="line"> for (i&#x3D;1; i&lt;&#x3D;n; ++i)  </span><br><span class="line"> if (i !&#x3D; k &amp;&amp; in_perm\[i\] &#x3D;&#x3D; FALSE) &#x2F;&#x2F; pruning  </span><br><span class="line"> c\[(*ncandidates)++\] &#x3D; i;  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-Multisets"><a href="#7-2-Multisets" class="headerlink" title="7-2 Multisets"></a>7-2 Multisets</h3><p>题目</p>
+<p>Multisets are allowed to have repeated elements. A multiset of n items may thus have fewer than n! distinct permutations. For example, {1,1,2,2} has only six different permutations: {1,1,2,2}, {1,2,1,2}, {1,2,2,1}, {2,1,1,2}, {2,1,2,1}, and {2,2,1,1}. multiset Design and implement an efficient algorithm for constructing all permutations of a multiset.</p>
+<p>解答</p>
+<p>在每次选取候选者的时候，重复的候选者，只选择一个，就不会出现同一个数字在同一个位置，出现多次。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">mulset\[NMAX\]; &#x2F;&#x2F; Multisets  </span><br><span class="line">a\[\]; &#x2F;&#x2F; save the indexes of the number in mulset  </span><br><span class="line">void construct_candidates(int a\[\], int k, int n, int c\[\], int *ncandidates)  </span><br><span class="line">&#123;  </span><br><span class="line"> int i;  </span><br><span class="line"> bool in_perm\[NMAX\]; &#x2F;&#x2F; save the indexes of the number in mulset  </span><br><span class="line"> int uniset\[NMAX\]; &#x2F;&#x2F; save the first indexes of a number in mulset  </span><br><span class="line">  </span><br><span class="line"> for (i&#x3D;1; i&lt;NMAX; ++i) in_perm\[i\] &#x3D; FALSE;  </span><br><span class="line"> for (i&#x3D;1; i&lt;k; ++i) in_perm\[a\[i\]\] &#x3D; TRUE;  </span><br><span class="line">  </span><br><span class="line"> get\_unique\_set(in_perm, uniset);   </span><br><span class="line">  </span><br><span class="line"> *ncandidates &#x3D; 0;  </span><br><span class="line"> for (i&#x3D;1; i&lt;&#x3D;n; ++i)  </span><br><span class="line"> if (i !&#x3D; k &amp;&amp; uniset\[i\] &#x3D;&#x3D; FALSE) &#x2F;&#x2F; pruning  </span><br><span class="line"> c\[(*ncandidates)++\] &#x3D; i;  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+<h3 id="7-3-图的同构"><a href="#7-3-图的同构" class="headerlink" title="7-3 图的同构"></a>7-3 图的同构</h3><p>题目</p>
+<p>Design and implement an algorithm for testing whether two graphs are isomorphic to each other. The graph isomorphism problem is discussed in graph-isomorphism. With proper pruning, graphs on hundreds of vertices can be tested reliably.</p>
+<p>解答</p>
+<p>NP问题。</p>
+<p>方法就是进行验证。</p>
+<p>以无向图举例。</p>
+<ol>
+<li>顶点数量相同。</li>
+<li>在图G中任选一点，依次与图H中的点进行匹配。</li>
+<li>那么总的配对方式供NxN个。</li>
+<li>验证方式是：图G中有的边，图H中也有，图H中有的边图G中也有。</li>
+</ol>
+<p>剪枝：仅将H中与G中当前顶点度相同的顶点加入到候选者列表。</p>
+<h3 id="7-4"><a href="#7-4" class="headerlink" title="7-4"></a>7-4</h3><p>题目</p>
+<p>Anagrams are rearrangements of the letters of a word or phrase into a different word or phrase. Sometimes the results are quite striking. For example, “MANY VOTED BUSH RETIRED” is an anagram of “TUESDAY NOVEMBER THIRD”, which correctly predicted the result of the 1992 U.S. presidential election. Design and implement an algorithm for finding anagrams using combinatorial search and a dictionary.</p>
+<p>解答</p>
+<ol>
+<li>根据输入字符串，拆解得到一个字符池。池中字母保持字典顺序。</li>
+<li>按照课本构造子集的方式，得到一个子集，即一个“单词”，判断该单词在不在词典中？<br> 2.1 在，则从剩下的字符池继续构建单词，直到池为空，得到一个solution；<br> 2.2 否，构建下一个单词。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/TADM/" rel="tag"># TADM</a>
+              <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/" rel="prev" title="算法设计手册第二版第六章课后习题解答">
+                  <i class="fa fa-chevron-left"></i> 算法设计手册第二版第六章课后习题解答
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/11/30/How-to-Select-Programming-Language/" rel="next" title="如何选择编程语言">
+                  如何选择编程语言 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'a3a9a4c3fe6edb1d767693654daa830f',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="上一篇文章《Go语言高阶：调度器系列（1）起源》，学goroutine调度器之前的一些背景知识，这篇文章则是为了对调度器有个宏观的认识，从宏观的3个角度，去看待和理解调度器是什么样子的，但仍然不涉及具体的调度原理。 三个角度分别是：  调度器的宏观组成 调度器的生命周期 GMP的可视化感受  在开始前，先回忆下调度器相关的3个缩写：  G: goroutine，每个G都代表1个goroutine">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go调度器系列（2）宏观看调度器">
+<meta property="og:url" content="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="上一篇文章《Go语言高阶：调度器系列（1）起源》，学goroutine调度器之前的一些背景知识，这篇文章则是为了对调度器有个宏观的认识，从宏观的3个角度，去看待和理解调度器是什么样子的，但仍然不涉及具体的调度原理。 三个角度分别是：  调度器的宏观组成 调度器的生命周期 GMP的可视化感受  在开始前，先回忆下调度器相关的3个缩写：  G: goroutine，每个G都代表1个goroutine">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-goroutine-scheduler-model.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-scheduler-lifetime.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-go-tool-trace.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-for-print-syscall.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="article:published_time" content="2019-03-26T09:29:29.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.791Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-03-goroutine-scheduler-model.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go调度器系列（2）宏观看调度器 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E5%99%A8%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="nav-number">1.</span> <span class="nav-text">调度器的功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scheduler%E7%9A%84%E5%AE%8F%E8%A7%82%E7%BB%84%E6%88%90"><span class="nav-number">2.</span> <span class="nav-text">Scheduler的宏观组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E5%99%A8%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">3.</span> <span class="nav-text">调度器的生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GMP%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96%E6%84%9F%E5%8F%97"><span class="nav-number">4.</span> <span class="nav-text">GMP的可视化感受</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E6%97%B6%E5%88%BB"><span class="nav-number">5.</span> <span class="nav-text">总结时刻</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">6.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go调度器系列（2）宏观看调度器
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-26 17:29:29" itemprop="dateCreated datePublished" datetime="2019-03-26T17:29:29+08:00">2019-03-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>上一篇文章<a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">《Go语言高阶：调度器系列（1）起源》</a>，学goroutine调度器之前的一些背景知识，<strong>这篇文章则是为了对调度器有个宏观的认识，从宏观的3个角度，去看待和理解调度器是什么样子的，但仍然不涉及具体的调度原理</strong>。</p>
+<p>三个角度分别是：</p>
+<ol>
+<li>调度器的宏观组成</li>
+<li>调度器的生命周期</li>
+<li>GMP的可视化感受</li>
+</ol>
+<p>在开始前，先回忆下调度器相关的3个缩写：</p>
+<ul>
+<li><strong>G</strong>: goroutine，每个G都代表1个goroutine </li>
+<li><strong>M</strong>: 工作线程，是Go语言定义出来在用户层面描述系统线程的对象 ，每个M代表一个系统线程</li>
+<li><strong>P</strong>: 处理器，它包含了运行Go代码的资源。</li>
+</ul>
+<p>3者的简要关系是P拥有G，M必须和一个P关联才能运行P拥有的G。 </p>
+<h3 id="调度器的功能"><a href="#调度器的功能" class="headerlink" title="调度器的功能"></a>调度器的功能</h3><p><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">《Go语言高阶：调度器系列（1）起源》</a>中介绍了协程和线程的关系，协程需要运行在线程之上，线程由CPU进行调度。</p>
+<p>在Go中，<strong>线程是运行goroutine的实体，调度器的功能是把可运行的goroutine分配到工作线程上</strong>。</p>
+<p>Go的调度器也是经过了多个版本的开发才是现在这个样子的，</p>
+<ul>
+<li>1.0版本发布了最初的、最简单的调度器，是G-M模型，存在4类问题</li>
+<li>1.1版本重新设计，修改为G-P-M模型，奠定当前调度器基本模样</li>
+<li><a target="_blank" rel="noopener" href="https://golang.org/doc/go1.2#preemption">1.2版本</a>加入了抢占式调度，防止协程不让出CPU导致其他G饿死</li>
+</ul>
+<blockquote>
+<p>在<code>$GOROOT/src/runtime/proc.go</code>的开头注释中包含了对Scheduler的重要注释，介绍Scheduler的设计曾拒绝过3种方案以及原因，本文不再介绍了，希望你不要忽略为数不多的官方介绍。</p>
+</blockquote>
+<h3 id="Scheduler的宏观组成"><a href="#Scheduler的宏观组成" class="headerlink" title="Scheduler的宏观组成"></a>Scheduler的宏观组成</h3><p><a target="_blank" rel="noopener" href="https://tonybai.com/">Tony Bai</a>在<a target="_blank" rel="noopener" href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/">《也谈goroutine调度器》</a>中的这幅图，展示了goroutine调度器和系统调度器的关系，而不是把二者割裂开来，并且从宏观的角度展示了调度器的重要组成。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-goroutine-scheduler-model.png"></p>
+<p>自顶向下是调度器的4个部分：</p>
+<ol>
+<li><strong>全局队列</strong>（Global Queue）：存放等待运行的G。</li>
+<li><strong>P的本地队列</strong>：同全局队列类似，存放的也是等待运行的G，存的数量有限，不超过256个。新建G’时，G’优先加入到P的本地队列，如果队列满了，则会把本地队列中一半的G移动到全局队列。</li>
+<li><strong>P列表</strong>：所有的P都在程序启动时创建，并保存在数组中，最多有GOMAXPROCS个。</li>
+<li><strong>M</strong>：线程想运行任务就得获取P，从P的本地队列获取G，P队列为空时，M也会尝试从全局队列<strong>拿</strong>一批G放到P的本地队列，或从其他P的本地队列<strong>偷</strong>一半放到自己P的本地队列。M运行G，G执行之后，M会从P获取下一个G，不断重复下去。</li>
+</ol>
+<p><strong>Goroutine调度器和OS调度器是通过M结合起来的，每个M都代表了1个内核线程，OS调度器负责把内核线程分配到CPU的核上执行</strong>。</p>
+<h3 id="调度器的生命周期"><a href="#调度器的生命周期" class="headerlink" title="调度器的生命周期"></a>调度器的生命周期</h3><p>接下来我们从另外一个宏观角度——生命周期，认识调度器。</p>
+<p>所有的Go程序运行都会经过一个完整的调度器生命周期：从创建到结束。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-scheduler-lifetime.png"></p>
+<p>即使下面这段简单的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// main.main</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;Hello scheduler&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也会经历如上图所示的过程：</p>
+<ol>
+<li>runtime创建最初的线程m0和goroutine g0，并把2者关联。</li>
+<li>调度器初始化：初始化m0、栈、垃圾回收，以及创建和初始化由GOMAXPROCS个P构成的P列表。</li>
+<li>示例代码中的main函数是<code>main.main</code>，<code>runtime</code>中也有1个main函数——<code>runtime.main</code>，代码经过编译后，<code>runtime.main</code>会调用<code>main.main</code>，程序启动时会为<code>runtime.main</code>创建goroutine，称它为main goroutine吧，然后把main goroutine加入到P的本地队列。</li>
+<li>启动m0，m0已经绑定了P，会从P的本地队列获取G，获取到main goroutine。</li>
+<li>G拥有栈，M根据G中的栈信息和调度信息设置运行环境</li>
+<li>M运行G</li>
+<li>G退出，再次回到M获取可运行的G，这样重复下去，直到<code>main.main</code>退出，<code>runtime.main</code>执行Defer和Panic处理，或调用<code>runtime.exit</code>退出程序。</li>
+</ol>
+<p>调度器的生命周期几乎占满了一个Go程序的一生，<code>runtime.main</code>的goroutine执行之前都是为调度器做准备工作，<code>runtime.main</code>的goroutine运行，才是调度器的真正开始，直到<code>runtime.main</code>结束而结束。</p>
+<h3 id="GMP的可视化感受"><a href="#GMP的可视化感受" class="headerlink" title="GMP的可视化感受"></a>GMP的可视化感受</h3><p>上面的两个宏观角度，都是根据文档、代码整理出来，最后我们从可视化角度感受下调度器，有2种方式。</p>
+<p><strong>方式1：go tool trace</strong></p>
+<p>trace记录了运行时的信息，能提供可视化的Web页面。</p>
+<p>简单测试代码：main函数创建trace，trace会运行在单独的goroutine中，然后main打印”Hello trace”退出。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 创建trace文件</span></span><br><span class="line">	f, err := os.Create(<span class="string">&quot;trace.out&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> f.Close()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动trace goroutine</span></span><br><span class="line">	err = trace.Start(f)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> trace.Stop()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// main</span></span><br><span class="line">	fmt.Println(<span class="string">&quot;Hello trace&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行程序和运行trace：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  trace git:(master) ✗ go run trace1.go</span><br><span class="line">Hello trace</span><br><span class="line">➜  trace git:(master) ✗ ls</span><br><span class="line">trace.out trace1.go</span><br><span class="line">➜  trace git:(master) ✗</span><br><span class="line">➜  trace git:(master) ✗ go tool trace trace.out</span><br><span class="line">2019/03/24 20:48:22 Parsing trace...</span><br><span class="line">2019/03/24 20:48:22 Splitting trace...</span><br><span class="line">2019/03/24 20:48:22 Opening browser. Trace viewer is listening on http://127.0.0.1:55984</span><br></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-go-tool-trace.png" alt="trace1"></p>
+<p>从上至下分别是goroutine（G）、堆、线程（M）、Proc（P）的信息，从左到右是时间线。用鼠标点击颜色块，最下面会列出详细的信息。</p>
+<p>我们可以发现：</p>
+<ul>
+<li><code>runtime.main</code>的goroutine是<code>g1</code>，这个编号应该永远都不变的，<code>runtime.main</code>是在<code>g0</code>之后创建的第一个goroutine。</li>
+<li>g1中调用了<code>main.main</code>，创建了<code>trace goroutine g18</code>。g1运行在P2上，g18运行在P0上。</li>
+<li>P1上实际上也有goroutine运行，可以看到短暂的竖线。</li>
+</ul>
+<p>go tool trace的资料并不多，如果感兴趣可阅读：<a target="_blank" rel="noopener" href="https://making.pusher.com/go-tool-trace/">https://making.pusher.com/go-tool-trace/</a> ，中文翻译是：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ">https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ</a> 。</p>
+<p><strong>方式2：Debug trace</strong></p>
+<p>示例代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.main</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">		time.Sleep(time.Second)</span><br><span class="line">		fmt.Println(<span class="string">&quot;Hello scheduler&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译和运行，运行过程会打印trace：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  one_routine2 git:(master) ✗ go build .</span><br><span class="line">➜  one_routine2 git:(master) ✗ GODEBUG=schedtrace=1000 ./one_routine2</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SCHED 0ms: gomaxprocs&#x3D;8 idleprocs&#x3D;5 threads&#x3D;5 spinningthreads&#x3D;1 idlethreads&#x3D;0 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">SCHED 1001ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 2002ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 3004ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 4005ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 5013ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br></pre></td></tr></table></figure>
+
+<p>看到这密密麻麻的文字就有点担心，不要愁！因为每行字段都是一样的，各字段含义如下：</p>
+<ul>
+<li>SCHED：调试信息输出标志字符串，代表本行是goroutine调度器的输出；</li>
+<li>0ms：即从程序启动到输出这行日志的时间；</li>
+<li>gomaxprocs: P的数量，本例有8个P；</li>
+<li>idleprocs: 处于idle状态的P的数量；通过gomaxprocs和idleprocs的差值，我们就可知道执行go代码的P的数量；</li>
+<li>threads: os threads/M的数量，包含scheduler使用的m数量，加上runtime自用的类似sysmon这样的thread的数量；</li>
+<li>spinningthreads: 处于自旋状态的os thread数量；</li>
+<li>idlethread: 处于idle状态的os thread的数量；</li>
+<li>runqueue=0： Scheduler全局队列中G的数量；</li>
+<li><code>[0 0 0 0 0 0 0 0]</code>: 分别为8个P的local queue中的G的数量。</li>
+</ul>
+<p>看第一行，含义是：刚启动时创建了8个P，其中5个空闲的P，共创建5个M，其中1个M处于自旋，没有M处于空闲，8个P的本地队列都没有G。</p>
+<p>再看个复杂版本的，加上<code>scheddetail=1</code>可以打印更详细的trace信息。</p>
+<p>命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">➜  one_routine2 git:(master) ✗ GODEBUG=schedtrace=1000,scheddetail=1 ./one_routine2</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-for-print-syscall.png"><br><em>截图可能更代码匹配不起来，最初代码是for死循环，后面为了减少打印加了限制循环5次</em></p>
+<p>每次分别打印了每个P、M、G的信息，P的数量等于<code>gomaxprocs</code>，M的数量等于<code>threads</code>，主要看圈黄的地方：</p>
+<ul>
+<li>第1处：P1和M2进行了绑定。</li>
+<li>第2处：M2和P1进行了绑定，但M2上没有运行的G。</li>
+<li>第3处：代码中使用fmt进行打印，会进行系统调用，P1系统调用的次数很多，说明我们的用例函数基本在P1上运行。</li>
+<li>第4处和第5处：M0上运行了G1，G1的状态为3（系统调用），G进行系统调用时，M会和P解绑，但M会记住之前的P，所以M0仍然记绑定了P1，而P1称未绑定M。</li>
+</ul>
+<h3 id="总结时刻"><a href="#总结时刻" class="headerlink" title="总结时刻"></a>总结时刻</h3><p>这篇文章，从3个宏观的角度介绍了调度器，也许你依然不知道调度器的原理，心里感觉模模糊糊，没关系，一步一步走，通过这篇文章希望你了解了：</p>
+<ol>
+<li>Go调度器和OS调度器的关系</li>
+<li>Go调度器的生命周期/总体流程</li>
+<li>P的数量等于GOMAXPROCS</li>
+<li>M需要通过绑定的P获取G，然后执行G，不断重复这个过程</li>
+</ol>
+<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><p>本文所有示例代码都在Github，可通过阅读原文访问：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/tree/master/scheduler">golang_step_by_step/tree/master/scheduler</a></p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/28058856">Go程序的“一生”</a></li>
+<li><a target="_blank" rel="noopener" href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/">也谈goroutine调度器</a></li>
+<li><a target="_blank" rel="noopener" href="https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs">Debug trace, 当前调度器设计人Dmitry Vyukov的文章</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ">Go tool trace中文翻译</a></li>
+<li><a target="_blank" rel="noopener" href="https://dave.cheney.net/tag/godebug">Dave关于GODEBUG的介绍</a></li>
+</ul>
+<blockquote>
+<p>最近的感受是：自己懂是一个层次，能写出来需要抬升一个层次，给他人讲懂又需要抬升一个层次。希望朋友们有所收获。</p>
+</blockquote>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/03/15/ethereum-broadcast-transaction/" rel="prev" title="以太坊交易广播：从宏观到微观">
+                  <i class="fa fa-chevron-left"></i> 以太坊交易广播：从宏观到微观
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/04/04/golang-scheduler-3-principle-with-graph/" rel="next" title="Go调度器系列（3）图解调度原理">
+                  Go调度器系列（3）图解调度原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '16681142d8f7b7aa5ce1d7eb6599a31f',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

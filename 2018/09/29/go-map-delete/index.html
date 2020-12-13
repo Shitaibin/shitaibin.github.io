@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="结论在Go中，map中存放map，上层map执行delete，子层map占用的内存会释放，无需手动先释放子map内存，再在上层map执行删除。 实验在C++中，如果使用了map包含map的数据结构，当要释放上层map的某一项时，需要手动释放对应的子map占用的内存，而在Go中，垃圾回收让内存管理变得如此简单。 做2个对比实验，实验1：普通的map，map保存到是int到int的映射，会执行dele">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go的map中删除子map，内存会自动释放吗？">
+<meta property="og:url" content="http://lessisbetter.site/2018/09/29/go-map-delete/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="结论在Go中，map中存放map，上层map执行delete，子层map占用的内存会释放，无需手动先释放子map内存，再在上层map执行删除。 实验在C++中，如果使用了map包含map的数据结构，当要释放上层map的某一项时，需要手动释放对应的子map占用的内存，而在Go中，垃圾回收让内存管理变得如此简单。 做2个对比实验，实验1：普通的map，map保存到是int到int的映射，会执行dele">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-09-29T12:06:39.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.771Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="map">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2018/09/29/go-map-delete/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go的map中删除子map，内存会自动释放吗？ | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C"><span class="nav-number">2.</span> <span class="nav-text">实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C1"><span class="nav-number">2.1.</span> <span class="nav-text">实验1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C2"><span class="nav-number">2.2.</span> <span class="nav-text">实验2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">参考资料 </span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/09/29/go-map-delete/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go的map中删除子map，内存会自动释放吗？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-09-29 20:06:39" itemprop="dateCreated datePublished" datetime="2018-09-29T20:06:39+08:00">2018-09-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>在Go中，map中存放map，上层map执行delete，子层map占用的内存会释放，无需手动先释放子map内存，再在上层map执行删除。</p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>在C++中，如果使用了map包含map的数据结构，当要释放上层map的某一项时，需要手动释放对应的子map占用的内存，而在Go中，垃圾回收让内存管理变得如此简单。</p>
+<p>做2个对比实验，<br>实验1：普通的map，map保存到是int到int的映射，会执行delete删除map的每一项，执行垃圾回收，看内存是否被回收，map设置为nil，再看是否被回收。<br>实验2：map套子map，顶层map是int到子map的映射，子map是int到int的映射，同样先执行delete，再设置为nil，分别看垃圾回收情况。</p>
+<h3 id="实验1"><a href="#实验1" class="headerlink" title="实验1"></a>实验1</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;runtime&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> lastTotalFreed <span class="keyword">uint64</span></span><br><span class="line"><span class="keyword">var</span> intMap <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> cnt = <span class="number">8192</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	initMap()</span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	log.Println(<span class="built_in">len</span>(intMap))</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		<span class="built_in">delete</span>(intMap, i)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="built_in">len</span>(intMap))</span><br><span class="line"></span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	intMap = <span class="literal">nil</span></span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">initMap</span><span class="params">()</span></span> &#123;</span><br><span class="line">	intMap = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>, cnt)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		intMap[i] = i</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printMemStats</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> m runtime.MemStats</span><br><span class="line">	runtime.ReadMemStats(&amp;m)</span><br><span class="line">	log.Printf(<span class="string">&quot;Alloc = %v TotalAlloc = %v  Just Freed = %v Sys = %v NumGC = %v\n&quot;</span>,</span><br><span class="line">		m.Alloc/<span class="number">1024</span>, m.TotalAlloc/<span class="number">1024</span>, ((m.TotalAlloc-m.Alloc)-lastTotalFreed)/<span class="number">1024</span>, m.Sys/<span class="number">1024</span>, m.NumGC)</span><br><span class="line"></span><br><span class="line">	lastTotalFreed = m.TotalAlloc - m.Alloc</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看结果前，解释下几个字段：</p>
+<ul>
+<li>Alloc：当前堆上对象占用的内存大小。</li>
+<li>TotalAlloc：堆上总共分配出的内存大小。</li>
+<li>Sys：程序从操作系统总共申请的内存大小。</li>
+<li>NumGC：垃圾回收运行的次数。</li>
+</ul>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2018&#x2F;09&#x2F;29 20:09:25 Alloc &#x3D; 65 TotalAlloc &#x3D; 65  Just Freed &#x3D; 0 Sys &#x3D; 1700 NumGC &#x3D; 0</span><br><span class="line">2018&#x2F;09&#x2F;29 20:09:25 Alloc &#x3D; 387 TotalAlloc &#x3D; 391  Just Freed &#x3D; 3 Sys &#x3D; 3076 NumGC &#x3D; 1</span><br><span class="line">2018&#x2F;09&#x2F;29 20:09:25 8192</span><br><span class="line">2018&#x2F;09&#x2F;29 20:09:25 0</span><br><span class="line">2018&#x2F;09&#x2F;29 20:09:25 Alloc &#x3D; 387 TotalAlloc &#x3D; 392  Just Freed &#x3D; 1 Sys &#x3D; 3140 NumGC &#x3D; 2</span><br><span class="line">2018&#x2F;09&#x2F;29 20:09:25 Alloc &#x3D; 74 TotalAlloc &#x3D; 394  Just Freed &#x3D; 314 Sys &#x3D; 3140 NumGC &#x3D; 3</span><br></pre></td></tr></table></figure>
+
+<p>Alloc代表了map占用的内存大小，这个结果表明，执行完delete后，map占用的内存并没有变小，Alloc依然是387，代表map的key和value占用的空间仍在map里.执行完map设置为nil，Alloc变为74，与刚创建的map大小基本是约等于。</p>
+<h3 id="实验2"><a href="#实验2" class="headerlink" title="实验2"></a>实验2</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;runtime&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> intMapMap <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> cnt = <span class="number">1024</span></span><br><span class="line"><span class="keyword">var</span> lastTotalFreed <span class="keyword">uint64</span> <span class="comment">// size of last memory has been freed</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 1</span></span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 2</span></span><br><span class="line">	initMapMap()</span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 3</span></span><br><span class="line">	fillMapMap()</span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 4</span></span><br><span class="line">	log.Println(<span class="built_in">len</span>(intMapMap))</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		<span class="built_in">delete</span>(intMapMap, i)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="built_in">len</span>(intMapMap))</span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 5</span></span><br><span class="line">	intMapMap = <span class="literal">nil</span></span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">initMapMap</span><span class="params">()</span></span> &#123;</span><br><span class="line">	intMapMap = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>, cnt)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		intMapMap[i] = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>, cnt)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fillMapMap</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; cnt; j++ &#123;</span><br><span class="line">			intMapMap[i][j] = j</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printMemStats</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> m runtime.MemStats</span><br><span class="line">	runtime.ReadMemStats(&amp;m)</span><br><span class="line">	log.Printf(<span class="string">&quot;Alloc = %v TotalAlloc = %v  Just Freed = %v Sys = %v NumGC = %v\n&quot;</span>,</span><br><span class="line">		m.Alloc/<span class="number">1024</span>, m.TotalAlloc/<span class="number">1024</span>, ((m.TotalAlloc-m.Alloc)-lastTotalFreed)/<span class="number">1024</span>, m.Sys/<span class="number">1024</span>, m.NumGC)</span><br><span class="line"></span><br><span class="line">	lastTotalFreed = m.TotalAlloc - m.Alloc</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">2018&#x2F;09&#x2F;29 20:10:27 Alloc &#x3D; 64 TotalAlloc &#x3D; 64  Just Freed &#x3D; 0 Sys &#x3D; 1700 NumGC &#x3D; 0</span><br><span class="line">2018&#x2F;09&#x2F;29 20:10:27 Alloc &#x3D; 41154 TotalAlloc &#x3D; 41157  Just Freed &#x3D; 3 Sys &#x3D; 46026 NumGC &#x3D; 5</span><br><span class="line">2018&#x2F;09&#x2F;29 20:10:27 Alloc &#x3D; 41241 TotalAlloc &#x3D; 41293  Just Freed &#x3D; 48 Sys &#x3D; 47082 NumGC &#x3D; 6</span><br><span class="line">2018&#x2F;09&#x2F;29 20:10:27 1024</span><br><span class="line">2018&#x2F;09&#x2F;29 20:10:27 0</span><br><span class="line">2018&#x2F;09&#x2F;29 20:10:27 Alloc &#x3D; 114 TotalAlloc &#x3D; 41295  Just Freed &#x3D; 41128 Sys &#x3D; 47082 NumGC &#x3D; 7</span><br><span class="line">2018&#x2F;09&#x2F;29 20:10:27 Alloc &#x3D; 74 TotalAlloc &#x3D; 41296  Just Freed &#x3D; 41 Sys &#x3D; 47082 NumGC &#x3D; 8</span><br></pre></td></tr></table></figure>
+
+<p>这个结果表明，在执行完delete后，顶层map占用的内存从41241降到了114，子层map占用的空间肯定是被GC回收了，不然占用内存不会下降这么显著。但依然比初始化的顶层map占用的内存64多出不少，那是因为delete操作，顶层map的key占用的空间依然在map里，当把顶层map设置为nil时，大小变为74吗，顶层map占用那些空间被释放了.</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料 "></a>参考资料 </h2><ul>
+<li><a target="_blank" rel="noopener" href="http://blog.cyeam.com/json/2017/11/02/go-map-delete">http://blog.cyeam.com/json/2017/11/02/go-map-delete</a></li>
+</ul>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/09/29/go-map-delete/">http://lessisbetter.site/2018/09/29/go-map-delete/</a></li>
+</ol>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/map/" rel="tag"># map</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/09/26/Set-custom-domain-for-github-pags/" rel="prev" title="为Github博客配置自定义域名">
+                  <i class="fa fa-chevron-left"></i> 为Github博客配置自定义域名
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/10/18/ethereum-code-event-framework/" rel="next" title="以太坊源码分析：事件框架">
+                  以太坊源码分析：事件框架 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '0847d70acf81fe28a153c66cd46f2a28',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

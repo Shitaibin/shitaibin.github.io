@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。 sync包提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步&#x2F;并发操作最好选用通">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang并发的次优选择：sync包">
+<meta property="og:url" content="http://lessisbetter.site/2019/01/04/golang-pkg-sync/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。 sync包提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步&#x2F;并发操作最好选用通">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/gzh-qrcode-with-text.png">
+<meta property="article:published_time" content="2019-01-04T13:31:48.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.790Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/gzh-qrcode-with-text.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/01/04/golang-pkg-sync/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Golang并发的次优选择：sync包 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%92%E6%96%A5%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">互斥锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%94%81"><span class="nav-number">2.</span> <span class="nav-text">读写锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%89%E5%BE%85%E7%BB%84"><span class="nav-number">3.</span> <span class="nav-text">等待组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E6%AC%A1%E6%89%A7%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">单次执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E6%9C%9F%E9%A2%84%E5%91%8A"><span class="nav-number">5.</span> <span class="nav-text">下期预告</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E6%BA%90%E7%A0%81"><span class="nav-number">6.</span> <span class="nav-text">示例源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%8E%A8%E8%8D%90"><span class="nav-number">7.</span> <span class="nav-text">文章推荐</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/04/golang-pkg-sync/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Golang并发的次优选择：sync包
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-04 21:31:48" itemprop="dateCreated datePublished" datetime="2019-01-04T21:31:48+08:00">2019-01-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。</p>
+<p><a target="_blank" rel="noopener" href="https://golang.org/pkg/sync/">sync包</a>提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步/并发操作最好选用通道和通信。</p>
+<p>sync包提供了：</p>
+<ol>
+<li>Mutex：互斥锁</li>
+<li>RWMutex：读写锁</li>
+<li>WaitGroup：等待组</li>
+<li>Once：单次执行</li>
+<li>Cond：信号量</li>
+<li>Pool：临时对象池</li>
+<li>Map：自带锁的map</li>
+</ol>
+<p>这篇文章是sync包的入门文章，所以只介绍常用的结构和方法：<code>Mutex</code>、<code>RWMutex</code>、<code>WaitGroup</code>、<code>Once</code>，而<code>Cond</code>、<code>Pool</code>和<code>Map</code>留给大家自行探索，或有需求再介绍。</p>
+<a id="more"></a>
+
+<h3 id="互斥锁"><a href="#互斥锁" class="headerlink" title="互斥锁"></a>互斥锁</h3><p>常做并发工作的朋友对互斥锁应该不陌生，Golang里<strong>互斥锁需要确保的是某段时间内，不能有多个协程同时访问一段代码（临界区）</strong>。</p>
+<p>互斥锁被称为<code>Mutex</code>，它有2个函数，<code>Lock()</code>和<code>Unlock()</code>分别是获取锁和释放锁，如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Mutex</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mutex)</span> <span class="title">Lock</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mutex)</span> <span class="title">Unlock</span><span class="params">()</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>Mutex</code>的初始值为未锁的状态，并且<code>Mutex</code>通常作为结构体的匿名成员存在</strong>。</p>
+<p>经过了上面这么“官方”的介绍，举个例子：你在工商银行有100元存款，这张卡绑定了支付宝和微信，在中午12点你用支付宝支付外卖30元，你在微信发红包，抢到10块。银行需要按顺序执行上面两件事，先减30再加10或者先加10再减30，结果都是80，但如果同时执行，结果可能是，只减了30或者只加了10，即你有70元或者你有110元。前一个结果是你赔了，后一个结果是银行赔了，银行可不希望把这种事算错。</p>
+<p>看看实际使用吧：创建一个银行，银行里存每个账户的钱，存储查询都加了锁操作，这样银行就不会算错账了。<br>银行的定义：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Bank <span class="keyword">struct</span> &#123;</span><br><span class="line">	sync.Mutex</span><br><span class="line">	saving <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span> <span class="comment">// 每账户的存款金额</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBank</span><span class="params">()</span> *<span class="title">Bank</span></span> &#123;</span><br><span class="line">	b := &amp;Bank&#123;</span><br><span class="line">		saving: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>),</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>银行的存取钱：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Deposit 存款</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bank)</span> <span class="title">Deposit</span><span class="params">(name <span class="keyword">string</span>, amount <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	b.Lock()</span><br><span class="line">	<span class="keyword">defer</span> b.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _, ok := b.saving[name]; !ok &#123;</span><br><span class="line">		b.saving[name] = <span class="number">0</span></span><br><span class="line">	&#125;</span><br><span class="line">	b.saving[name] += amount</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Withdraw 取款，返回实际取到的金额</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bank)</span> <span class="title">Withdraw</span><span class="params">(name <span class="keyword">string</span>, amount <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	b.Lock()</span><br><span class="line">	<span class="keyword">defer</span> b.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _, ok := b.saving[name]; !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> b.saving[name] &lt; amount &#123;</span><br><span class="line">		amount = b.saving[name]</span><br><span class="line">	&#125;</span><br><span class="line">	b.saving[name] -= amount</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> amount</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Query 查询余额</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bank)</span> <span class="title">Query</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	b.Lock()</span><br><span class="line">	<span class="keyword">defer</span> b.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _, ok := b.saving[name]; !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> b.saving[name]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>模拟操作：小米支付宝存了100，并且同时花了20。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	b := NewBank()</span><br><span class="line">	<span class="keyword">go</span> b.Deposit(<span class="string">&quot;xiaoming&quot;</span>, <span class="number">100</span>)</span><br><span class="line">	<span class="keyword">go</span> b.Withdraw(<span class="string">&quot;xiaoming&quot;</span>, <span class="number">20</span>)</span><br><span class="line">	<span class="keyword">go</span> b.Deposit(<span class="string">&quot;xiaogang&quot;</span>, <span class="number">2000</span>)</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;xiaoming has: %d\n&quot;</span>, b.Query(<span class="string">&quot;xiaoming&quot;</span>))</span><br><span class="line">	fmt.Printf(<span class="string">&quot;xiaogang has: %d\n&quot;</span>, b.Query(<span class="string">&quot;xiaogang&quot;</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果：先存后花。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  sync_pkg git:(master) ✗ go run mutex.go</span><br><span class="line">xiaoming has: 80</span><br><span class="line">xiaogang has: 2000</span><br></pre></td></tr></table></figure>
+<p>也可能是：先花后存，因为先花20，因为小明没钱，所以没花出去。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  sync_pkg git:(master) ✗ go run mutex.go</span><br><span class="line">xiaoming has: 100</span><br><span class="line">xiaogang has: 2000</span><br></pre></td></tr></table></figure>
+
+<p><em>这个例子只是介绍了mutex的基本使用，如果你想多研究下mutex，那就去我的Github（阅读原文）下载下来代码，自己修改测试。Github中还提供了没有锁的例子，运行多次总能碰到错误：</em></p>
+<blockquote>
+<p>fatal error: concurrent map writes<br>这是由于并发访问map造成的。</p>
+</blockquote>
+<h3 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h3><p>读写锁是互斥锁的特殊变种，如果是计算机基本知识扎实的朋友会知道，读写锁来自于读者和写者的问题，这个问题就不介绍了，介绍下我们的重点：<strong>读写锁要达到的效果是同一时间可以允许多个协程读数据，但只能有且只有1个协程写数据</strong>。</p>
+<p><strong>也就是说，读和写是互斥的，写和写也是互斥的，但读和读并不互斥</strong>。具体讲，当有至少1个协程读时，如果需要进行写，就必须等待所有已经在读的协程结束读操作，写操作的协程才获得锁进行写数据。当写数据的协程已经在进行时，有其他协程需要进行读或者写，就必须等待已经在写的协程结束写操作。</p>
+<p>读写锁是<code>RWMutex</code>，它有5个函数，它需要为读操作和写操作分别提供锁操作，这样就4个了：</p>
+<ul>
+<li><code>Lock()</code>和<code>Unlock()</code>是给写操作用的。 </li>
+<li><code>RLock()</code>和<code>RUnlock()</code>是给读操作用的。</li>
+</ul>
+<p><strong><code>RLocker()</code>能获取读锁，然后传递给其他协程使用。使用较少</strong>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> RWMutex</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">Lock</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">RLock</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">RLocker</span><span class="params">()</span> <span class="title">Locker</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">RUnlock</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">Unlock</span><span class="params">()</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的银行<strong>实现不合理</strong>：大家都是拿手机APP查余额，可以同时几个人一起查呀，这根本不影响，银行的锁可以换成读写锁。存、取钱是写操作，查询金额是读操作，代码修改如下，其他不变：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Bank <span class="keyword">struct</span> &#123;</span><br><span class="line">	sync.RWMutex</span><br><span class="line">	saving <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span> <span class="comment">// 每账户的存款金额</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Query 查询余额</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bank)</span> <span class="title">Query</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	b.RLock()</span><br><span class="line">	<span class="keyword">defer</span> b.RUnlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _, ok := b.saving[name]; !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> b.saving[name]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	b := NewBank()</span><br><span class="line">	<span class="keyword">go</span> b.Deposit(<span class="string">&quot;xiaoming&quot;</span>, <span class="number">100</span>)</span><br><span class="line">	<span class="keyword">go</span> b.Withdraw(<span class="string">&quot;xiaoming&quot;</span>, <span class="number">20</span>)</span><br><span class="line">	<span class="keyword">go</span> b.Deposit(<span class="string">&quot;xiaogang&quot;</span>, <span class="number">2000</span>)</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	<span class="built_in">print</span> := <span class="function"><span class="keyword">func</span><span class="params">(name <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;%s has: %d\n&quot;</span>, name, b.Query(name))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	nameList := []<span class="keyword">string</span>&#123;<span class="string">&quot;xiaoming&quot;</span>, <span class="string">&quot;xiaogang&quot;</span>, <span class="string">&quot;xiaohong&quot;</span>, <span class="string">&quot;xiaozhang&quot;</span>&#125;</span><br><span class="line">	<span class="keyword">for</span> _, name := <span class="keyword">range</span> nameList &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="built_in">print</span>(name)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果，<strong>可能不一样，因为协程都是并发执行的，执行顺序不固定</strong>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  sync_pkg git:(master) ✗ <span class="keyword">go</span> run rwmutex.<span class="keyword">go</span></span><br><span class="line">xiaohong has: <span class="number">0</span></span><br><span class="line">xiaozhang has: <span class="number">0</span></span><br><span class="line">xiaogang has: <span class="number">2000</span></span><br><span class="line">xiaoming has: <span class="number">100</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="等待组"><a href="#等待组" class="headerlink" title="等待组"></a>等待组</h3><p>互斥锁和读写锁大多数人可能比较熟悉，而对等待组（<code>WaitGroup</code>）可能就不那么熟悉，甚至有点陌生，所以先来介绍下等待组在现实中的例子。</p>
+<p>你们团队有5个人，你作为队长要带领大家打开藏有宝藏的箱子，但这个箱子需要4把钥匙才能同时打开，你把寻找4把钥匙的任务，分配给4个队员，让他们分别去寻找，而你则守着宝箱，在这<strong>等待</strong>，等他们都找到回来后，一起插进钥匙打开宝箱。</p>
+<p>这其中有个很重要的过程叫等待：<strong>等待一些工作完成后，再进行下一步的工作</strong>。如果使用Golang实现，就得使用等待组。</p>
+<p>等待组是<code>WaitGroup</code>，它有3个函数:</p>
+<ul>
+<li><code>Add()</code>：在被等待的协程启动前加1，代表要等待1个协程。</li>
+<li><code>Done()</code>：被等待的协程执行Done，代表该协程已经完成任务，通知等待协程。</li>
+<li><code>Wait()</code>: 等待其他协程的协程，使用Wait进行等待。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> WaitGroup</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wg *WaitGroup)</span> <span class="title">Add</span><span class="params">(delta <span class="keyword">int</span>)</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wg *WaitGroup)</span> <span class="title">Done</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wg *WaitGroup)</span> <span class="title">Wait</span><span class="params">()</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>来，一起看下怎么用WaitGroup实现上面的问题。</p>
+<p>队长先创建一个WaitGroup对象wg，每个队员都是1个协程， 队长让队员出发前，使用<code>wg.Add()</code>，队员出发寻找钥匙，队长使用<code>wg.Wait()</code>等待（阻塞）所有队员完成，某个队员完成时执行<code>wg.Done()</code>，等所有队员找到钥匙，<code>wg.Wait()</code>则返回，完成了等待的过程，接下来就是开箱。</p>
+<p>结合之前的协程池的例子，修改成WG等待协程池协程退出，实例代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">leader</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">4</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">4</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> follower(&amp;wg, i)</span><br><span class="line">	&#125;</span><br><span class="line">	wg.Wait()</span><br><span class="line">	</span><br><span class="line">	fmt.Println(<span class="string">&quot;open the box together&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">follower</span><span class="params">(wg *sync.WaitGroup, id <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">&quot;follwer %d find key\n&quot;</span>, id)</span><br><span class="line">	wg.Done()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  sync_pkg git:(master) ✗ go run waitgroup.go</span><br><span class="line">follwer 3 find key</span><br><span class="line">follwer 1 find key</span><br><span class="line">follwer 0 find key</span><br><span class="line">follwer 2 find key</span><br><span class="line">open the box together</span><br></pre></td></tr></table></figure>
+
+<p>WaitGroup也常用在协程池的处理上，协程池等待所有协程退出，把上篇文章<a href="http://lessisbetter.site/2018/12/20/golang-simple-goroutine-pool/">《Golang并发模型：轻松入门协程池》</a>的例子改下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">workerPool</span><span class="params">(n <span class="keyword">int</span>, jobCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>, retCh <span class="keyword">chan</span>&lt;- <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(n)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; n; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> worker(&amp;wg, i, jobCh, retCh)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	wg.Wait()</span><br><span class="line">	<span class="built_in">close</span>(retCh)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">worker</span><span class="params">(wg *sync.WaitGroup, id <span class="keyword">int</span>, jobCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>, retCh <span class="keyword">chan</span>&lt;- <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	cnt := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> job := <span class="keyword">range</span> jobCh &#123;</span><br><span class="line">		cnt++</span><br><span class="line">		ret := fmt.Sprintf(<span class="string">&quot;worker %d processed job: %d, it&#x27;s the %dth processed by me.&quot;</span>, id, job, cnt)</span><br><span class="line">		retCh &lt;- ret</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	wg.Done()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="单次执行"><a href="#单次执行" class="headerlink" title="单次执行"></a>单次执行</h3><p>在程序执行前，通常需要做一些初始化操作，但触发初始化操作的地方是有多处的，但是这个初始化又只能执行1次，怎么办呢？</p>
+<p>使用Once就能轻松解决，<code>once</code>对象是用来存放<strong>1个无入参无返回值的函数，once可以确保这个函数只被执行1次</strong>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Once</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(o *Once)</span> <span class="title">Do</span><span class="params">(f <span class="keyword">func</span>()</span>)</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>直接把官方代码给大家搬过来看下，once在10个协程中调用，但once中的函数<code>onceBody()</code>只执行了1次：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> once sync.Once</span><br><span class="line">	onceBody := <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;Only once&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			once.Do(onceBody)</span><br><span class="line">			done &lt;- <span class="literal">true</span></span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		&lt;-done</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  sync_pkg git:(master) ✗ go run once.go</span><br><span class="line">Only once</span><br></pre></td></tr></table></figure>
+
+<h3 id="下期预告"><a href="#下期预告" class="headerlink" title="下期预告"></a>下期预告</h3><p>这次先介绍入门的知识，下次再介绍一些深入思考、最佳实践，不能一口吃个胖子，咱们慢慢来，顺序渐进。</p>
+<p>下一篇我以这些主题进行介绍，欢迎关注：</p>
+<ol>
+<li>哪个协程先获取锁</li>
+<li>一定要用锁吗</li>
+<li>锁与通道的选择</li>
+</ol>
+<h3 id="示例源码"><a href="#示例源码" class="headerlink" title="示例源码"></a>示例源码</h3><p>本文所有示例源码，及历史文章、代码都存储在Github：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/tree/master/sync_pkg">https://github.com/Shitaibin/golang_step_by_step/tree/master/sync_pkg</a></p>
+<h3 id="文章推荐"><a href="#文章推荐" class="headerlink" title="文章推荐"></a>文章推荐</h3><ol>
+<li><a href="http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a href="http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a href="http://lessisbetter.site/2018/12/13/golang-slect/">Golang并发模型：轻松入门select</a></li>
+<li><a href="http://lessisbetter.site/2018/12/17/golang-selete-advance/">Golang并发模型：select进阶</a></li>
+<li><a href="http://lessisbetter.site/2018/12/20/golang-simple-goroutine-pool/">Golang并发模型：轻松入门协程池</a></li>
+<li><a href="http://lessisbetter.site/2019/01/04/golang-pkg-sync/">Golang并发的次优选择：sync包</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有新文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/04/golang-pkg-sync/">http://lessisbetter.site/2019/01/04/golang-pkg-sync/</a></li>
+</ol>
+</blockquote>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
+
+<img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
+
+
+<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/12/20/golang-simple-goroutine-pool/" rel="prev" title="Golang并发模型：轻松入门协程池">
+                  <i class="fa fa-chevron-left"></i> Golang并发模型：轻松入门协程池
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/01/14/golang-channel-and-mutex/" rel="next" title="Golang并发：再也不愁选channel还是选锁">
+                  Golang并发：再也不愁选channel还是选锁 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'a8c25720792f5c175ea1ad6ea2a92522',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

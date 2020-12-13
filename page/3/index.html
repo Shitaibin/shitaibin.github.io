@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="云原生、Go语言、区块链">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Go语言充电站">
+<meta property="og:url" content="http://lessisbetter.site/page/3/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="云原生、Go语言、区块链">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="云原生 k8s kubernetes 区块链 Go语言 后端 技术 人生 编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/page/3/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/15/why-pbft-needs-3-phase-message/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/03/15/why-pbft-needs-3-phase-message/" class="post-title-link" itemprop="url">为什么PBFT需要3个阶段消息？</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-15 09:25:41" itemprop="dateCreated datePublished" datetime="2020-03-15T09:25:41+08:00">2020-03-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在面试的时候，很多同学的简历熟悉PBFT共识算法，在现场面试的时候，却只能说个主要逻辑，离完整的算法，还差十万八千里，相似从网络上看了一些文章，就算是熟悉了。当我问“为什么PBFT需要3个阶段消息？2个阶段行不行”时，还没有人能回答出来。</p>
+<p>回答这个问题，还要从PBFT要解决的本质问题说起，所以我打算以这样一个思路，为大家回答问题：</p>
+<ul>
+<li>PBFT与拜占庭问题</li>
+<li>拜占庭节点在网络中的行为</li>
+<li>什么是3阶段消息</li>
+<li>3阶段消息解决什么问题</li>
+<li>为什么不能只有前2个阶段</li>
+<li>论文使用的2个不变性</li>
+<li>为什么3个阶段可以达成一致性</li>
+</ul>
+<h2 id="PBFT与拜占庭问题"><a href="#PBFT与拜占庭问题" class="headerlink" title="PBFT与拜占庭问题"></a>PBFT与拜占庭问题</h2><blockquote>
+<p>莱斯利·兰波特在其论文[1]中描述了如下拜占庭问题：</p>
+<p>一组拜占庭帝国的将军分别各率领一支军队共同围困一座城市。为了简化问题，将各支军队的行动策略限定为进攻或撤离两种。因为部分军队进攻，或部分军队撤离可能会造成灾难性后果，因此各位将军必须通过投票来达成一致策略，即所有军队一起进攻或所有军队一起撤离。因为各位将军分处城市不同方向，他们只能通过信使互相联系。在投票过程中，每位将军都将自己投票进攻还是撤退的信息，通过信使分别通知其他所有将军，这样一来每位将军根据自己的投票，和其他所有将军送来的信息，就可以知道共同的投票结果，而决定行动策略。</p>
+<p>问题在于，将军中可能出现叛徒(坏将军)，他们不仅可能向较为糟糕的策略投票，还可能选择性地发送投票信息。阻止好将军达成一致的形成策略。</p>
+<p>摘自：<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%8B%9C%E5%8D%A0%E5%BA%AD%E5%B0%86%E5%86%9B%E9%97%AE%E9%A2%98">维基百科：拜占庭将军问题</a>，有删改。</p>
+</blockquote>
+<p><em>很多人喜欢玩狼人杀，我也喜欢，但我玩的很菜</em>，我用狼人杀跟拜占庭将军问题做个类比。</p>
+<p>在狼人杀开局的时候，你是好人，并且不知道自己的队友是谁，也不知道狼人是谁，但所有的好人都有一个共同的目的：干死狼人，好人获胜。所以游戏中需要使用技巧和策略，达成目的。</p>
+<p>拜占庭将军问题是类似的，好的将军不知道其他将军是好的，还是坏的，但所有好的将军的目的是：行动一致，共同进退。所以，它们也需要策略达成一致。</p>
+<p>BFT是一类解决拜占庭将军问题的策略/算法：让非拜占庭节点达成一致的算法。在这类论文中，拜占庭节点指“坏”的将军，非拜占庭节点指“好”的将军。</p>
+<p>PBFT是实用拜占庭算法（<a target="_blank" rel="noopener" href="http://pmg.csail.mit.edu/papers/osdi99.pdf">Practical Byzantine Fault Tolerance</a>）的缩写，该论文与1999年发表，另外2001年又发表了一篇<a target="_blank" rel="noopener" href="http://www.pmg.csail.mit.edu/papers/bft-tocs.pdf">Practical Byzantine Fault Tolerance and Proactive Recovery</a>，让PBFT拥有恢复能力。</p>
+<p>PBFT作为解决拜占庭问题的策略：<strong>非拜占庭节点不知道哪些是拜占庭节点，哪些是非拜占庭节点，PBFT要让非拜占庭节点达成一致</strong>。</p>
+<h2 id="拜占庭节点在网络中的行为"><a href="#拜占庭节点在网络中的行为" class="headerlink" title="拜占庭节点在网络中的行为"></a>拜占庭节点在网络中的行为</h2><p>拜占庭问题是在分布式对等网络，对通信容错所提出来的。在真实世界中，拜占庭问题是什么样的？</p>
+<p>通常使用拜占庭行为，描述拜占庭节点可能的行为，拜占庭行为有：</p>
+<ul>
+<li>任何不遵守协议的动作</li>
+<li>恶意代码、节点</li>
+<li>代码bug</li>
+<li>网络故障、数据包损坏</li>
+<li>磁盘崩掉、重复丢失</li>
+<li>无权限时加入</li>
+<li>…</li>
+</ul>
+<h2 id="什么是3阶段消息"><a href="#什么是3阶段消息" class="headerlink" title="什么是3阶段消息"></a>什么是3阶段消息</h2><p><img src="http://img.lessisbetter.site/2020-03-pbft-3-phase-message.png" alt="3阶段消息"></p>
+<p>3阶段消息是：Pre-prepare、Prepare和Commit。每个消息都会包含数字签名，证明消息的发送者，以及消息类型，下文中会省略。</p>
+<p>Pre-prepare消息由主节点发出，包含：</p>
+<ul>
+<li>当前view：v</li>
+<li>主节点分配给请求的序号n</li>
+<li>请求的摘要d</li>
+<li>请求本身m</li>
+</ul>
+<p><strong>务必记牢，m、v、n、d，后面会使用缩写</strong>。</p>
+<p>Prepare是副本节点收到Pre-prepare消息后，做出的响应，发送给所有副本节点，包含：</p>
+<ul>
+<li>v</li>
+<li>n</li>
+<li>d</li>
+</ul>
+<p>Prepared状态：副本i有Pre-prepare消息，且收到2f个有效的Prepare消息。</p>
+<p>副本i达到Prepared状态，可以发送Commit消息，Commit消息的内容和Prepare消息内容相同，但消息类型和数字签名是不同的，所以可以区分。</p>
+<p>m可以使用d代替，所以Prepare和Commit消息使用d代替m，来节省通信量。</p>
+<h2 id="3阶段消息解决什么问题"><a href="#3阶段消息解决什么问题" class="headerlink" title="3阶段消息解决什么问题"></a>3阶段消息解决什么问题</h2><p>前面提到，PBFT解决的是拜占庭问题的一致性，即让非拜占庭节点达成一致。更具体的说：<strong>让请求m，在view内使用序号n，并且完成执行m，向客户端发送响应</strong>。</p>
+<h2 id="为什么不能只有前2个阶段消息"><a href="#为什么不能只有前2个阶段消息" class="headerlink" title="为什么不能只有前2个阶段消息"></a>为什么不能只有前2个阶段消息</h2><p>这个问题的等价问题是：为什么Pre-prepare和Prepare消息，不能让非拜占庭节点达成一致？</p>
+<p>Pre-prepare消息的目的是，主节点为请求m，分配了视图v和序号n，让至少f+1个非拜占庭节点对这个分配组合<code>&lt;m, v, n&gt;</code>达成一致，并且不存在<code>&lt;m&#39;, v, n&gt;</code>，即不存在有2个消息使用同一个v和n的情况。</p>
+<p><strong>Prepared状态可以证明非拜占庭节点在只有请求m使用<code>&lt;v, n&gt;</code>上达成一致</strong>。主节点本身是认可<code>&lt;m, v, n&gt;</code>的，所以副本只需要收集2f个Prepare消息，而不是2f+1个Prepare消息，就可以计算出至少f个副本节点是非拜占庭节点，它们认可m使用<code>&lt;v, n&gt;</code>，并且没有另外1个消息可以使用<code>&lt;v, n&gt;</code>。</p>
+<p>既然1个<code>&lt;v, n&gt;</code>只能对应1个请求m了，达到Prepared状态后，副本i执行请求m，不就达成一致了么？</p>
+<p>并不能。<strong>Prepared是一个局部视角，不是全局一致</strong>，即副本i看到了非拜占庭节点认可了<code>&lt;m, v, n&gt;</code>，但整个系统包含3f+1个节点，异步的系统中，存在丢包、延时、拜占庭节点故意向部分节点发送Prepare等拜占庭行文，<strong>副本i无法确定，其他副本也达到Prepared状态。如果少于f个副本成为Prepared状态，然后执行了请求m，系统就出现了不一致。</strong></p>
+<p>所以，前2个阶段的消息，并不能让非拜占庭节点达成一致。</p>
+<p>如果你了解2PC或者Paxos，我相信可以更容易理解上面的描述。2PC或Paxos，第一步只是用来锁定资源，第2步才是真正去Do Action。把Pre-prepare和Prepare理解为第一步，资源是<code>&lt;v, n&gt;</code>，只有第一步是达不成一致性的。</p>
+<h2 id="2个不变性"><a href="#2个不变性" class="headerlink" title="2个不变性"></a>2个不变性</h2><p>PBFT的论文提到了2个不变性，这2个不变性，<strong>用来证明PBFT如何让非拜占庭节点达成一致性</strong>。</p>
+<p><strong>第1个不变性</strong>，它是由Pre-prepare和Prepare消息所共同确保的不变性：非拜占庭节点在同一个view内对请求的序号达成共识。关于这个不变性，已经在<a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E5%8F%AA%E6%9C%89%E5%89%8D2%E4%B8%AA%E9%98%B6%E6%AE%B5%E6%B6%88%E6%81%AF">为什么不能只有前2个阶段消息</a>中论述过。</p>
+<p>介绍第2个不变性之前，需要介绍2个定义。</p>
+<ul>
+<li>committed-local：副本i已经是Prepared状态，并且收到了2f+1个Commit消息。</li>
+<li>committed：至少f+1个非拜占庭节点已经是Prepared状态。</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2020-03-pbft-committed.png"></p>
+<p><strong>第2个不变性</strong>，如果副本i是committed-local，那么一定存在committed。</p>
+<p>2f+1个Commit消息，去掉最多f个拜占庭节点伪造的消息，得出至少f+1个非拜占庭节点发送了Commit消息，即至少f+1个非拜占庭节点是Prepared状态。所以第2个不变性成立。</p>
+<h2 id="为什么3个阶段消息可以达成一致性"><a href="#为什么3个阶段消息可以达成一致性" class="headerlink" title="为什么3个阶段消息可以达成一致性"></a>为什么3个阶段消息可以达成一致性</h2><p>committed意味着有f+1个非拜占庭节点可以执行请求，而committed-local意味着，副本i看到了有f+1个非拜占庭节点可以执行请求，f+1个非拜占庭节点执行请求，也就达成了，让非拜占庭节点一致。</p>
+<p>虽然我前面使用了2PC和Paxos做类比，但不意味着PBFT的Commit阶段就相当于，2PC和Paxos的第2步。因为2PC和Paxos处理的CFT场景，不存在拜占庭节点，它们的主节点充当了统计功能，统计有多少节点完成了第一步。PBFT中节点是存在拜占庭节点的，主节点并不是可靠(信)的，不能依赖主节点统计是否有f+1个非拜占庭节点达成了Prepared，而是每个节点各自统计，committed-local让节点看到了，系统一定可以达成一致，才去执行请求。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文介绍了2个阶段消息是无法达成一致的原因，而为什么3阶段消息可以。最核心的还是要理解好，PBFT解决了什么问题，以及它是如何解决的。</p>
+<p><strong>PBFT解决的是在拜占庭环境下，如何提供一致性，以及如何持续的提供一致性的问题</strong>。本文只介绍了如何提供一致性，没有提如何持续提供一致性，即PBFT的可用性。现在，不妨思考一下，View Change是如何保证切换时一致性的，是否也需要2个不变性的支持呢？</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/11/pbft-xmind/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/03/11/pbft-xmind/" class="post-title-link" itemprop="url">一张思维导图看懂PBFT</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-11 21:08:05" itemprop="dateCreated datePublished" datetime="2020-03-11T21:08:05+08:00">2020-03-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>最近央行发布的《金融分布式账本安全规范》中提到了区块链系统要提供BFT共识，把之前整理的PBFT的思维导图分享给大家。</p>
+<p><strong>新标签页中打开，查看高清大图</strong>。</p>
+<h2 id="1999年版本"><a href="#1999年版本" class="headerlink" title="1999年版本"></a>1999年版本</h2><p><img src="http://img.lessisbetter.site/PBFT.svg"></p>
+<h2 id="2001年版本"><a href="#2001年版本" class="headerlink" title="2001年版本"></a>2001年版本</h2><p><img src="http://img.lessisbetter.site/PBFT-PR.svg"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/03/contribute-to-fabric/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/03/03/contribute-to-fabric/" class="post-title-link" itemprop="url">向Fabric贡献代码</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-03 20:33:19" itemprop="dateCreated datePublished" datetime="2020-03-03T20:33:19+08:00">2020-03-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>PDF如下：</p>
+<div class="pdf-container" data-target="http://img.lessisbetter.site/contribute-to-fabric.pdf" data-height="500px"></div>
+
+<blockquote>
+<p>PDF不显示时，hexo安装插件：<code>npm install --save hexo-pdf</code>。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/01/causal-relationship-and-personal-ability/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/03/01/causal-relationship-and-personal-ability/" class="post-title-link" itemprop="url">从因果关系谈个人能力建设和面试</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-01 11:13:38" itemprop="dateCreated datePublished" datetime="2020-03-01T11:13:38+08:00">2020-03-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>昨天睡前了看了一本收藏已久的书，是关于投资的，叫<a target="_blank" rel="noopener" href="https://book.douban.com/subject/30450383/">《伟大的时代-深度解读价值投资》</a>，这是一本采访了国内价值投资者的书籍，从这些投资者的话语里，看到了一些共性的东西，寻找垄断企业持续发展的根因，也就获得了投资收益，这个果。</p>
+<p>今天起床后，就想到了因果关系、面试、个人能力，在这些角度进行了一些思考，在此记录下思考的成果，这篇文章会介绍：</p>
+<ul>
+<li>因果关系应该关注因，还是关注果？</li>
+<li>如何从因果关系角度，建设个人能力？</li>
+<li>如何从因果关系角度，发现优秀的面试者？</li>
+</ul>
+<h3 id="价值投资中的因果关系"><a href="#价值投资中的因果关系" class="headerlink" title="价值投资中的因果关系"></a>价值投资中的因果关系</h3><p>这些投资者的共性是，都提到了要寻找垄断，并且能够持续垄断的企业，并投资这些企业。</p>
+<p><strong>垄断是“果”，持续垄断也是过，它们需要“因”</strong>。</p>
+<p>怎么才能有垄断，并且持续垄断呢？</p>
+<p>需要找到企业的文化、价值观、制度，这些软性的东西、虚的东西，是企业<strong>不断发展和进化</strong>的根基，这些是企业保持垄断，或成长为垄断的基石，垄断创造收益，收益是实。应了阿里一句话：把虚做实，把实做虚。</p>
+<p>所以，企业文化、价值观和制度是“因”，垄断是“果”。</p>
+<p>如果垄断是“因”，企业收益就是“果”。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-cr-monopoly.png"></p>
+<p>收益的因不只有垄断，但垄断可以带来巨大收益。</p>
+<h3 id="关注因，还是关注果？"><a href="#关注因，还是关注果？" class="headerlink" title="关注因，还是关注果？"></a>关注因，还是关注果？</h3><p>从企业文化、垄断和收益，这3者看，因果关系可以形成链条，组成一条因果链，一个元素即可以是因，又可以是果。</p>
+<p>比如，垄断是企业文化的果，是收益的因。</p>
+<p>说关注因是对的，关注果也是对的，关注因果链中，<strong>关注最根本的“因”，才是最对的</strong>。</p>
+<p>说一个开发者最容易体会的例子：解决bug，需要定位问题的“根因”，只解决中间原因，并不能真正解决bug。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-cr-root-cause.png"></p>
+<h3 id="如何从因果关系角度，建设个人能力？"><a href="#如何从因果关系角度，建设个人能力？" class="headerlink" title="如何从因果关系角度，建设个人能力？"></a>如何从因果关系角度，建设个人能力？</h3><p>我把<strong>中级</strong>技术开发者的能力，分成5个维度：技术深度、技术广度、商业思维能力、管理能力和演讲能力。</p>
+<p>不同岗位、层次看到的能力维度是不一样的，比如CTO在找技术总监时的岗位时，需要有体系建设的能力。所以上面强调的是中级开发者。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-cr-personal-ability.png"></p>
+<p>这5个维度的能力是因，项目、职位、收入这些是果。</p>
+<p>果是我们的目标，是我们要达到的地方。而因才是我们要关注的地方。</p>
+<p>建设能力，能力就转变成了“果”，那对应的因是什么呢？</p>
+<p>建设能力的“因”是<strong>持续学习</strong>。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-cr-continuelearn.png"></p>
+<p>这几年的付费学习，可把持续学习给玩坏了，总是弥漫着一种贩卖焦虑的气息，但不可否认的是，持续学习的人，总有机会。</p>
+<p>持续学习，有很多种通俗的说法:</p>
+<ol>
+<li>活到老，学到老。</li>
+<li>永不止步。</li>
+<li>不给自己设限。</li>
+<li>Stay foolish, Stay hungry。——乔布斯</li>
+<li>…</li>
+</ol>
+<p>关于技术上的持续学习，曹大（Xargin）最近这篇文章值得一看<a target="_blank" rel="noopener" href="https://xargin.com/how-to-learn/">《工程师应该怎么学习》</a>。</p>
+<h3 id="如何从因果关系角度，发现优秀的面试者？"><a href="#如何从因果关系角度，发现优秀的面试者？" class="headerlink" title="如何从因果关系角度，发现优秀的面试者？"></a>如何从因果关系角度，发现优秀的面试者？</h3><p>我考察候选人的经历不是特别多，1年下来，简历筛选过几百份，候选人也面过几十个了，有一些体会，今天就借着因果关系，浅谈一下。</p>
+<p><strong>面试的本质，是挖掘面试者当前的能力和持续学习的能力</strong>。</p>
+<p>上面这句代表2个观点：</p>
+<ol>
+<li>简历是“果”，能力是“因”。</li>
+<li>招进来能持续创建价值是未来的“果”，持续学习是“因”。</li>
+</ol>
+<p>阿里有句土话，用来招聘很适合：没有过程的结果是垃圾，没有结果的过程是放屁。</p>
+<p>上半句用来筛选简历，如果简历只写自己参与、做过了什么，而没有成果，这份简历就是垃圾，而写不出好简历的面试者，能力大概率也不优秀。</p>
+<p>下半句用来面试，面试者是怎么取得这些成果的，TA具有哪些能力才取得了这些成果？</p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>因果关系，还让我深刻的想到一句话：<strong>抓住事物的主要矛盾</strong>。</p>
+<p>咱们国家的发展，不一直就是党和政府在抓主要矛盾，解决主要矛盾的过程吗。</p>
+<h3 id="远见"><a href="#远见" class="headerlink" title="远见"></a>远见</h3><p>在世界读书日那天，美团技术团队推荐了许多书，其中有一本关于职业生涯的书籍：《<strong>远见：如何规划职业生涯3大阶段</strong>》，书很薄，也很容易理解，读完之后对职业生涯的认知提升了几个Level，值得深度阅读并实践，推荐给不断让自己更优秀的你。</p>
+<p>下面是<strong>美团点评酒旅事业群前端团队负责人郭凯</strong>的推荐语：</p>
+<blockquote>
+<p>我们不仅要找到热爱的工作，而且要建立热爱的生活。职业生涯就像是一场至少长达45年的马拉松，这本书介绍了远见思维和三大职业生涯阶段，并介绍了如何应对职场和生活的冲突。我辈应该多行动、少忧虑，并且提前做好中长期的职业思考和职业规划。如果用“远见”的思维看待眼前的影响和困难，就根本不值得一提。用“远见”的思维，长期有耐心，每天前进30公里。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/01/03/fabric-peer-ledger/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/01/03/fabric-peer-ledger/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 9：从账本角度看Peer</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-03 20:58:03" itemprop="dateCreated datePublished" datetime="2020-01-03T20:58:03+08:00">2020-01-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>区块链最核心的是<strong>可信数据</strong>，所有的功能与设计根源都是数据。本次从数据存储的角度，看一看Peer。</p>
+<h2 id="账本"><a href="#账本" class="headerlink" title="账本"></a>账本</h2><p>区块链的数据存储在账本中，账本包含：</p>
+<ul>
+<li>区块存储<ul>
+<li>区块文件</li>
+<li>区块索引数据库</li>
+</ul>
+</li>
+<li>世界状态数据库</li>
+<li>历史数据库</li>
+<li>私有数据数据库</li>
+</ul>
+<p>关于账本以上各数据库的工具，<a target="_blank" rel="noopener" href="https://hyperledger-fabric-cn.readthedocs.io/zh/latest/ledger/ledger.html">官方文档</a>中对区块存储和世界状态数据库介绍的比较详细了，但我们介绍下它没有提到的。</p>
+<h3 id="区块文件和区块索引数据库"><a href="#区块文件和区块索引数据库" class="headerlink" title="区块文件和区块索引数据库"></a>区块文件和区块索引数据库</h3><p>区块是保存在文件中的，<strong>为了快速查找区块、交易</strong>，Fabric建立了索引，指明某通道某区块高度的第x个交易，是存在哪个文件，偏移量是多少。当然，索引还包含了区块高度、区块hash等，方便根据高度、hash查询区块。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-blockfile-index.png"></p>
+<p>上图展示了一个区块文件存储区块的情况，每个区块包含：</p>
+<ul>
+<li>区块长度</li>
+<li>区块头</li>
+<li>每条交易长度、交易数据</li>
+</ul>
+<p>每个区块的开始位置、交易的开始位置，在写区块的时候记录下来，然后写到索引数据库（Index DB）。</p>
+<p><strong>整个Fabric网络只有1个区块索引数据库，也就是多通道共用一个</strong>。</p>
+<h3 id="历史数据库"><a href="#历史数据库" class="headerlink" title="历史数据库"></a>历史数据库</h3><p><strong>用来记录交易中每个状态数据的历史信息，直白点可以理解为链码中某个key的历史数值</strong>。它的key实际是<code>&#123;通道id+链码id, key, 区块高度, 交易在区块中的序号&#125;</code>组成的<strong>复合key</strong>，值为空，并且只包含有效的交易。</p>
+<p>有这样一个问题：值为空，到底怎么查询到历史状态呢？</p>
+<p>答：通过历史数据库合成复合key，但复合key中没有交易在区块中的序号，创建一个迭代器，迭代器可以获取包含key的复合key，然后从复合key中提取到交易在区块的序号，然后去区块文件中提取交易，再提取到写集的Value，就可以合成某个key的所有历史值。</p>
+<p>因此<strong>查询历史状态，需要结合历史数据库和区块文件</strong>。</p>
+<h2 id="各数据库实现"><a href="#各数据库实现" class="headerlink" title="各数据库实现"></a>各数据库实现</h2><p><strong>区块文件使用文件直接存储区块，没有使用数据库的原因</strong>是：区块是一种自然的追加操作，写入后不再修改，即不会覆盖历史区块，使用文件系统直接存储区块，可以达到区块最快落盘的目的，因为向文件写区块是顺序写，而写数据库是随机写，磁盘（包含HD、SSD）的顺序写性能要高于随机写。</p>
+<p>世界状态数据库可以使用leveldb或者CouchDB，CouchDB支持富查询功能，当链码数据按JSON建模时，CouchDB可以提供更好的数据查询，更多CouchDB的信息见文档<a target="_blank" rel="noopener" href="https://stone-fabric.readthedocs.io/zh/latest/couchdb_tutorial.html">使用 CouchDB</a>。</p>
+<p>其他数据库都使用leveldb作为底层存储。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-peer-ledger-storage.png"></p>
+<p><strong>提醒</strong>：Fabric支持多通道，逻辑上每个通道拥有一个账本。实现上区块文件是按通道名隔离开了，使用leveldb的各数据库，被各通道共用。</p>
+<h2 id="从数据看Peer功能"><a href="#从数据看Peer功能" class="headerlink" title="从数据看Peer功能"></a>从数据看Peer功能</h2><p>和账本相关的概念还有<strong>区块、交易和状态</strong>，从账本的角度看，账本向上支撑了2类功能：</p>
+<ol>
+<li>数据同步：广播与同步区块</li>
+<li>交易背书：模拟执行交易</li>
+</ol>
+<p>在下图中，数据同步和交易背书分别使用蓝色和橙色的线圈出，底部剩下的2层为账本。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-03-usage-of-peer-ledger.png"></p>
+<h3 id="账本-1"><a href="#账本-1" class="headerlink" title="账本"></a>账本</h3><p><code>core/ledger</code>实现了Peer的账本功能，包含了账本中的各项数据库，它依赖<code>common/ledger</code>实现区块文件存储，区块文件存储包含3类：</p>
+<ul>
+<li><code>File</code>：把区块保存在文件中，生产环境使用，orderer和peer皆可使用</li>
+<li><code>Json</code>：把文件保证JSON格式的文件中，使用在非生产环境，仅供orderer使用</li>
+<li><code>Ram</code> ：把区块保存在内存中，使用在非生产环境，仅供orderer使用</li>
+</ul>
+<p><code>core/ledger</code>中的：</p>
+<ul>
+<li><code>PeerLedger</code>接口，代表<strong>Peer账本</strong>，主要用来向账本写区块和私有数据，查询区块、交易和私有数据</li>
+<li><code>Txsimulator</code>接口，代表<strong>交易模拟器</strong>，用来模拟执行1条交易</li>
+<li><code>QueryExecutor</code>接口用来查询<strong>最新的</strong>数据</li>
+<li><code>HistoryQueryExecutor</code>接口用来查询<strong>历史</strong>状态</li>
+</ul>
+<h3 id="同步数据"><a href="#同步数据" class="headerlink" title="同步数据"></a>同步数据</h3><p>同步数据有2种方式：</p>
+<ul>
+<li>Deliver服务，Peer使用事件从Orderer获取区块</li>
+<li>Peer向其他节点请求获取某个区间的区块</li>
+</ul>
+<p>虽然Peer获取区块的方式有2种，但收到区块，处理区块的方式只有1种，所以下面分3小节介绍。</p>
+<h4 id="使用Deliver同步区块"><a href="#使用Deliver同步区块" class="headerlink" title="使用Deliver同步区块"></a>使用Deliver同步区块</h4><p>Deliver用来以事件的方式获取区块，场景有2点：</p>
+<ul>
+<li>Peer从Oderer获取区块</li>
+<li>客户端/SDK从Peer获取区块</li>
+</ul>
+<p>在<a href="http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/">Fabric 1.4源码解读 8：Orderer和Peer的交互</a>中已经介绍了Peer从Orderer获取区块，这里再做一点补充。</p>
+<p>Deliver服务是Orderer和Peer都使用的功能，但Orderer并没有<code>core/ledger</code>，所以从设计和实现上，<code>common/deliver</code>是从<code>common/ledger</code>中直接读区块，而不是<code>core/ledger</code>读区块。</p>
+<h4 id="Peer请求区块"><a href="#Peer请求区块" class="headerlink" title="Peer请求区块"></a>Peer请求区块</h4><p>每个Peer可以通过Gossip得知同通道的、所连接的Peer信息，其中一项就是对方Peer账本的高度。账本高度低的Peer可以向高度高的Peer发送<strong>StateRequest</strong>，请求获取某个连续区间的区块。</p>
+<p>Peer上负责StateRequest的是<code>gossip/state</code>模块，它负责：</p>
+<ul>
+<li>创建StateRequest请求</li>
+<li>处理StateRequest请求，生成StateRequest响应</li>
+<li>处理StateRequest响应</li>
+</ul>
+<p>创建请求：假设Peer1比Peer2少50个区块，并且配置了Peer每次最多取10个区块，Peer1会创建5个StateRequest请求，顺序的向Peer2进行请求，Peer1收到前一个请求的响应后，才发出下一个请求。</p>
+<p>处理请求：实际是从账本读取所请求区块的过程，这个过程主要是读取区块文件，如果区块涉及私密数据，也涉及读取私密数据库，这部分功能主要由<code>gossip/privdata</code>完成，<code>gossip/state</code>把读到的区块和私密数据生成请求响应。</p>
+<h4 id="Peer处理收到的区块"><a href="#Peer处理收到的区块" class="headerlink" title="Peer处理收到的区块"></a>Peer处理收到的区块</h4><p>Peer从Orderer和其他Peer哪获取的区块，最终都会进入到<code>gossip/state</code>，区块会被放入到一个区块缓冲区：<strong>PayloadsBuffer</strong>，默认大小为存储200个区块。</p>
+<p>每个通道账本都有一个goroutine，从各自的PayloadsBuffer拿下一个高度的区块，交给<code>gossip/privdata</code>进行区块的验证和写入。</p>
+<h5 id="验证区块"><a href="#验证区块" class="headerlink" title="验证区块"></a>验证区块</h5><p>这部分功能由<code>core/handler/validation</code>完成。在Fabric 1.4中，StateImpl会调用QueryExecutor查询状态，但实际StateImpl没有被调用。</p>
+<p>验证区块主要是并发验证区块中的交易：</p>
+<ul>
+<li>验证交易中的字段</li>
+<li>验证是否满足背书策略</li>
+<li>验证交易是否调用最新版本的链码</li>
+<li>验证交易是否重复</li>
+</ul>
+<p>交易验证的结果，即交易是否有效，并不会保存在交易中，这样区块中记录所有交易的DataHash就变化了。区块中所有交易的有效性存储在区块的元数据中，区块元数据中有一个有效性数组，依次存放了每个交易的有效性，使用数组的下标，与交易在数组中的顺序，一一对应。</p>
+<p>交易验证后，会修改区块的元数据，把无效的交易设置为响应的无效序号。</p>
+<p>如果缺失区块的私有数据，<code>gossip/privdata</code>会创建获取私有数据的请求，并获取私有数据，当区块和私有数据都准备齐全后，开始<strong>commit</strong>区块和私有数据。</p>
+<h5 id="区块写入账本"><a href="#区块写入账本" class="headerlink" title="区块写入账本"></a>区块写入账本</h5><p>包含2大块：</p>
+<ul>
+<li>交易MVCC验证<ul>
+<li>Fabric要求世界状态数据库支持MVCC，即多版本并发控制，以便交易能够并发执行（背书），在真正修改状态的时候，才判断读写的数据是否冲突，冲突的交易会被标记为无效。关于MVCC我们在下文的背书部分再详细介绍。</li>
+</ul>
+</li>
+<li>把区块写入数据库，以及修改各数据库：<ul>
+<li>把区块写入到区块文件</li>
+<li>把区块、交易的索引写入到索引数据库</li>
+<li>把<strong>有效交易</strong>的写集更新到世界状态</li>
+<li>提交历史数据库</li>
+<li>提交私密数据库</li>
+</ul>
+</li>
+</ul>
+<h5 id="写区块完成后"><a href="#写区块完成后" class="headerlink" title="写区块完成后"></a>写区块完成后</h5><p>写区块完成后，还需要做一些<strong>修剪</strong>操作：私密数据是有有效期的，比如存活100个区块时间，假如在1000高度写入了某私有数据，第1100写入账本后，私密数据就要从私密数据库被抹除。</p>
+<h3 id="背书"><a href="#背书" class="headerlink" title="背书"></a>背书</h3><p>Peer除了记账的另外一个角色就是背书，背书很重要的一个环节就是模拟执行交易。</p>
+<h4 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h4><p>Fabric为了提供更高的系统性能，支持并发的执行交易，交易在执行过程中会读写世界状态数据库，也就存在并发访问数据库的场景，为了安全的访问数据库数据，就需要对数据库的并发进行限制。</p>
+<p>Draveness在<a target="_blank" rel="noopener" href="https://draveness.me/database-concurrency-control">浅谈数据库并发控制 - 锁和 MVCC</a>种介绍了并发控制3种手段：悲观锁、乐观锁和MVCC。</p>
+<p>Fabric选择了MVCC，它要求世界状态数据库支持MVCC，本质上讲任何支持MVCC的数据库，都可以用来实现状态数据库。</p>
+<p>MVCC是多版本并发控制的缩写，它是一种思想，而不是一种具体的算法，所以不同的数据库实现的MVCC不同。</p>
+<p>在MVCC的数据存储中，数据有版本的概念，写一个数据的值，实际上是创建了一个新的版本来保存数据。</p>
+<p>MVCC可以实现并发读写的能力，当读数据时，先确定待读数据的版本，然后从该版本读取数据，写数据时，创建新的版本保存数据。读数据必然是已经存在的版本，而写数据是新的版本，因此读写可以并行。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-mvcc-read-write.png"></p>
+<h4 id="Fabric对MVCC的使用"><a href="#Fabric对MVCC的使用" class="headerlink" title="Fabric对MVCC的使用"></a>Fabric对MVCC的使用</h4><p>背书节点在模拟执行交易的过程中，会生成读写集，<strong>读集和写集分别是所有待写key读出来时的版本和待写入的新值</strong>。</p>
+<p>交易并发执行到写入区块的过程中存在2种<strong>读写冲突</strong>的情况：</p>
+<ol>
+<li>同一个区块中的前后两笔交易，后面的交易读集包含某个key，但key在前面交易的写集：也就说后面交易读的是老版本的数据，是一种脏读的情况</li>
+<li>区块中交易的读集的某个key，某之前区块的交易写集修改：背书跟写区块是并发执行的，背书时产生的写集，直到写区块才会更新到世界状态数据库，这里存在一段时间，即key已经有了新版本的数据，只是还没有提交到数据库。如果这期间有新的交易模拟执行，就会读到老版本数据，也是一种脏读的情况</li>
+</ol>
+<p>有效交易的写集会被应用到世界状态数据库，被修改数据都会有一个新的版本，这个版本是逻辑版本，成为Hight，由<code>&#123;区块高度,交易在区块内的顺序&#125;</code>组成。</p>
+<blockquote>
+<p>注：验证函数为 <code>validateTx</code>，读写集冲突错误为 <code>TxValidationCode_MVCC_READ_CONFLICT</code> ，另一个读写冲突错误为 <code>TxValidationCode_PHANTOM_READ_CONFLICT</code>， 因为执行过程中有RangeQuery，查询某个区间的Key，也需要验证这些Key是否冲突，底层本质还是读写集的验证。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从账本的视角，介绍了Peer的账本，以及和账本打交道的功能。</p>
+<p>真正企业级的区块链、大用户规模的区块链，必然能够支撑大量的并发交易，这对账本以及底层存储，都会提出更高的性能要求、磁盘利用率要求，所以理解和掌握账本和存储机制是非常有必要的。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://draveness.me/database-concurrency-control">浅谈数据库并发控制 - 锁和 MVCC</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Multiversion_concurrency_control">WIKI: MVCC</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/01/02/wal-introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/01/02/wal-introduction/" class="post-title-link" itemprop="url">WAL(预写式日志)简介</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-02 20:56:32" itemprop="dateCreated datePublished" datetime="2020-01-02T20:56:32+08:00">2020-01-02</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>Write Ahead Logging，简称WAL，也被翻译成<strong>预写式日志</strong>，是数据库技术中实现事务日志(Transaction Journal)的一种标准方法，可以实现<strong>单机</strong>事务的原子性，同时可以提高数据库的写入效率。</p>
+<p>思考如下场景，如何确保原子性：写操作修改数据库中a和b的值，二者是一个事务，需要把a和b的最新值持久化到磁盘，假如保存完a的值，系统宕机了，重新启动后，a的值已经写入，但b待写入的值已经丢失，如何发现事务没有完成呢？如何保证事务的原子性呢？</p>
+<p>可以为事务加锁，也为事务增加标志位，修改完磁盘数据后，标志位设置事务为完成，事务状态保存在磁盘中，假使保存事务状态的过程中宕机了，就把事务回滚掉。实现REDO和UNDO，就能实现原子性。</p>
+<p>数据库中针对<strong>Crash</strong>和<strong>Recovery</strong>的解决方案是WAL。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>WAL的核心思想是<strong>先写日志再写数据文件</strong>，修改数据文件必须发生在修改操作记录在日志文件之后。</p>
+<blockquote>
+<p>本文的日志指事务的操作日志，本文提到的日志都是指事务日志，不再特殊声明。</p>
+</blockquote>
+<p><img src="http://img.lessisbetter.site/2019-12-wal.png" alt="WAL"></p>
+<p>我们看WAL怎么<strong>解决宕机和恢复的问题</strong>：</p>
+<ul>
+<li>写WAL前宕机了，重启后，数据处于事务未执行的状态。</li>
+<li>写WAL时宕机了，重启后，可以检查到WAL数据不正确，回滚当事务前的状态。</li>
+<li>写WAL后宕机了，重启后，把WAL中记录的操作，应用到数据库文件中，得到事务执行后的状态。</li>
+</ul>
+<p>如此，保证了数据的恢复和事务的原子性。</p>
+<p>上面提到的都是写操作，看一下使用WAL时的<strong>读操作</strong>。WAL中可能包含了未写入到数据库文件中的最新值，如果读最新值就需要从WAL中读取，如果WAL中未读到，从数据库读到的就是最新的数据。</p>
+<p><strong>检查点</strong>：写入到WAL文件中的操作记录并不一定会立刻应用到数据库文件上，这个过程是异步的，设计检查点来记录已经被应用到数据库文件上的操作序号，检查点后面的操作记录等待被应用到数据库文件上。</p>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>WAL的作用是解决宕机和恢复的问题，同时也有其他优点：</p>
+<ol>
+<li><strong>提高写数据的性能</strong><ol>
+<li>WAL是顺序写，数据库文件是随机写，顺序写性能高于随机写</li>
+<li>减少写磁盘次数<ol>
+<li>不直接修改数据库真实数据</li>
+<li>合并若干小的事务，一次性commit到数据库</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>保证事务<strong>原子性</strong></li>
+<li>保证事务<strong>一致性</strong></li>
+<li><strong>并发读写</strong>，比如SQLite中，读写、读读都是可以并行的，比如读时需要找到WAL某个值最后写入的位置，就可以从该位置读数据，而写操作是在WAL文件后Append，二者并行。但写写不能并行，因为2次写操作都要向WAL文件Append数据，无法同时进行。</li>
+<li>WAL文件中记录了数据的历史版本，因此可以读取历史版本的值，甚至把状态回滚到某个历史版本。</li>
+</ol>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p>SQLite提到了WAL的几项缺点：</p>
+<ol>
+<li>WAL需要VFS的支持。</li>
+<li>所有使用数据库的进程必须在同一个机器上，以为WAL是单机的。</li>
+<li>多读少写的场景WAL比rollback-journal类型要慢1%~2%。</li>
+</ol>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>WAL几乎是<strong>数据存储</strong>(数据库只是数据存储的一个类别，只不过这个类别很大)的标配：</p>
+<ul>
+<li>Raft可以使用WAL保存log Entry以及状态</li>
+<li>数据库<ul>
+<li>PgSQL使用WAL实现事务日志实现事务原子性、一致性，提升性能</li>
+<li>SQLite使用WAL实现原子性</li>
+<li>MySQL使用WAL实现持久性，保证数据不丢失的情况下提升性能</li>
+<li>leveldb也使用WAL提升性能，保证操作原子性</li>
+</ul>
+</li>
+</ul>
+<h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5b04a93151882542672666e8">菜鸟学数据库——WAL模式及其原理</a></li>
+<li><a target="_blank" rel="noopener" href="http://mysql.taobao.org/monthly/2017/03/02/">PgSQL · 特性分析 · Write-Ahead Logging机制浅析</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/9.1/wal-intro.html">PostgreSQL 9.1.24 Documentation: Chapter 29. Reliability and the Write-Ahead Log</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.sqlite.org/wal.html">SQLite: Write-Ahead Logging</a></li>
+<li><a target="_blank" rel="noopener" href="https://mysqlserverteam.com/mysql-8-0-new-lock-free-scalable-wal-design/">MySQL 8.0: New Lock free, scalable WAL design</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/12/17/fabric-blocks-from-orderer-to-peer/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 8：Orderer和Peer的交互</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-17 20:14:34" itemprop="dateCreated datePublished" datetime="2019-12-17T20:14:34+08:00">2019-12-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，本文就来介绍，Peer是如何从Orderer获取区块的，顺带介绍为何Peer从Orderer获取的区块“好慢”。</p>
+<h2 id="网络拓扑"><a href="#网络拓扑" class="headerlink" title="网络拓扑"></a>网络拓扑</h2><p>假设存在如下的Fabric网络拓扑情况，本文使用此拓扑进行介绍Orderer到Peer的区块传播情况：</p>
+<p>网络中存在两家组织：Org1和Org2，它们分别拥有Peer1作为主节点，连向了排序服务的Orderer1节点。</p>
+<p>网络中存在2个应用channel：channel1和channel2，它们的账本分别是channel1 ledger和channel2 ledger，Org1和Org2都加入了这2个channel。</p>
+<p><strong>channel间是隔离的，所以Peer和Orderer对不同的channel都会分别处理</strong>。</p>
+<h2 id="宏观视角"><a href="#宏观视角" class="headerlink" title="宏观视角"></a>宏观视角</h2><p>下图展示了Orderer向Peer传递区块的宏观视角，能够展示<strong>多个通道在Orderer和Peer间传递区块的情况</strong>：</p>
+<ol>
+<li>Orderer上有2个通道的账本，每个Peer分别有2个Deliver Server对应2个通道的账本，从账本读取区块，发送给Peer。</li>
+<li>每个Peer有2个Deliver Client，也对应2个通道，接收Orderer发来的区块，加入到缓冲区Payloads Buffer，然后再从Payloads Buffer中提取区块，验证后写入对应的通道账本。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-12-spread-of-blocks-new.png"></p>
+<p>后面，介绍区块同步某个通道区块的情况。</p>
+<h2 id="单通道区块同步"><a href="#单通道区块同步" class="headerlink" title="单通道区块同步"></a>单通道区块同步</h2><p><strong>Peer利用Deliver从Orderer获取区块</strong>，就像SDK利用Deliver从Peer获取区块一样，Deliver服务端的处理是一样的，Deliver客户端的处理就由SDK、Peer自行处理了。</p>
+<p>Deliver本质是一个事件订阅接口，Leading Peer启动后，会为每个通道，分别向Orderer节点注册<strong>区块事件</strong>，并且指定结束的区块高度为<code>uint</code>类型的最大值，这是为了不停的从orderer获取区块。</p>
+<p>通过建立的gRPC连接，Orderer源源不断的向Peer发送区块，具体流程，如下图所示：</p>
+<ol>
+<li>Orderer调用<code>deliverBlock</code>函数，该函数是循环函数，获取区块直到指定高度。</li>
+<li>每当有新区块产生，<code>deliverBlock</code>能利用<code>NextBlock</code>从通道账本中读到最新的区块，如果没有最新区块，<code>NextBlock</code>会阻塞。</li>
+<li><code>deliverBlock</code>把获取的区块封装成区块事件，发送给Peer（写入到gRPC缓冲区）。</li>
+<li>Peer从gRPC读到区块事件，把区块提取出来后，加入到<strong>Payloads Buffer</strong>，Payloads Buffer默认大小为200（通过源码和日志发现，Payloads Buffer实际存储202个区块），如果Orderer想向Peer发送更多的区块，必须等Payloads Buffer被消费，有空闲的位置才可以。</li>
+<li><code>deliverPayloads</code>为循环函数，不断<strong>消费</strong>Payloads Buffer中的区块，执行区块验证，添加区块剩余元数据，最后写入通道账本。</li>
+<li>写通道账本包含区块写入区块账本，修改世界状态数据库，历史索引等。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-12-orderer-to-peer.png"></p>
+<h2 id="为何Peer从Orderer获取区块慢？"><a href="#为何Peer从Orderer获取区块慢？" class="headerlink" title="为何Peer从Orderer获取区块慢？"></a>为何Peer从Orderer获取区块慢？</h2><p>在性能测试过程中，我们发现Orderer排序完成后，Peer还在不断的从Orderer获取区块，而不是所有排序后的区块都先发送给Peer，Peer缓存起来，慢慢去验证？</p>
+<p>上面提到Orderer向Peer发送的区块，Peer收到后先存到Payloads Buffer中，Buffer有空闲位置的时候，Orderer发送的区块才能写入Buffer，deliverBlock 1次循环才能完成，才可以发送下一个区块。</p>
+<p>但Payloads Buffer大小是有限的，当Buffer满后，Orderer发送区块的操作也会收到阻塞。</p>
+<p>我们可以把Orderer和Peer间发送区块可以抽象一下，它们就是<strong>生产者-消费者模型</strong>，它们中间是缓冲区，Orderer是生产者，向缓冲区写数据，Peer是消费者，从缓冲区读数据，缓冲区满了会阻塞生产者写数据。</p>
+<p>所以<strong>Orderer向Peer发送数据的快慢，取决消费者的速度，即取决于deliverPayloads处理一个区块的快慢</strong>。</p>
+<p>deliverPayloads慢在把区块写入区块账本，也就是写账本，成了整个网络的瓶颈。</p>
+<h2 id="为何不让Peer缓存所有未处理的区块？"><a href="#为何不让Peer缓存所有未处理的区块？" class="headerlink" title="为何不让Peer缓存所有未处理的区块？"></a>为何不让Peer缓存所有未处理的区块？</h2><p>从我们测试的情况看，Orderer排序的速度远快于Peer，Peer和Orderer的高度差可以达到10万+，如果让Peer来缓存这些区块，然后再做处理是需要耗费大量的空间。</p>
+<p>在生产者-消费者模型中，只需要要消费者时刻都有数据处理即可。虽然Orderer和Peer之间是网络传输，测试网络比较可靠，传输速度远比Peer处理区块要快。</p>
+<p>Payloads Buffer可以让网络传输区块和Peer处理区块并行，这样缩短了一个区块从Orderer中发出，到Peer写入区块到账本的总时间，提升Fabric网络整体性能。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/12/16/fabric-2-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/12/16/fabric-2-0/" class="post-title-link" itemprop="url">Fabric 2.0 特性一览</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-16 20:30:11" itemprop="dateCreated datePublished" datetime="2019-12-16T20:30:11+08:00">2019-12-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Fabric 2.0 Beta版前几日已经发布了，浏览了官方文档和Release Notes，对特性进行了记录，</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/master/whatsnew.html">官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric/releases/tag/v2.0.0-beta">Relase Notes</a></li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2019-12-fabric-2.0.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/21/fabric-orderer-architecture/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/11/21/fabric-orderer-architecture/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 7：Orderer架构解读</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-11-21 20:07:54" itemprop="dateCreated datePublished" datetime="2019-11-21T20:07:54+08:00">2019-11-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Orderer介绍"><a href="#Orderer介绍" class="headerlink" title="Orderer介绍"></a>Orderer介绍</h2><p>排序服务由一组<strong>排序节点</strong>组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的<strong>一致性</strong>服务。</p>
+<p><img src="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png"></p>
+<blockquote>
+<p>图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft</p>
+</blockquote>
+<p>排序服务所提供的一致性，依赖<strong>确定性的共识算法</strong>，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有Solo、Kafka、EtcdRaft。</p>
+<p>客户端<strong>通过Broadcast接口向Orderer提交背书过的交易</strong>，客户端（此处广义指用户客户端和<strong>Peer节点</strong>）<strong>通过Deliver接口订阅区块事件，从Orderer获取区块</strong>。</p>
+<p>更多的排序服务介绍请参考这篇官方文档<a target="_blank" rel="noopener" href="https://hyperledger-fabric-cn.readthedocs.io/zh/latest/orderer/ordering_service.html">排序服务</a>。</p>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="http://img.lessisbetter.site/2019-11-arch-of-orderer.png" alt="Architecture of Orderer"></p>
+<blockquote>
+<p>本图依赖 Fabric 1.4 源码分析而得</p>
+</blockquote>
+<p>Orderer由：多通道、共识插件、消息处理器、本地配置、区块元数据、gRPC服务端、账本等组成，其中gRPC中的Deliver、Ledger是通用的（Peer也有），其余都是Orderer独有的。</p>
+<h3 id="多通道"><a href="#多通道" class="headerlink" title="多通道"></a>多通道</h3><p>Fabric 支持多通道特性，而Orderer是多通道的核心组成部分。多通道由Registrar、ChainSupport、BlockWriter等一些重要部件组成。</p>
+<p>Registrar是所有通道资源的汇总，访问每一条通道，都要经由Registrar，更多信息请看<a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/#Registrar">Registrar</a>。</p>
+<p>ChainSupport代表了每一条通道，它融合了一条通道所有的资源，更多信息请看<a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/#ChainSupport">ChainSupport</a>。</p>
+<p>BlockWriter 是区块达成共识后，Orderer写入区块到账本需要使用的接口。</p>
+<h3 id="共识插件"><a href="#共识插件" class="headerlink" title="共识插件"></a>共识插件</h3><p>Fabric的共识是插件化的，抽象出了Orderer所使用的共识接口，任何一种共识插件，只要满足给定的接口，就可以配合Fabric Orderer使用。</p>
+<p>当前共识有3种插件：Solo、Kafka、EtcdRaft。Solo用于实验环境，Kafka和EtcdRaft用于生产环境，Kafka和EtcdRaft都是CFT算法，但EtcdRaft比Kafka更易配置。</p>
+<p>EtcdRaft实在Fabric 1.4开始引入的，如果之前的生产环境使用Kafka作为共识，可以遵循Fabric给的指导，把Kafka共识，迁移到Raft共识。</p>
+<h3 id="gRPC通信"><a href="#gRPC通信" class="headerlink" title="gRPC通信"></a>gRPC通信</h3><p>Orderer只有2个gRPC接口：</p>
+<ul>
+<li>Broadcast：用来接收客户端提交的待排序交易</li>
+<li>Deliver：客户端（包括Peer节点）用来从Orderer节点获取已经达成一致的区块</li>
+</ul>
+<p>其中，Broadcast是Orderer独有的，而Devliver是通用的，因为客户端也可以利用Deliver接口从Peer节点获取区块、交易等。</p>
+<p>关于Broadcast和Orderer更多介绍可以参考杨保华的2篇笔记：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/orderer_broadcast.md">Orderer 节点 Broadcast 请求的处理</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/orderer_deliver.md">Orderer 节点 Deliver 请求的处理</a>。<h3 id="Local-Config"><a href="#Local-Config" class="headerlink" title="Local Config"></a>Local Config</h3></li>
+</ul>
+<p>用来解析orderer节点的配置文件: <code>orderer.yaml</code>，并保存入内存。</p>
+<p>该配置文件中的配置，是节点本地的配置，不需要Orderer节点间统一的配置，因此不需要上链，相关配置有：</p>
+<ul>
+<li>网络相关配置</li>
+<li>账本类型、位置</li>
+<li>raft文件位置</li>
+<li>…</li>
+</ul>
+<p>而上链的配置，被称为通道配置，需要使用配置交易进行更新，这部分配置，写在<code>configtx.yaml</code>中，和Orderer相关的有：</p>
+<ul>
+<li>共识类型</li>
+<li>区块大小</li>
+<li>切区块的时间</li>
+<li>区块内交易数</li>
+<li>各种共识的相关配置</li>
+<li>…</li>
+</ul>
+<h3 id="Metadata"><a href="#Metadata" class="headerlink" title="Metadata"></a>Metadata</h3><p>区块中有4个元数据：</p>
+<ul>
+<li>区块签名，存放orderer对区块的SignatureHeader</li>
+<li>最新配置区块的高度，方便获取当前通道最新配置</li>
+<li>交易过滤，为数组，存放区块内所有交易的有效性，使用数字代表无效的原因，由验证交易的记账节点填写</li>
+<li>orderer相关元数据，不同的共识类型，该元数据不同</li>
+</ul>
+<p>区块Header中记录了Data.Hash()，Data是所有交易后序列化的结果，但不包含区块元数据，所以区块元数据是可以在产生区块后修改的。即，即使元数据上链了，但这数据是可以修改的，只不过修改也没有什么意义。</p>
+<h3 id="MsgProcessor"><a href="#MsgProcessor" class="headerlink" title="MsgProcessor"></a>MsgProcessor</h3><p>orderer收到交易后需要对交易进行多项检查，不同的通道可以设置不同的MsgProcessor，也就可以进行不同的检查。</p>
+<p>当前Processor分2个：</p>
+<ul>
+<li>应用通道的叫StandardChannel</li>
+<li>系统通道的叫SystemChannel</li>
+</ul>
+<p>StandardChannel会对交易进行以下检查：</p>
+<ul>
+<li>交易内容不能为空</li>
+<li>交易大小不能超过区块大小最大值（默认10MB）</li>
+<li>交易交易签名不符合签名策略</li>
+<li>签名者证书是否过期</li>
+</ul>
+<p>SystemChannel只比StandardChannel多一项：系统配置检查，用来检查以下交易中包含的配置，配置项是否有缺失，或者此项配置是否允许更新等。</p>
+<h3 id="BlockCutter"><a href="#BlockCutter" class="headerlink" title="BlockCutter"></a>BlockCutter</h3><p>BlockCutter用来把收到的交易分成多个组，每组交易会打包到一个区块中。而分组的过程，就是切块，每组交易被称为一个Batch，它有一个缓冲区用来存放待切块交易。</p>
+<p>切块有3个可配置条件：</p>
+<ul>
+<li>缓冲区内交易数，达到区块包含的交易上限（默认500）</li>
+<li>缓冲区内交易总大小，达到区块大小上限（默认10MB）</li>
+<li>缓冲区存在交易，并且未出块的时间，达到切块超时时间（默认2s）</li>
+</ul>
+<p>切块有1个不可配置条件：</p>
+<ul>
+<li>缓冲区收到配置交易，配置交易要放到单独区块，如果缓冲区有交易，缓冲区已有交易会切到1个区块</li>
+</ul>
+<p>超多刚接触Fabric的人有这样一个疑问：排序节点是按什么规则对交易排序的？</p>
+<p>按什么顺序对交易排序并不重要，只要交易在区块内的顺序是一致的，然后所有记账节点，按交易在区块内的顺序，处理交易，最后得到的状态必然是一致的，这也是区块链保持一致性的原理。</p>
+<p>再回过头来说一下实现是什么顺序：哪个交易先写入BlockCutter的缓冲区，哪个交易就在前面，仅此而已。</p>
+<h3 id="BlockWriter"><a href="#BlockWriter" class="headerlink" title="BlockWriter"></a>BlockWriter</h3><p>Orderer的BlockWriter是基于common/ledger实现的，<strong>它用来保存区块文件</strong>，不包含状态数据库等其他数据库，其中有3类区块文件:ram，json和file，file是Orderer和Peer都可使用的，另外2个只能Orderer使用。</p>
+<p>BlockWriter用来向Peer的账本追加区块，但追加区块之前，还需要做另外1件事情，设置区块的元数据。</p>
+<p>区块元数据包含：</p>
+<ul>
+<li>区块签名，存放orderer对区块的SignatureHeader</li>
+<li>最新配置区块的高度，方便获取当前通道最新配置</li>
+<li>交易过滤，为数组，存放区块内所有交易的有效性，使用数字代表无效的原因，由验证交易的记账节点填写</li>
+<li>orderer相关元数据，不同的共识类型，该元数据不同</li>
+</ul>
+<p>但此时只设置其中的3个：区块签名、配置区块高度、orderer相关的元数据。因为交易的有效性在记账节点检查后才能设置。</p>
+<p><strong>为何不在创建区块的时候就设置这些元数据信息，而是在区块经过共识之后？</strong></p>
+<p>共识的过程会传播区块，只让区块包含必要的信息，可以减少区块大小，降低通信量。但元数据占用大小非常小，所以这未必是真实原因。</p>
+<p>BlockWriter还有<strong>另外一个功能：根据一个Batch创建下一个高度的区块</strong>。一个区块包含了：</p>
+<ul>
+<li>Header：区块高度、前一个区块Hash、Data的哈希值</li>
+<li>Data：被序列化的交易列表</li>
+<li>Metadata：区块元数据</li>
+</ul>
+<p>Header只记录Data的哈希值，不包含Metadata哈希值，这样的目的是，在区块创建之后，仍能修改区块。</p>
+<h2 id="Orderer节点启动"><a href="#Orderer节点启动" class="headerlink" title="Orderer节点启动"></a>Orderer节点启动</h2><p>根据Fabric 1.4源码梳理Orderer启动步骤：</p>
+<ul>
+<li>加载配置文件</li>
+<li>设置Logger</li>
+<li>设置本地MSP</li>
+<li>核心启动部分：<ul>
+<li>加载创世块</li>
+<li>创建账本工厂</li>
+<li>创建本机gRPCServer</li>
+<li>如果共识需要集群(raft)，创建集群gRPCServer</li>
+<li>创建Registrar：设置好共识插件，启动各通道，如果共识是raft，还会设置集群的gRPC接口处理函数Step</li>
+<li>创建本机server：它是原子广播的处理服务，融合了Broadcast处理函数、deliver处理函数和registrar</li>
+<li>开启profile</li>
+<li>启动集群gRPC服务</li>
+<li>启动本机gRPC服务</li>
+</ul>
+</li>
+</ul>
+<p>启动流程图可请参考杨宝华的笔记<a target="_blank" rel="noopener" href="https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/orderer_start.md">Orderer 节点启动过程</a>，笔记可能是老版本的Fabric，但依然有参考价值。</p>
+<h2 id="Orderer处理交易的流程"><a href="#Orderer处理交易的流程" class="headerlink" title="Orderer处理交易的流程"></a>Orderer处理交易的流程</h2><h3 id="普通交易在Orderer中的流程"><a href="#普通交易在Orderer中的流程" class="headerlink" title="普通交易在Orderer中的流程"></a>普通交易在Orderer中的流程</h3><p>交易是区块链的核心，交易在Orderer中的流程分3阶段：</p>
+<ol>
+<li>Orderer 的 Broadcast 接口收到来自客户端提交的交易，会获取交易所在的链的资源，并进行首次检查，然后提交给该链的共识，对交易进行排序，最后向客户端发送响应，为下图蓝色部分。</li>
+<li>共识实例是单独运行的，也就是说Orderer把交易交给共识后，共识可能还在处理交易，然而Orderer已经开始向客户端发送提交交易的响应。共识如果发现排序服务的配置如果进行了更新，会再次检查交易，然后利用把Pending的交易分割成一组，然后打包成区块，然后共识机制确保各Orderer节点对区块达成一致，最后将区块写入账本。为下图绿色部分。</li>
+<li>Peer会向Orderer订阅区块事件，每当新区块被Orderer写入账本时，Orderer会把新区块以区块事件的方式，发送给Peer。为下图换色部分。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-11-21-orderer-tx-flow.png"></p>
+<p>上面提到Orderer和共识实例分别会对交易进行2次检查，这些检查是相同的，为何要进行两次检查呢？</p>
+<p>代码如下：ProcessMessage 会调用<code>ProcessNormalMsg</code>，对交易进行第一次检查，如果有错误，会向客户端返回错误响应。 SomeConsensurFunc 是一个假的函数名称，但3种共识插件实现，都包含相同的代码片，当消息中 configSeq &lt; seq 时，再次对交易进行检查，如果错误，则丢次此条交易。configSeq是Order函数传入的，即第一次检查交易时的配置号，seq为共识当前运行时的配置号。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bh *Handler)</span> <span class="title">ProcessMessage</span><span class="params">(msg *cb.Envelope, addr <span class="keyword">string</span>)</span> <span class="params">(resp *ab.BroadcastResponse)</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    configSeq, err := processor.ProcessNormalMsg(msg)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        logger.Warningf(<span class="string">&quot;[channel: %s] Rejecting broadcast of normal message from %s because of error: %s&quot;</span>, chdr.ChannelId, addr, err)</span><br><span class="line">        <span class="keyword">return</span> &amp;ab.BroadcastResponse&#123;Status: ClassifyError(err), Info: err.Error()&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    err = processor.Order(msg, configSeq)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SomeConsensurFunc</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> msg.configSeq &lt; seq &#123;</span><br><span class="line">        _, err = ch.support.ProcessNormalMsg(msg.normalMsg)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            logger.Warningf(<span class="string">&quot;Discarding bad normal message: %s&quot;</span>, err)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我认为如此设计的原因，考量如下：<br>共识插件应当尽量高效，orderer尽量把能做的做掉，把不能做的交给共识插件，而交易检查就是orderer能做的。共识插件只有在排序服务配置更新后，才需要重新检查交易，以判断是否依然满足规则。排序服务的配置通常是比较稳定的，更新频率很低，所以进行2次校验的频率也是非常低。这种方式，比只在共识插件校验，会拥有更高的整体性能。</p>
+<h3 id="配置交易在Orderer中的流程"><a href="#配置交易在Orderer中的流程" class="headerlink" title="配置交易在Orderer中的流程"></a>配置交易在Orderer中的流程</h3><p>配置交易可以用来创建通道、更新通道配置，与普通交易的处理流程总体是相似的，只不过多了一些地方或者使用不同的函数，比如：</p>
+<ul>
+<li>交易检查函数不是ProcessNormalMsg，而是ProcessConfigMsg</li>
+<li>配置交易单独打包在1个区块</li>
+<li>配置交易写入账本后，要让配置生效，即Orderer应用最新的配置</li>
+<li>…</li>
+</ul>
+<h3 id="使用Raft共识，交易在Orderer中的流程"><a href="#使用Raft共识，交易在Orderer中的流程" class="headerlink" title="使用Raft共识，交易在Orderer中的流程"></a>使用Raft共识，交易在Orderer中的流程</h3><p>上面2中流程都是与具体共识算法无关的，这里补充一个Raft共识的。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-orderer-using-raft.png"></p>
+<p>使用Raft共识的链处理交易包含了上图中的4步：</p>
+<ul>
+<li>交易：处理交易</li>
+<li>区块：创建区块</li>
+<li>Raft：使用Raft对区块达成共识</li>
+<li>账本：写区块元数据，把区块写入到账本</li>
+</ul>
+<p>如果把图中提到的：转发和Raft去掉，就是以Solo为共识的链的过程。</p>
+<p>下图是更加细化一层的，如果看不懂，建议先读下<a href="http://lessisbetter.site/2019/08/22/etcd-raft-source-data-flow/">Etcd Raft架构设计和源码剖析2：数据流</a>这篇文章。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-fabric-order-with-etcdraft.png"></p>
+<p>红色圈出来的是etcd/raft的实现，蓝色圈出来的是Fabric使用raft为共识的部分，外面的Broadcast、Deliver是属于Orderer但不属于某条链。</p>
+<p>这张图和etcd与raft交互没有太多不同，只有2个地方：</p>
+<ol>
+<li>chains要把交易转化为区块，再交给raft去共识</li>
+<li>chains的Apply并不是去修改状态机，而是把取消写到账本</li>
+</ol>
+<h2 id="源码简介"><a href="#源码简介" class="headerlink" title="源码简介"></a>源码简介</h2><p>Orderer的代码位于<code>fabric/orderer</code>，其目录结构如下，标注了每个目录结构的功能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric git:(readCode) ✗ tree -L 2 orderer</span><br><span class="line">orderer</span><br><span class="line">├── README.md</span><br><span class="line">├── common</span><br><span class="line">│   ├── blockcutter 缓存待打包的交易，切块</span><br><span class="line">│   ├── bootstrap 启动时替换通道创世块</span><br><span class="line">│   ├── broadcast orderer的Broadcast接口</span><br><span class="line">│   ├── cluster （Raft）集群服务</span><br><span class="line">│   ├── localconfig 解析orderer配置文件orderer.yaml</span><br><span class="line">│   ├── metadata 区块元数据填写</span><br><span class="line">│   ├── msgprocessor 交易检查</span><br><span class="line">│   ├── multichannel 多通道支持：Registrar、chainSupport、写区块</span><br><span class="line">│   └── server Orderer节点的服务端程序</span><br><span class="line">├── consensus 共识插件</span><br><span class="line">│   ├── consensus.go 共识插件需要实现的接口等定义</span><br><span class="line">│   ├── etcdraft raft共识插件</span><br><span class="line">│   ├── inactive 未激活时的raft</span><br><span class="line">│   ├── kafka kafka共识插件</span><br><span class="line">│   ├── mocks 测试用的共识插件</span><br><span class="line">│   └── solo solo共识插件</span><br><span class="line">├── main.go orderer程序入口</span><br><span class="line">├── mocks</span><br><span class="line">│   ├── common</span><br><span class="line">│   └── util</span><br><span class="line">└── sample_clients orderer的客户端程序样例</span><br><span class="line">    ├── broadcast_config</span><br><span class="line">    ├── broadcast_msg</span><br><span class="line">    └── deliver_stdout</span><br><span class="line"></span><br><span class="line">23 directories, 3 files</span><br></pre></td></tr></table></figure>
+
+<p>阅读Orderer源码，深入学习Orderer的时候，建议以下顺序：</p>
+<ul>
+<li>核心的数据结构，主要在multichannel、consensus.go：<a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">Fabric 1.4源码解读 6：Orderer核心数据结构</a></li>
+<li>Orderer的启动</li>
+<li>Broadcast接口</li>
+<li>msgprocessor</li>
+<li>通过Solo掌握共识插件需要做哪些工作</li>
+<li>切块：blockcutter</li>
+<li>写区块：BlockWriter、metadata</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从宏观的角度介绍了Orderer的功能、核心组成，以及交易在Orderer中的流程，Peer如何从Orderer获取区块。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/11/18/fabric-orderer-structs/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 6：Orderer核心数据结构</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-11-18 20:45:23" itemprop="dateCreated datePublished" datetime="2019-11-18T20:45:23+08:00">2019-11-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>许多Orderer的文章，都是从Orderer的启动过程讲起，今天换一种“乐高”角度，先看看有哪些“零件”，再看这些零件怎么配合。</p>
+<p>Orderer负责接收交易，把交易打包成区块，然后区块在所有Orderer节点之间达成一致，再分发给Peer的功能，这涉及了：</p>
+<ul>
+<li>网络：gRPC接收交易，向Peer发送区块</li>
+<li>切块：把交易打包成区块</li>
+<li>共识：所有Orderer节点达成一致</li>
+</ul>
+<p>这些功能是由Orderer核心数据结构组织起来。</p>
+<blockquote>
+<p>在Fabric中，通道和链在概念上都是一条区块链，所以本文中也会可能会混用链和通道。</p>
+</blockquote>
+<h2 id="核心数据结构"><a href="#核心数据结构" class="headerlink" title="核心数据结构"></a>核心数据结构</h2><h3 id="Registrar"><a href="#Registrar" class="headerlink" title="Registrar"></a>Registrar</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-registrar.png" alt="Registrar"></p>
+<p>代码中，这样描述Registrar：</p>
+<blockquote>
+<p>Registrar serves as a point of access and control for the individual channel resources.</p>
+</blockquote>
+<p>可见它负责了每个channel资源的访问和控制点，也就说，要对某个通道怎么样，得从这入手。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Registrar <span class="keyword">struct</span> &#123;</span><br><span class="line">	lock sync.RWMutex</span><br><span class="line">	<span class="comment">// 保存了多条链</span></span><br><span class="line">	chains <span class="keyword">map</span>[<span class="keyword">string</span>]*ChainSupport</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 共识插件</span></span><br><span class="line">	consenters         <span class="keyword">map</span>[<span class="keyword">string</span>]consensus.Consenter</span><br><span class="line">	ledgerFactory      blockledger.Factory</span><br><span class="line">	signer             crypto.LocalSigner</span><br><span class="line">    </span><br><span class="line">	systemChannelID    <span class="keyword">string</span></span><br><span class="line">	systemChannel      *ChainSupport</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>chains</code>保存了每一条链，每一条链在Orderer中都以<a href="#ChainSupport">ChainSupport</a>代表。</li>
+<li><code>consenters</code>保存了所有的共识插件，每个共识插件都是一个<a href="#Consenter">Consenter</a>，Fabric 1.4中共识插件有Solo、Kafka、EtcdRaft。</li>
+<li><code>ledgerFactory</code>用来读取和创建链的账本。</li>
+<li><code>signer</code>用来对Orderer中的数据进行签名，以及创建<a href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/#%E8%A7%A3%E5%AF%86SignatureHeader">SignatureHeader</a>。</li>
+<li><code>systemChannelID</code>和<code>systemChannel</code>分别是系统链ID、系统链实例。</li>
+</ul>
+<h3 id="ChainSupport"><a href="#ChainSupport" class="headerlink" title="ChainSupport"></a>ChainSupport</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-chainsupport.png" alt="chainsupport"></p>
+<p>ChainSupport汇集了一条通道所需要的所有资源，所以说一个ChainSupport代表了一条链。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ChainSupport <span class="keyword">struct</span> &#123;</span><br><span class="line">	*ledgerResources</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line">	*BlockWriter</span><br><span class="line">	consensus.Chain</span><br><span class="line">	cutter blockcutter.Receiver</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ChainSupport 是一堆接口的集合，这些接口构成一条链所有的操作，接口可以分为4类：</p>
+<ul>
+<li>账本：<code>ledgerResources</code>、<code>BlockWriter</code>分别是账本读写和把区块写入到账本。</li>
+<li>消息：<code>msgprocessor.Processor</code>、<code>cutter</code>分别是处理交易和把交易切块。</li>
+<li>共识：<code>consensus.Chain</code>是Orderer的共识实例，比如每条链都有自己的Raft共识实例，它们互不干扰。</li>
+<li>签名：<code>crypto.LocalSigner</code>，同Registrar中的介绍。</li>
+</ul>
+<h3 id="Chain"><a href="#Chain" class="headerlink" title="Chain"></a>Chain</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-chain.png" alt="Chain"></p>
+<p>Chain是接口，它的实现并不一条链，而是一条链的共识实例，可以是Solo、Kafka和EtcdRaft，它运行在单独的协程，使用Channel和ChainSupport通信，它调用其它接口完成切块，以及让所有的Orderer节点对交易达成一致。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Chain defines a way to inject messages for ordering.</span></span><br><span class="line"><span class="comment">// Note, that in order to allow flexibility in the implementation, it is the responsibility of the implementer</span></span><br><span class="line"><span class="comment">// to take the ordered messages, send them through the blockcutter.Receiver supplied via HandleChain to cut blocks,</span></span><br><span class="line"><span class="comment">// and ultimately write the ledger also supplied via HandleChain.  This design allows for two primary flows</span></span><br><span class="line"><span class="comment">// 1. Messages are ordered into a stream, the stream is cut into blocks, the blocks are committed (solo, kafka)</span></span><br><span class="line"><span class="comment">// 2. Messages are cut into blocks, the blocks are ordered, then the blocks are committed (sbft)</span></span><br><span class="line"><span class="keyword">type</span> Chain <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// 普通消息/交易排序</span></span><br><span class="line">	<span class="comment">// Order accepts a message which has been processed at a given configSeq.</span></span><br><span class="line">	<span class="comment">// If the configSeq advances, it is the responsibility of the consenter</span></span><br><span class="line">	<span class="comment">// to revalidate and potentially discard the message</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Order(env *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置消息/交易排序</span></span><br><span class="line">	<span class="comment">// Configure accepts a message which reconfigures the channel and will</span></span><br><span class="line">	<span class="comment">// trigger an update to the configSeq if committed.  The configuration must have</span></span><br><span class="line">	<span class="comment">// been triggered by a ConfigUpdate message. If the config sequence advances,</span></span><br><span class="line">	<span class="comment">// it is the responsibility of the consenter to recompute the resulting config,</span></span><br><span class="line">	<span class="comment">// discarding the message if the reconfiguration is no longer valid.</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Configure(config *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 等待排序集群可用</span></span><br><span class="line">	<span class="comment">// WaitReady blocks waiting for consenter to be ready for accepting new messages.</span></span><br><span class="line">	<span class="comment">// This is useful when consenter needs to temporarily block ingress messages so</span></span><br><span class="line">	<span class="comment">// that in-flight messages can be consumed. It could return error if consenter is</span></span><br><span class="line">	<span class="comment">// in erroneous states. If this blocking behavior is not desired, consenter could</span></span><br><span class="line">	<span class="comment">// simply return nil.</span></span><br><span class="line">	WaitReady() error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当排序集群发送错误时，会关闭返回的通道</span></span><br><span class="line">	<span class="comment">// Errored returns a channel which will close when an error has occurred.</span></span><br><span class="line">	<span class="comment">// This is especially useful for the Deliver client, who must terminate waiting</span></span><br><span class="line">	<span class="comment">// clients when the consenter is not up to date.</span></span><br><span class="line">	Errored() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动当前链</span></span><br><span class="line">	<span class="comment">// Start should allocate whatever resources are needed for staying up to date with the chain.</span></span><br><span class="line">	<span class="comment">// Typically, this involves creating a thread which reads from the ordering source, passes those</span></span><br><span class="line">	<span class="comment">// messages to a block cutter, and writes the resulting blocks to the ledger.</span></span><br><span class="line">	Start()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 停止当前链，并释放资源</span></span><br><span class="line">	<span class="comment">// Halt frees the resources which were allocated for this Chain.</span></span><br><span class="line">	Halt()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Consenter"><a href="#Consenter" class="headerlink" title="Consenter"></a>Consenter</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-consenter.png" alt="Consenter"></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Consenter <span class="keyword">interface</span> &#123;</span><br><span class="line">	HandleChain(support ConsenterSupport, metadata *cb.Metadata) (Chain, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Consenter也是接口，它只有1个功能用来创建<code>Chain</code>。每种共识插件，都有自己单独的<strong>consenter实现</strong>，分别用来创建solo实例、kafka实例或etcdraft实例。</p>
+<h3 id="ConsenterSupport"><a href="#ConsenterSupport" class="headerlink" title="ConsenterSupport"></a>ConsenterSupport</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-consentersupport.png" alt="ConsenterSupport"></p>
+<p>ConsenterSupport为<strong>consenter实现</strong>提供所需的资源，其实就是共识用来访问外部数据的接口。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ConsenterSupport provides the resources available to a Consenter implementation.</span></span><br><span class="line"><span class="keyword">type</span> ConsenterSupport <span class="keyword">interface</span> &#123;</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line"></span><br><span class="line">	<span class="comment">// VerifyBlockSignature verifies a signature of a block with a given optional</span></span><br><span class="line">	<span class="comment">// configuration (can be nil).</span></span><br><span class="line">	VerifyBlockSignature([]*cb.SignedData, *cb.ConfigEnvelope) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 提供把消息切成块的接口</span></span><br><span class="line">	<span class="comment">// BlockCutter returns the block cutting helper for this channel.</span></span><br><span class="line">	BlockCutter() blockcutter.Receiver</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的orderer配置</span></span><br><span class="line">	<span class="comment">// SharedConfig provides the shared config from the channel&#x27;s current config block.</span></span><br><span class="line">	SharedConfig() channelconfig.Orderer</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的通道配置</span></span><br><span class="line">	<span class="comment">// ChannelConfig provides the channel config from the channel&#x27;s current config block.</span></span><br><span class="line">	ChannelConfig() channelconfig.Channel</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 生成区块</span></span><br><span class="line">	<span class="comment">// CreateNextBlock takes a list of messages and creates the next block based on the block with highest block number committed to the ledger</span></span><br><span class="line">	<span class="comment">// Note that either WriteBlock or WriteConfigBlock must be called before invoking this method a second time.</span></span><br><span class="line">	CreateNextBlock(messages []*cb.Envelope) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 读区块</span></span><br><span class="line">	<span class="comment">// Block returns a block with the given number,</span></span><br><span class="line">	<span class="comment">// or nil if such a block doesn&#x27;t exist.</span></span><br><span class="line">	Block(number <span class="keyword">uint64</span>) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写区块</span></span><br><span class="line">	<span class="comment">// WriteBlock commits a block to the ledger.</span></span><br><span class="line">	WriteBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写配置区块并更新配置</span></span><br><span class="line">	<span class="comment">// WriteConfigBlock commits a block to the ledger, and applies the config update inside.</span></span><br><span class="line">	WriteConfigBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Sequence returns the current config squence.</span></span><br><span class="line">	Sequence() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// ChainID returns the channel ID this support is associated with.</span></span><br><span class="line">	ChainID() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Height returns the number of blocks in the chain this channel is associated with.</span></span><br><span class="line">	Height() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 以原始数据的格式追加区块，不像WriteBlock那样会修改元数据</span></span><br><span class="line">	<span class="comment">// Append appends a new block to the ledger in its raw form,</span></span><br><span class="line">	<span class="comment">// unlike WriteBlock that also mutates its metadata.</span></span><br><span class="line">	Append(block *cb.Block) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="宏观视角"><a href="#宏观视角" class="headerlink" title="宏观视角"></a>宏观视角</h2><p>把上面介绍的各项，融合在一幅图中：</p>
+<ul>
+<li>Registrar 包容万象，主要是ChainSupport和Consenter，Consenter是可插拔的</li>
+<li>ChainSupport 代表了一条链，能够指向属于本条链的共识实例，该共识实例由对应共识类型的Consenter创建</li>
+<li>共识实例使用ConsenterSupport访问共识外部资源</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2019-11-core-struct-of-orderer.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="春节就要到了，每到年末就非常适合总结、反思，思考过去一年的成长（就），过去一年的收获，过去一年的改变，所以接下来两三周的时间，我想给大家分享一些技术以外的思考。 这次先跟大家分享关于未来的思考，职业目标和规划决定了你以后的职业高度、职业角色，你本来想成架构师、技术VP、CTO，结果就是没有了结果。 后面可能分享理财和读书等方面的思考，因为技术人，首先是一个人，那必然就有生活，生活就需要money，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="未来你是CTO，还是架构师">
+<meta property="og:url" content="http://lessisbetter.site/2019/01/27/choose-your-career/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="春节就要到了，每到年末就非常适合总结、反思，思考过去一年的成长（就），过去一年的收获，过去一年的改变，所以接下来两三周的时间，我想给大家分享一些技术以外的思考。 这次先跟大家分享关于未来的思考，职业目标和规划决定了你以后的职业高度、职业角色，你本来想成架构师、技术VP、CTO，结果就是没有了结果。 后面可能分享理财和读书等方面的思考，因为技术人，首先是一个人，那必然就有生活，生活就需要money，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-leadership.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="article:published_time" content="2019-01-27T06:57:12.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.767Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="职业">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-01-leadership.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/01/27/choose-your-career/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>未来你是CTO，还是架构师 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E4%BA%BA%E6%9C%89%E5%93%AA%E4%BA%9B%E8%A7%92%E8%89%B2-%E5%B2%97%E4%BD%8D%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">技术人有哪些角色&#x2F;岗位？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E5%B8%88"><span class="nav-number">2.</span> <span class="nav-text">架构师</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A6%96%E5%B8%AD%E6%9E%B6%E6%9E%84%E5%B8%88"><span class="nav-number">3.</span> <span class="nav-text">首席架构师</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E6%80%BB%E7%9B%91"><span class="nav-number">4.</span> <span class="nav-text">技术总监</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AFVP"><span class="nav-number">5.</span> <span class="nav-text">技术VP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CTO"><span class="nav-number">6.</span> <span class="nav-text">CTO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">7.</span> <span class="nav-text">附录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-number">8.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/27/choose-your-career/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          未来你是CTO，还是架构师
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-27 14:57:12" itemprop="dateCreated datePublished" datetime="2019-01-27T14:57:12+08:00">2019-01-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>春节就要到了，每到年末就非常适合总结、反思，思考过去一年的成长（就），过去一年的收获，过去一年的改变，所以接下来两三周的时间，我想给大家分享一些技术以外的思考。</p>
+<p>这次先跟大家分享关于未来的思考，<strong>职业目标和规划决定了你以后的职业高度、职业角色</strong>，你本来想成架构师、技术VP、CTO，结果就是没有了结果。</p>
+<p>后面可能分享理财和读书等方面的思考，因为技术人，首先是一个人，那必然就有生活，生活就需要money，你不理财，最后只能一穷二白，辛辛苦苦一年的劳动，可能所剩无几，甚至负数了，几年后别人过着舒服的生活了，而你还在苦逼的挤公交、地铁。</p>
+<p>读书是获取知识最廉价的方式，知识改变命运不是闹着玩的，读大学没用这些言论是扯淡的，你看那些CEO、CTO，或者你身边的非常牛的人，哪个不读书？如果你不喜欢读书，大概是心里没有目标，没有找到自己喜欢的书。</p>
+<p>预告到此打住，如果希望读到理财和读书的文章的话，在春节期间，记得关注文章推送，不妨<strong>给一起学Golang加星标</strong>。</p>
+<h2 id="技术人有哪些角色-岗位？"><a href="#技术人有哪些角色-岗位？" class="headerlink" title="技术人有哪些角色/岗位？"></a>技术人有哪些角色/岗位？</h2><p>技术人常说自己是靠手艺、靠技术吃饭的，最初只是开发/测试/运维工程师，后面一路打怪升级，经历高级、资深工程师到达首席架构师、技术总监、技术VP、CTO，这些顶级的技术角色，哪些才是你的未来？</p>
+<p>如果你热爱技术，愿意靠技术生活，或者立志使用技术改变世界，你可能就会走到上面列出的技术岗位，<strong>你是否想过你的未来在哪？</strong></p>
+<p>如果你想到了，你是否了解这些不同岗位的区别，以及需要的能力？</p>
+<h2 id="架构师"><a href="#架构师" class="headerlink" title="架构师"></a>架构师</h2><p>架构师是一个公司的核心技术人员，是公司技术团队中的<strong>技术佼佼者</strong>，对架构师主要要求是技术能力。</p>
+<p>如果你喜欢深入研究技术，架构师就是你很好的目标。</p>
+<h2 id="首席架构师"><a href="#首席架构师" class="headerlink" title="首席架构师"></a>首席架构师</h2><p>首席架构师应当是<strong>公司技术最牛的人</strong>，但同时是公司所有架构师的管理人，需要有<strong>一定的人员管理能力</strong>，所以首席架构师的主要能力栈是：</p>
+<ol>
+<li>技术能力</li>
+<li>人员管理能力</li>
+</ol>
+<p>如果你深入研究技术，能用技术解决公司遇到的业务难题，还具备一些人员管理能力，不妨在成为架构师后，将目标再提升1个level，成为公司首席架构师。</p>
+<h2 id="技术总监"><a href="#技术总监" class="headerlink" title="技术总监"></a>技术总监</h2><p>技术总监这个岗位，一般在大、中公司才有，它是<strong>技术和管理能力比较均衡的1个岗位</strong>，技术上不如某些架构师、首席架构师，但管理能力要比架构师高，它的主要能力栈和架构师相同：</p>
+<ol>
+<li>技术能力</li>
+<li>人员管理能力 </li>
+</ol>
+<p>如果在技术圈摸爬滚打了一段时间，发现自己擅长沟通、上下级管理、员工心理、决策能力强，也许你的目标可以设定为技术经理或技术总监。</p>
+<h2 id="技术VP"><a href="#技术VP" class="headerlink" title="技术VP"></a>技术VP</h2><p>技术VP（副总裁）更是公司规模比较大时才有的技术岗位，技术VP是<strong>CTO的副手</strong>，公司只有1个CTO，但通常有多个技术VP，负责公司不同业务的技术，技术VP管着多个技术总监。技术VP也是技术出身，但比技术总监高一个level，除了技术能力和人员管理能力外，还要求技术VP有很强的体系搭建能力，体系搭建是一个很复杂的能力，总结来讲就是要管事的能力，比如要管理研发质量、进度、节奏、人员等等。</p>
+<p>技术总监的主要能力栈：</p>
+<ol>
+<li>技术能力</li>
+<li>人员管理能力 </li>
+<li>体系搭建能力</li>
+</ol>
+<p>如果你发现自己技术够牛，也能带人，还能管事，技术VP绝对会是一个非常好的目标，但是你估计头都大了，怎么要管这么多🙂。</p>
+<h2 id="CTO"><a href="#CTO" class="headerlink" title="CTO"></a>CTO</h2><p>只要带O的都很了不起，想想CEO、COO、CFO等等，<strong>CTO是一个公司的直接技术负责人</strong>，出了问题CEO可是要拿CTO是问的，而不是那群技术VP，CTO要和各种O沟通，要让整个技术团队，用技术把产品做出来，跟上业务的脚步。</p>
+<p>CTO是个多面手，他的主要能力栈：</p>
+<ol>
+<li>很强的技术能力，尤其在创业早起，必须撸起袖子带所有人一起干，但是CTO的技术不能是最牛的，公司稳定后，他需要分配更多的精力负责技术团队的各项事务，如果CTO技术是最牛的，他必然是整个技术团队的瓶颈。</li>
+<li>很强的体系建设能力，虽然hold的事情没有技术VP细，但各种都抓。</li>
+<li>很强的人员管理能力，然每一个技术人员，尤其是技术管理人员发挥十倍、百倍的能力，建设强大的团队。</li>
+<li>很强的文化建设能力，公司大了，公司的技术文化，决定了员工在没有管理时的状态，是游手好闲，还是聚焦工作。</li>
+<li>很强的领导力，易观CTO郭炜给领导力一个通俗易懂的解释，把事办成的能力，就是从0到1的能力，公司需要的是完整可用的产品，最后只做到了0.99都不是完整的产品。</li>
+</ol>
+<p>如果你立志要成为一个CTO，那你要充分利用时间，跟时间赛跑，不断的学习/迭代各种能力。</p>
+<p>关于领导力，我根据郭炜的描述，做了一个导图，把一个大的、复杂的能力拆解，感觉目标就清晰了。</p>
+<p><img src="http://img.lessisbetter.site/2019-01-leadership.png"><br><em>根据领导力300讲文章《技术领导力就是“成事”的能力》制作</em></p>
+<p>也许我上面的文章不一定准确，甚至有些地方不一定对，但这不重要，重要的是你如果还没有职业目标和职业规划，反思一下你是否喜欢技术，是否希望在技术上长期发展？如果答案是肯定的，你应当<strong>为自己负责</strong>，设定一个目标和一个实现目标的计划。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p><strong>如何找到自己的兴趣和能力</strong></p>
+<p>兴趣、能力和我们的职业目标有什么关系？关系大了去了。你不喜欢coding，就写不出高质量的代码，你不喜欢钻研技术，就成不了架构师，你不喜欢业务，就无法成为技术管理者，你不喜欢“事多”就成不了技术VP、CTO。</p>
+<p><strong>基于自己的兴趣和能力，设定最适合自己的目标，这样才能让目标实现</strong>。</p>
+<p>But很多人都有一个特（问）点（题），不了解自己。你问他“你喜欢做什么？”，通常哑口无言，啥也说出来。那我教你，如何发现自己的兴趣或者能力。</p>
+<p>把下面这几个问题问自己，每个思考5分钟，如果第一个没有答案，就看下一个：</p>
+<ol>
+<li>我擅长做什么？</li>
+<li>我得到表扬的工作是什么？</li>
+<li>我最经常做的是什么？</li>
+<li>在你过去1年的工作中，我做的最好的3件事是什么？</li>
+</ol>
+<p>如果第4个还没有答案，我建议你给自己一段时间，了解自己，从今天开始写<strong>成功日记</strong>，每天写一个，记录自己今天做的好的事情，不论工作还是生活。</p>
+<p>每月回顾过去的成功日记，其中写的最多的就是你的<strong>特长</strong>，也许你一两个月就发现自己擅长的事情，也许要半年，也许要1年，但终究你能发现自己的能力，那时你会更加自信。</p>
+<p><strong>文章不精，希望你有所收获。</strong></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>其实，我对自己的了解还不够深入，这是我必须坦诚的。但我们对自己的了解程度，和对世界的认知，这种“内在”的认知，会通过我们日常的行为<strong>映射</strong>出来，体现在我们的待人接物，同样也会决定着我们人生的高度、工作的高度。</p>
+<p>想让自己的思想和视野站上一个更高的高度，我购买了极客时间《技术领导力300讲》这个课程，听、读了很多CEO、CTO等的观点后，想输出下，这篇文章的主要内容是我读郭炜的《你的能力模型决定你的职位》这篇文章“贩卖”出来的，不如原文好，为了避免广告嫌疑，我不在此放分享链接了。<strong>真心想读</strong>的朋友，可以后台私信，我发给你。极客时间分享的文章最多能被10个人阅读，所以只发给前10个留言的朋友。</p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/27/choose-your-career/">http://lessisbetter.site/2019/01/27/choose-your-career/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%81%8C%E4%B8%9A/" rel="tag"># 职业</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/01/27/blockchain-bussiness/" rel="prev" title="区块链与商业结合：场景+案例">
+                  <i class="fa fa-chevron-left"></i> 区块链与商业结合：场景+案例
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/02/01/ethereum-useful-command-and-flag/" rel="next" title="以太坊有用的命令和标记">
+                  以太坊有用的命令和标记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'c0db9825ef40bd2ae1b5a50071df7451',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="minikube很好，但某些原因造成国内用起来比较慢，要各种挂代理、Docker镜像加速。 minikube原理 kubectl和kube-apiserver是CS架构，kubectl是操作k8s集群的客户端，kube-apiserver是服务端。 minikube是创建了一个虚拟机minikube vm，然后在虚拟机里创建了1个单机的k8s集群，并把集群部署信息写到~&#x2F;.kube&#x2F;config文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="玩转minikube">
+<meta property="og:url" content="http://lessisbetter.site/2020/08/27/play-minikube/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="minikube很好，但某些原因造成国内用起来比较慢，要各种挂代理、Docker镜像加速。 minikube原理 kubectl和kube-apiserver是CS架构，kubectl是操作k8s集群的客户端，kube-apiserver是服务端。 minikube是创建了一个虚拟机minikube vm，然后在虚拟机里创建了1个单机的k8s集群，并把集群部署信息写到~&#x2F;.kube&#x2F;config文">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-08-minikube.jpeg">
+<meta property="article:published_time" content="2020-08-27T13:30:41.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.797Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2020-08-minikube.jpeg">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2020/08/27/play-minikube/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>玩转minikube | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#minikube%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">minikube原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">安装软件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A6%96%E6%AC%A1%E5%90%AF%E5%8A%A8"><span class="nav-number">3.</span> <span class="nav-text">首次启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#minikube%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">4.</span> <span class="nav-text">minikube常用命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kubectl%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8"><span class="nav-number">5.</span> <span class="nav-text">kubectl自动补全</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/08/27/play-minikube/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          玩转minikube
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-27 21:30:41" itemprop="dateCreated datePublished" datetime="2020-08-27T21:30:41+08:00">2020-08-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>minikube很好，但某些原因造成国内用起来比较慢，要各种挂代理、Docker镜像加速。</p>
+<h2 id="minikube原理"><a href="#minikube原理" class="headerlink" title="minikube原理"></a>minikube原理</h2><p><img src="http://img.lessisbetter.site/2020-08-minikube.jpeg"></p>
+<p>kubectl和kube-apiserver是CS架构，kubectl是操作k8s集群的客户端，kube-apiserver是服务端。</p>
+<p>minikube是创建了一个虚拟机<code>minikube vm</code>，然后在虚拟机里创建了1个单机的k8s集群，并把集群部署信息写到<code>~/.kube/config</code>文件，它是kubectl默认使用的配置文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[~]$ ls ~&#x2F;.kube&#x2F;config</span><br><span class="line">&#x2F;Users&#x2F;shitaibin&#x2F;.kube&#x2F;config</span><br><span class="line">[~]$ cat ~&#x2F;.kube&#x2F;config</span><br><span class="line">apiVersion: v1</span><br><span class="line">clusters:</span><br><span class="line">- cluster:</span><br><span class="line">    certificate-authority: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;ca.crt</span><br><span class="line">    server: https:&#x2F;&#x2F;192.168.99.103:8443</span><br><span class="line">  name: minikube</span><br><span class="line">contexts:</span><br><span class="line">- context:</span><br><span class="line">    cluster: minikube</span><br><span class="line">    user: minikube</span><br><span class="line">  name: minikube</span><br><span class="line">current-context: minikube</span><br><span class="line">kind: Config</span><br><span class="line">preferences: &#123;&#125;</span><br><span class="line">users:</span><br><span class="line">- name: minikube</span><br><span class="line">  user:</span><br><span class="line">    client-certificate: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.crt</span><br><span class="line">    client-key: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.key</span><br></pre></td></tr></table></figure>
+
+<p>文件内容也可以使用 <code>kubectl config view</code> 命令查看。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[~]$ kubectl config view</span><br><span class="line">apiVersion: v1</span><br><span class="line">clusters:</span><br><span class="line">- cluster:</span><br><span class="line">    certificate-authority: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;ca.crt</span><br><span class="line">    server: https:&#x2F;&#x2F;192.168.99.103:8443</span><br><span class="line">  name: minikube</span><br><span class="line">contexts:</span><br><span class="line">- context:</span><br><span class="line">    cluster: minikube</span><br><span class="line">    user: minikube</span><br><span class="line">  name: minikube</span><br><span class="line">current-context: minikube</span><br><span class="line">kind: Config</span><br><span class="line">preferences: &#123;&#125;</span><br><span class="line">users:</span><br><span class="line">- name: minikube</span><br><span class="line">  user:</span><br><span class="line">    client-certificate: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.crt</span><br><span class="line">    client-key: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.key</span><br><span class="line">[~]$</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装软件"><a href="#安装软件" class="headerlink" title="安装软件"></a>安装软件</h2><ol>
+<li><p>安装minikube，1分钟，如果提供的命令行下载不下来，就浏览器下载下来，放到增加可执行，然后放到bin目录即可：<br><a target="_blank" rel="noopener" href="https://yq.aliyun.com/articles/691500">https://yq.aliyun.com/articles/691500</a></p>
+</li>
+<li><p>centos安装virtualbox，2分钟安装完成:<br><a target="_blank" rel="noopener" href="https://wiki.centos.org/zh/HowTos/Virtualization/VirtualBox">https://wiki.centos.org/zh/HowTos/Virtualization/VirtualBox</a></p>
+</li>
+<li><p>安装kubectl：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/yuanjunlai141/article/details/79469071">https://blog.csdn.net/yuanjunlai141/article/details/79469071</a></p>
+</li>
+</ol>
+<h2 id="首次启动"><a href="#首次启动" class="headerlink" title="首次启动"></a>首次启动</h2><p>启动命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">minikube start --image-mirror-country cn \</span><br><span class="line">    --iso-url&#x3D;https:&#x2F;&#x2F;kubernetes.oss-cn-hangzhou.aliyuncs.com&#x2F;minikube&#x2F;iso&#x2F;minikube-v1.7.3.iso \</span><br><span class="line">    --registry-mirror&#x3D;&quot;https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&quot; \</span><br><span class="line">    --image-repository&#x3D;&quot;registry.cn-hangzhou.aliyuncs.com&#x2F;google_containers&quot; \</span><br><span class="line">    --kubernetes-version&#x3D;v1.18.3</span><br></pre></td></tr></table></figure>
+
+<p>使用minikube可以查看帮助flag帮助信息：</p>
+<ul>
+<li><code>--image-mirror-country</code>: 需要使用的镜像镜像的国家/地区代码。留空以使用全球代码。对于中国大陆用户，请将其设置为<br>cn</li>
+<li><code>--registry-mirror</code>: 传递给 Docker 守护进程的注册表镜像。效果最好的镜像加速器：<code>--registry-mirror=&quot;https://a90tkz28.mirror.aliyuncs.com&quot;</code> 。使用加速器的原理是，docker deamon会先去加速器寻找镜像，如果找不到才从docker官方仓库拉镜像。如果指定拉某个镜像仓库的镜像，镜像加速器是用不上的。</li>
+<li><code>--image-repository</code> : 如果不能从gcr.io拉镜像，配置minikube中docker拉镜像的地方</li>
+<li><code>--kubernetes-version</code>： 指定要部署的k8s版本，可以省略</li>
+</ul>
+<p>minikube内拉不到镜像的报错:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe pod</span><br><span class="line">  Type     Reason     Age                    From               Message</span><br><span class="line">  ----     ------     ----                   ----               -------</span><br><span class="line">  Warning  Failed     2m59s (x4 over 4m36s)  kubelet, minikube  Failed to pull image &quot;kubeguide&#x2F;redis-master&quot;: rpc error: code &#x3D; Unknown desc &#x3D; Error response from daemon: Get https:&#x2F;&#x2F;registry-1.docker.io&#x2F;v2&#x2F;: proxyconnect tcp: dial tcp 192.168.0.104:1087: connect: connection refused</span><br></pre></td></tr></table></figure>
+
+<p>启动日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ minikube start --image-mirror-country cn \</span><br><span class="line">    --iso-url&#x3D;https:&#x2F;&#x2F;kubernetes.oss-cn-hangzhou.aliyuncs.com&#x2F;minikube&#x2F;iso&#x2F;minikube-v1.7.3.iso \</span><br><span class="line">    --registry-mirror&#x3D;&quot;https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&quot; \</span><br><span class="line">    --image-repository&#x3D;&quot;registry.cn-hangzhou.aliyuncs.com&#x2F;google_containers&quot;</span><br><span class="line">😄  Darwin 10.15.3 上的 minikube v1.12.3</span><br><span class="line">✨  根据用户配置使用 virtualbox 驱动程序</span><br><span class="line">✅  正在使用镜像存储库 registry.cn-hangzhou.aliyuncs.com&#x2F;google_containers</span><br><span class="line">👍  Starting control plane node minikube in cluster minikube</span><br><span class="line">🔥  Creating virtualbox VM (CPUs&#x3D;2, Memory&#x3D;4000MB, Disk&#x3D;20000MB) ...</span><br><span class="line">💡  Existing disk is missing new features (lz4). To upgrade, run &#39;minikube delete&#39;</span><br><span class="line">🐳  正在 Docker 19.03.6 中准备 Kubernetes v1.18.3…</span><br><span class="line">🔎  Verifying Kubernetes components...</span><br><span class="line">🌟  Enabled addons: default-storageclass, storage-provisioner</span><br><span class="line">🏄  完成！kubectl 已经配置至 &quot;minikube&quot;</span><br></pre></td></tr></table></figure>
+
+<p>做哪些事？</p>
+<ol>
+<li>创建虚拟机”minikube”</li>
+<li>生成kubectl使用的配置文件，使用该配置连接集群：~/.kube/config</li>
+<li>在虚拟机里的容器上启动k8s</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">$ minikube ssh</span><br><span class="line">                         _             _</span><br><span class="line">            _         _ ( )           ( )</span><br><span class="line">  ___ ___  (_)  ___  (_)| |&#x2F;&#39;)  _   _ | |_      __</span><br><span class="line">&#x2F;&#39; _ &#96; _ &#96;\| |&#x2F;&#39; _ &#96;\| || , &lt;  ( ) ( )| &#39;_&#96;\  &#x2F;&#39;__&#96;\</span><br><span class="line">| ( ) ( ) || || ( ) || || |\&#96;\ | (_) || |_) )(  ___&#x2F;</span><br><span class="line">(_) (_) (_)(_)(_) (_)(_)(_) (_)&#96;\___&#x2F;&#39;(_,__&#x2F;&#39;&#96;\____)</span><br><span class="line"></span><br><span class="line">$</span><br><span class="line">$ docker info</span><br><span class="line">Client:</span><br><span class="line"> Debug Mode: false</span><br><span class="line"></span><br><span class="line">Server:</span><br><span class="line"> Containers: 18</span><br><span class="line">  Running: 15</span><br><span class="line">  Paused: 0</span><br><span class="line">  Stopped: 3</span><br><span class="line"> Images: 11</span><br><span class="line"> Server Version: 19.03.6</span><br><span class="line"> Storage Driver: overlay2</span><br><span class="line">  Backing Filesystem: extfs</span><br><span class="line">  Supports d_type: true</span><br><span class="line">  Native Overlay Diff: true</span><br><span class="line"> Logging Driver: json-file</span><br><span class="line"> Cgroup Driver: cgroupfs</span><br><span class="line"> Plugins:</span><br><span class="line">  Volume: local</span><br><span class="line">  Network: bridge host ipvlan macvlan null overlay</span><br><span class="line">  Log: awslogs fluentd gcplogs gelf journald json-file local logentries splunk syslog</span><br><span class="line"> Swarm: inactive</span><br><span class="line"> Runtimes: runc</span><br><span class="line"> Default Runtime: runc</span><br><span class="line"> Init Binary: docker-init</span><br><span class="line"> containerd version: 35bd7a5f69c13e1563af8a93431411cd9ecf5021</span><br><span class="line"> runc version: dc9208a3303feef5b3839f4323d9beb36df0a9dd</span><br><span class="line"> init version: fec3683</span><br><span class="line"> Security Options:</span><br><span class="line">  seccomp</span><br><span class="line">   Profile: default</span><br><span class="line"> Kernel Version: 4.19.94</span><br><span class="line"> Operating System: Buildroot 2019.02.9</span><br><span class="line"> OSType: linux</span><br><span class="line"> Architecture: x86_64</span><br><span class="line"> CPUs: 2</span><br><span class="line"> Total Memory: 3.754GiB</span><br><span class="line"> Name: minikube</span><br><span class="line"> ID: 6GOT:L6SH:NPBW:ZM44:PVKY:LSEZ:MXW7:LWOB:GB4N:CNXU:S6NJ:KASG</span><br><span class="line"> Docker Root Dir: &#x2F;var&#x2F;lib&#x2F;docker</span><br><span class="line"> Debug Mode: false</span><br><span class="line"> Registry: https:&#x2F;&#x2F;index.docker.io&#x2F;v1&#x2F;</span><br><span class="line"> Labels:</span><br><span class="line">  provider&#x3D;virtualbox</span><br><span class="line"> Experimental: false</span><br><span class="line"> Insecure Registries:</span><br><span class="line">  10.96.0.0&#x2F;12</span><br><span class="line">  127.0.0.0&#x2F;8</span><br><span class="line"> Registry Mirrors:</span><br><span class="line">  https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&#x2F;</span><br><span class="line"> Live Restore Enabled: false</span><br><span class="line"> Product License: Community Engine</span><br><span class="line"></span><br><span class="line">$ exit</span><br><span class="line">logout</span><br></pre></td></tr></table></figure>
+
+<p>Registry Mirrors对应的是阿里云镜像加速，HTTP proxy也配置上了，如果启动后，发现没有改变，需要删除过去创建的minikube，全部清理一遍。</p>
+<h2 id="minikube常用命令"><a href="#minikube常用命令" class="headerlink" title="minikube常用命令"></a>minikube常用命令</h2><ul>
+<li>集群状态： minikube status</li>
+<li>暂停和恢复集群，不用的时候把它暂停掉，节约主机的CPU和内存： minikube pause， minikube unpause</li>
+<li>停止集群： minikube stop</li>
+<li>删除集群，遇到问题时，清理一波数据： minikube delete</li>
+<li>查看集群IP，kubectl就是连这个IP： minikube ip</li>
+<li>进入minikube虚拟机，整个k8s集群跑在这里面： minikube ssh</li>
+</ul>
+<h2 id="kubectl自动补全"><a href="#kubectl自动补全" class="headerlink" title="kubectl自动补全"></a>kubectl自动补全</h2><p>zsh在配置文件 <code>~/.zshrc</code> 中增加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source &lt;(kubectl completion zsh)  # 在 zsh 中设置当前 shell 的自动补全</span><br><span class="line">echo &quot;if [ $commands[kubectl] ]; then source &lt;(kubectl completion zsh); fi&quot; &gt;&gt; ~&#x2F;.zshrc # 在您的 zsh shell 中永久的添加自动补全</span><br></pre></td></tr></table></figure>
+
+<p>bash 在 <code>~/.bashrc</code> 中增加:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source &lt;(kubectl completion bash) # 在 bash 中设置当前 shell 的自动补全，要先安装 bash-completion 包。</span><br><span class="line">echo &quot;source &lt;(kubectl completion bash)&quot; &gt;&gt; ~&#x2F;.bashrc # 在您的 bash shell 中永久的添加自动补全</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/08/27/sync-code-to-server-with-sftp-in-vscode/" rel="prev" title="VSCode利用SFTP上传代码到服务器">
+                  <i class="fa fa-chevron-left"></i> VSCode利用SFTP上传代码到服务器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/08/27/cgroup-1/" rel="next" title="Docker容器基础1：Cgroup - 资源控制简介">
+                  Docker容器基础1：Cgroup - 资源控制简介 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'ee9551c92a6fd2a7cdfdc2d01467e410',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

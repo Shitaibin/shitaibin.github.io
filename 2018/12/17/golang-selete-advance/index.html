@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。 前一篇文章《Golang并发模型：轻松入门select》介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。  nil的通道永远阻塞 如何跳出for-select select&amp;#123;&amp;#125;阻塞">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang并发模型：select进阶">
+<meta property="og:url" content="http://lessisbetter.site/2018/12/17/golang-selete-advance/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。 前一篇文章《Golang并发模型：轻松入门select》介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。  nil的通道永远阻塞 如何跳出for-select select&amp;#123;&amp;#125;阻塞">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/gzh-qrcode-with-text.png">
+<meta property="article:published_time" content="2018-12-17T12:22:09.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.792Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/gzh-qrcode-with-text.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2018/12/17/golang-selete-advance/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Golang并发模型：select进阶 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#nil%E7%9A%84%E9%80%9A%E9%81%93%E6%B0%B8%E8%BF%9C%E9%98%BB%E5%A1%9E"><span class="nav-number">1.</span> <span class="nav-text">nil的通道永远阻塞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%B7%B3%E5%87%BAfor-select"><span class="nav-number">2.</span> <span class="nav-text">如何跳出for-select</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select-%E6%B0%B8%E8%BF%9C%E9%98%BB%E5%A1%9E"><span class="nav-number">3.</span> <span class="nav-text">select&amp;#123;&amp;#125;永远阻塞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.</span> <span class="nav-text">select应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%B3%BB%E5%88%97%E6%96%87%E7%AB%A0%E6%8E%A8%E8%8D%90"><span class="nav-number">5.</span> <span class="nav-text">并发系列文章推荐</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/17/golang-selete-advance/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Golang并发模型：select进阶
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-17 20:22:09" itemprop="dateCreated datePublished" datetime="2018-12-17T20:22:09+08:00">2018-12-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。</p>
+<p>前一篇文章<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg">《Golang并发模型：轻松入门select》</a>介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。</p>
+<ol>
+<li><code>nil</code>的通道永远阻塞</li>
+<li>如何跳出<code>for-select</code></li>
+<li><code>select&#123;&#125;</code>阻塞</li>
+</ol>
+<a id="more"></a>
+
+<h3 id="nil的通道永远阻塞"><a href="#nil的通道永远阻塞" class="headerlink" title="nil的通道永远阻塞"></a><code>nil</code>的通道永远阻塞</h3><p><strong>当<code>case</code>上读一个通道时，如果这个通道是<code>nil</code>，则该<code>case</code>永远阻塞</strong>。这个功能有1个妙用，<code>select</code>通常处理的是多个通道，当某个读通道关闭了，但不想<code>select</code>再继续关注此<code>case</code>，继续处理其他<code>case</code>，把该通道设置为<code>nil</code>即可。<br>下面是一个合并程序等待两个输入通道都关闭后才退出的例子，就使用了这个特性。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">combine</span><span class="params">(inCh1, inCh2 &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="comment">// 输出通道</span></span><br><span class="line">	out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动协程合并数据</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> x, open := &lt;-inCh1:</span><br><span class="line">				<span class="keyword">if</span> !open &#123;</span><br><span class="line">					inCh1 = <span class="literal">nil</span></span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;</span><br><span class="line">				out&lt;-x</span><br><span class="line">			<span class="keyword">case</span> x, open := &lt;-inCh2:</span><br><span class="line">				<span class="keyword">if</span> !open &#123;</span><br><span class="line">					inCh2 = <span class="literal">nil</span></span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;</span><br><span class="line">				out&lt;-x</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// 当ch1和ch2都关闭是才退出</span></span><br><span class="line">			<span class="keyword">if</span> inCh1 == <span class="literal">nil</span> &amp;&amp; inCh2 == <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="如何跳出for-select"><a href="#如何跳出for-select" class="headerlink" title="如何跳出for-select"></a>如何跳出for-select</h3><p><strong><code>break</code>在<code>select</code>内的并不能跳出<code>for-select</code>循环</strong>。看下面的例子，<code>consume</code>函数从通道<code>inCh</code>不停读数据，期待在<code>inCh</code>关闭后退出<code>for-select</code>循环，但结果是永远没有退出。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consume</span><span class="params">(inCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	i := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;for: %d\n&quot;</span>, i)</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> x, open := &lt;-inCh:</span><br><span class="line">			<span class="keyword">if</span> !open &#123;</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">			fmt.Printf(<span class="string">&quot;read: %d\n&quot;</span>, x)</span><br><span class="line">		&#125;</span><br><span class="line">		i++</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">&quot;combine-routine exit&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜ go run x.go</span><br><span class="line"><span class="keyword">for</span>: 0</span><br><span class="line"><span class="built_in">read</span>: 0</span><br><span class="line"><span class="keyword">for</span>: 1</span><br><span class="line"><span class="built_in">read</span>: 1</span><br><span class="line"><span class="keyword">for</span>: 2</span><br><span class="line"><span class="built_in">read</span>: 2</span><br><span class="line"><span class="keyword">for</span>: 3</span><br><span class="line">gen <span class="built_in">exit</span></span><br><span class="line"><span class="keyword">for</span>: 4</span><br><span class="line"><span class="keyword">for</span>: 5</span><br><span class="line"><span class="keyword">for</span>: 6</span><br><span class="line"><span class="keyword">for</span>: 7</span><br><span class="line"><span class="keyword">for</span>: 8</span><br><span class="line">... // never stop</span><br></pre></td></tr></table></figure>
+<p>既然<code>break</code>不能跳出<code>for-select</code>，那怎么办呢？给你3个锦囊：</p>
+<ol>
+<li>在满足条件的<code>case</code>内，使用<code>return</code>，如果有结尾工作，尝试交给<code>defer</code>。</li>
+<li>在<code>select</code>外<code>for</code>内使用<code>break</code>挑出循环，如<code>combine</code>函数。</li>
+<li>使用<code>goto</code>。</li>
+</ol>
+<h3 id="select-永远阻塞"><a href="#select-永远阻塞" class="headerlink" title="select{}永远阻塞"></a><code>select&#123;&#125;</code>永远阻塞</h3><p><code>select&#123;&#125;</code>的效果等价于创建了1个通道，直接从通道读数据：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">&lt;-ch</span><br></pre></td></tr></table></figure>
+<p>但是，这个写起来多麻烦啊！没<code>select&#123;&#125;</code>简洁啊。<br>但是，永远阻塞能有什么用呢！？<br>当你开发一个并发程序的时候，<code>main</code>函数千万不能在子协程干完活前退出啊，不然所有的协程都<strong>被迫退出</strong>了，还怎么提供服务呢？<br>比如，写了个Web服务程序，端口监听、后端处理等等都在子协程跑起来了，<code>main</code>函数这时候能退出吗？</p>
+<h3 id="select应用场景"><a href="#select应用场景" class="headerlink" title="select应用场景"></a>select应用场景</h3><p>最后，介绍下我常用的<code>select</code>场景：</p>
+<ol>
+<li>无阻塞的读、写通道。即使通道是带缓存的，也是存在阻塞的情况，使用select可以完美的解决阻塞读写，这篇文章我之前发在了个人博客，后面给大家介绍下。</li>
+<li>给某个请求/处理/操作，设置超时时间，一旦超时时间内无法完成，则停止处理。</li>
+<li><code>select</code>本色：多通道处理</li>
+</ol>
+<h3 id="并发系列文章推荐"><a href="#并发系列文章推荐" class="headerlink" title="并发系列文章推荐"></a>并发系列文章推荐</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/68FGjm7PFN5VbVF0zL-PlQ">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg">Golang并发模型：轻松入门select</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/12/11/gongzhonghao-articles/">http://lessisbetter.site/2018/12/11/gongzhonghao-articles/</a></li>
+</ol>
+</blockquote>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
+
+<img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
+
+
+<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/12/13/golang-slect/" rel="prev" title="Golang并发模型：轻松入门select">
+                  <i class="fa fa-chevron-left"></i> Golang并发模型：轻松入门select
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/12/20/golang-simple-goroutine-pool/" rel="next" title="Golang并发模型：轻松入门协程池">
+                  Golang并发模型：轻松入门协程池 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '3b784d1a4532a1ed92738a631c12dbf5',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

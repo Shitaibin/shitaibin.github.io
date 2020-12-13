@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="前言就如以太坊黄皮书讲的，以太坊是状态机，区块的产生，实际是状态迁移的过程。那以太坊  是如何定义状态的？ 是如何迁移状态的？ 是怎么存储状态的？  这篇文章就介绍什么是状态，以及是怎么存储的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊源码分析：statedb">
+<meta property="og:url" content="http://lessisbetter.site/2018/06/22/ethereum-code-statedb/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="前言就如以太坊黄皮书讲的，以太坊是状态机，区块的产生，实际是状态迁移的过程。那以太坊  是如何定义状态的？ 是如何迁移状态的？ 是怎么存储状态的？  这篇文章就介绍什么是状态，以及是怎么存储的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-100624.jpg-own">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-100654.jpg-own">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-100700.jpg-own">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-100711.jpg-own">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-100716.jpg-own">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-100745.jpg-own">
+<meta property="article:published_time" content="2018-06-22T10:10:54.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.773Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="以太坊">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2018-06-22-100624.jpg-own">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2018/06/22/ethereum-code-statedb/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>以太坊源码分析：statedb | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">状态基本知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">状态的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E8%A1%A8%E7%A4%BA"><span class="nav-number">2.2.</span> <span class="nav-text">状态表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%8A%B6%E6%80%81"><span class="nav-number">2.3.</span> <span class="nav-text">获取状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E5%93%AA"><span class="nav-number">2.4.</span> <span class="nav-text">状态存在哪</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#StateDB"><span class="nav-number">3.</span> <span class="nav-text">StateDB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#StateDB%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.1.</span> <span class="nav-text">StateDB的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%95%E5%B1%82%E5%AD%98%E5%82%A8%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.1.1.</span> <span class="nav-text">底层存储设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#StateDB%E7%9A%84%E7%8A%B6%E6%80%81%E7%BB%84%E7%BB%87%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.1.2.</span> <span class="nav-text">StateDB的状态组织设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E5%92%8C%E5%9B%9E%E6%BB%9A%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.1.3.</span> <span class="nav-text">事务和回滚设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StateDB%E7%9A%84%E9%AA%A8%E5%B9%B2%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.2.</span> <span class="nav-text">StateDB的骨干实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#state%E7%9B%AE%E5%BD%95%E5%92%8C%E6%96%87%E4%BB%B6%E5%88%92%E5%88%86"><span class="nav-number">3.2.1.</span> <span class="nav-text">state目录和文件划分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#database-go"><span class="nav-number">3.2.2.</span> <span class="nav-text">database.go</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#state-object-go"><span class="nav-number">3.2.3.</span> <span class="nav-text">state_object.go</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7%E5%92%8CstateObject"><span class="nav-number">3.2.3.1.</span> <span class="nav-text">账户和stateObject</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#stateObject%E7%9A%84%E9%87%8D%E8%A6%81%E5%87%BD%E6%95%B0"><span class="nav-number">3.2.3.2.</span> <span class="nav-text">stateObject的重要函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#statedb-go"><span class="nav-number">3.2.4.</span> <span class="nav-text">statedb.go</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E8%B4%A6%E6%88%B7%E4%BF%A1%E6%81%AF"><span class="nav-number">3.2.4.1.</span> <span class="nav-text">存储账户信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A2%9E%E5%88%A0%E6%94%B9%E5%92%8C%E6%9F%A5%E8%AF%A2%E8%B4%A6%E6%88%B7%E4%BF%A1%E6%81%AF%EF%BC%88%E7%8A%B6%E6%80%81%E6%95%B0%E6%8D%AE%EF%BC%89"><span class="nav-number">3.2.4.2.</span> <span class="nav-text">增删改和查询账户信息（状态数据）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Finalise%E5%92%8CCommit"><span class="nav-number">3.2.4.3.</span> <span class="nav-text">Finalise和Commit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E5%92%8C%E5%9B%9E%E6%BB%9A"><span class="nav-number">3.2.4.4.</span> <span class="nav-text">日志和回滚</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/06/22/ethereum-code-statedb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          以太坊源码分析：statedb
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-06-22 18:10:54" itemprop="dateCreated datePublished" datetime="2018-06-22T18:10:54+08:00">2018-06-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>就如以太坊黄皮书讲的，以太坊是状态机，区块的产生，实际是状态迁移的过程。那以太坊</p>
+<ol>
+<li>是如何定义状态的？</li>
+<li>是如何迁移状态的？</li>
+<li>是怎么存储状态的？</li>
+</ol>
+<p>这篇文章就介绍什么是状态，以及是怎么存储的。</p>
+<a id="more"></a>
+
+<h1 id="状态基本知识"><a href="#状态基本知识" class="headerlink" title="状态基本知识"></a>状态基本知识</h1><h2 id="状态的定义"><a href="#状态的定义" class="headerlink" title="状态的定义"></a>状态的定义</h2><p>一个账户的信息，就是一个状态，而以太坊是所有状态的集合。比如，最开始的状态是：{A有10元，B有0元}，后来A发起了交易，给B 2元，状态变成{A有8元，B有2元}，这中间的过程就是状态转移。</p>
+<p>以太坊实际最初的状态是创世块，每产生一个新区块就转移到一个新的状态。</p>
+<h2 id="状态表示"><a href="#状态表示" class="headerlink" title="状态表示"></a>状态表示</h2><p> 以太坊使用<code>root</code>表示状态。以太坊使用Trie组织状态，Trie可以理解为是字典树和默克尔树的结合，它有一个树根<code>root</code>，有这个<code>root</code>，你就可以访问所有的状态数据，即每个账户的信息，所以用<code>root</code>来表示一个状态。</p>
+<h2 id="获取状态"><a href="#获取状态" class="headerlink" title="获取状态"></a>获取状态</h2><p>区块头中有一个字段<code>Root</code>，所以找到区块头，就能获取区块链的状态。</p>
+<h2 id="状态存在哪"><a href="#状态存在哪" class="headerlink" title="状态存在哪"></a>状态存在哪</h2><p>状态不存在区块中。区块头中存放了<code>root</code>，这只是一个地址，从区块中并不能找到状态的数据。</p>
+<p>状态只是临时的数据，可以再生成。创世块是最初的状态，把第一个区块中的交易都执行一遍，就得到了一个新的状态，把这个状态的root存到第一个区块头的Root中。如果有所有的区块，就可以把所有的交易都执行，然后生成最新区块中的状态。</p>
+<p>状态存放在外部数据库。以太坊底层的数据库是LevelDB，区块存放在里面，状态也存放在里面。但状态是一个Trie，不能直接存在LevelDB里面。</p>
+<h1 id="StateDB"><a href="#StateDB" class="headerlink" title="StateDB"></a>StateDB</h1><p>StateDB，从名字就能看出来，是用来存储状态的数据库。它把Trie和DB结合了起来，实现了对状态的存储、更新、回滚。我们先介绍它的设计思路，然后再介绍一些它的<strong>骨干实现</strong>。</p>
+<h2 id="StateDB的设计"><a href="#StateDB的设计" class="headerlink" title="StateDB的设计"></a>StateDB的设计</h2><p>以太坊使用LevelDB作为底层的存储数据库，虽然leveldb能够满足存取状态，但没有缓存功能、快速访问和修改状态等特性，以太坊实现了StateDB，来满足自身的需求。</p>
+<p>我们就介绍下，它是如何设计来实现以上特性的。</p>
+<h3 id="底层存储设计"><a href="#底层存储设计" class="headerlink" title="底层存储设计"></a>底层存储设计</h3><p>使用Trie实现快速访问。上文提到了，Trie是字典树和默克尔树的结合，可以实现快速查找，这里就看它是如何使用Trie的。</p>
+<p>使用内存实现缓存。常用的数据，会被计算机留在内存中，同样，常用的状态也被留在内存中，并且使用StateDB把它们管理起来。</p>
+<p>StateDB定义了2个接口：<code>Trie</code>和<code>Database</code>：Trie建立在Database之上，Trie的数据存放在Database中。</p>
+<p><img src="http://img.lessisbetter.site/2018-06-22-100624.jpg-own" alt="img"></p>
+<ul>
+<li>Trie被定义为<strong>带有缓存的KV数据库</strong>。你可以通过它快速存储、更新、删除数据。</li>
+<li>Database被定义为一个打开Trie、拷贝Trie的数据库。它不直接对外访问，不能直接使用它存取数据。</li>
+</ul>
+<p>在代码实现上，cachedTrie实现了Trie，cachingDB实现了Databse，他们定义在<code>core/state/database.go</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 实现Database接口，缓存常用的trie</span></span><br><span class="line"><span class="keyword">type</span> cachingDB <span class="keyword">struct</span> &#123;</span><br><span class="line">   <span class="comment">//保存trie数据的db</span></span><br><span class="line">   db *trie.Database</span><br><span class="line">   mu sync.Mutex</span><br><span class="line">   <span class="comment">// 缓存过去的trie，队列类型</span></span><br><span class="line">   pastTries     []*trie.SecureTrie</span><br><span class="line">   codeSizeCache *lru.Cache</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 包含了trie和缓存db，trie实际是存在db中的</span></span><br><span class="line"><span class="keyword">type</span> cachedTrie <span class="keyword">struct</span> &#123;</span><br><span class="line">   *trie.SecureTrie</span><br><span class="line">   db *cachingDB</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//从db中打开一个trie，如果不是最近使用过，则创建一个新的，存到db</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(db *cachingDB)</span> <span class="title">OpenTrie</span><span class="params">(root common.Hash)</span> <span class="params">(Trie, error)</span></span> &#123;</span><br><span class="line">   db.mu.Lock()</span><br><span class="line">   <span class="keyword">defer</span> db.mu.Unlock()</span><br><span class="line"></span><br><span class="line">   <span class="keyword">for</span> i := <span class="built_in">len</span>(db.pastTries) - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">      <span class="keyword">if</span> db.pastTries[i].Hash() == root &#123;</span><br><span class="line">         <span class="keyword">return</span> cachedTrie&#123;db.pastTries[i].Copy(), db&#125;, <span class="literal">nil</span></span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   tr, err := trie.NewSecure(root, db.db, MaxTrieCacheGen)</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> cachedTrie&#123;tr, db&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="StateDB的状态组织设计"><a href="#StateDB的状态组织设计" class="headerlink" title="StateDB的状态组织设计"></a>StateDB的状态组织设计</h3><p>StateDB使用Trie存放stateObject，是账户地址到账户信息的映射，每个stateObject都是一个账户的信息。</p>
+<p>stateObject使用Trie存放数据，这些数据被称为storage，实现对某个账户的状态数据的存储和修改，key是数据的hash值，value是状态数据。</p>
+<p><img src="http://img.lessisbetter.site/2018-06-22-100654.jpg-own" alt="img"></p>
+<p>StateDB和stateObject都使用Database存放了自己的Trie，他们使用的是同一个DB。<br>但从逻辑层次上看，他们满足这种关系：</p>
+<p><img src="http://img.lessisbetter.site/2018-06-22-100700.jpg-own" alt="img"></p>
+<h3 id="事务和回滚设计"><a href="#事务和回滚设计" class="headerlink" title="事务和回滚设计"></a>事务和回滚设计</h3><p>stateDB这个KV数据库，实现了类似传统数据库的事务和回滚设计。每一个交易都是一个事务，每一个交易的执行，都是一次状态转移，在执行交易之前，先创建当前的快照，执行交易的过程中，会记录状态数据的每一次修改，如果交易执行失败，则进行回滚，交易执行完毕，会把所有修改的状态数据写入到Trie，然后更新Trie的根。<br>在生成1个区块的时候，会进行很多次Finalise，回滚是不能跨越交易的，也就是说，当前交易失败了，我不能回滚到上上一条交易。生成区块的时候，最后一次Finalize的Trie的Root，会保存到区块头的Header.Root。当区块要写入到区块链的时候，会执行一次Commit。</p>
+<p><img src="http://img.lessisbetter.site/2018-06-22-100711.jpg-own" alt="img"></p>
+<p>关于Finalise和Commit的主要调用关系如下图：</p>
+<p><img src="http://img.lessisbetter.site/2018-06-22-100716.jpg-own" alt="img"></p>
+<p>Finalise的主要调用场景是：</p>
+<ol>
+<li>执行交易/合约，进行一次状态转移。</li>
+<li>给矿工计算奖励后，进行一次状态转移。</li>
+</ol>
+<p>Commit的主要调用场景是插入区块链，有2种情况：</p>
+<ol>
+<li>自己挖到区块。</li>
+<li>收到他人的区块。</li>
+</ol>
+<h2 id="StateDB的骨干实现"><a href="#StateDB的骨干实现" class="headerlink" title="StateDB的骨干实现"></a>StateDB的骨干实现</h2><p>基于上面对StateDB设计的了解，我们再介绍一下StateDB一些主要的实现。这一小节主要覆盖以下内容：</p>
+<ol>
+<li>state所在的目录和文件划分。</li>
+<li>stateObject实现。</li>
+<li>stateDB的实现。</li>
+</ol>
+<h3 id="state目录和文件划分"><a href="#state目录和文件划分" class="headerlink" title="state目录和文件划分"></a>state目录和文件划分</h3><p>state所在的目录是：<code>core/state</code>，它的文件和每个文件的主要功能如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">core/state</span><br><span class="line">├── database.<span class="keyword">go</span>，底层的存储设计，<span class="string">`Trie`</span>和<span class="string">`Database`</span>定义在此文件。</span><br><span class="line">├── dump.<span class="keyword">go</span>，用来dumpstateDB数据。</span><br><span class="line">├── iterator.<span class="keyword">go</span>，用来遍历<span class="string">`Trie`</span>。</span><br><span class="line">├── journal.<span class="keyword">go</span>，用来记录状态的每一步改变。</span><br><span class="line">├── managed_state.<span class="keyword">go</span>，给txpool使用，具体功能未研究。</span><br><span class="line">├── state_object.<span class="keyword">go</span>，每一个账户的状态。</span><br><span class="line">├── statedb.<span class="keyword">go</span>，以太坊整个的状态。</span><br><span class="line">├── sync.<span class="keyword">go</span>，用来和downloader结合起来同步state。</span><br></pre></td></tr></table></figure>
+
+<p>关于stateDB如何存储状态，主要关注这3个文件：</p>
+<ol>
+<li>database.go</li>
+<li>state_object.go</li>
+<li>statedb.go</li>
+</ol>
+<p>接下来通过源码介绍这3个文件的功能和实现。</p>
+<h3 id="database-go"><a href="#database-go" class="headerlink" title="database.go"></a>database.go</h3><p>database.go的主要代码和设计，已经在<a href="#%E5%BA%95%E5%B1%82%E5%AD%98%E5%82%A8%E8%AE%BE%E8%AE%A1">底层存储设计</a>的时候介绍过了，这里补充介绍另外一个重要的函数<code>OpenStorageTrie</code>它与<code>OpenTrie</code>的区别：</p>
+<ol>
+<li>实现区别，<code>OpenTrie</code>会先从db中查找，如果每找到才创建一个，而<code>OpenStorageTrie</code>是直接创建一个。</li>
+<li>功能区别，<code>OpenTrie</code>创建的stateDB的Trie，而<code>OpenStorageTrie</code>创建的是stateObject的Trie。</li>
+</ol>
+<p>把1和2合并：<strong>cachingDB会缓存stateDB使用的Trie，而不会缓存stateObject使用的Trie</strong>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// OpenStorageTrie opens the storage trie of an account.</span></span><br><span class="line"><span class="comment">// 创建一个账户的存储trie，但实际没有使用到addrHash</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(db *cachingDB)</span> <span class="title">OpenStorageTrie</span><span class="params">(addrHash, root common.Hash)</span> <span class="params">(Trie, error)</span></span> &#123;</span><br><span class="line">   <span class="keyword">return</span> trie.NewSecure(root, db.db, <span class="number">0</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// OpenTrie opens the main account trie.</span></span><br><span class="line"><span class="comment">// 从db中打开一个trie，如果不是最近使用过，则创建一个新的，存到db</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(db *cachingDB)</span> <span class="title">OpenTrie</span><span class="params">(root common.Hash)</span> <span class="params">(Trie, error)</span></span> &#123;</span><br><span class="line">   db.mu.Lock()</span><br><span class="line">   <span class="keyword">defer</span> db.mu.Unlock()</span><br><span class="line"></span><br><span class="line">   <span class="keyword">for</span> i := <span class="built_in">len</span>(db.pastTries) - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">      <span class="keyword">if</span> db.pastTries[i].Hash() == root &#123;</span><br><span class="line">         <span class="keyword">return</span> cachedTrie&#123;db.pastTries[i].Copy(), db&#125;, <span class="literal">nil</span></span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   tr, err := trie.NewSecure(root, db.db, MaxTrieCacheGen)</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> cachedTrie&#123;tr, db&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="state-object-go"><a href="#state-object-go" class="headerlink" title="state_object.go"></a>state_object.go</h3><p>该文件主要实现最小状态的存储和修改。stateObject代表最小粒度的状态，它是一个账户的状态信息。我们先看下基础的数据结构定义，再看它实现的主要功能。</p>
+<h4 id="账户和stateObject"><a href="#账户和stateObject" class="headerlink" title="账户和stateObject"></a>账户和stateObject</h4><p>以太坊的账户分为普通账户和合约账户，在代码上，他们都是用<code>Account</code>来表示，它记录了账户的数据，有：Nonce，余额，状态树根Root和合约代码的哈希值CodeHash。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Account is the Ethereum consensus representation of accounts.</span></span><br><span class="line"><span class="comment">// These objects are stored in the main account trie.</span></span><br><span class="line"><span class="comment">// Account是账户的数据，不包含账户地址</span></span><br><span class="line"><span class="comment">// 账户需要使用地址来表示，地址在stateObject中</span></span><br><span class="line"><span class="keyword">type</span> Account <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// 每执行1次交易，Nonce+1</span></span><br><span class="line">    Nonce <span class="keyword">uint64</span></span><br><span class="line">    Balance *big.Int</span><br><span class="line">    <span class="comment">// 该账户的状态，即trie的根</span></span><br><span class="line">    Root common.Hash <span class="comment">// merkle root of the storage trie</span></span><br><span class="line">    <span class="comment">// 合约账户专属，合约代码编译后的Hash值</span></span><br><span class="line">    CodeHash []<span class="keyword">byte</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上是账户的数据，那如何表示一个账户呢？<br><strong>使用账户地址表示账户</strong>，它记录在<code>stateObject</code>中:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// stateObject represents an Ethereum account which is being modified.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The usage pattern is as follows:</span></span><br><span class="line"><span class="comment">// First you need to obtain a state object.</span></span><br><span class="line"><span class="comment">// Account values can be accessed and modified through the object.</span></span><br><span class="line"><span class="comment">// Finally, call CommitTrie to write the modified storage trie into a database.</span></span><br><span class="line"><span class="comment">// 地址、账户、账户哈希、数据库</span></span><br><span class="line"><span class="keyword">type</span> stateObject <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// 账户信息</span></span><br><span class="line">    address common.Address</span><br><span class="line">    addrHash common.Hash <span class="comment">// hash of ethereum address of the account</span></span><br><span class="line">    data Account</span><br><span class="line"></span><br><span class="line">    code Code</span><br><span class="line">    <span class="comment">// 更多信息省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以 <strong>一个stateObject记录了一个完整的账户信息：Account + Address + Code</strong>。</p>
+<p>再来看下stateObject的完整信息，它记录了：账户信息、EVM执行过程中的错误、保存数据的storage trie、合约代码、缓存的storage数据cachedStorage、修改过的storage数据dirtyStorage，剩下的信息先忽略。storage代表了该对象/账户中存储的KV数据。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> stateObject <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// 账户信息</span></span><br><span class="line">    address common.Address</span><br><span class="line">    addrHash common.Hash <span class="comment">// hash of ethereum address of the account</span></span><br><span class="line">    data Account</span><br><span class="line">    <span class="comment">// 所属于的stateDB</span></span><br><span class="line">    db *StateDB</span><br><span class="line"></span><br><span class="line">    <span class="comment">// DB error.</span></span><br><span class="line">    <span class="comment">// State objects are used by the consensus core and VM which are</span></span><br><span class="line">    <span class="comment">// unable to deal with database-level errors. Any error that occurs</span></span><br><span class="line">    <span class="comment">// during a database read is memoized http://lessisbetter.site/2018/06/22/ethereum-code-statedb/ and will eventually be returned</span></span><br><span class="line">    <span class="comment">// by StateDB.Commit.</span></span><br><span class="line">    <span class="comment">// VM不处理db层的错误，先记录下来，最后返回，只能保存1个错误，保存存的第一个错误</span></span><br><span class="line">    dbErr error</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Write caches.</span></span><br><span class="line">    <span class="comment">// 使用trie组织stateObj的数据</span></span><br><span class="line">    trie Trie <span class="comment">// storage trie, which becomes non-nil on first access</span></span><br><span class="line">    <span class="comment">// 合约代码</span></span><br><span class="line">    code Code <span class="comment">// contract bytecode, which gets set when code is loaded</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 存缓存，避免重复从数据库读</span></span><br><span class="line">    cachedStorage Storage <span class="comment">// Storage entry cache to avoid duplicate reads</span></span><br><span class="line">    <span class="comment">// 需要写到磁盘的缓存</span></span><br><span class="line">    dirtyStorage Storage <span class="comment">// Storage entries that need to be flushed to disk</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Cache flags.</span></span><br><span class="line">    <span class="comment">// When an object is marked suicided it will be delete from the trie</span></span><br><span class="line">    <span class="comment">// during the &quot;update&quot; phase of the state transition.</span></span><br><span class="line">    dirtyCode <span class="keyword">bool</span> <span class="comment">// true if the code was updated</span></span><br><span class="line">    <span class="comment">// 标记suicided，代表这个对象要从trie删除，在update阶段</span></span><br><span class="line">    suicided <span class="keyword">bool</span></span><br><span class="line">    deleted <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>账户地址和账户信息是stateObject的核心数据</strong>，有他们2个就能建立一个stateObject：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// newObject creates a state object.</span></span><br><span class="line"><span class="comment">// 使用地址和账户创建stateObject</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newObject</span><span class="params">(db *StateDB, address common.Address, data Account)</span> *<span class="title">stateObject</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> data.Balance == <span class="literal">nil</span> &#123;</span><br><span class="line">        data.Balance = <span class="built_in">new</span>(big.Int)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> data.CodeHash == <span class="literal">nil</span> &#123;</span><br><span class="line">        data.CodeHash = emptyCodeHash</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &amp;stateObject&#123;</span><br><span class="line">        db: db,</span><br><span class="line">        address: address,</span><br><span class="line">        addrHash: crypto.Keccak256Hash(address[:]),</span><br><span class="line">        data: data,</span><br><span class="line">        cachedStorage: <span class="built_in">make</span>(Storage),</span><br><span class="line">        dirtyStorage: <span class="built_in">make</span>(Storage),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="stateObject的重要函数"><a href="#stateObject的重要函数" class="headerlink" title="stateObject的重要函数"></a>stateObject的重要函数</h4><p>stateObject保存了2个重要信息：</p>
+<ol>
+<li>账户的信息：<code>Account</code>、<code>Address</code>、<code>Code</code>。创建账户之后，这些数据就不变了。</li>
+<li>账户的数据：<code>trie</code>。对于合约账户，trie用来存储数据，因此trie是经常变化的。比如，投票合约，有新的投票，就有新的数据产生和改变，trie也就发生改变。</li>
+</ol>
+<p><strong>掌握关于trie的函数，就掌握了stateObject的核心操作</strong>：</p>
+<ol>
+<li>func (c *stateObject) getTrie(db Database) Trie。获取当前账户的trie。</li>
+<li>func (self *stateObject) SetState(db Database, key, value common.Hash)。设置trie中的kv数据对，能够完成创建、更新、删除功能。</li>
+<li>func (self *stateObject) updateRoot(db Database)。更新trie的根。</li>
+<li>func (self *stateObject) updateTrie(db Database) Trie。更新trie，把账户中修改过的数据写入到trie。</li>
+</ol>
+<p>剩余的函数都是stateObject的基本Get和Set函数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取当前账户的trie，如果没有，则创建一个空的</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *stateObject)</span> <span class="title">getTrie</span><span class="params">(db Database)</span> <span class="title">Trie</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> c.trie == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> err error</span><br><span class="line">        c.trie, err = db.OpenStorageTrie(c.addrHash, c.data.Root)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            c.trie, _ = db.OpenStorageTrie(c.addrHash, common.Hash&#123;&#125;)</span><br><span class="line">            c.setError(fmt.Errorf(<span class="string">&quot;can&#x27;t create storage trie: %v&quot;</span>, err))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> c.trie</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SetState updates a value in account storage.</span></span><br><span class="line"><span class="comment">// 设置一个新的kv：保存过去的kv，然后设置新的。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *stateObject)</span> <span class="title">SetState</span><span class="params">(db Database, key, value common.Hash)</span></span> &#123;</span><br><span class="line">    self.db.journal.<span class="built_in">append</span>(storageChange&#123;</span><br><span class="line">        account: &amp;self.address,</span><br><span class="line">        key: key,</span><br><span class="line">        prevalue: self.GetState(db, key),</span><br><span class="line">    &#125;)</span><br><span class="line">    self.setState(key, value)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 先加入缓存和dirty</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *stateObject)</span> <span class="title">setState</span><span class="params">(key, value common.Hash)</span></span> &#123;</span><br><span class="line">    self.cachedStorage[key] = value</span><br><span class="line">    self.dirtyStorage[key] = value</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// updateTrie writes cached storage modifications into the object&#x27;s storage trie.</span></span><br><span class="line"><span class="comment">// 把标记为dirty的kv写入、删除、更新到存储trie、</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *stateObject)</span> <span class="title">updateTrie</span><span class="params">(db Database)</span> <span class="title">Trie</span></span> &#123;</span><br><span class="line">    tr := self.getTrie(db)</span><br><span class="line">    <span class="keyword">for</span> key, value := <span class="keyword">range</span> self.dirtyStorage &#123;</span><br><span class="line">        <span class="built_in">delete</span>(self.dirtyStorage, key)</span><br><span class="line">        <span class="comment">// 空value代表删除kv</span></span><br><span class="line">        <span class="keyword">if</span> (value == common.Hash&#123;&#125;) &#123;</span><br><span class="line">            self.setError(tr.TryDelete(key[:]))</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Encoding []byte cannot fail, ok to ignore the error.</span></span><br><span class="line">        v, _ := rlp.EncodeToBytes(bytes.TrimLeft(value[:], <span class="string">&quot;\x00&quot;</span>))</span><br><span class="line">        self.setError(tr.TryUpdate(key[:], v))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> tr</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// UpdateRoot sets the trie root to the current root hash of</span></span><br><span class="line"><span class="comment">// 更新root：更新trie，然后获取新的root。Finalize使用</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *stateObject)</span> <span class="title">updateRoot</span><span class="params">(db Database)</span></span> &#123;</span><br><span class="line">    self.updateTrie(db)</span><br><span class="line">    self.data.Root = self.trie.Hash()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="statedb-go"><a href="#statedb-go" class="headerlink" title="statedb.go"></a>statedb.go</h3><p>该文件主要实现stateDB的功能：</p>
+<ol>
+<li>存储所有的账户信息（stateObject）。</li>
+<li>提供增删、修改账户的状态数据（stateObject）的接口。</li>
+<li>Finalise和提交修改的账户信息（stateObject）。</li>
+<li>对每个状态数据改变记录日志，创建快照，实现回滚。</li>
+</ol>
+<p>接下来对这4个功能依次介绍。</p>
+<h4 id="存储账户信息"><a href="#存储账户信息" class="headerlink" title="存储账户信息"></a>存储账户信息</h4><p>关于对stateObject的存储，之前是设计已经讲过其存储思路。现从StateDB的定义讲存储和管理stateObject：</p>
+<ol>
+<li>使用<code>trie</code>来组织它所有的stateObject。</li>
+<li>使用<code>db</code>存储trie。</li>
+<li>使用<code>stateObjects</code>存储最近使用过的stateObject。</li>
+<li>使用<code>stateObjectsDirty</code>存储被修改过的stateObject。</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// StateDBs within the ethereum protocol are used to store anything</span></span><br><span class="line"><span class="comment">// within the merkle trie. StateDBs take care of caching and storing</span></span><br><span class="line"><span class="comment">// nested states. It&#x27;s the general query interface to retrieve:</span></span><br><span class="line"><span class="comment">// * Contracts</span></span><br><span class="line"><span class="comment">// * Accounts</span></span><br><span class="line"><span class="comment">// 在merkle树种保存任何数据，形式是kv</span></span><br><span class="line"><span class="keyword">type</span> StateDB <span class="keyword">struct</span> &#123;</span><br><span class="line">   <span class="comment">// 存储本Trie的数据库</span></span><br><span class="line">   db Database</span><br><span class="line">   <span class="comment">// 存储所有的stateObject</span></span><br><span class="line">   trie Trie</span><br><span class="line"></span><br><span class="line">   <span class="comment">// This map holds &#x27;live&#x27; objects, which will get modified while processing a state transition.</span></span><br><span class="line">   <span class="comment">// 最近使用过的数据对象，他们的账户地址为key</span></span><br><span class="line">   stateObjects <span class="keyword">map</span>[common.Address]*stateObject</span><br><span class="line">   <span class="comment">// 修改过的账户对象</span></span><br><span class="line">   stateObjectsDirty <span class="keyword">map</span>[common.Address]<span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// DB error.</span></span><br><span class="line">   <span class="comment">// State objects are used by the consensus core and VM which are</span></span><br><span class="line">   <span class="comment">// unable to deal with database-level errors. Any error that occurs</span></span><br><span class="line">   <span class="comment">// during a database read is memoized http://lessisbetter.site/2018/06/22/ethereum-code-statedb/ and will eventually be returned</span></span><br><span class="line">   <span class="comment">// by StateDB.Commit.</span></span><br><span class="line">   dbErr error</span><br><span class="line"></span><br><span class="line">   <span class="comment">// The refund counter, also used by state transitioning.</span></span><br><span class="line">   refund <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">   thash, bhash common.Hash</span><br><span class="line">   txIndex      <span class="keyword">int</span></span><br><span class="line">   logs         <span class="keyword">map</span>[common.Hash][]*types.Log</span><br><span class="line">   logSize      <span class="keyword">uint</span></span><br><span class="line"></span><br><span class="line">   preimages <span class="keyword">map</span>[common.Hash][]<span class="keyword">byte</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">// Journal of state modifications. This is the backbone of</span></span><br><span class="line">   <span class="comment">// Snapshot and RevertToSnapshot.</span></span><br><span class="line">   <span class="comment">// 快照和回滚的主要参数</span></span><br><span class="line">   <span class="comment">// 存放每一步修改了啥</span></span><br><span class="line">   journal *journal</span><br><span class="line">   <span class="comment">// 快照id和journal的长度组成revision，可以回滚</span></span><br><span class="line">   validRevisions []revision</span><br><span class="line">   <span class="comment">// 下一个可用的快照id</span></span><br><span class="line">   nextRevisionId <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">   lock sync.Mutex</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建StateDB很简单，传入已知的root和使用的db即可。调用<code>cachingDB.OpenTrie</code>打开一个trie，该trie就用来存放所有的stateObject。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">(root common.Hash, db Database)</span> <span class="params">(*StateDB, error)</span></span> &#123;</span><br><span class="line">   tr, err := db.OpenTrie(root)</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> &amp;StateDB&#123;</span><br><span class="line">      db:                db,</span><br><span class="line">      trie:              tr,</span><br><span class="line">      stateObjects:      <span class="built_in">make</span>(<span class="keyword">map</span>[common.Address]*stateObject),</span><br><span class="line">      stateObjectsDirty: <span class="built_in">make</span>(<span class="keyword">map</span>[common.Address]<span class="keyword">struct</span>&#123;&#125;),</span><br><span class="line">      logs:              <span class="built_in">make</span>(<span class="keyword">map</span>[common.Hash][]*types.Log),</span><br><span class="line">      preimages:         <span class="built_in">make</span>(<span class="keyword">map</span>[common.Hash][]<span class="keyword">byte</span>),</span><br><span class="line">      journal:           newJournal(),</span><br><span class="line">   &#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="增删改和查询账户信息（状态数据）"><a href="#增删改和查询账户信息（状态数据）" class="headerlink" title="增删改和查询账户信息（状态数据）"></a>增删改和查询账户信息（状态数据）</h4><p>创建账户。账户使用地址来标记，所以创建账户的时候要传入地址。如果当前的地址已经代表了一个账户，再执行创建账户，会创建1个新的空账户，然后把旧账户的余额，设置到新的账户，其他账户信息比如Nonce、Code等都设置为初始值了。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CreateAccount explicitly creates a state object. If a state object with the address</span></span><br><span class="line"><span class="comment">// already exists the balance is carried over to the new account.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// CreateAccount is called during the EVM CREATE operation. The situation might arise that</span></span><br><span class="line"><span class="comment">// a contract does the following:</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//   1. sends funds to sha(account ++ (nonce + 1))</span></span><br><span class="line"><span class="comment">//   2. tx_create(sha(account ++ nonce)) (note that this gets the address of 1)</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Carrying over the balance ensures that Ether doesn&#x27;t disappear.</span></span><br><span class="line"><span class="comment">// 创建一个新的空账户，如果存在该地址的旧账户，则把旧地址中的余额，放到新账户中</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *StateDB)</span> <span class="title">CreateAccount</span><span class="params">(addr common.Address)</span></span> &#123;</span><br><span class="line">   <span class="built_in">new</span>, prev := self.createObject(addr)</span><br><span class="line">   <span class="keyword">if</span> prev != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="built_in">new</span>.setBalance(prev.data.Balance)</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// createObject creates a new state object. If there is an existing account with</span></span><br><span class="line"><span class="comment">// the given address, it is overwritten and returned as the second return value.</span></span><br><span class="line"><span class="comment">// 创建一个stateObject，对账户数据进行初始化，然后记录日志</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *StateDB)</span> <span class="title">createObject</span><span class="params">(addr common.Address)</span> <span class="params">(newobj, prev *stateObject)</span></span> &#123;</span><br><span class="line">   prev = self.getStateObject(addr)</span><br><span class="line">   newobj = newObject(self, addr, Account&#123;&#125;)</span><br><span class="line">   newobj.setNonce(<span class="number">0</span>) <span class="comment">// sets the object to dirty</span></span><br><span class="line">   <span class="keyword">if</span> prev == <span class="literal">nil</span> &#123;</span><br><span class="line">      self.journal.<span class="built_in">append</span>(createObjectChange&#123;account: &amp;addr&#125;)</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      self.journal.<span class="built_in">append</span>(resetObjectChange&#123;prev: prev&#125;)</span><br><span class="line">   &#125;</span><br><span class="line">   self.setStateObject(newobj)</span><br><span class="line">   <span class="keyword">return</span> newobj, prev</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查询账户。<code>getStateObject</code>入参是账户地址，先查询缓存中是否存在账户，没有的话，再从trie中读取。有一点需要注意：trie中实际保存的stateObject中的Account数据，从trie中获取到Account信息后，然后再合成stateObject，它通常被查询账户数据的函数所使用。<br><code>GetOrNewStateObject</code>是先查询一下stateObject，如果不存在则创建一个新的。通常是被Set系列函数在更新状态数据的时候使用。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Retrieve a state object given by the address. Returns nil if not found.</span></span><br><span class="line"><span class="comment">// stateDB中使用trie保存addr到stateObject的映射，stateObject中保存key到value的映射</span></span><br><span class="line"><span class="comment">// 先从stateObjects中读取，否则从Trie读取Account，然后创建stateObject，存到stateObjects</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *StateDB)</span> <span class="title">getStateObject</span><span class="params">(addr common.Address)</span> <span class="params">(stateObject *stateObject)</span></span> &#123;</span><br><span class="line">   <span class="comment">// Prefer &#x27;live&#x27; objects.</span></span><br><span class="line">   <span class="keyword">if</span> obj := self.stateObjects[addr]; obj != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> obj.deleted &#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> obj</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Load the object from the database.</span></span><br><span class="line">   enc, err := self.trie.TryGet(addr[:])</span><br><span class="line">   <span class="keyword">if</span> <span class="built_in">len</span>(enc) == <span class="number">0</span> &#123;</span><br><span class="line">      self.setError(err)</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// trie中实际实际保存的是Account</span></span><br><span class="line">   <span class="keyword">var</span> data Account</span><br><span class="line">   <span class="keyword">if</span> err := rlp.DecodeBytes(enc, &amp;data); err != <span class="literal">nil</span> &#123;</span><br><span class="line">      log.Error(<span class="string">&quot;Failed to decode state object&quot;</span>, <span class="string">&quot;addr&quot;</span>, addr, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// Insert into the live set.</span></span><br><span class="line">   obj := newObject(self, addr, data)</span><br><span class="line">   self.setStateObject(obj)</span><br><span class="line">   <span class="keyword">return</span> obj</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Retrieve a state object or create a new state object if nil.</span></span><br><span class="line"><span class="comment">// 获取stateObject，不存在则创建</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *StateDB)</span> <span class="title">GetOrNewStateObject</span><span class="params">(addr common.Address)</span> *<span class="title">stateObject</span></span> &#123;</span><br><span class="line">   stateObject := self.getStateObject(addr)</span><br><span class="line">   <span class="keyword">if</span> stateObject == <span class="literal">nil</span> || stateObject.deleted &#123;</span><br><span class="line">      stateObject, _ = self.createObject(addr)</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> stateObject</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>更新状态数据。stateObject的修改，修改后都暂存在<code>stateDB.stateObjects</code>中，当执行<code>updateStateObject</code>的时候，是把stateOject进行RLP编码，然后存到<code>stateDB.trie</code>中。<br><strong>tire中实际保存的是stateObject的Account的RLP编码。</strong>因为stateObject实现了<code>EncodeRLP</code>函数，在RLP执行编码的时候，会调用该函数对stateObject进行编码，该函数实际只对<code>state.data</code>进行了编码。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// updateStateObject writes the given object to the trie.</span></span><br><span class="line"><span class="comment">// 把对象RLP编码，然后写到trie</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *StateDB)</span> <span class="title">updateStateObject</span><span class="params">(stateObject *stateObject)</span></span> &#123;</span><br><span class="line">   addr := stateObject.Address()</span><br><span class="line">   data, err := rlp.EncodeToBytes(stateObject)</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="built_in">panic</span>(fmt.Errorf(<span class="string">&quot;can&#x27;t encode object at %x: %v&quot;</span>, addr[:], err))</span><br><span class="line">   &#125;</span><br><span class="line">   self.setError(self.trie.TryUpdate(addr[:], data))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// EncodeRLP implements rlp.Encoder.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *stateObject)</span> <span class="title">EncodeRLP</span><span class="params">(w io.Writer)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">   <span class="keyword">return</span> rlp.Encode(w, c.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>更新状态数据，就是一些列的Set函数了，这里就不讲了。</p>
+<h4 id="Finalise和Commit"><a href="#Finalise和Commit" class="headerlink" title="Finalise和Commit"></a>Finalise和Commit</h4><p><strong>Finalise和Commit是和存储过程紧密关联的2个函数，Finalise代表修改过的状态已经进入“终态”，Commit代表所有的状态都写入到数据库。</strong>我们使用下面这个图介绍一下。</p>
+<ul>
+<li>Finalise会把stateObjects写入到trie，并且计算trie的树根，但trie本身的所有节点，还在trie（trie暂时保存在内存）中，没有写入到trie数据库中。</li>
+<li>Commit要比Finalise深一步，它会把trie的所有节点写入到trie的数据库中，然后还会使用传入的回调函数处理trie的叶子节点。</li>
+</ul>
+<p>我们再结合代码，看Finalise和Commit实现上的差异。Finalise处理的journal中标记为dirty的对象，不处理stateObjectsDirty中的对象，对于自杀的对象和空的对象，要把它们删除对象，降低trie的存储。然后，每向trie里写入1个对象，就会更新一次trie的根，然后才把对象加入到stateObjectsDirty，最后清空journal，因为这些journal已经过时了。</p>
+<p>Commit会把journal中所有标记的对象加入到stateObjectsDirty，然后清空自杀和空的对象，把修改的对象写入到trie，把对象trie写入到数据库，最后把自己的trie写入到数据库。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Finalise finalises the state by removing the self destructed objects</span></span><br><span class="line"><span class="comment">// and clears the journal as well as the refunds.</span></span><br><span class="line"><span class="comment">// 最终化数据库，遍历的日志中标记为dirty的账户，删除部分自杀、或空的数据，然后把数据写入存储trie，然后更新root，但每个对象都没有commit</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *StateDB)</span> <span class="title">Finalise</span><span class="params">(deleteEmptyObjects <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">   <span class="comment">// 只处理journal中标记为dirty的对象，不处理stateObjectsDirty中的对象</span></span><br><span class="line">   <span class="keyword">for</span> addr := <span class="keyword">range</span> s.journal.dirties &#123;</span><br><span class="line">      stateObject, exist := s.stateObjects[addr]</span><br><span class="line">      <span class="keyword">if</span> !exist &#123;</span><br><span class="line">         <span class="comment">// ripeMD is &#x27;touched&#x27; at block 1714175, in tx 0x1237f737031e40bcde4a8b7e717b2d15e3ecadfe49bb1bbc71ee9deb09c6fcf2</span></span><br><span class="line">         <span class="comment">// That tx goes out of gas, and although the notion of &#x27;touched&#x27; does not exist there, the</span></span><br><span class="line">         <span class="comment">// touch-event will still be recorded in the journal. Since ripeMD is a special snowflake,</span></span><br><span class="line">         <span class="comment">// it will persist in the journal even though the journal is reverted. In this special circumstance,</span></span><br><span class="line">         <span class="comment">// it may exist in `s.journal.dirties` but not in `s.stateObjects`.</span></span><br><span class="line">         <span class="comment">// Thus, we can safely ignore it http://lessisbetter.site/2018/06/22/ethereum-code-statedb/</span></span><br><span class="line">         <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> stateObject.suicided || (deleteEmptyObjects &amp;&amp; stateObject.empty()) &#123;</span><br><span class="line">         s.deleteStateObject(stateObject)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         <span class="comment">// 把对象数据写入到storage trie，并获取新的root</span></span><br><span class="line">         stateObject.updateRoot(s.db)</span><br><span class="line">         s.updateStateObject(stateObject)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// 加入到stateObjectsDirty</span></span><br><span class="line">      s.stateObjectsDirty[addr] = <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// Invalidate journal because reverting across transactions is not allowed.</span></span><br><span class="line">   <span class="comment">// 清空journal，没法再回滚了</span></span><br><span class="line">   s.clearJournalAndRefund()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 清空journal，revision，不能再回滚</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *StateDB)</span> <span class="title">clearJournalAndRefund</span><span class="params">()</span></span> &#123;</span><br><span class="line">   s.journal = newJournal()</span><br><span class="line">   s.validRevisions = s.validRevisions[:<span class="number">0</span>]</span><br><span class="line">   s.refund = <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// Commit writes the state to the underlying in-memory trie database.</span></span><br><span class="line"><span class="comment">// 把数据写入trie数据库，与Finalize不同，这里处理的是Dirty的对象</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *StateDB)</span> <span class="title">Commit</span><span class="params">(deleteEmptyObjects <span class="keyword">bool</span>)</span> <span class="params">(root common.Hash, err error)</span></span> &#123;</span><br><span class="line">   <span class="comment">// 清空journal无法再回滚</span></span><br><span class="line">   <span class="keyword">defer</span> s.clearJournalAndRefund()</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 把journal中dirties的对象，加入到stateObjectsDirty</span></span><br><span class="line">   <span class="keyword">for</span> addr := <span class="keyword">range</span> s.journal.dirties &#123;</span><br><span class="line">      s.stateObjectsDirty[addr] = <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// Commit objects to the trie.</span></span><br><span class="line">   <span class="comment">// 遍历所有活动/修改过的对象</span></span><br><span class="line">   <span class="keyword">for</span> addr, stateObject := <span class="keyword">range</span> s.stateObjects &#123;</span><br><span class="line">      _, isDirty := s.stateObjectsDirty[addr]</span><br><span class="line">      <span class="keyword">switch</span> &#123;</span><br><span class="line">      <span class="keyword">case</span> stateObject.suicided || (isDirty &amp;&amp; deleteEmptyObjects &amp;&amp; stateObject.empty()):</span><br><span class="line">         <span class="comment">// If the object has been removed, don&#x27;t bother syncing it</span></span><br><span class="line">         <span class="comment">// and just mark it for deletion in the trie.</span></span><br><span class="line">         s.deleteStateObject(stateObject)</span><br><span class="line">      <span class="keyword">case</span> isDirty:</span><br><span class="line">         <span class="comment">// Write any contract code associated with the state object</span></span><br><span class="line">         <span class="comment">// 把修改过的合约代码写到数据库，这个用法高级，直接把数据库拿过来，插进去</span></span><br><span class="line">         <span class="comment">// 注意：这里写入的DB是stateDB的数据库，因为stateObject的Trie只保存Account信息</span></span><br><span class="line">         <span class="keyword">if</span> stateObject.code != <span class="literal">nil</span> &amp;&amp; stateObject.dirtyCode &#123;</span><br><span class="line">            s.db.TrieDB().Insert(common.BytesToHash(stateObject.CodeHash()), stateObject.code)</span><br><span class="line">            stateObject.dirtyCode = <span class="literal">false</span></span><br><span class="line">         &#125;</span><br><span class="line">         <span class="comment">// Write any storage changes in the state object to its storage trie.</span></span><br><span class="line">         <span class="comment">// 对象提交：把任何改变的存储数据写到数据库</span></span><br><span class="line">         <span class="keyword">if</span> err := stateObject.CommitTrie(s.db); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> common.Hash&#123;&#125;, err</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="comment">// Update the object in the main account trie.</span></span><br><span class="line">         <span class="comment">// 把修改后的对象，编码后写入到stateDB的trie中</span></span><br><span class="line">         s.updateStateObject(stateObject)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">delete</span>(s.stateObjectsDirty, addr)</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// Write trie changes.</span></span><br><span class="line">   <span class="comment">// stateDB的提交</span></span><br><span class="line">   root, err = s.trie.Commit(<span class="function"><span class="keyword">func</span><span class="params">(leaf []<span class="keyword">byte</span>, parent common.Hash)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      <span class="keyword">var</span> account Account</span><br><span class="line">      <span class="keyword">if</span> err := rlp.DecodeBytes(leaf, &amp;account); err != <span class="literal">nil</span> &#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// 如果叶子节点的trie不空，则trie关联到父节点</span></span><br><span class="line">      <span class="keyword">if</span> account.Root != emptyState &#123;</span><br><span class="line">         <span class="comment">// reference的功能还没搞懂</span></span><br><span class="line">         s.db.TrieDB().Reference(account.Root, parent)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// 如果叶子节点的code不空（合约账户），则把code关联到父节点</span></span><br><span class="line">      code := common.BytesToHash(account.CodeHash)</span><br><span class="line">      <span class="keyword">if</span> code != emptyCode &#123;</span><br><span class="line">         s.db.TrieDB().Reference(code, parent)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">   &#125;)</span><br><span class="line">   log.Debug(<span class="string">&quot;Trie cache stats after commit&quot;</span>, <span class="string">&quot;misses&quot;</span>, trie.CacheMisses(), <span class="string">&quot;unloads&quot;</span>, trie.CacheUnloads())</span><br><span class="line">   <span class="keyword">return</span> root, err</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>关于Commit保存对象信息的时候，还有1个重点关注：<strong>stateObject.Code并没有保存在stateObject.trie中，而是保存在stateDB.trie中</strong>。所以调用stateObject.Code获取合约代码的时候，实际传入的是stateDB.db，<code>cachingDB.ContractCode</code>实际也不使用合约的地址，因为(CodeHash, Code)本身就是作为KV存放在Trie中。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Code returns the contract code associated with this object, if any.</span></span><br><span class="line"><span class="comment">// 从db读取合约代码，db实际是stateDB.db</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *stateObject)</span> <span class="title">Code</span><span class="params">(db Database)</span> []<span class="title">byte</span></span> &#123;</span><br><span class="line">   <span class="keyword">if</span> self.code != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> self.code</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span> bytes.Equal(self.CodeHash(), emptyCodeHash) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">   &#125;</span><br><span class="line">   code, err := db.ContractCode(self.addrHash, common.BytesToHash(self.CodeHash()))</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      self.setError(fmt.Errorf(<span class="string">&quot;can&#x27;t load code hash %x: %v&quot;</span>, self.CodeHash(), err))</span><br><span class="line">   &#125;</span><br><span class="line">   self.code = code</span><br><span class="line">   <span class="keyword">return</span> code</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ContractCode retrieves a particular contract&#x27;s code.</span></span><br><span class="line"><span class="comment">// 合约账户的code</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(db *cachingDB)</span> <span class="title">ContractCode</span><span class="params">(addrHash, codeHash common.Hash)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">   <span class="comment">//addrHash无用</span></span><br><span class="line">   code, err := db.db.Node(codeHash)</span><br><span class="line">   <span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">      db.codeSizeCache.Add(codeHash, <span class="built_in">len</span>(code))</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> code, err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="日志和回滚"><a href="#日志和回滚" class="headerlink" title="日志和回滚"></a>日志和回滚</h4><p>以太坊使用记录每一步状态的变化来支持回滚，每一步变化就是日志。假如从状态A转移到状态B，需要经过8步，在第1不的时候创建了snapshot，执行到第6步的时候出现了错误，回滚操作就是：把操作2，3，4，5步之前的数据，以5，4，3，2的顺序设置回去。</p>
+<p><img src="http://img.lessisbetter.site/2018-06-22-100745.jpg-own" alt="img"></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Snapshot returns an identifier for the current revision of the state.</span></span><br><span class="line"><span class="comment">// 快照只是一个id，把id和日志的长度关联起来，存到Revisions中</span></span><br><span class="line"><span class="comment">// EVM在执行在运行一个交易时，在修改state之前，创建快照，出现错误，则回滚</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *StateDB)</span> <span class="title">Snapshot</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">   id := self.nextRevisionId</span><br><span class="line">   self.nextRevisionId++</span><br><span class="line">   self.validRevisions = <span class="built_in">append</span>(self.validRevisions, revision&#123;id, self.journal.length()&#125;)</span><br><span class="line">   <span class="keyword">return</span> id</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// RevertToSnapshot reverts all state changes made since the given revision.</span></span><br><span class="line"><span class="comment">// 回滚到指定vision/快照</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(self *StateDB)</span> <span class="title">RevertToSnapshot</span><span class="params">(revid <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">   <span class="comment">// Find the snapshot in the stack of valid snapshots.</span></span><br><span class="line">   idx := sort.Search(<span class="built_in">len</span>(self.validRevisions), <span class="function"><span class="keyword">func</span><span class="params">(i <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">      <span class="keyword">return</span> self.validRevisions[i].id &gt;= revid</span><br><span class="line">   &#125;)</span><br><span class="line">   <span class="keyword">if</span> idx == <span class="built_in">len</span>(self.validRevisions) || self.validRevisions[idx].id != revid &#123;</span><br><span class="line">      <span class="built_in">panic</span>(fmt.Errorf(<span class="string">&quot;revision id %v cannot be reverted&quot;</span>, revid))</span><br><span class="line">   &#125;</span><br><span class="line">   snapshot := self.validRevisions[idx].journalIndex</span><br><span class="line"></span><br><span class="line">   <span class="comment">// Replay the journal to undo changes and remove invalidated snapshots</span></span><br><span class="line">   <span class="comment">// 反操作后续的操作，达到回滚的目的</span></span><br><span class="line">   self.journal.revert(self, snapshot)</span><br><span class="line">   self.validRevisions = self.validRevisions[:idx]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在journal.go中有更多的日志操作，以及每种类型操作需要记录的数据。</p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/06/22/ethereum-code-statedb/">http://lessisbetter.site/2018/06/22/ethereum-code-statedb/</a></li>
+</ol>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"># 以太坊</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/06/03/steps-of-house-trade/" rel="prev" title="二手房交易流程（附时间表）">
+                  <i class="fa fa-chevron-left"></i> 二手房交易流程（附时间表）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/06/22/ethereum-code-consensus-1/" rel="next" title="以太坊源码分析：共识（1）矿工">
+                  以太坊源码分析：共识（1）矿工 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '7e953cbbf180744d966a7cc17d39fed8',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

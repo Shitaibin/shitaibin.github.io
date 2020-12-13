@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="从时间管理与记录，周计划、日计划，对理想、目标的渴望，每天告诉自己，我设定的目标。一路走来，至今，我突然开始问自己，今天的计划有助于达成我的目标吗？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="个人管理的思考">
+<meta property="og:url" content="http://lessisbetter.site/2015/12/21/think-about-personal-management/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="从时间管理与记录，周计划、日计划，对理想、目标的渴望，每天告诉自己，我设定的目标。一路走来，至今，我突然开始问自己，今天的计划有助于达成我的目标吗？">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-12-21T01:09:00.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.796Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="思考">
+<meta property="article:tag" content="管理">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2015/12/21/think-about-personal-management/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>个人管理的思考 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">时间管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%B6%E5%AE%9A%E8%AE%A1%E5%88%92"><span class="nav-number">2.</span> <span class="nav-text">制定计划</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E7%9B%AE%E6%A0%87%E7%9A%84%E6%B8%B4%E6%9C%9B"><span class="nav-number">3.</span> <span class="nav-text">对目标的渴望</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A5%E4%B8%8A%E5%86%85%E5%AE%B9%E5%86%99%E4%BA%8E2015%E5%B9%B412%E6%9C%8822%E6%97%A5%E3%80%82"><span class="nav-number">3.1.</span> <span class="nav-text">以上内容写于2015年12月22日。</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E8%A6%81%E7%AC%A6%E5%90%88SMART%E5%8E%9F%E5%88%99"><span class="nav-number">4.</span> <span class="nav-text">目标要符合SMART原则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A5%E4%B8%8A%E6%9B%B4%E6%96%B0%E4%B8%8E2018%E5%B9%B406%E6%9C%8802%E6%97%A5%E3%80%82"><span class="nav-number">4.1.</span> <span class="nav-text">以上更新与2018年06月02日。</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2015/12/21/think-about-personal-management/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          个人管理的思考
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-12-21 09:09:00" itemprop="dateCreated datePublished" datetime="2015-12-21T09:09:00+08:00">2015-12-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>从时间管理与记录，周计划、日计划，对理想、目标的渴望，每天告诉自己，我设定的目标。一路走来，至今，我突然开始问自己，今天的计划有助于达成我的目标吗？</p>
+</blockquote>
+<a id="more"></a>
+
+
+
+<h1 id="时间管理"><a href="#时间管理" class="headerlink" title="时间管理"></a>时间管理</h1><p>在2013年底，考研结束，接近寒假，然而假期总是让人懒散的。我为了充分的准备考研复试，提高自己的学习效率，我找了一本时间管理的书，或者说网络搜罗的资料。我选择了<em>番茄管理法</em>，主要是因为那本书，有很多图表，这样读一本书，就不再枯燥乏味。当时花了一周时间看书，培养番茄管理，并且还对本书做了笔记，记录在豆瓣日记中，至今豆瓣还偶尔有通知，说某某某点赞之类的。</p>
+<p>然而番茄管理，我只用了那个寒假。2014年开学后，在自习室看书的人多了起来，每25分钟休息一次对别人还是影响挺大的，所以我也就放弃了。但秉承了工作一段时间就休息，只是感觉累了，就活动一下。</p>
+<p>在2015年4月份的时候，我读了一本书<a target="_blank" rel="noopener" href="http://book.douban.com/subject/1322025/">《卓有成效的管理者》</a>，由彼得·德鲁克所著。<strong>这本书开阔了我的视野，改变了我对管理的观点.*<em>在多数人的眼中，管理是领导对下属的管理，而本书着重的</em>每一位知识工作者其实多事管理者*，这让我意识到，</strong>几乎每一个人都应该是管理者，首先最重要的是管理好自己，自己就是自己的管理者<strong>。我按照书中的建议来改善自己的工作效率，期中一个便是</strong>时间管理**。</p>
+<p>搜集资料，确定使用<a target="_blank" rel="noopener" href="http://baike.baidu.com/link?url=F0YOLiUH9XizKOJK4YqmYHuVt5ge_ZdFcI8YJCJoINaJ9-06LNrl8wOBFPDeDyhfgZCj_GZjEb4-O6r1SYqp0K#2">柳比歇夫时间管理法</a>。我在为知笔记上设定了表格，填写每件事情，开始时间、结束时间、消耗时间、备注，从刚开始仅仅是记录，设定大块时间完成重要事情，小事情集合到一起办理，<strong>基本上消除了零碎时间对我的影响</strong>。每个月结束后评估，哪些事情是不需要做的，哪些事情浪费了别人的时间，哪一部分占用了太多的时间，每个月中都有一块就是<em>看视频</em>，我喜欢看电影、综艺节目、电视剧，电视剧是生活大爆炸，从第一季到第七季，但每周都会看一个固定的综艺节目《跑男》，偶尔还会在学校内网下电影，看一下，这样一月下来消耗的时间还是蛮多的，如今克制了不少，基本不看电视剧了，但保留了每周看跑男，看电影的次数也少的可怜了。</p>
+<p>我坚持了8个月，然后停止了时间记录。时间记录改变了我，让我变的在某块时间一旦做了某事，就不愿意去更换去做另外一件事，这种影响好坏参半。在11月份的某段时间，我不能专注与做有用的事情，不少时间都被浪费了，主要原因是<strong>虽然我有时间记录，但我没有计划安排。</strong></p>
+<p>因此，现在我们转场到制定计划。</p>
+<h1 id="制定计划"><a href="#制定计划" class="headerlink" title="制定计划"></a>制定计划</h1><p>在考研的时候，我指定的计划还是蛮不错的，一步一步去做，达成自己的目标，那时候我并没有指定特别详细的计划。</p>
+<p>读研究生后，我也会指定计划，但总是发现这些计划好像并不能及时的完成，甚至放弃。但我也从来没有去深究过其中的原因。所以一心想找办法提高自己的效率，以为这样就可以完成目标。虽然进行实践管理后，仍然有完不成计划的情况，但至少已经改善了不少。</p>
+<p>研究生时期与考研时期的重要不同是时间规律不同。考研时期时间自由，每天的生活是一样的，把每天分成几块时间，安排不同的事情就可以了。而研究生时间，自由时间没有规律，今天突然有事情A，明天突然有事情B，然而事情A与B可能对自己都没有什么帮助，但它们消耗了时间，那么制定的计划也就很难及时完成，拖延时间久了，甚至计划都被遗弃了。</p>
+<p>回归到时间管理后期出现的问题。时间管理，让我把时间划分成块，如果开端没有做正确的事，那么这块时间就被污染，整块时间基本就被浪费。那么为什么在开端没有做正确的事呢？<strong>虽然我有制定的计划，但计划不够详细，考虑也不够周全，内心也就对计划怠慢了许多，也许某块时间就做了不正确的事，时间被浪费。</strong></p>
+<p>而后，我求助知乎等，<strong>如何保持专注，如何才能专注于计划。</strong>当时参考了不少回答，期中有一个回答（借鉴了国外某人的博文），是制定<strong>周计划与日计划</strong>，周计划由日计划组成，日计划的安排是从早晨起床，到下午下班的每个时间段都设置好，严格去执行，使用这种方法不让自己偏离轨道。他还提到，要注意放松，答主的安排是白天安排满满的，晚上尽情去放松，因为这样才能形成良性循环。</p>
+<p>我接受上面的建议，设定周计划与日计划。我的设定是从早晨起床到晚上睡觉，每一块时间都被划分。但坚持了一周就不行了，因为我在让我的生命赶这个时间计划，而不是让计划来改善工作与生活，这让我有很累，不久就出现了失眠，因为每天都绷的太紧了。</p>
+<p>后来，我不再设置这种时间计划表。我在一周开始前，去掉那些已安排的事情所占用的时间，留出一些时间给“意外”事件，估计一下本周有多少空余时间，基于这些空余时间再安排合理的工作量，而这些工作又源于我的目标。我依然根据周计划设定日计划，但不再是那种<strong>时间表</strong>的情况，而是再去采取一种<strong>松散的时间块</strong>的形式：上午，下午，晚上。如果上午的计划完成，就去做下午的事情，如果还剩很小的时间块就去做一些不得不做的杂事。</p>
+<p>每周评估本周的计划完成情况，然后需要改进什么，然后根据改进指定下周的计划。如今周计划已经实施了5周，并且周计划与日计划也变得更加好。</p>
+<p>目前看来，最重要的有两点：</p>
+<ol>
+<li>估计好本周可用时间。</li>
+<li>根据时间设定实际可行的计划。</li>
+</ol>
+<h1 id="对目标的渴望"><a href="#对目标的渴望" class="headerlink" title="对目标的渴望"></a>对目标的渴望</h1><p>在前几日（12月中旬），中午天气好，我随手拿起书架上的<a target="_blank" rel="noopener" href="http://book.douban.com/subject/10565381/">《活法》</a>（稻盛和夫著作），心想好久没看了，打算坐在阳光下，读一读。这一读，让我知道了，我为何松散的原因。</p>
+<p>选中了第一章阅读，标题是<strong>你的梦想一定能实现</strong>。其中有一则松下幸之助讲的水库的故事，稻盛先生后来，点名了“心想”才能“事成”，如果你日日想，时时刻刻都在想，你总会找到办法，你总会前进，你总会离你的目标更进一点。</p>
+<p>而后，我在手机日历上设置了一个提醒，每天起床后就能看到这个提醒，然后，我花1分钟的时间重复这句话。刚开始，效果并没有显现，三四天之后，又是某个中午，我的心里突然蹦出了：<strong>今天这个计划，能让你达到你的目标吗？</strong>，我思考了一下，给出了肯定的回答。</p>
+<p>在此之后，每天设定计划的时候，我都会问自己这个问题。我觉得我回到追求理想的轨道上了。</p>
+<h2 id="以上内容写于2015年12月22日。"><a href="#以上内容写于2015年12月22日。" class="headerlink" title="以上内容写于2015年12月22日。"></a>以上内容写于2015年12月22日。</h2><h1 id="目标要符合SMART原则"><a href="#目标要符合SMART原则" class="headerlink" title="目标要符合SMART原则"></a>目标要符合SMART原则</h1><p>了解SMART：<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/SMART%E5%8E%9F%E5%88%99/8575850?fr=aladdin">SMART原则百度百科资料</a>。</p>
+<p>工作后，我开始掌握SMART，对于小工作、小任务我用SMART规划的比较好。但对于稍微长一点的目标，虽然规划的好，但实现上遇到了遇到了困难。比如月计划、半月计划这些虽然用SMART规划好了，但中间的许多未知性，让我很可能没有按时达成，甚至没有达成目标。</p>
+<p>我近期，开始规划一个10年左右的目标。1）先用SMART原则，规划出具体目标，可能不会完全符合SMART，比如长期目标的截止日期应该是灵活变动的，因为这其中有大量不可控、未知的因素。2）将目标分解。先分解为3年的中目标，每个再分解为年目标，继续向下分解到季度、月、周。</p>
+<h2 id="以上更新与2018年06月02日。"><a href="#以上更新与2018年06月02日。" class="headerlink" title="以上更新与2018年06月02日。"></a>以上更新与2018年06月02日。</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%80%9D%E8%80%83/" rel="tag"># 思考</a>
+              <a href="/tags/%E7%AE%A1%E7%90%86/" rel="tag"># 管理</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/12/12/back-up-your-blog/" rel="prev" title="搭好博客勤备份">
+                  <i class="fa fa-chevron-left"></i> 搭好博客勤备份
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/12/22/python-unittest-in-action/" rel="next" title="Python单元测试实践">
+                  Python单元测试实践 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '7ca13d53f3f6acdf5a0e39a2fc1cdcda',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

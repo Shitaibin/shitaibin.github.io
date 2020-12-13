@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="云原生、Go语言、区块链">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Go语言充电站">
+<meta property="og:url" content="http://lessisbetter.site/page/2/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="云原生、Go语言、区块链">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="云原生 k8s kubernetes 区块链 Go语言 后端 技术 人生 编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/page/2/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/08/27/cgroup-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/08/27/cgroup-1/" class="post-title-link" itemprop="url">Docker容器基础1：Cgroup - 资源控制简介</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-27 21:43:52" itemprop="dateCreated datePublished" datetime="2020-08-27T21:43:52+08:00">2020-08-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="什么是Cgroup"><a href="#什么是Cgroup" class="headerlink" title="什么是Cgroup"></a>什么是Cgroup</h2><p>Cgroup 是 Control Group 的缩写，提供对一组进程，及未来子进程的资源<strong>限制、控制、统计</strong>能力，包括CPU、内存、磁盘、网络。</p>
+<ul>
+<li>限制：限制的资源最大使用量阈值。比如不能超过128MB内存，CPU使用率不得超过50%，或者只能是否CPU的某哪几个核。</li>
+<li>控制：超过资源使用最大阈值时，进程会被控制，不任由它发展。比如cgroup内所有tasks的内存使用量超过阈值的结果就是被KILL，CPU使用率不得超过设定值。</li>
+<li>统计：统计资源的使用情况等指标。比如cgroup内tasks的内存使用量，占用CPU的时间。</li>
+</ul>
+<p>Cgroup 包含3个组件：</p>
+<ul>
+<li>cgroup ：一组进程，可以加上subsystem</li>
+<li>subsystem ：一组资源控制模块，CPU、内存…</li>
+<li>hierarchy ： 把一组cgroup串成树状结构，这样就能实现cgroup的继承。为什么要继承呢？就如同docker镜像的继承，站在前人的基础之上，免去重复的配置</li>
+</ul>
+<h2 id="为什么需要Cgroup"><a href="#为什么需要Cgroup" class="headerlink" title="为什么需要Cgroup"></a>为什么需要Cgroup</h2><p>为什么需要Cgroup的问题等价于：为什么需要限制一组进程的资源？</p>
+<p>有多种原因，比如：</p>
+<ol>
+<li>Linux是一个可以多用户登录的系统，如何限制不同的用户使用不同量的系统资源呢？</li>
+<li>某个系统有64核，由于局部性原理，如果一组进程在64个核上调度，效率比较低，但把这些进程只允许在某几个核上调度，就有较好的局部性，提高效率。这类似与在分布式系统中，某个有状态的请求，最好能分配到上一次处理该请求的机器上一样的道理。</li>
+</ol>
+<p>cgroup的文档中还提到一个思路：实现资源限制的技术有多种，为什么使用cgroup？</p>
+<p>cgroup是内核实现的，它更轻量、更高效、对内核的热点路径影响最小。</p>
+<h2 id="你的Linux支持哪些Cgroup-subsystem"><a href="#你的Linux支持哪些Cgroup-subsystem" class="headerlink" title="你的Linux支持哪些Cgroup subsystem"></a>你的Linux支持哪些Cgroup subsystem</h2><p>查看当前系统支持的subsystem，共12个子系统。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup]$ cat &#x2F;proc&#x2F;cgroups</span><br><span class="line">#subsys_name	hierarchy	num_cgroups	enabled</span><br><span class="line">cpuset	8	4	1</span><br><span class="line">cpu	2	74	1</span><br><span class="line">cpuacct	2	74	1</span><br><span class="line">memory	11	74	1</span><br><span class="line">devices	6	69	1</span><br><span class="line">freezer	10	4	1</span><br><span class="line">net_cls	4	4	1</span><br><span class="line">blkio	9	69	1</span><br><span class="line">perf_event	5	4	1</span><br><span class="line">hugetlb	7	4	1</span><br><span class="line">pids	3	69	1</span><br><span class="line">net_prio	4	4	1</span><br></pre></td></tr></table></figure>
+
+<p>从左到右字段的含义分别是：</p>
+<ol>
+<li>subsys_name: subsystem的名字</li>
+<li>hierarchy: subsystem所关联到的cgroup树的ID，如果多个subsystem关联到同一颗cgroup树，那么他们的这个字段将一样，比如这里的cpu和cpuacct就一样，表示他们绑定到了同一颗树。如果出现下面的情况，这个字段将为0：<ul>
+<li>当前subsystem没有和任何cgroup树绑定</li>
+<li>当前subsystem已经和cgroup v2的树绑定</li>
+<li>当前subsystem没有被内核开启</li>
+</ul>
+</li>
+<li>num_cgroups: subsystem所关联的cgroup树中进程组的个数，也即树上节点的个数</li>
+<li>enabled: 1表示开启，0表示没有被开启(可以通过设置内核的启动参数“cgroup_disable”来控制subsystem的开启).</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://www.kernel.org/doc/Documentation/cgroup-v1/">Cgroup的内核文档</a>对各 cgroup 和 subsystem 有详细的介绍，以下是每个 subsystem 功能简记：</p>
+<ol>
+<li>cpu ：用来<strong>限制</strong>cgroup的CPU使用率</li>
+<li>cpuacct ：用来<strong>统计</strong>cgroup的CPU的使用率</li>
+<li>cpuset ： 用来绑定cgroup到指定CPU哪个核上和NUMA节点</li>
+<li>memory ：限制和统计cgroup的内存的使用率，包括process memory, kernel memory, 和swap</li>
+<li>devices ： 限制cgroup创建(mknod)和访问设备的权限</li>
+<li>freezer ： suspend和restore一个cgroup中的所有进程</li>
+<li>net_cls ： 将一个cgroup中进程创建的所有网络包加上一个classid标记，用于tc和iptables。 只对发出去的网络包生效，对收到的网络包不起作用</li>
+<li>blkio ： 限制cgroup访问块设备的IO速度</li>
+<li>perf_event ： 对cgroup进行性能监控</li>
+<li>net_prio ： 针对每个网络接口设置cgroup的访问优先级</li>
+<li>hugetlb ： 限制cgroup的huge pages的使用量</li>
+<li>pids ：限制一个cgroup及其子孙cgroup中的总进程数</li>
+</ol>
+<p>这些子系统的排列顺序，就是引入Linux内核顺序，最早的是cpu subsystem ，引入自Linux 2.6.24，最晚的是pid subsystem ，引入自 Linux 4.3。</p>
+<h2 id="查看子系统和cgroup的挂载"><a href="#查看子系统和cgroup的挂载" class="headerlink" title="查看子系统和cgroup的挂载"></a>查看子系统和cgroup的挂载</h2><p>cgroup是通过文件系统实现的，每个目录都是一个cgroup节点，目录中的子目录都是子cgroup节点，这样就形成了 cgroup的 hierarchy 特性。</p>
+<p>cgroup会挂载到 <code>/sys/fs/cgroup/</code>目录，该目录下的目录基本都是subsystem，<code>systemd</code>目录除外（它是 systemd 自建在cgroup下的目录，但不是子系统）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup]$ ll</span><br><span class="line">total 0</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 blkio</span><br><span class="line">lrwxrwxrwx 1 root root 11 Aug 30 09:30 cpu -&gt; cpu,cpuacct</span><br><span class="line">lrwxrwxrwx 1 root root 11 Aug 30 09:30 cpuacct -&gt; cpu,cpuacct</span><br><span class="line">dr-xr-xr-x 7 root root  0 Aug 30 09:30 cpu,cpuacct</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 cpuset</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 devices</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 freezer</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 hugetlb</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 memory</span><br><span class="line">lrwxrwxrwx 1 root root 16 Aug 30 09:30 net_cls -&gt; net_cls,net_prio</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 net_cls,net_prio</span><br><span class="line">lrwxrwxrwx 1 root root 16 Aug 30 09:30 net_prio -&gt; net_cls,net_prio</span><br><span class="line">dr-xr-xr-x 3 root root  0 Aug 30 09:30 perf_event</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 pids</span><br><span class="line">dr-xr-xr-x 6 root root  0 Aug 30 09:30 systemd</span><br></pre></td></tr></table></figure>
+
+<p>发现cpu、cpuacct都指向了 <code>cpu,cpuacct</code> 目录，把它们合成了1个cgroup节点。另外 net_cls 和 net_prio 也都合到了 <code>net_cls,net_prio</code> 节点，也就形成了下面这幅图的样子，并把资源控制分成了5个类别：CPU、内存、网络、进程控制、设备，另外的<code>perf_event</code>是cgroup对自身的监控，不归于资源控制。</p>
+<p><img src="http://img.lessisbetter.site/2020-08-30-cgroup-subsystem.png"></p>
+<p>子系统挂载到cgroup的虚拟文件系统是通过mount命令实现的，系统启动时自动挂载subsystem到cgroup，查看已经挂载的Cgroup：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[~]$ mount -t cgroup</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,release_agent&#x3D;&#x2F;lib&#x2F;systemd&#x2F;systemd-cgroups-agent,name&#x3D;systemd)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;pids type cgroup (rw,nosuid,nodev,noexec,relatime,pids)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpu,cpuacct)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;freezer type cgroup (rw,nosuid,nodev,noexec,relatime,freezer)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,net_cls,net_prio)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;devices type cgroup (rw,nosuid,nodev,noexec,relatime,devices)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,hugetlb)</span><br><span class="line">cgroup on &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,perf_event)</span><br></pre></td></tr></table></figure>
+
+<p>查看某个进程所属的cgroup：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup]$ # $$代表当前进程</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup]$ cat &#x2F;proc&#x2F;$$&#x2F;cgroup</span><br><span class="line">11:memory:&#x2F;user.slice&#x2F;user-1000.slice&#x2F;session-269.scope</span><br><span class="line">10:freezer:&#x2F;</span><br><span class="line">9:blkio:&#x2F;user.slice</span><br><span class="line">8:cpuset:&#x2F;</span><br><span class="line">7:hugetlb:&#x2F;</span><br><span class="line">6:devices:&#x2F;user.slice</span><br><span class="line">5:perf_event:&#x2F;</span><br><span class="line">4:net_prio,net_cls:&#x2F;</span><br><span class="line">3:pids:&#x2F;user.slice</span><br><span class="line">2:cpuacct,cpu:&#x2F;user.slice&#x2F;user-1000.slice&#x2F;session-269.scope</span><br><span class="line">1:name&#x3D;systemd:&#x2F;user.slice&#x2F;user-1000.slice&#x2F;session-269.scope</span><br></pre></td></tr></table></figure>
+
+<p>每一行从左到右，用<code>:</code>分割依次是：</p>
+<ul>
+<li><code>11</code>： cgroup继承树的节点的ID</li>
+<li><code>memory</code>: 当前节点上挂载的子系统</li>
+<li><code>/user.slice/user-1000.slice/session-269.scope</code>: cgroup节点相对于cgroup根目录下子系统的相对路径，转换成绝对路径就是：<code>/sys/fs/cgroup/memory/user.slice/user-1000.slice/session-269.scope</code></li>
+</ul>
+<h2 id="再聊cgroup-hierarchy"><a href="#再聊cgroup-hierarchy" class="headerlink" title="再聊cgroup hierarchy"></a>再聊cgroup hierarchy</h2><p>在 cpu,cpuacct 子系统下创建一个测试cgroup节点：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[/sys/fs/cgroup/cpu,cpuacct]$ sudo mkdir dabin_test_cpu_cgroup</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct]$ <span class="built_in">cd</span> dabin_test_cpu_cgroup</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ ls</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ ls cgroup.*</span><br><span class="line">cgroup.clone_children  cgroup.event_control  cgroup.procs</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ cat cgroup.clone_children</span><br><span class="line">0</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ cat cgroup.procs</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ ls notify_on_release tasks</span><br><span class="line">notify_on_release  tasks</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ cat tasks</span><br><span class="line">[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ cat notify_on_release</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+
+<p>cgroup hierarchy (继承树)结构，每个cgroup节点都包含以下几个文件：</p>
+<ul>
+<li>cgroup.clone_children : 被cpuset控制器使用，值为1时子cgroup初始化时拷贝父cgroup的配置</li>
+<li>cgroup.procs : cgroup中的线程组id</li>
+<li>tasks : 当前cgroup包含的进程列表</li>
+<li>notify_on_release : 值为0或1，1代表当cgroup中的最后1个task退出，并且子cgroup移除时，内核会在继承树根目录运行<code>release_agent</code>文件</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>cgroup对一组进程的资源进行控制，包括但不限于CPU、内存、网络、磁盘等资源，共12种资源，通过12个subsystem去进行限制、控制。</p>
+<p>cgroup由内核使用文件系统实现，文件系统的层级结构实现了cgroup的层级结构，它默认挂载到 <code>/sys/fs/cgroup</code> 目录。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups">Linux Kernel Cgroup的文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://union-click.jd.com/jdc?e=&p=AyIGZRtSFwsWB1EcXhUyFQ5WEloVCxMBURxrUV1KWQorAlBHU0VeBUVNR0ZbSkdETlcNVQtHRVNSUVNLXANBRA1XB14DS10cQQVYD21XHgBcGFIUAhsGUx9cJQEbBTJbEmFdcHkRSANGBhBDCnkmEVQeC2UaaxUDEwVWEl8RBhM3ZRtcJUN8B1QaUxMCFAFlGmsVBhoOUx9fFwESB1IfaxICGzeDtdnBl4nT2YZrJTIRN2UrWyUBIkU7HQxBABEGBhILHVdGAgcaXB0DQARWHQ4QVhFVVhkLEVciBVQaXxw=">阿里同学的书《自己动手写Docker》</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/08/27/play-minikube/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/08/27/play-minikube/" class="post-title-link" itemprop="url">玩转minikube</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-27 21:30:41" itemprop="dateCreated datePublished" datetime="2020-08-27T21:30:41+08:00">2020-08-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>minikube很好，但某些原因造成国内用起来比较慢，要各种挂代理、Docker镜像加速。</p>
+<h2 id="minikube原理"><a href="#minikube原理" class="headerlink" title="minikube原理"></a>minikube原理</h2><p><img src="http://img.lessisbetter.site/2020-08-minikube.jpeg"></p>
+<p>kubectl和kube-apiserver是CS架构，kubectl是操作k8s集群的客户端，kube-apiserver是服务端。</p>
+<p>minikube是创建了一个虚拟机<code>minikube vm</code>，然后在虚拟机里创建了1个单机的k8s集群，并把集群部署信息写到<code>~/.kube/config</code>文件，它是kubectl默认使用的配置文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[~]$ ls ~&#x2F;.kube&#x2F;config</span><br><span class="line">&#x2F;Users&#x2F;shitaibin&#x2F;.kube&#x2F;config</span><br><span class="line">[~]$ cat ~&#x2F;.kube&#x2F;config</span><br><span class="line">apiVersion: v1</span><br><span class="line">clusters:</span><br><span class="line">- cluster:</span><br><span class="line">    certificate-authority: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;ca.crt</span><br><span class="line">    server: https:&#x2F;&#x2F;192.168.99.103:8443</span><br><span class="line">  name: minikube</span><br><span class="line">contexts:</span><br><span class="line">- context:</span><br><span class="line">    cluster: minikube</span><br><span class="line">    user: minikube</span><br><span class="line">  name: minikube</span><br><span class="line">current-context: minikube</span><br><span class="line">kind: Config</span><br><span class="line">preferences: &#123;&#125;</span><br><span class="line">users:</span><br><span class="line">- name: minikube</span><br><span class="line">  user:</span><br><span class="line">    client-certificate: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.crt</span><br><span class="line">    client-key: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.key</span><br></pre></td></tr></table></figure>
+
+<p>文件内容也可以使用 <code>kubectl config view</code> 命令查看。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[~]$ kubectl config view</span><br><span class="line">apiVersion: v1</span><br><span class="line">clusters:</span><br><span class="line">- cluster:</span><br><span class="line">    certificate-authority: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;ca.crt</span><br><span class="line">    server: https:&#x2F;&#x2F;192.168.99.103:8443</span><br><span class="line">  name: minikube</span><br><span class="line">contexts:</span><br><span class="line">- context:</span><br><span class="line">    cluster: minikube</span><br><span class="line">    user: minikube</span><br><span class="line">  name: minikube</span><br><span class="line">current-context: minikube</span><br><span class="line">kind: Config</span><br><span class="line">preferences: &#123;&#125;</span><br><span class="line">users:</span><br><span class="line">- name: minikube</span><br><span class="line">  user:</span><br><span class="line">    client-certificate: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.crt</span><br><span class="line">    client-key: &#x2F;Users&#x2F;shitaibin&#x2F;.minikube&#x2F;profiles&#x2F;minikube&#x2F;client.key</span><br><span class="line">[~]$</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装软件"><a href="#安装软件" class="headerlink" title="安装软件"></a>安装软件</h2><ol>
+<li><p>安装minikube，1分钟，如果提供的命令行下载不下来，就浏览器下载下来，放到增加可执行，然后放到bin目录即可：<br><a target="_blank" rel="noopener" href="https://yq.aliyun.com/articles/691500">https://yq.aliyun.com/articles/691500</a></p>
+</li>
+<li><p>centos安装virtualbox，2分钟安装完成:<br><a target="_blank" rel="noopener" href="https://wiki.centos.org/zh/HowTos/Virtualization/VirtualBox">https://wiki.centos.org/zh/HowTos/Virtualization/VirtualBox</a></p>
+</li>
+<li><p>安装kubectl：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/yuanjunlai141/article/details/79469071">https://blog.csdn.net/yuanjunlai141/article/details/79469071</a></p>
+</li>
+</ol>
+<h2 id="首次启动"><a href="#首次启动" class="headerlink" title="首次启动"></a>首次启动</h2><p>启动命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">minikube start --image-mirror-country cn \</span><br><span class="line">    --iso-url&#x3D;https:&#x2F;&#x2F;kubernetes.oss-cn-hangzhou.aliyuncs.com&#x2F;minikube&#x2F;iso&#x2F;minikube-v1.7.3.iso \</span><br><span class="line">    --registry-mirror&#x3D;&quot;https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&quot; \</span><br><span class="line">    --image-repository&#x3D;&quot;registry.cn-hangzhou.aliyuncs.com&#x2F;google_containers&quot; \</span><br><span class="line">    --kubernetes-version&#x3D;v1.18.3</span><br></pre></td></tr></table></figure>
+
+<p>使用minikube可以查看帮助flag帮助信息：</p>
+<ul>
+<li><code>--image-mirror-country</code>: 需要使用的镜像镜像的国家/地区代码。留空以使用全球代码。对于中国大陆用户，请将其设置为<br>cn</li>
+<li><code>--registry-mirror</code>: 传递给 Docker 守护进程的注册表镜像。效果最好的镜像加速器：<code>--registry-mirror=&quot;https://a90tkz28.mirror.aliyuncs.com&quot;</code> 。使用加速器的原理是，docker deamon会先去加速器寻找镜像，如果找不到才从docker官方仓库拉镜像。如果指定拉某个镜像仓库的镜像，镜像加速器是用不上的。</li>
+<li><code>--image-repository</code> : 如果不能从gcr.io拉镜像，配置minikube中docker拉镜像的地方</li>
+<li><code>--kubernetes-version</code>： 指定要部署的k8s版本，可以省略</li>
+</ul>
+<p>minikube内拉不到镜像的报错:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe pod</span><br><span class="line">  Type     Reason     Age                    From               Message</span><br><span class="line">  ----     ------     ----                   ----               -------</span><br><span class="line">  Warning  Failed     2m59s (x4 over 4m36s)  kubelet, minikube  Failed to pull image &quot;kubeguide&#x2F;redis-master&quot;: rpc error: code &#x3D; Unknown desc &#x3D; Error response from daemon: Get https:&#x2F;&#x2F;registry-1.docker.io&#x2F;v2&#x2F;: proxyconnect tcp: dial tcp 192.168.0.104:1087: connect: connection refused</span><br></pre></td></tr></table></figure>
+
+<p>启动日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ minikube start --image-mirror-country cn \</span><br><span class="line">    --iso-url&#x3D;https:&#x2F;&#x2F;kubernetes.oss-cn-hangzhou.aliyuncs.com&#x2F;minikube&#x2F;iso&#x2F;minikube-v1.7.3.iso \</span><br><span class="line">    --registry-mirror&#x3D;&quot;https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&quot; \</span><br><span class="line">    --image-repository&#x3D;&quot;registry.cn-hangzhou.aliyuncs.com&#x2F;google_containers&quot;</span><br><span class="line">😄  Darwin 10.15.3 上的 minikube v1.12.3</span><br><span class="line">✨  根据用户配置使用 virtualbox 驱动程序</span><br><span class="line">✅  正在使用镜像存储库 registry.cn-hangzhou.aliyuncs.com&#x2F;google_containers</span><br><span class="line">👍  Starting control plane node minikube in cluster minikube</span><br><span class="line">🔥  Creating virtualbox VM (CPUs&#x3D;2, Memory&#x3D;4000MB, Disk&#x3D;20000MB) ...</span><br><span class="line">💡  Existing disk is missing new features (lz4). To upgrade, run &#39;minikube delete&#39;</span><br><span class="line">🐳  正在 Docker 19.03.6 中准备 Kubernetes v1.18.3…</span><br><span class="line">🔎  Verifying Kubernetes components...</span><br><span class="line">🌟  Enabled addons: default-storageclass, storage-provisioner</span><br><span class="line">🏄  完成！kubectl 已经配置至 &quot;minikube&quot;</span><br></pre></td></tr></table></figure>
+
+<p>做哪些事？</p>
+<ol>
+<li>创建虚拟机”minikube”</li>
+<li>生成kubectl使用的配置文件，使用该配置连接集群：~/.kube/config</li>
+<li>在虚拟机里的容器上启动k8s</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">$ minikube ssh</span><br><span class="line">                         _             _</span><br><span class="line">            _         _ ( )           ( )</span><br><span class="line">  ___ ___  (_)  ___  (_)| |&#x2F;&#39;)  _   _ | |_      __</span><br><span class="line">&#x2F;&#39; _ &#96; _ &#96;\| |&#x2F;&#39; _ &#96;\| || , &lt;  ( ) ( )| &#39;_&#96;\  &#x2F;&#39;__&#96;\</span><br><span class="line">| ( ) ( ) || || ( ) || || |\&#96;\ | (_) || |_) )(  ___&#x2F;</span><br><span class="line">(_) (_) (_)(_)(_) (_)(_)(_) (_)&#96;\___&#x2F;&#39;(_,__&#x2F;&#39;&#96;\____)</span><br><span class="line"></span><br><span class="line">$</span><br><span class="line">$ docker info</span><br><span class="line">Client:</span><br><span class="line"> Debug Mode: false</span><br><span class="line"></span><br><span class="line">Server:</span><br><span class="line"> Containers: 18</span><br><span class="line">  Running: 15</span><br><span class="line">  Paused: 0</span><br><span class="line">  Stopped: 3</span><br><span class="line"> Images: 11</span><br><span class="line"> Server Version: 19.03.6</span><br><span class="line"> Storage Driver: overlay2</span><br><span class="line">  Backing Filesystem: extfs</span><br><span class="line">  Supports d_type: true</span><br><span class="line">  Native Overlay Diff: true</span><br><span class="line"> Logging Driver: json-file</span><br><span class="line"> Cgroup Driver: cgroupfs</span><br><span class="line"> Plugins:</span><br><span class="line">  Volume: local</span><br><span class="line">  Network: bridge host ipvlan macvlan null overlay</span><br><span class="line">  Log: awslogs fluentd gcplogs gelf journald json-file local logentries splunk syslog</span><br><span class="line"> Swarm: inactive</span><br><span class="line"> Runtimes: runc</span><br><span class="line"> Default Runtime: runc</span><br><span class="line"> Init Binary: docker-init</span><br><span class="line"> containerd version: 35bd7a5f69c13e1563af8a93431411cd9ecf5021</span><br><span class="line"> runc version: dc9208a3303feef5b3839f4323d9beb36df0a9dd</span><br><span class="line"> init version: fec3683</span><br><span class="line"> Security Options:</span><br><span class="line">  seccomp</span><br><span class="line">   Profile: default</span><br><span class="line"> Kernel Version: 4.19.94</span><br><span class="line"> Operating System: Buildroot 2019.02.9</span><br><span class="line"> OSType: linux</span><br><span class="line"> Architecture: x86_64</span><br><span class="line"> CPUs: 2</span><br><span class="line"> Total Memory: 3.754GiB</span><br><span class="line"> Name: minikube</span><br><span class="line"> ID: 6GOT:L6SH:NPBW:ZM44:PVKY:LSEZ:MXW7:LWOB:GB4N:CNXU:S6NJ:KASG</span><br><span class="line"> Docker Root Dir: &#x2F;var&#x2F;lib&#x2F;docker</span><br><span class="line"> Debug Mode: false</span><br><span class="line"> Registry: https:&#x2F;&#x2F;index.docker.io&#x2F;v1&#x2F;</span><br><span class="line"> Labels:</span><br><span class="line">  provider&#x3D;virtualbox</span><br><span class="line"> Experimental: false</span><br><span class="line"> Insecure Registries:</span><br><span class="line">  10.96.0.0&#x2F;12</span><br><span class="line">  127.0.0.0&#x2F;8</span><br><span class="line"> Registry Mirrors:</span><br><span class="line">  https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&#x2F;</span><br><span class="line"> Live Restore Enabled: false</span><br><span class="line"> Product License: Community Engine</span><br><span class="line"></span><br><span class="line">$ exit</span><br><span class="line">logout</span><br></pre></td></tr></table></figure>
+
+<p>Registry Mirrors对应的是阿里云镜像加速，HTTP proxy也配置上了，如果启动后，发现没有改变，需要删除过去创建的minikube，全部清理一遍。</p>
+<h2 id="minikube常用命令"><a href="#minikube常用命令" class="headerlink" title="minikube常用命令"></a>minikube常用命令</h2><ul>
+<li>集群状态： minikube status</li>
+<li>暂停和恢复集群，不用的时候把它暂停掉，节约主机的CPU和内存： minikube pause， minikube unpause</li>
+<li>停止集群： minikube stop</li>
+<li>删除集群，遇到问题时，清理一波数据： minikube delete</li>
+<li>查看集群IP，kubectl就是连这个IP： minikube ip</li>
+<li>进入minikube虚拟机，整个k8s集群跑在这里面： minikube ssh</li>
+</ul>
+<h2 id="kubectl自动补全"><a href="#kubectl自动补全" class="headerlink" title="kubectl自动补全"></a>kubectl自动补全</h2><p>zsh在配置文件 <code>~/.zshrc</code> 中增加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source &lt;(kubectl completion zsh)  # 在 zsh 中设置当前 shell 的自动补全</span><br><span class="line">echo &quot;if [ $commands[kubectl] ]; then source &lt;(kubectl completion zsh); fi&quot; &gt;&gt; ~&#x2F;.zshrc # 在您的 zsh shell 中永久的添加自动补全</span><br></pre></td></tr></table></figure>
+
+<p>bash 在 <code>~/.bashrc</code> 中增加:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source &lt;(kubectl completion bash) # 在 bash 中设置当前 shell 的自动补全，要先安装 bash-completion 包。</span><br><span class="line">echo &quot;source &lt;(kubectl completion bash)&quot; &gt;&gt; ~&#x2F;.bashrc # 在您的 bash shell 中永久的添加自动补全</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/08/27/sync-code-to-server-with-sftp-in-vscode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/08/27/sync-code-to-server-with-sftp-in-vscode/" class="post-title-link" itemprop="url">VSCode利用SFTP上传代码到服务器</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-27 20:24:00" itemprop="dateCreated datePublished" datetime="2020-08-27T20:24:00+08:00">2020-08-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>VSCode已经支持远程开发，可以把代码自动从本地和服务器进行同步。</p>
+<p>为了某些实验搞了一条Ubuntu 14.04的服务器，结果VSCode说远程服务器不支持，就只能另谋它路了，利用SFTP实现本地和服务器端的代码同步。</p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ol>
+<li>VSCode应用市场安装SFTP插件</li>
+<li>在项目目录下建立SFTP的配置文件：<code>.vscode/sftp.json</code>，内容如下</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;root&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;host&quot;</span>: <span class="string">&quot;192.168.9.xxx&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;protocol&quot;</span>: <span class="string">&quot;sftp&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;port&quot;</span>: <span class="number">22</span>,</span><br><span class="line">    <span class="attr">&quot;username&quot;</span>: <span class="string">&quot;centos&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;privateKeyPath&quot;</span>: <span class="string">&quot;/Users/shitaibin/.ssh/id_xxx&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;remotePath&quot;</span>: <span class="string">&quot;/home/centos/workspace/docker/notes&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;uploadOnSave&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">&quot;ignore&quot;</span>: [<span class="string">&quot;.vscode&quot;</span>, <span class="string">&quot;.git&quot;</span>, <span class="string">&quot;.DS_Store&quot;</span>, <span class="string">&quot;node_modules&quot;</span>, <span class="string">&quot;vendor&quot;</span>],</span><br><span class="line">    <span class="attr">&quot;localPath&quot;</span>:<span class="string">&quot;.&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>登录服务器可以使用密码或者私钥，上面文件的示例使用私钥，如果使用密码，增加一项<code>password</code>即可。</p>
+<p><code>uploadOnSave</code>配置项设置为true，能够确保文件保存时，自动上传到服务器，无需手动上传。</p>
+<ol start="3">
+<li><p>初次上传到服务器</p>
+<p> a. Ctrl + Shift + P，输入<code>SFTP</code>，选择<code>Sync Local -&gt; Remote</code>即可<br> b. VSCode底部状态栏，会显示SFTP，如果在动态变化，说明在上传文件</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/07/29/go-time-date-timestamp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/07/29/go-time-date-timestamp/" class="post-title-link" itemprop="url">Go语言日期和时间戳转换</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-29 19:48:59" itemprop="dateCreated datePublished" datetime="2020-07-29T19:48:59+08:00">2020-07-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>字符串格式日期、time.Time类型、整形时间戳三者之间的转换如下图：</p>
+<p><img src="http://img.lessisbetter.site/2020-07-go-time-date-transform.png"></p>
+<p>有2点要注意：</p>
+<ol>
+<li>字符串日期和时间戳之间不能直接转换，需要通过time.Time完成。</li>
+<li>涉及字符串日期的时候，字符串日期格式一定要以Go诞生的时间为基准，而不是随意的时间，否则会导致时间转换不正确。所以，以下Demo中的日期格式是通用的。</li>
+<li>字符串日期格式要与真实的日期格式完全匹配，否则会解析时间不正确。比如设置的格式为<code>2006-01-02</code>，实际日期格式为<code>2006-1-2</code>时会解析错误。</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Date2Time</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;&gt;&gt; Date2Time&quot;</span>)</span><br><span class="line">	<span class="keyword">defer</span> fmt.Println(<span class="string">&quot;&lt;&lt; Date2Time&quot;</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 一定要以Go诞生的时间为基准</span></span><br><span class="line">	<span class="comment">// 2006年1月2号，MST时区，下午3:04分为基准</span></span><br><span class="line">	<span class="keyword">const</span> dateFormat = <span class="string">&quot;Jan 2, 2006 at 3:04pm (MST)&quot;</span></span><br><span class="line">	t, _ := time.Parse(dateFormat, <span class="string">&quot;May 20, 2020 at 0:00am (UTC)&quot;</span>)</span><br><span class="line">	fmt.Println(t)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">const</span> shortForm = <span class="string">&quot;2006-Jan-02&quot;</span></span><br><span class="line">	t, _ = time.Parse(shortForm, <span class="string">&quot;2020-May-20&quot;</span>)</span><br><span class="line">	fmt.Println(t)</span><br><span class="line"></span><br><span class="line">	t, _ = time.Parse(<span class="string">&quot;01/02/2006&quot;</span>, <span class="string">&quot;05/20/2020&quot;</span>)</span><br><span class="line">	fmt.Println(t)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Time2Date</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;&gt;&gt; Time2Date&quot;</span>)</span><br><span class="line">	<span class="keyword">defer</span> fmt.Println(<span class="string">&quot;&lt;&lt; Time2Date&quot;</span>)</span><br><span class="line"></span><br><span class="line">	tm := time.Now()</span><br><span class="line">	fmt.Println(tm.Format(<span class="string">&quot;2006-01-02 03:04:05 PM&quot;</span>))</span><br><span class="line">	fmt.Println(tm.Format(<span class="string">&quot;2006-1-2 03:04:05 PM&quot;</span>))</span><br><span class="line">	fmt.Println(tm.Format(<span class="string">&quot;2006-Jan-02 03:04:05 PM&quot;</span>))</span><br><span class="line">	fmt.Println(tm.Format(<span class="string">&quot;02/01/2006 03:04:05 PM&quot;</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Timestamp2Time</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;&gt;&gt; Timestamp2Time&quot;</span>)</span><br><span class="line">	<span class="keyword">defer</span> fmt.Println(<span class="string">&quot;&lt;&lt; Timestamp2Time&quot;</span>)</span><br><span class="line"></span><br><span class="line">	ts := <span class="keyword">int64</span>(<span class="number">1595900001</span>)</span><br><span class="line">	tm := time.Unix(ts, <span class="number">0</span>)</span><br><span class="line">	fmt.Println(tm)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Time2Timestamp</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;&gt;&gt; Time2Timestamp&quot;</span>)</span><br><span class="line">	<span class="keyword">defer</span> fmt.Println(<span class="string">&quot;&lt;&lt; Time2Timestamp&quot;</span>)</span><br><span class="line"></span><br><span class="line">	tm := time.Now()</span><br><span class="line">	ts := tm.Unix()</span><br><span class="line">	fmt.Println(ts)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	Date2Time()</span><br><span class="line">	Time2Date()</span><br><span class="line">	Timestamp2Time()</span><br><span class="line">	Time2Timestamp()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt; Date2Time</span><br><span class="line">2020-05-20 00:00:00 +0000 UTC</span><br><span class="line">2020-05-20 00:00:00 +0000 UTC</span><br><span class="line">2020-05-20 00:00:00 +0000 UTC</span><br><span class="line">&lt;&lt; Date2Time</span><br><span class="line">&gt;&gt; Time2Date</span><br><span class="line">2020-07-28 09:35:46 AM</span><br><span class="line">2020-7-28 09:35:46 AM</span><br><span class="line">2020-Jul-28 09:35:46 AM</span><br><span class="line">28&#x2F;07&#x2F;2020 09:35:46 AM</span><br><span class="line">&lt;&lt; Time2Date</span><br><span class="line">&gt;&gt; Timestamp2Time</span><br><span class="line">2020-07-28 09:33:21 +0800 CST</span><br><span class="line">&lt;&lt; Timestamp2Time</span><br><span class="line">&gt;&gt; Time2Timestamp</span><br><span class="line">1595900146</span><br><span class="line">&lt;&lt; Time2Timestamp</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/07/28/about-ssh/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/07/28/about-ssh/" class="post-title-link" itemprop="url">SSH常用命令和配置</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-28 21:11:15" itemprop="dateCreated datePublished" datetime="2020-07-28T21:11:15+08:00">2020-07-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="生成SSH密钥"><a href="#生成SSH密钥" class="headerlink" title="生成SSH密钥"></a>生成SSH密钥</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -f ~/.ssh/id_rsa -C <span class="string">&quot;temp user&quot;</span> -N <span class="string">&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>-t：指定加密算法<br>-f：指定路径<br>-C：注释，可以填写用户名或邮箱<br>-N：密码</p>
+<p>指定以上<code>f、C、N</code>这3个参数，可以避免交互式问答，快速生成密钥，在脚本中使用很方便。</p>
+<h2 id="SSH客户端配置文件"><a href="#SSH客户端配置文件" class="headerlink" title="SSH客户端配置文件"></a>SSH客户端配置文件</h2><p><code>~/.ssh/config</code>文件内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># Read more about SSH config files: https:&#x2F;&#x2F;linux.die.net&#x2F;man&#x2F;5&#x2F;ssh_config</span><br><span class="line">Host 个人VM</span><br><span class="line">    HostName 192.168.9.137</span><br><span class="line">    User centos</span><br><span class="line"></span><br><span class="line">Host 阿里云</span><br><span class="line">    HostName 139.224.105.10</span><br><span class="line">    User root</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">Host 腾讯云</span><br><span class="line">    HostName 140.143.6.185</span><br><span class="line">    User root</span><br><span class="line">    Port 22</span><br><span class="line">    IdentityFile ~&#x2F;.ssh&#x2F;id_rsa_tencent</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Host：自定义命名</li>
+<li>HostName：机器IP或者域名</li>
+<li>User：登录机器的用户名</li>
+<li>Port：登录机器的端口，默认为22，可省略</li>
+<li>IdentityFile：登录机器时使用的私钥，默认为<code>~/.ssh/id_rsa</code>，可省略；当某台机器使用单独密钥时，很有用</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/05/05/open-source-license/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/05/05/open-source-license/" class="post-title-link" itemprop="url">如何选择开源协议</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-05 14:37:26" itemprop="dateCreated datePublished" datetime="2020-05-05T14:37:26+08:00">2020-05-05</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>当基于开源项目发布新的开源项目时，我们需要说明项目所使用的License，同样也需要考虑你基于开源项目所做的事情，是否满足该项目的License。</p>
+<p>下面这2幅图摘自 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/28292322">开源许可证都有什么区别,一般开源项目用什么许可证? - 知乎</a>，足以帮助我们判断：</p>
+<ol>
+<li>要做的事情，是否满足开源项目的License。</li>
+<li>开源一个项目，该如何选择License。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2020-05-license-choose.jpg"><br>来源：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/28292322/answer/656121132">https://www.zhihu.com/question/28292322/answer/656121132</a></p>
+<p><img src="http://img.lessisbetter.site/2020-05-license-2.jpg"><br>来源：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/28292322/answer/840556759">https://www.zhihu.com/question/28292322/answer/840556759</a><br>从左到右，是从宽松到严格。</p>
+<p>举例：</p>
+<ol>
+<li>以太坊采License用的是LGPLv3，修改源码后如果提供给外部使用必须开源，不要求新增代码采用相同的License，也不要求对新增代码进行文档说明，后来我们项目同样采用了LGPLv3。</li>
+<li>Fabric采用Apache 2.0，基于Fabric项目原有代码都必须放置Fabric原有版权声明，但可以选择不开源。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/04/12/fabric-bccsp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/04/12/fabric-bccsp/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 10：可扩展密码服务提供者BCCSP，以及可扩展国密</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-04-12 14:32:33" itemprop="dateCreated datePublished" datetime="2020-04-12T14:32:33+08:00">2020-04-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>密码学是当代数字信息化时代的基础技术，没有密码学，网络上的传输信息的可靠性就无法保证，比如你输入的密码会被窃取，你存在网络上的照片、文档如果没有加密，就有可能泄露。</p>
+<p>密码学也是区块链的一项基础技术，使用密码学实现区块链中的：身份验证、数据可信、权限管理、零知识证明、可信计算等等。</p>
+<p>Fabric提供了模块化的、可插拔的密码服务，该服务由<code>bccsp</code>模块提供，本文就谈一下BCCSP插件化设计，另外Fabric国密化也是最近2年必做的事情，所以同时介绍实现可扩展国密的思路，最后介绍一下Hyperledger社区对Fabric支持国密的开发。</p>
+<h2 id="BCCSP介绍"><a href="#BCCSP介绍" class="headerlink" title="BCCSP介绍"></a>BCCSP介绍</h2><p>BCCSP是Block Chain Crypto Service Provider的缩写。</p>
+<p><code>bccsp</code>模块它为Fabric的上层模块提供密码学服务，它包含的具体功能有：对称加密和非对称加密的密钥生成、导如、导出，数字签名和验证，对称加密和解密、摘要计算。</p>
+<p><code>bccsp</code>模块为了密码服务的扩展性，定义了<code>BCCSP</code>接口，上层模块调用<code>BCCSP</code>接口中定义的方法，而不直接调用具体的实现函数，实现和具体密码学实现的解耦，当<code>bccsp</code>使用不同密码学实现时，上层模块无需修改，这种解耦是通过<strong>依赖反转</strong>实现的。</p>
+<p>bccsp模块中当前有2种密码实现，它们都是bccsp中的密码学插件：SW和PKCS11，SW代表的是国际标准加密的软实现，SW是software的缩写，PKCS11代指硬实现。</p>
+<p><img src="http://img.lessisbetter.site/2020-04-fabric-bccsp.png"></p>
+<blockquote>
+<p>扩展阅读：PKCS11是PKCS系列标准中的第11个，它定义了应用层和底层加密设备的交互标准，比如过去在电脑上，插入USBKey用网银转账时，就需要走USBKey中的硬件进行数字签名，这个过程就需要使用PCKS11。</p>
+</blockquote>
+<p>密码学通常有软实现和硬实现，软实现就是常用的各种加密库，比如Go中<code>crypto</code>包，硬实现是使用加密机提供的一套加密服务。软实现和硬实现的重要区别是，密码算法的安全性强依赖随机数，软实现利用的是OS的伪随机数，而硬实现利用的是加密机生成的随机数，所以硬实现的安全强度要高于软实现。</p>
+<p>让Fabric支持国密时，就需要在bccsp中新增一个国密插件<code>GM</code>，只在bccsp中增加GM并不是完成的Fabric国密改造，下文再详细介绍。</p>
+<h2 id="SW介绍"><a href="#SW介绍" class="headerlink" title="SW介绍"></a>SW介绍</h2><p>SW是国际标准加密的软实现插件，它包含了ECDSA算法、RSA算法、AES算法，以及SHA系列的摘要算法。</p>
+<p><code>BCCSP</code>接口定义了以下方法，其实对密码学中的函数进行了一个功能分类：</p>
+<ul>
+<li><code>KeyGen</code>：密钥生成，包含对称和非对称加密</li>
+<li><code>KeyDeriv</code>：密钥派生</li>
+<li><code>KeyImport</code>：密钥导入，从文件、内存、数字证书中导入</li>
+<li><code>GetKey</code>：获取密钥</li>
+<li><code>Hash</code>：计算摘要</li>
+<li><code>GetHash</code>：获取摘要计算实例</li>
+<li><code>Sign</code>：数字签名</li>
+<li><code>Verify</code>：签名验证</li>
+<li><code>Encrypt</code>：数据加密，包含对称和非对称加密</li>
+<li><code>Decrypt</code>：数据解密，包含对称和非对称加密</li>
+</ul>
+<p>SW要做的是，把ECDSA、RSA、AES、SHA中的各种函数，对应到以上各种分类中，主要的分类如下图所示。</p>
+<p><img src="http://img.lessisbetter.site/2020-04-12-bccsp-sw.png"></p>
+<p>从上图可以看出，密钥生成、派生、导入都包含了ECDSA、RSA、AES，签名和延签包含了ECDSA和RSA，摘要计算包含了SHA系列，加密解密包含了AES，但没有包含RSA，是因为非对称加密耗时，并不常用。</p>
+<h2 id="可插拔国密"><a href="#可插拔国密" class="headerlink" title="可插拔国密"></a>可插拔国密</h2><p>Fabric支持国密并非仅仅在bccsp中增加1个国密实现这么简单，还需要让数字证书支持国密，让数字证书的操作符合X.509。各语言的标准库<code>x509</code>都是适配标准加密的，并不能直接用来操作国密证书。</p>
+<p>在数字证书支持国密后，还可能需要进一步考虑，是否需要TLS证书使用国密数字证书，让通信过程使用国密算法。</p>
+<p>另外，国密的实现有很多版本，如果需要适配不同的国密实现，就需要保证国密的可插拔和可扩展。</p>
+<p>综上情况，你需要一个中间件，中间件中包含定义好国密接口、国密数字证书接口等，用这些接口去适配Fabric，然后当采用不同国密实现时，只需要对具体实现进行封装，去适配中间件中定义好的接口。</p>
+<p><img src="http://img.lessisbetter.site/2020-04-fabric-gm.png"></p>
+<h2 id="社区对Fabric支持国密的态度"><a href="#社区对Fabric支持国密的态度" class="headerlink" title="社区对Fabric支持国密的态度"></a>社区对Fabric支持国密的态度</h2><p>国密有很多基于Fabric的项目，金融业是区块链场景最多的行业，金融行业又必须使用国密，所以国内对Fabric国密的改造是必须的，在《金融分布式账本安全规范》发布之后，社区也计划让Fabric支持国密，但方式是不提供具体国密实现，而是定义好接口，项目方使用哪种国密实现，去适配定义好的接口即可，这样保留了好的扩展性，与<a href="#%E5%8F%AF%E6%8F%92%E6%8B%94%E5%9B%BD%E5%AF%86">可插拔国密</a>的目的是一致的，选择权交给企业。</p>
+<p>社区支持Fabric国密的版本，预计在2.x版本发布。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>密码学在区块链中的地位是相当高的，从区块链使用最基础的密码学，到现在还在不断融入同态加密、零知识证明等前言的加密技术，未来可以在区块链上保护数据隐私的情况，提供更好的服务，区块链也可以有更多的应用场景。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/23/markdown-mermaid/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/03/23/markdown-mermaid/" class="post-title-link" itemprop="url">提高画时序图的效率</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-23 15:28:40" itemprop="dateCreated datePublished" datetime="2020-03-23T15:28:40+08:00">2020-03-23</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><a target="_blank" rel="noopener" href="https://mermaid-js.github.io/mermaid/#/README">mermaid</a>是一个开源项目，可以在Markdown中，使用类似编写代码的方式，制作流程图、时序图、甘特图、饼图等。使用下来，感觉可以明显提升时序图的效率。</p>
+<h3 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h3><h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    %% 注释</span><br><span class="line">    Client -&gt;&gt; Gateway: 发送JSON RPC请求</span><br><span class="line">    Gateway -&gt;&gt; Gateway: JSON RPC请求转换为gRPC请求</span><br><span class="line">    Gateway -&gt;&gt; Server: 发送gRPC请求</span><br><span class="line">    Server -&gt;&gt; Server: 处理gRPC请求</span><br><span class="line">    Server -&gt;&gt; Gateway: 发送gRPC响应</span><br><span class="line">    Gateway -&gt;&gt; Gateway: gRPC响应转换为JSON RPC响应</span><br><span class="line">    Gateway -&gt;&gt; Client: 把JSON RPC响应发送给客户端</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    %% 注释</span><br><span class="line">    Client -&gt;&gt; Gateway: 发送JSON RPC请求</span><br><span class="line">    Gateway -&gt;&gt; Gateway: JSON RPC请求转换为gRPC请求</span><br><span class="line">    Gateway -&gt;&gt; Server: 发送gRPC请求</span><br><span class="line">    Server -&gt;&gt; Server: 处理gRPC请求</span><br><span class="line">    Server -&gt;&gt; Gateway: 发送gRPC响应</span><br><span class="line">    Gateway -&gt;&gt; Gateway: gRPC响应转换为JSON RPC响应</span><br><span class="line">    Gateway -&gt;&gt; Client: 把JSON RPC响应发送给客户端</span><br></pre></td></tr></table></figure>
+
+<h4 id="昵称"><a href="#昵称" class="headerlink" title="昵称"></a>昵称</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant C as Client</span><br><span class="line">    participant G as Gateway</span><br><span class="line">    participant S as Server</span><br><span class="line"></span><br><span class="line">    C -&gt;&gt; G: 发送JSON RPC请求</span><br><span class="line">    G -&gt;&gt; G: JSON RPC请求转换为gRPC请求</span><br><span class="line">    G -&gt;&gt; S: 发送gRPC请求</span><br><span class="line">    S -&gt;&gt; S: 处理gRPC请求</span><br><span class="line">    S -&gt;&gt; G: 发送gRPC响应</span><br><span class="line">    G -&gt;&gt; G: gRPC响应转换为JSON RPC响应</span><br><span class="line">    G -&gt;&gt; C: 把JSON RPC响应发送给客户端</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant C as Client</span><br><span class="line">    participant G as Gateway</span><br><span class="line">    participant S as Server</span><br><span class="line">    </span><br><span class="line">    C -&gt;&gt; G: 发送JSON RPC请求</span><br><span class="line">    G -&gt;&gt; G: JSON RPC请求转换为gRPC请求</span><br><span class="line">    G -&gt;&gt; S: 发送gRPC请求</span><br><span class="line">    S -&gt;&gt; S: 处理gRPC请求</span><br><span class="line">    S -&gt;&gt; G: 发送gRPC响应</span><br><span class="line">    G -&gt;&gt; G: gRPC响应转换为JSON RPC响应</span><br><span class="line">    G -&gt;&gt; C: 把JSON RPC响应发送给客户端</span><br></pre></td></tr></table></figure>
+
+<h4 id="线条和箭头"><a href="#线条和箭头" class="headerlink" title="线条和箭头"></a>线条和箭头</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt; Gateway: 实线</span><br><span class="line">    Client --&gt; Gateway: 虚线 --</span><br><span class="line">    Client -&gt;&gt; Gateway: 带箭头 &gt;&gt;</span><br><span class="line">    Client -x Gateway: 带叉，不使用&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt; Gateway: 实线</span><br><span class="line">    Client --&gt; Gateway: 虚线 --</span><br><span class="line">    Client -&gt;&gt; Gateway: 带箭头 &gt;&gt;</span><br><span class="line">    Client -x Gateway: 带叉，不使用&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Note left of Client: 创建请求</span><br><span class="line">    Note right of Gateway: 接收请求</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Note left of Client: 创建请求</span><br><span class="line">    Note right of Gateway: 接收请求</span><br></pre></td></tr></table></figure>
+
+<h4 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    loop Every Second</span><br><span class="line">        Client -&gt;&gt; Server: 发送请求</span><br><span class="line">        Server -&gt;&gt; Server: 处理请求</span><br><span class="line">        Server -&gt;&gt; Client: 发送响应</span><br><span class="line">    end</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    loop Every Second</span><br><span class="line">        Client -&gt;&gt; Server: 发送请求</span><br><span class="line">        Server -&gt;&gt; Server: 处理请求</span><br><span class="line">        Server -&gt;&gt; Client: 发送响应</span><br><span class="line">    end</span><br></pre></td></tr></table></figure>
+
+<h4 id="If语句"><a href="#If语句" class="headerlink" title="If语句"></a>If语句</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt;&gt; Server: 查询用户</span><br><span class="line">    alt User not found</span><br><span class="line">        Server -&gt;&gt; Server: 创建错误响应：用户不存在</span><br><span class="line">    else </span><br><span class="line">        Server -&gt;&gt; Server: 使用用户信息创建响应</span><br><span class="line">    end</span><br><span class="line">    Server -&gt;&gt; Client: 发送响应</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt;&gt; Server: 查询用户</span><br><span class="line">    alt User not found</span><br><span class="line">        Server -&gt;&gt; Server: 创建错误响应：用户不存在</span><br><span class="line">    else </span><br><span class="line">        Server -&gt;&gt; Server: 使用用户信息创建响应</span><br><span class="line">    end</span><br><span class="line">    Server -&gt;&gt; Client: 发送响应</span><br></pre></td></tr></table></figure>
+
+<h4 id="背景颜色"><a href="#背景颜色" class="headerlink" title="背景颜色"></a>背景颜色</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt;&gt; Server: 发送请求</span><br><span class="line">    rect rgb(191,223,255)</span><br><span class="line">    Server -&gt;&gt; Server: 处理请求</span><br><span class="line">    Server -&gt;&gt; Client: 发送响应</span><br><span class="line">    end</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt;&gt; Server: 发送请求</span><br><span class="line">    rect rgb(191,223,255)</span><br><span class="line">    Server -&gt;&gt; Server: 处理请求</span><br><span class="line">    Server -&gt;&gt; Client: 发送响应</span><br><span class="line">    end</span><br></pre></td></tr></table></figure>
+
+<h4 id="激活"><a href="#激活" class="headerlink" title="激活"></a>激活</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt;&gt; Server: 发送请求</span><br><span class="line">    activate Server</span><br><span class="line">    Server -&gt;&gt; Server: 处理请求</span><br><span class="line">    Server -&gt;&gt; Client: 发送响应</span><br><span class="line">    deactivate Server</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt;&gt; Server: 发送请求</span><br><span class="line">    activate Server</span><br><span class="line">    Server -&gt;&gt; Server: 处理请求</span><br><span class="line">    Server -&gt;&gt; Client: 发送响应</span><br><span class="line">    deactivate Server</span><br></pre></td></tr></table></figure>
+
+<h3 id="饼图"><a href="#饼图" class="headerlink" title="饼图"></a>饼图</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pie</span><br><span class="line">    title 硬币正反面的概率</span><br><span class="line">    &quot;正面&quot;: 0.5</span><br><span class="line">    &quot;反面&quot;: 0.5</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pie</span><br><span class="line">    title 硬币正反面的概率</span><br><span class="line">    &quot;正面&quot;: 0.5</span><br><span class="line">    &quot;反面&quot;: 0.5</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/22/why-pbft-needs-viewchange/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/03/22/why-pbft-needs-viewchange/" class="post-title-link" itemprop="url">为什么PBFT需要View Changes</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-22 14:10:53" itemprop="dateCreated datePublished" datetime="2020-03-22T14:10:53+08:00">2020-03-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在当前的PBFT资料中，尤其是中文资料，多数都在介绍PBFT的3阶段消息过程，很少提及View Changes（视图切换），View Changes对PBFT的重要性，如同Leader Election对Raft的重要性，它是一个一致性算法中，不可或缺的部分。</p>
+<p>作者为大家介绍下，为什么View Changes如此重要，即为什么PBFT需要View Changes，以及View Changes的原理。</p>
+<h2 id="为什么PBFT需要View-Changes"><a href="#为什么PBFT需要View-Changes" class="headerlink" title="为什么PBFT需要View Changes"></a>为什么PBFT需要View Changes</h2><p>一致性算法都要提供：</p>
+<ul>
+<li>safety ：原意指不会出现错误情况，一致性中指操作是正确的，得到相同的结果。</li>
+<li>liveness ：操作过程能在有限时间内完成。</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2020-03-consistency-property.png" alt="一致性协议需要满足的特性"></p>
+<p><strong>safety通常称为一致性，liveness通常称为可用性</strong>，没有liveness的一致性算法无法长期提供一致性服务，没有safety的一致性算法称不上一致性算法，所以，所有的一致性算法都在做二者之间的折中。</p>
+<p>所以对一致性和可用性不同的要求，就出现了你常听见的ACID原理、CAP理论、BASE理论。</p>
+<p>PBFT作为一个一致性算法，它也需要提供一致性和可用性。在<a href="https://lessisbetter.site/2020/03/15/why-pbft-needs-3-phase-message/">为什么PBFT需要3个阶段消息</a>中，介绍了PBFT算法的如何达成一致性，并且请求可以在有限时间内达成一致，客户端得到响应，也满足可用性。</p>
+<p>但没有介绍，当遇到以下情况时，是否还能保住一致性和可用性呢？</p>
+<ol>
+<li>主节点是拜占庭节点（宕机、拒绝响应…）</li>
+<li>主节点不是拜占庭节点，但非拜占庭副本节点参与度不足，不足以完成3阶段消息</li>
+<li>网络不畅，丢包严重，造成不足以完成3阶段消息</li>
+<li>…</li>
+</ol>
+<p>在以上场景中，<strong>新的请求无法在有限时间内达成一致，老的数据可以保持一致性，所以一致性是可以满足的，但可用性无法满足</strong>。必须寻找一个方案，恢复集群的可用性。</p>
+<p><strong>PBFT算法使用View Changes，让集群重新具有可用性</strong>。通过View Changes，可以选举出新的、让请求在有限时间内达成一致的主节点，向客户端响应，从而满足可用性的要求。</p>
+<p>让集群重新恢复可用，需要做到什么呢？<strong>让至少f+1个非拜占庭节点迁移到，新的一致的状态</strong>。然后这些节点，运行3阶段消息协议，处理新的客户端请求，并达成一致。</p>
+<h2 id="不同版本的View-Changes协议有什么不同？"><a href="#不同版本的View-Changes协议有什么不同？" class="headerlink" title="不同版本的View Changes协议有什么不同？"></a>不同版本的View Changes协议有什么不同？</h2><p>PBFT算法有1999年和2001年2个版本：</p>
+<ul>
+<li>99年：<a target="_blank" rel="noopener" href="http://pmg.csail.mit.edu/papers/osdi99.pdf">Practical Byzantine Fault Tolerance</a>，PBFT初次发表。</li>
+<li>01年：<a target="_blank" rel="noopener" href="http://www.pmg.csail.mit.edu/papers/bft-tocs.pdf">Practical Byzantine Fault Tolerance and Proactive Recovery</a>，又称PBFT-PR，让PBFT受攻击时，具有主动恢复能力。</li>
+</ul>
+<p>PBFT-PR并非只是在PBFT上增加了PR，同时也对PBFT算法做了详细的介绍和改进，View Changes的改进就是其中一项。</p>
+<p>PBFT中View Changes介绍比较简单，没有说明以下场景下，View Changes协议如何处理：</p>
+<ul>
+<li>如果下一个View的主节点宕机了怎么办</li>
+<li>如果下一个View的主节点是恶意节点，作恶怎么办</li>
+<li>如果非拜占庭恶意发起View Changes，造成主节点切换怎么办？</li>
+<li>如果参与View Changes的节点数量不足怎么办</li>
+</ul>
+<p>如果，以上场景下，节点处在View Changes阶段，持续的等待下去，就无法恢复集群的可用性。</p>
+<p>PBFT-PR中的View Changes协议进行了细化，可以解决以上问题。</p>
+<h2 id="2001年版本View-Changes协议原理"><a href="#2001年版本View-Changes协议原理" class="headerlink" title="2001年版本View Changes协议原理"></a>2001年版本View Changes协议原理</h2><p>每个主节点都拥有一个View，就如同Raft中每个leader都拥有1个term。不同点是term所属的leader是选举出来的，而View所属的主节点是计算出的： <code>primary = v % R</code>，R是运行PBFT协议的节点数量。</p>
+<p>View Changes的战略是：当副本节点怀疑主节点无法让请求达成一致时，发起视图切换，新的主节点收集当前视图中已经Prepared，但未Committed的请求，传递到下一个视图中，所有非拜占庭节点基于以上请求，会达到一个新的、一致的状态。然后，正常运行3阶段消息协议。</p>
+<p>为什么要包含已经Prepared，但未Committed的请求？如果一个请求，在副本节点i上，已经是Prepared状态，证明至少f+1的非拜占庭节点，已经拥有此请求并赞成请求req在视图v中使用序号n。如果没有问题，不发生视图切换，这些请求可以在有限的时间内达成一致，新的主节点把已经Prepared的请求，带到新的view，并证明给其他节点，请求已经Prepared，那只需1轮Commit就可以达成一致。</p>
+<h3 id="View-Changes主要流程简介"><a href="#View-Changes主要流程简介" class="headerlink" title="View Changes主要流程简介"></a>View Changes主要流程简介</h3><p>对View Changes的流程可以分为2部分：</p>
+<ul>
+<li>View Changes的开端，即每一次View的开始</li>
+<li>View Changes的中间过程，以及View Changes的结束，切换到正常流程</li>
+</ul>
+<p>这2部分分别占据了下图的左右两部分。实线代表流程线，虚线代表网络消息。蓝色代表正常操作流程（三阶段消息：Preprepare、Prepare、Commit），青色代表View Changes流程，蓝青相接就是正常流程和View Changes流程切换的地方。</p>
+<p><img src="http://img.lessisbetter.site/2020-04-09-blueprint-view-changes.png"></p>
+<p>View Changes的开端流程是通用的，主节点和副本节点都遵守这一流程：<code>新视图：v=v+1</code>，代表一个新的View开始，指向它的每一个箭头，都是视图切换的一种原因。某个副本节点，新视图的开始，还伴随着广播<code>view-change</code>消息，告诉其他节点，本节点开启了一个新的视图。</p>
+<p>主节点是通过公式算出来的，其余为副本节点，在View Changes流程中，副本节点会和主节点交互，共同完成View Changes过程。副本节点会对收到的<code>view-change</code>消息进行检查，然后把一条对应的<code>view-change-ack</code>消息发送给主节点，主节点会依赖收到的<code>view-change</code>消息和<code>view-change-ack</code>消息数量和内容，产生能让所有节点移动到统一状态的<code>new-view</code>消息，并且对<code>new-view</code>消息进行3阶段共识，即对<code>new-view</code>消息达成一致，从而让至少<code>f+1</code>个非拜占庭节点达成一致。</p>
+<h3 id="View-Changes的开端"><a href="#View-Changes的开端" class="headerlink" title="View Changes的开端"></a>View Changes的开端</h3><p>View Change的核心因素只有一个：怀疑当前的主节点在有限的时间内，无法达成一致。</p>
+<p>具体有4个路径：</p>
+<ol>
+<li>正常阶段定时器超时，代表一定时间内无法完成Pre-prepare -&gt; Prepare -&gt; Commit</li>
+<li>View Changes阶段定时器超时，代表一定时间内无法完成正在进行的View Change</li>
+<li>定时器未超时，但有效的view-change消息数量达到f+1个，代表当前已经有f+1个非拜占庭节点发起了新的视图切换，本节点为了不落后，不等待超时而进入视图切换</li>
+<li>new-view消息不合法，代表当前View Changes阶段的主节点为拜占庭节点</li>
+</ol>
+<p>图中【正常阶段定时器超时】被标记为蓝色，是因为它是正常阶段进入视图切换阶段的开端，【有效的view-change消息数量达到f+1个】即有可能是正常阶段的定时器，也有可能是视图切换过程中的定时器，所以颜色没做调整。</p>
+<h3 id="主副节点主要交互流程"><a href="#主副节点主要交互流程" class="headerlink" title="主副节点主要交互流程"></a>主副节点主要交互流程</h3><p>视图切换过程中有3个消息：view-change消息、view-change-ack消息和new-view消息，下文围绕这3个消息，对主副节点的交互流程做详细介绍。</p>
+<h3 id="view-change消息阶段"><a href="#view-change消息阶段" class="headerlink" title="view-change消息阶段"></a>view-change消息阶段</h3><p>在view v时，副本节点怀疑主节点fault时，会发送view-change消息，该消息包含：</p>
+<ol>
+<li>h：副本i最新的稳定检查点序号</li>
+<li>C：副本i保存的h之后的（非稳定）检查点</li>
+<li>P和Q</li>
+<li>i：副本i</li>
+<li>α：副本i对本消息的数字签名</li>
+</ol>
+<p>P和Q是2个集合。</p>
+<p>P是已经Prepared消息的信息集合：消息既然已经Prepared，说明**至少2f+1的节点拥有了消息，并且认可<code>&lt;view, n, d&gt;</code>**，即为消息分配的view和序号，只是还差一步commit阶段就可以完成一致性确认。P中包含的就是已经达到Prepared的消息的摘要d，无需包含完整的请求消息。新的view中，这些请求会使用老的序号n，而无需分配新的序号。</p>
+<p>Q是已经Pre-prepared消息的信息集合，主节点已经发送Pre-prepare或副本节点i为请求已经发送Prepare消息，证明**该节点认可<code>&lt;n, d, v&gt;</code>**。</p>
+<p>P、Q中的请求都是高低水位之间的，无View Changes时，P、Q都是空的，也就是说不包含已经committed的请求。new-view消息中的数据（View Changes的决策结果），都是基于P、Q集合计算出的。</p>
+<p>在发送view-change消息前，副本节点会利用日志中的三阶段消息计算P、Q集合，发送view-change消息后，就删除日志中的三阶段消息。</p>
+<h3 id="view-change-ack消息阶段"><a href="#view-change-ack消息阶段" class="headerlink" title="view-change-ack消息阶段"></a>view-change-ack消息阶段</h3><p>视图<code>v+1</code>的主节点在收到其他节点发送的view-change消息后，并不确认view-change消息是是否拜占庭节点发出的，即不确定消息是否是正确无误的，如果基于错误的消息做决策，就会得到错误的结果，违反一致性：一切操作都是正确的。</p>
+<p>设置view-change-ack消息的目的是，让所有副本节点对所有它收到的view-change消息进行检查和确认，只不过确认的结果都发送给新的主节点。主节点统计ack消息，可以辨别哪些view-change是正确的，哪些是拜占庭节点发出的。</p>
+<p>副本节点会对view-change消息中的P、Q集合进行检查，要求集合中的请求消息小于等于视图<code>v</code>，满足则发送view-change-ack消息：</p>
+<ol>
+<li>v：v+1</li>
+<li>i：发送ack消息的副本序号</li>
+<li>j：副本i要确认的view-change消息的发送方</li>
+<li>d：副本i要确认的view-change消息的摘要</li>
+<li>μip：i向主节点p发送消息的通信密钥计算出的MAC，这里需要保证i和p之间通信的私密性，所以不使用数字签名</li>
+</ol>
+<h3 id="new-view消息阶段"><a href="#new-view消息阶段" class="headerlink" title="new-view消息阶段"></a>new-view消息阶段</h3><p>新视图主节点p负责基于view-change消息做决策，决策放到new-view消息中。</p>
+<p>主节点p维护了一个集合S，用来存放正确的view-change消息。只有view-change消息，以及为该消息背书的view-change-ack消息达到<code>2f-1</code>个时，view-change消息才能加入到集合S，但view-change-ack消息不加入集合S。</p>
+<p>当集合S的大小达到<code>2f+1</code>时，证明有足够多的非拜占庭节点认为需要进行视图变更，并提供了变更的依据：2f+1个view-change消息，主节点p使用S做决策。以下便是<strong>决策逻辑</strong>。</p>
+<p>主节点p先确定h：所有view-change消息中最大的稳定检查点。h和h+L其实就是高低水位。</p>
+<p>然后依次检查h到h+L中的每一个序号n，对序号n对于的请求进行的处理为：请求m已经Prepared并且Pre-prepared，则收集序号n对应的请求。否则，说明没有请求在序号n能达到committed，为序号n分配一个空请求，并收集起来。它们最后会被放到new-view消息的X集合中。</p>
+<p>主节点会创建new-view消息：</p>
+<ul>
+<li>view：当前新视图的编号</li>
+<li>V：是一个集合，每个元素是一对<code>(i, d)</code>，代表i发送的view-change消息摘要是d，每一对都与集合S中消息对应，可以使用V证明主节点是在满足条件下，创建new-view消息的，即V是新视图的证明。因为其它多数副本节点已经接收view-change消息，所以此处发送消息的摘要做对比即可。</li>
+<li>X：是一个集合，包含检查点以及选定的请求</li>
+<li>α：主节点p对new-view消息的数字签名</li>
+</ul>
+<p>之后，主节点会把new-view消息广播给每一个副本节点。</p>
+<h3 id="处理new-view消息"><a href="#处理new-view消息" class="headerlink" title="处理new-view消息"></a>处理new-view消息</h3><h4 id="主节点处理new-view消息"><a href="#主节点处理new-view消息" class="headerlink" title="主节点处理new-view消息"></a>主节点处理new-view消息</h4><p>在发生View Changes时，主节点的状态可能也不是最全的，如果它没有X结合中的请求或者检查点，它可以从其他节点哪拉去。</p>
+<p>主节点需要使用new-view消息，达到视图切换的最后一步状态：在新视图v+1中，让集合X中的请求，全部是Pre-prepared状态。为何是Pre-prepared状态呢？因为new-view消息，可以看做一次特殊的Pre-prepare消息。</p>
+<p>为什么不直接标记为Committed呢？因为主节点也可能是拜占庭节点，副本节点需要检查new-view消息，向所有节点广播自己检查的结果，满足条件后才能达成一致性。</p>
+<h4 id="副本节点处理new-view消息"><a href="#副本节点处理new-view消息" class="headerlink" title="副本节点处理new-view消息"></a>副本节点处理new-view消息</h4><p>副本节点在视图v+1，会持续接收view-change消息和new-view消息，它会把new-view消息V集合中的view-change消息，跟它收到的消息做对比，如果它本地不存在某条view-change消息，它可以要求主节点向他提供view-change消息和view-change-ack消息集合，证明至少f+1个非拜占庭副本节点收到过此view-change消息。</p>
+<p>副本节点拥有所有的view-change消息之后，副本节点会和主节点运行相同的决策逻辑，以校验new-view消息的正确性。</p>
+<p>如果new-view消息是正确的，副本节点会和主节点一样移动到相同的状态，然后广播一条Prepare消息给所有节点，这样就恢复到了正常情况下的：<code>Pre-prepare -&gt; Prepare -&gt; Commit</code> 一致性逻辑。这样就完成了从View Changes到正常处理流程的迁移。</p>
+<p>如果new-view消息是错误的，说明主节点p是拜占庭节点，副本节点会直接进入v+2，发送view-change消息，进行新的一轮视图切换。</p>
+<h3 id="View-Changes如何提供liveness"><a href="#View-Changes如何提供liveness" class="headerlink" title="View Changes如何提供liveness"></a>View Changes如何提供liveness</h3><p>在一轮视图切换无法完成的时候，会开启新的一轮视图切换，由于拜占庭节点的数量最多为f个，最终会在某一轮视图切换中，能够完成视图切换，所有非拜占庭节点达成一致的状态，保证liveness和safety。</p>
+<p>本文前面列出了几种异常情况，下面就看一下View Changes是如何应对这些异常情况的，以及如何提供活性。</p>
+<p>Q1：如果下一个View的主节点宕机了怎么办？</p>
+<p>A1：副本节点在收集到2f+1个view-change消息后，会启动定时器，超时时间为T，新view的主节点宕机，必然会导致定时器超时时，未能完成View Changes流程，会进入新一轮视图切换。</p>
+<p>Q2：如果下一个View的主节点是恶意节点，作恶怎么办？</p>
+<p>A2：新view的主节点是恶意节点，如果它做恶了，生成的new-view消息不合法，副本节点可以检测出来。或者new-view消息是合法的，但它只发送给了少数副本节点，副本节点在对new-view消息进行正常的3阶段流程，参与的节点太少，在定时器超时前，不足以完成3阶段流程，副本节点会进入下一轮视图切换。</p>
+<p>Q3：如果非拜占庭恶意发起View Changes，造成主节点切换怎么办？</p>
+<p>A3：定时器未超时情况下，只有有效的f+1个view-change消息，才会引发其他副本节点进行主节点切换，否则无法造成主节点切换。但PBFT的前提条件是恶意节点不足f个，所以只有恶意节点发起view-change消息时，无法造成主节点切换。</p>
+<p>Q4：如果参与View Changes的节点数量不足怎么办？</p>
+<p>A4：这个问题可以分几种情况。</p>
+<ul>
+<li>发起view-change的节点数量不足f+1个，这种情况不会发生整个集群的视图切换。</li>
+<li>视图切换过程中，不满足各节点的数量要求，无法完成本轮视图切换，会进入下一轮视图切换。</li>
+</ul>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>View Changes是PBFT中一个重要的环节，它能保证整个协议的liveness，是PBFT不可或缺的一部分。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/15/gops-introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/03/15/gops-introduction/" class="post-title-link" itemprop="url">Go官方进程诊断工具gops详解</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-15 20:20:47" itemprop="dateCreated datePublished" datetime="2020-03-15T20:20:47+08:00">2020-03-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="gops简介"><a href="#gops简介" class="headerlink" title="gops简介"></a>gops简介</h2><p><a target="_blank" rel="noopener" href="https://github.com/google/gops">gops</a> 是Go团队提供的命令行工具，它可以用来获取go进程运行时信息。</p>
+<p>可以查看：</p>
+<ul>
+<li>当前有哪些go语言进程，哪些使用gops的go进程</li>
+<li>进程的概要信息</li>
+<li>进程的调用栈</li>
+<li>进程的内存使用情况</li>
+<li>构建程序的Go版本</li>
+<li>运行时统计信息</li>
+</ul>
+<p>可以获取：</p>
+<ul>
+<li>trace</li>
+<li>cpu profile和memory profile</li>
+</ul>
+<p>还可以：</p>
+<ul>
+<li>让进程进行1次GC</li>
+<li>设置GC百分比</li>
+</ul>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><p>使用<code>Options</code>配置agent。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;runtime&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;github.com/google/gops/agent&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err := agent.Listen(agent.Options&#123;</span><br><span class="line">		Addr:            <span class="string">&quot;0.0.0.0:8848&quot;</span>,</span><br><span class="line">		<span class="comment">// ConfigDir:       &quot;/home/centos/gopsconfig&quot;, // 最好使用默认</span></span><br><span class="line">		ShutdownCleanup: <span class="literal">true</span>&#125;); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 测试代码</span></span><br><span class="line">	_ = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">1000</span>, <span class="number">1000</span>)</span><br><span class="line">	runtime.GC()</span><br><span class="line"></span><br><span class="line">	_ = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">1000</span>, <span class="number">2000</span>)</span><br><span class="line">	runtime.GC()</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Hour)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="agent-Option选项"><a href="#agent-Option选项" class="headerlink" title="agent Option选项"></a>agent Option选项</h2><p>agent有3个配置：</p>
+<ul>
+<li><code>Addr</code>：agent要监听的ip和端口，默认ip为环回地址，端口随机分配。</li>
+<li><code>ConfigDir</code>：该目录存放的不是agent的配置，而是每一个使用了agent的go进程信息，文件以pid命名，内容是该pid进程所监听的端口号，所以其中文件的目的是形成pid到端口的映射。默认值为<code>~/.config/gops</code></li>
+<li><code>ShutdownCleanup</code>：进程退出时，是否清理ConfigDir中的文件，默认值为false，不清理</li>
+</ul>
+<p>通常可以把<code>Addr</code>设置为要监听的IP，把<code>ShutdownCleanup</code>设置为<code>ture</code>，进程退出后，残留在ConfigDir目录的文件不再有用，最好清除掉。</p>
+<p><code>ConfigDir</code>示例：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// gopsconfig为设置的ConfigDir目录，2051为pid，8848为端口号。</span><br><span class="line">➜  ~ cat gopsconfig/2051</span><br><span class="line">8848%</span><br><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">tcp6       0      0 :::8848                 :::*                    LISTEN      2051/./gopsexample</span><br></pre></td></tr></table></figure>
+
+<h2 id="gops原理"><a href="#gops原理" class="headerlink" title="gops原理"></a>gops原理</h2><p>gops的原理是，代码中导入<code>gops/agent</code>，建立agent服务，gops命令连接<code>agent</code>读取进程信息。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-gops.png" alt="gops"></p>
+<p><code>agent</code>的实现原理可以查看<code>agent/handle</code><a target="_blank" rel="noopener" href="https://github.com/google/gops/blob/master/agent/agent.go#L182">函数</a>。</p>
+<p>使用go标准库中原生接口实现相关功能，如同你要在自己的程序中开启pprof类似，只不过这部分功能由<code>gops/agent</code>实现了：</p>
+<ul>
+<li>使用<code>runtime.MemStats</code>获取内存情况</li>
+<li>使用<code>runtime/pprof</code>获取调用栈、cpu profile和memory profile</li>
+<li>使用<code>runtime/trace</code>获取trace</li>
+<li>使用<code>runtime</code>获取stats信息</li>
+<li>使用<code>runtime/debug</code>、<code>GC</code>设置和启动GC</li>
+</ul>
+<p>再谈<code>ConfigDir</code>。从源码上看，<code>ConfigDir</code>对agent并没有用途，对gops有用。当gops和ConfigDir在一台机器上时，即gops查看本机的go进程信息，gops可以通过其中的文件，快速找到agent服务的端口。能够实现：<code>gops &lt;sub-cmd&gt; pid</code>到<code>gops &lt;sub-cmd&gt; 127.0.0.1:port</code>的转换。</p>
+<p>如果代码中通过<code>ConfigDir</code>指定了其他目录，使用<code>gops</code>时，需要添加环境变量<code>GOPS_CONFIG_DIR</code>指向<code>ConfigDir</code>使用的目录。</p>
+<h2 id="子命令介绍"><a href="#子命令介绍" class="headerlink" title="子命令介绍"></a>子命令介绍</h2><p>gops后面可以跟子命令，然后是pid或者远端地址。</p>
+<p>也可以直接跟pid，查看本机进程信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops help memstats</span><br><span class="line">gops is a tool to list and diagnose Go processes.</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  gops &lt;cmd&gt; &lt;pid|addr&gt; ...</span><br><span class="line">  gops &lt;pid&gt; # displays process info</span><br><span class="line">  gops help  # displays this help message</span><br><span class="line"></span><br><span class="line">Commands:</span><br><span class="line">  stack      Prints the stack trace.</span><br><span class="line">  gc         Runs the garbage collector and blocks until successful.</span><br><span class="line">  setgc	     Sets the garbage collection target percentage.</span><br><span class="line">  memstats   Prints the allocation and garbage collection stats.</span><br><span class="line">  version    Prints the Go version used to build the program.</span><br><span class="line">  stats      Prints runtime stats.</span><br><span class="line">  trace      Runs the runtime tracer for 5 secs and launches &quot;go tool trace&quot;.</span><br><span class="line">  pprof-heap Reads the heap profile and launches &quot;go tool pprof&quot;.</span><br><span class="line">  pprof-cpu  Reads the CPU profile and launches &quot;go tool pprof&quot;.</span><br><span class="line"></span><br><span class="line">All commands require the agent running on the Go process.</span><br><span class="line">&quot;*&quot; indicates the process is running the agent.</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看当前机器上go程序进程信息"><a href="#查看当前机器上go程序进程信息" class="headerlink" title="查看当前机器上go程序进程信息"></a>查看当前机器上go程序进程信息</h3><p>查看当前机器上的go进程，可以列出pid、ppid、进程名、可执行程序所使用的go版本，以及可执行程序的路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops</span><br><span class="line">67292 66333 gops                         * go1.13    &#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;gops&#x2F;gops</span><br><span class="line">67434 65931 gops                           go1.13    &#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;bin&#x2F;gops</span><br><span class="line">66551 1     gocode                         go1.11.2  &#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;bin&#x2F;gocode</span><br><span class="line">137   1     com.docker.vmnetd              go1.12.7  &#x2F;Library&#x2F;PrivilegedHelperTools&#x2F;com.docker.vmnetd</span><br><span class="line">811   807   com.docker.backend             go1.12.13 &#x2F;Applications&#x2F;Docker.app&#x2F;Contents&#x2F;MacOS&#x2F;com.docker.backend</span><br><span class="line">807   746   com.docker.supervisor          go1.12.13 &#x2F;Applications&#x2F;Docker.app&#x2F;Contents&#x2F;MacOS&#x2F;com.docker.supervisor</span><br><span class="line">810   807   com.docker.driver.amd64-linux  go1.12.13 &#x2F;Applications&#x2F;Docker.app&#x2F;Contents&#x2F;MacOS&#x2F;com.docker.driver.amd64-linux</span><br></pre></td></tr></table></figure>
+
+<p>带<code>*</code>的是程序中使用了gops/agent，不带<code>*</code>的是普通的go程序。</p>
+<h3 id="go程序进程树"><a href="#go程序进程树" class="headerlink" title="go程序进程树"></a>go程序进程树</h3><p>查看进程树：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops tree</span><br><span class="line">...</span><br><span class="line">├── 66333</span><br><span class="line">│   └── [*]  67292 (gops) &#123;go1.13&#125;</span><br><span class="line">├── 1</span><br><span class="line">│   ├── 66551 (gocode) &#123;go1.11.2&#125;</span><br><span class="line">│   └── 137 (com.docker.vmnetd) &#123;go1.12.7&#125;</span><br><span class="line">├── 65931</span><br><span class="line">│   └── 67476 (gops) &#123;go1.13&#125;</span><br><span class="line">└── 746</span><br><span class="line">    └── 807 (com.docker.supervisor) &#123;go1.12.13&#125;</span><br><span class="line">        ├── 811 (com.docker.backend) &#123;go1.12.13&#125;</span><br><span class="line">        └── 810 (com.docker.driver.amd64-linux) &#123;go1.12.13&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="pid：进程概要信息"><a href="#pid：进程概要信息" class="headerlink" title="pid：进程概要信息"></a>pid：进程概要信息</h3><p>查看进程的概要信息，非gops进程也可以：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops 67292</span><br><span class="line">parent PID:	66333</span><br><span class="line">threads:	7</span><br><span class="line">memory usage:	0.018%</span><br><span class="line">cpu usage:	0.000%</span><br><span class="line">username:	shitaibin</span><br><span class="line">cmd+args:	.&#x2F;gops</span><br><span class="line">elapsed time:	11:28</span><br><span class="line">local&#x2F;remote:	127.0.0.1:54753 &lt;-&gt; :0 (LISTEN)</span><br><span class="line">➜  ~</span><br><span class="line">➜  ~ gops 807</span><br><span class="line">parent PID:	746</span><br><span class="line">threads:	28</span><br><span class="line">memory usage:	0.057%</span><br><span class="line">cpu usage:	0.003%</span><br><span class="line">username:	shitaibin</span><br><span class="line">cmd+args:	&#x2F;Applications&#x2F;Docker.app&#x2F;Contents&#x2F;MacOS&#x2F;com.docker.supervisor -watchdog fd:0</span><br><span class="line">elapsed time:	27-23:36:35</span><br><span class="line">local&#x2F;remote:	127.0.0.1:54832 &lt;-&gt; :0 ()</span><br><span class="line">local&#x2F;remote:	*:53849 &lt;-&gt; :0 ()</span><br><span class="line">local&#x2F;remote:	127.0.0.1:49473 &lt;-&gt; :0 (LISTEN)</span><br></pre></td></tr></table></figure>
+
+<h3 id="stack：当前调用栈"><a href="#stack：当前调用栈" class="headerlink" title="stack：当前调用栈"></a>stack：当前调用栈</h3><p>查看使用gops的进程的调用栈：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops stack 67292</span><br><span class="line">goroutine 19 [running]:</span><br><span class="line">runtime&#x2F;pprof.writeGoroutineStacks(0x1197160, 0xc00009c028, 0x0, 0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;pprof&#x2F;pprof.go:679 +0x9d</span><br><span class="line">runtime&#x2F;pprof.writeGoroutine(0x1197160, 0xc00009c028, 0x2, 0x0, 0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;pprof&#x2F;pprof.go:668 +0x44</span><br><span class="line">runtime&#x2F;pprof.(*Profile).WriteTo(0x1275c60, 0x1197160, 0xc00009c028, 0x2, 0xc00009c028, 0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;pprof&#x2F;pprof.go:329 +0x3da</span><br><span class="line">github.com&#x2F;google&#x2F;gops&#x2F;agent.handle(0x1665008, 0xc00009c028, 0xc000014068, 0x1, 0x1, 0x0, 0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;src&#x2F;github.com&#x2F;google&#x2F;gops&#x2F;agent&#x2F;agent.go:185 +0x1ab</span><br><span class="line">github.com&#x2F;google&#x2F;gops&#x2F;agent.listen()</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;src&#x2F;github.com&#x2F;google&#x2F;gops&#x2F;agent&#x2F;agent.go:133 +0x2bf</span><br><span class="line">created by github.com&#x2F;google&#x2F;gops&#x2F;agent.Listen</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;src&#x2F;github.com&#x2F;google&#x2F;gops&#x2F;agent&#x2F;agent.go:111 +0x364</span><br><span class="line"></span><br><span class="line">goroutine 1 [sleep]:</span><br><span class="line">runtime.goparkunlock(...)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;proc.go:310</span><br><span class="line">time.Sleep(0x34630b8a000)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;time.go:105 +0x157</span><br><span class="line">main.main()</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;gops&#x2F;example.go:15 +0xa3</span><br><span class="line"></span><br><span class="line">goroutine 18 [syscall]:</span><br><span class="line">os&#x2F;signal.signal_recv(0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;sigqueue.go:144 +0x96</span><br><span class="line">os&#x2F;signal.loop()</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;os&#x2F;signal&#x2F;signal_unix.go:23 +0x22</span><br><span class="line">created by os&#x2F;signal.init.0</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;os&#x2F;signal&#x2F;signal_unix.go:29 +0x41</span><br></pre></td></tr></table></figure>
+
+<h3 id="memstats-内存使用情况"><a href="#memstats-内存使用情况" class="headerlink" title="memstats: 内存使用情况"></a>memstats: 内存使用情况</h3><p>查看gops进程内存使用情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops memstats 67944</span><br><span class="line">alloc: 136.80KB (140088 bytes) &#x2F;&#x2F; 当前分配出去未收回的内存总量</span><br><span class="line">total-alloc: 152.08KB (155728 bytes) &#x2F;&#x2F; 已分配出去的内存总量</span><br><span class="line">sys: 67.25MB (70518784 bytes) &#x2F;&#x2F; 当前进程从OS获取的内存总量</span><br><span class="line">lookups: 0</span><br><span class="line">mallocs: 418 &#x2F;&#x2F; 分配的对象数量</span><br><span class="line">frees: 82 &#x2F;&#x2F; 释放的对象数量</span><br><span class="line">heap-alloc: 136.80KB (140088 bytes) &#x2F;&#x2F; 当前分配出去未收回的堆内存总量</span><br><span class="line">heap-sys: 63.56MB (66650112 bytes) &#x2F;&#x2F; 当前堆从OS获取的内存</span><br><span class="line">heap-idle: 62.98MB (66035712 bytes) &#x2F;&#x2F; 当前堆中空闲的内存量</span><br><span class="line">heap-in-use: 600.00KB (614400 bytes) &#x2F;&#x2F; 当前堆使用中的内存量</span><br><span class="line">heap-released: 62.89MB (65945600 bytes)</span><br><span class="line">heap-objects: 336 &#x2F;&#x2F; 堆中对象数量</span><br><span class="line">stack-in-use: 448.00KB (458752 bytes) &#x2F;&#x2F; 栈使用中的内存量 </span><br><span class="line">stack-sys: 448.00KB (458752 bytes) &#x2F;&#x2F; 栈从OS获取的内存总量 </span><br><span class="line">stack-mspan-inuse: 10.89KB (11152 bytes)</span><br><span class="line">stack-mspan-sys: 16.00KB (16384 bytes)</span><br><span class="line">stack-mcache-inuse: 13.56KB (13888 bytes)</span><br><span class="line">stack-mcache-sys: 16.00KB (16384 bytes)</span><br><span class="line">other-sys: 1.01MB (1062682 bytes)</span><br><span class="line">gc-sys: 2.21MB (2312192 bytes)</span><br><span class="line">next-gc: when heap-alloc &gt;&#x3D; 4.00MB (4194304 bytes) &#x2F;&#x2F; 下次GC的条件</span><br><span class="line">last-gc: 2020-03-16 10:06:26.743193 +0800 CST &#x2F;&#x2F; 上次GC的世界</span><br><span class="line">gc-pause-total: 83.84µs &#x2F;&#x2F; GC总暂停时间</span><br><span class="line">gc-pause: 44891 &#x2F;&#x2F; 上次GC暂停时间，单位纳秒</span><br><span class="line">num-gc: 2 &#x2F;&#x2F; 已进行的GC次数</span><br><span class="line">enable-gc: true &#x2F;&#x2F; 是否开始GC</span><br><span class="line">debug-gc: false</span><br></pre></td></tr></table></figure>
+
+<h3 id="stats-运行时信息"><a href="#stats-运行时信息" class="headerlink" title="stats: 运行时信息"></a>stats: 运行时信息</h3><p>查看运行时统计信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops stats 68125</span><br><span class="line">goroutines: 3</span><br><span class="line">OS threads: 12</span><br><span class="line">GOMAXPROCS: 8</span><br><span class="line">num CPU: 8</span><br></pre></td></tr></table></figure>
+
+<h3 id="trace"><a href="#trace" class="headerlink" title="trace"></a>trace</h3><p>获取当前运行5s的trace信息，会打开网页：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops trace 68125</span><br><span class="line">Tracing now, will take 5 secs...</span><br><span class="line">Trace dump saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;trace116447431</span><br><span class="line">2020&#x2F;03&#x2F;16 10:23:37 Parsing trace...</span><br><span class="line">2020&#x2F;03&#x2F;16 10:23:37 Splitting trace...</span><br><span class="line">2020&#x2F;03&#x2F;16 10:23:37 Opening browser. Trace viewer is listening on http:&#x2F;&#x2F;127.0.0.1:55480</span><br></pre></td></tr></table></figure>
+
+<h3 id="cpu-profile"><a href="#cpu-profile" class="headerlink" title="cpu profile"></a>cpu profile</h3><p>获取cpu profile，并进入交互模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops pprof-cpu 68125</span><br><span class="line">Profiling CPU now, will take 30 secs...</span><br><span class="line"></span><br><span class="line">Profile dump saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;profile431166544</span><br><span class="line">Binary file saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;binary765361519</span><br><span class="line">File: binary765361519</span><br><span class="line">Type: cpu</span><br><span class="line">Time: Mar 16, 2020 at 10:25am (CST)</span><br><span class="line">Duration: 30s, Total samples &#x3D; 0</span><br><span class="line">No samples were found with the default sample value type.</span><br><span class="line">Try &quot;sample_index&quot; command to analyze different sample values.</span><br><span class="line">Entering interactive mode (type &quot;help&quot; for commands, &quot;o&quot; for options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) top</span><br><span class="line">Showing nodes accounting for 0, 0% of 0 total</span><br><span class="line">      flat  flat%   sum%        cum   cum%</span><br></pre></td></tr></table></figure>
+
+<h3 id="memory-profile"><a href="#memory-profile" class="headerlink" title="memory profile"></a>memory profile</h3><p>获取memory profile，并进入交互模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops pprof-heap 68125</span><br><span class="line">Profile dump saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;profile292136242</span><br><span class="line">Binary file saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;binary693335273</span><br><span class="line">File: binary693335273</span><br><span class="line">Type: inuse_space</span><br><span class="line">Time: Mar 16, 2020 at 10:27am (CST)</span><br><span class="line">No samples were found with the default sample value type.</span><br><span class="line">Try &quot;sample_index&quot; command to analyze different sample values.</span><br><span class="line">Entering interactive mode (type &quot;help&quot; for commands, &quot;o&quot; for options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) traces</span><br><span class="line">File: binary693335273</span><br><span class="line">Type: inuse_space</span><br><span class="line">Time: Mar 16, 2020 at 10:27am (CST)</span><br><span class="line">-----------+-------------------------------------------------------</span><br><span class="line">     bytes:  256kB</span><br><span class="line">         0   compress&#x2F;flate.(*compressor).init</span><br><span class="line">             compress&#x2F;flate.NewWriter</span><br><span class="line">             compress&#x2F;gzip.(*Writer).Write</span><br><span class="line">             runtime&#x2F;pprof.(*profileBuilder).build</span><br><span class="line">             runtime&#x2F;pprof.profileWriter</span><br><span class="line">-----------+-------------------------------------------------------</span><br><span class="line">     bytes:  64kB</span><br><span class="line">         0   compress&#x2F;flate.newDeflateFast</span><br><span class="line">             compress&#x2F;flate.(*compressor).init</span><br><span class="line">             compress&#x2F;flate.NewWriter</span><br><span class="line">             compress&#x2F;gzip.(*Writer).Write</span><br><span class="line">             runtime&#x2F;pprof.(*profileBuilder).build</span><br><span class="line">             runtime&#x2F;pprof.profileWriter</span><br><span class="line">-----------+-------------------------------------------------------</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用远程连接"><a href="#使用远程连接" class="headerlink" title="使用远程连接"></a>使用远程连接</h2><p>agent的默认配置<code>Option&#123;&#125;</code>，监听的是环回地址。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ sudo netstat -nap | grep 414</span><br><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">(Not all processes could be identified, non-owned process info</span><br><span class="line"> will not be shown, you would have to be root to see it all.)</span><br><span class="line">tcp        0      0 127.0.0.1:36812         0.0.0.0:*               LISTEN      414/./gopsexample</span><br></pre></td></tr></table></figure>
+
+<p>修改程序，在<code>Option</code>中设置监听的地址和端口：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">agent.Listen(agent.Options&#123;Addr:<span class="string">&quot;0.0.0.0:8848&quot;</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>在远程主机上重新编译、重启进程，确认进程监听的端口：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">(Not all processes could be identified, non-owned process info</span><br><span class="line"> will not be shown, you would have to be root to see it all.)</span><br><span class="line">tcp6       0      0 :::8848                 :::*                    LISTEN      887/./gopsexample</span><br></pre></td></tr></table></figure>
+
+<p>在本地主机上使用gops连接远端go进程，并查看数据：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops stats 192.168.9.137:8848</span><br><span class="line">goroutines: 3</span><br><span class="line">OS threads: 9</span><br><span class="line">GOMAXPROCS: 4</span><br><span class="line">num CPU: 4</span><br></pre></td></tr></table></figure>
+
+<p><code>gops</code>后面只能跟pid查看进程简要信息，不能跟ip和port查看远端go进程简要信息，这些简要信息可以通过子命令汇集起来。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops 192.168.9.137:8848</span><br><span class="line">gops: unknown subcommand</span><br><span class="line">➜  ~ </span><br><span class="line">➜  ~ gops version 192.168.9.137:8848</span><br><span class="line">go1.13</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+</body>
+</html>

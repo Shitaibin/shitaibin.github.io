@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="kustomize简介kustomize是一个自定义管理原始的YAML模板资源文件的工具，同时无需修改原始的YAML文件。 对于kustomize的理解是，它借助了docker镜像的类似概念：可以一层层的进行覆盖。 Kustmoize有Base和Overlay 2个概念，被依赖的层成为base，当前进行覆盖操作的层成为overlay。所以1个overlay，也可以是另外overlay的base。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kustomize：自定义YAML资源文件">
+<meta property="og:url" content="http://lessisbetter.site/2020/11/17/kustomize/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="kustomize简介kustomize是一个自定义管理原始的YAML模板资源文件的工具，同时无需修改原始的YAML文件。 对于kustomize的理解是，它借助了docker镜像的类似概念：可以一层层的进行覆盖。 Kustmoize有Base和Overlay 2个概念，被依赖的层成为base，当前进行覆盖操作的层成为overlay。所以1个overlay，也可以是另外overlay的base。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-11-kustomize-base-overlay.png">
+<meta property="article:published_time" content="2020-11-17T01:54:12.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.795Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2020-11-kustomize-base-overlay.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2020/11/17/kustomize/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Kustomize：自定义YAML资源文件 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#kustomize%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">kustomize简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#base"><span class="nav-number">2.</span> <span class="nav-text">base</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#overlay"><span class="nav-number">3.</span> <span class="nav-text">overlay</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%89%AF%E6%9C%AC%E6%95%B0%E9%87%8F"><span class="nav-number">3.1.</span> <span class="nav-text">修改副本数量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A6%86%E7%9B%96%E9%95%9C%E5%83%8F"><span class="nav-number">3.2.</span> <span class="nav-text">覆盖镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9B%B4%E5%A4%9A%E5%8A%9F%E8%83%BD"><span class="nav-number">3.3.</span> <span class="nav-text">更多功能</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kustomize%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">4.</span> <span class="nav-text">kustomize常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#build"><span class="nav-number">4.1.</span> <span class="nav-text">build</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#edit"><span class="nav-number">4.2.</span> <span class="nav-text">edit</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/11/17/kustomize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kustomize：自定义YAML资源文件
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-17 09:54:12" itemprop="dateCreated datePublished" datetime="2020-11-17T09:54:12+08:00">2020-11-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="kustomize简介"><a href="#kustomize简介" class="headerlink" title="kustomize简介"></a>kustomize简介</h3><p><a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/kustomize">kustomize</a>是一个自定义管理原始的YAML模板资源文件的工具，同时无需修改原始的YAML文件。</p>
+<p>对于kustomize的理解是，它借助了docker镜像的类似概念：可以一层层的进行覆盖。</p>
+<p>Kustmoize有Base和Overlay 2个概念，被依赖的层成为base，当前进行覆盖操作的层成为overlay。所以1个overlay，也可以是另外overlay的base。</p>
+<p><img src="http://img.lessisbetter.site/2020-11-kustomize-base-overlay.png" alt="Kustomize base和overlay"></p>
+<p>在kubectl v1.14之后，其中融合了kustomize，也就说如果安装了kubectl无需安装kustomize，即可使用kustomize。</p>
+<p>把kustmoize的资源文件部署到集群有2个办法：</p>
+<ol>
+<li>通过kubectl内置的kustomize：<code>kubectl apply -k $KUSTOMIZE_DIR</code> 应用到集群。</li>
+<li>集合kustomize和kubectl: <code>kustomize build $KUSTOMIZE_DIR | kubectl apply -f -</code>应用到集群。</li>
+</ol>
+<h3 id="base"><a href="#base" class="headerlink" title="base"></a>base</h3><p>nginx-deployment.yaml:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">image:</span> <span class="string">nginx:1.9.1</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">mountPath:</span> <span class="string">/user/share/nginx/html</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">      <span class="attr">restartPolicy:</span> <span class="string">Always</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">emptyDir:</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>kustomization.yaml :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">commonLabels:</span><br><span class="line">        app: kustomize-nginx</span><br><span class="line"></span><br><span class="line">resources:</span><br><span class="line">- nginx-deployment.yaml</span><br></pre></td></tr></table></figure>
+
+<p>build的效果就是，把列出来的resources中的label，都换成<code>app: kustomize-nginx</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">$ diff &lt;(kustomize build .) nginx-deployment.yaml</span><br><span class="line">4,5d3</span><br><span class="line">&lt;   labels:</span><br><span class="line">&lt;     app: kustomize-nginx</span><br><span class="line">6a5,6</span><br><span class="line">&gt;   labels:</span><br><span class="line">&gt;     app: nginx</span><br><span class="line">10c10</span><br><span class="line">&lt;       app: kustomize-nginx</span><br><span class="line">---</span><br><span class="line">&gt;       app: nginx</span><br><span class="line">14c14</span><br><span class="line">&lt;         app: kustomize-nginx</span><br><span class="line">---</span><br><span class="line">&gt;         app: nginx</span><br><span class="line">17,24c17,24</span><br><span class="line">&lt;       - image: nginx:1.9.1</span><br><span class="line">&lt;         name: nginx</span><br><span class="line">&lt;         ports:</span><br><span class="line">&lt;         - containerPort: 80</span><br><span class="line">&lt;           name: http</span><br><span class="line">&lt;         volumeMounts:</span><br><span class="line">&lt;         - mountPath: &#x2F;user&#x2F;share&#x2F;nginx&#x2F;html</span><br><span class="line">&lt;           name: data</span><br><span class="line">---</span><br><span class="line">&gt;         - image: nginx:1.9.1</span><br><span class="line">&gt;           name: nginx</span><br><span class="line">&gt;           ports:</span><br><span class="line">&gt;             - containerPort: 80</span><br><span class="line">&gt;               name: http</span><br><span class="line">&gt;           volumeMounts:</span><br><span class="line">&gt;             - mountPath: &#x2F;user&#x2F;share&#x2F;nginx&#x2F;html</span><br><span class="line">&gt;               name: data</span><br><span class="line">27,28c27,28</span><br><span class="line">&lt;       - emptyDir: &#123;&#125;</span><br><span class="line">&lt;         name: data</span><br><span class="line">---</span><br><span class="line">&gt;         - name: data</span><br><span class="line">&gt;           emptyDir: &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>应用到k8s，并且查看label。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;base]$ kubectl apply -k .</span><br><span class="line">deployment.apps&#x2F;nginx created</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;base]$ kubectl get deploy -o wide</span><br><span class="line">NAME    READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES        SELECTOR</span><br><span class="line">nginx   1&#x2F;1     1            1           7s    nginx        nginx:1.9.1   app&#x3D;kustomize-nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="overlay"><a href="#overlay" class="headerlink" title="overlay"></a>overlay</h3><h4 id="修改副本数量"><a href="#修改副本数量" class="headerlink" title="修改副本数量"></a>修改副本数量</h4><p>kustomization.yaml:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">namePrefix: testing-</span><br><span class="line">commonLabels:</span><br><span class="line">        app: kustomize-nginx</span><br><span class="line">        variant: testing</span><br><span class="line">        group: test</span><br><span class="line"></span><br><span class="line">bases: </span><br><span class="line">- ..&#x2F;..&#x2F;base</span><br><span class="line"></span><br><span class="line">patchesStrategicMerge:</span><br><span class="line">- nginx-deployment.yaml</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>namePrefix</code>: 资源前缀，比如deployment名称以<code>namePrefix: testing-</code>开头。</p>
+</li>
+<li><p><code>commonLabels</code>：会使用的标签</p>
+</li>
+<li><p><code>bases</code>：所基于的base文件</p>
+</li>
+<li><p><code>patchesStrategicMerge</code>：用合并的方式做path，列出涉及的文件。</p>
+</li>
+</ul>
+<p>nginx-deployment.yaml 为patch的内容：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>名称<code>metadata.name</code>应当与base中的名称相同，因为使用名称做匹配，所做的patch是当前overlay，名为nginx的deployment的副本数量为2。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -k .</span><br><span class="line">deployment.apps&#x2F;testing-nginx created</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;testing]$</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;testing]$ kubectl get deployment</span><br><span class="line">NAME            READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx           1&#x2F;1     1            1           19m</span><br><span class="line">testing-nginx   2&#x2F;2     2            2           8s</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="覆盖镜像"><a href="#覆盖镜像" class="headerlink" title="覆盖镜像"></a>覆盖镜像</h4><p>kustomization.yaml:</p>
+<ul>
+<li>前缀设置为develop，更新相应tag</li>
+<li>通过<code>images</code>更新镜像</li>
+<li>Nginx deployment的副本数量修改为5，这种方式与<a href="#%E4%BF%AE%E6%94%B9%E5%89%AF%E6%9C%AC%E6%95%B0%E9%87%8F">上一个修改副本数量</a>相比更简洁。</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">namePrefix:</span> <span class="string">dev-</span></span><br><span class="line"><span class="attr">commonLabels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">dev-nginx</span></span><br><span class="line">        <span class="attr">variant:</span> <span class="string">dev</span></span><br><span class="line">        <span class="attr">group:</span> <span class="string">develop</span></span><br><span class="line"></span><br><span class="line"><span class="attr">bases:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">../../base</span></span><br><span class="line"><span class="attr">images:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">          <span class="attr">newTag:</span> <span class="number">1.19</span><span class="number">.0</span></span><br><span class="line"><span class="attr">replicas:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">          <span class="attr">count:</span> <span class="number">5</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>部署到集群：发现kubectl内置的kustomize的<code>replicas</code>并没有得到支持，可能是内置的kustomize版本较老，使用kustomize + kubectl的方式可以部署到集群。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$ kubectl delete -k develop</span><br><span class="line">error: json: unknown field &quot;replicas&quot;</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$ kustomize build develop | kubectl apply -f -</span><br><span class="line">deployment.apps&#x2F;dev-nginx created</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$ kubectl get deploy -o wide</span><br><span class="line">NAME            READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES         SELECTOR</span><br><span class="line">dev-nginx       5&#x2F;5     5            5           17s   nginx        nginx:1.19.0   app&#x3D;dev-nginx,group&#x3D;develop,variant&#x3D;dev</span><br><span class="line">nginx           1&#x2F;1     1            1           10h   nginx        nginx:1.9.1    app&#x3D;kustomize-nginx</span><br><span class="line">testing-nginx   2&#x2F;2     2            2           10h   nginx        nginx:1.9.1    app&#x3D;kustomize-nginx,group&#x3D;test,variant&#x3D;testing</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a target="_blank" rel="noopener" href="https://kubectl.docs.kubernetes.io/references/kustomize/images/">https://kubectl.docs.kubernetes.io/references/kustomize/images/</a></p>
+<h4 id="更多功能"><a href="#更多功能" class="headerlink" title="更多功能"></a>更多功能</h4><p>参考<a target="_blank" rel="noopener" href="https://kubectl.docs.kubernetes.io/zh/api-reference/kustomization/bases/">kustomize reference</a>。</p>
+<h3 id="kustomize常用命令"><a href="#kustomize常用命令" class="headerlink" title="kustomize常用命令"></a>kustomize常用命令</h3><h4 id="build"><a href="#build" class="headerlink" title="build"></a>build</h4><p>使用配置文件生成资源的YAML文件，并打印到标准输出。配合kubectl命令可以把资源部署到集群。</p>
+<h4 id="edit"><a href="#edit" class="headerlink" title="edit"></a>edit</h4><p>通过命令行修改<code>kustomization.yaml</code>文件。这种办法可以方便的放到脚本中去修改<code>kustomization.yaml</code>，而不是手动去修改。比如operator-sdk的样例，通过edit命令指定资源所要使用的镜像。</p>
+<p><strong>edit的set命令</strong>可以做以下几样事：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Available Commands:</span><br><span class="line">  image       Sets images and their new names, new tags or digests in the kustomization file</span><br><span class="line">  nameprefix  Sets the value of the namePrefix field in the kustomization file.</span><br><span class="line">  namespace   Sets the value of the namespace field in the kustomization file</span><br><span class="line">  namesuffix  Sets the value of the nameSuffix field in the kustomization file.</span><br><span class="line">  replicas    Sets replicas count for resources in the kustomization file</span><br></pre></td></tr></table></figure>
+
+<p>通过命令行修改前缀和镜像：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$ cp -r develop develop-dabin</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;develop-dabin]$ kustomize edit set nameprefix &quot;develop-dabin-&quot;</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;develop-dabin]$ kustomize edit set image &quot;nginx:1.18.0&quot;</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;develop-dabin]$ head kustomization.yaml</span><br><span class="line">namePrefix: develop-dabin-</span><br><span class="line">commonLabels:</span><br><span class="line">  app: dev-nginx</span><br><span class="line">  group: develop</span><br><span class="line">  variant: dev</span><br><span class="line"></span><br><span class="line">images:</span><br><span class="line">- name: nginx</span><br><span class="line">  newTag: 1.18.0</span><br><span class="line">replicas:</span><br></pre></td></tr></table></figure>
+
+<p>edit命令除了set外，还有add、remove、fix，能够更加完整的通过命令编辑<code>kustomization.yaml</code>文件。</p>
+<p>本文样例：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/notes/tree/master/kubernetes/examples/kustomize">examples/kustomize</a> 。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://kubectl.docs.kubernetes.io/references/kustomize/nameprefix/">kustomization.yaml的写法</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/16/k8s-jsonpath/" rel="prev" title="利用JSONPath提取Kubernetes资源信息">
+                  <i class="fa fa-chevron-left"></i> 利用JSONPath提取Kubernetes资源信息
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/18/modify-oh-my-zsh-themes/" rel="next" title="Oh my zsh">
+                  Oh my zsh <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'd2a0ad74d262b405129d2b47c1b09147',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

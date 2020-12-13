@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="云原生、Go语言、区块链">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Go语言充电站">
+<meta property="og:url" content="http://lessisbetter.site/page/7/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="云原生、Go语言、区块链">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="云原生 k8s kubernetes 区块链 Go语言 后端 技术 人生 编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/page/7/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/05/03/go-concurrent-problems1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/05/03/go-concurrent-problems1/" class="post-title-link" itemprop="url">Go面试题：并发</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-05-03 09:23:17" itemprop="dateCreated datePublished" datetime="2019-05-03T09:23:17+08:00">2019-05-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h3 id="Once"><a href="#Once" class="headerlink" title="Once"></a>Once</h3><p>这个once的实现有没有什么问题？</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Once <span class="keyword">struct</span> &#123;</span><br><span class="line">	m    sync.Mutex</span><br><span class="line">	done <span class="keyword">uint32</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(o *Once)</span> <span class="title">Do</span><span class="params">(f <span class="keyword">func</span>()</span>)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> o.done == <span class="number">1</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	o.m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> o.m.Unlock()</span><br><span class="line">	<span class="keyword">if</span> o.done == <span class="number">0</span> &#123;</span><br><span class="line">		o.done = <span class="number">1</span></span><br><span class="line">		f()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有。讨论见这里：<a target="_blank" rel="noopener" href="https://github.com/smallnest/gitalk/issues/101#issuecomment-490738912">https://github.com/smallnest/gitalk/issues/101#issuecomment-490738912</a></p>
+<p>正确的姿势是使用原子操作，原子操作在修改变量的值后，会也让其他核立马看到数据的变动。Once.Do的官方实现就使用的原子操作：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(o *Once)</span> <span class="title">Do</span><span class="params">(f <span class="keyword">func</span>()</span>)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> atomic.LoadUint32(&amp;o.done) == <span class="number">1</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// Slow-path.</span></span><br><span class="line">	o.m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> o.m.Unlock()</span><br><span class="line">	<span class="keyword">if</span> o.done == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> atomic.StoreUint32(&amp;o.done, <span class="number">1</span>)</span><br><span class="line">		f()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于缓存，可以看鸟窝的<a target="_blank" rel="noopener" href="https://colobu.com/2019/01/24/cacheline-affects-performance-in-go/">《cacheline 对 Go 程序的影响》</a>和知乎<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31875174">《细说Cache-L1/L2/L3/TLB》</a>。</p>
+<h3 id="Wait-Group"><a href="#Wait-Group" class="headerlink" title="Wait Group"></a>Wait Group</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		time.Sleep(time.Millisecond)</span><br><span class="line">		wg.Done()</span><br><span class="line">		wg.Add(<span class="number">1</span>)</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>会panic：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">panic: sync: WaitGroup is reused before previous Wait has returned</span><br><span class="line"></span><br><span class="line">goroutine 1 [running]:</span><br><span class="line">sync.(*WaitGroup).Wait(0xc000018090)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;src&#x2F;github.com&#x2F;golang&#x2F;go&#x2F;src&#x2F;sync&#x2F;waitgroup.go:132 +0xae</span><br><span class="line">main.main()</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;problems&#x2F;concurrent&#x2F;waitgroup0.go:16 +0x79</span><br><span class="line">exit status 2</span><br></pre></td></tr></table></figure>
+
+<p>原因：第13行执行<code>wg.Done()</code>后，wg的计数已经变成了0，<code>wg.Wait()</code>实际以及完成并返回，14行再次使用此<code>wg.Add()</code>报错。</p>
+<h3 id="Mutex"><a href="#Mutex" class="headerlink" title="Mutex"></a>Mutex</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MyMutex <span class="keyword">struct</span> &#123;</span><br><span class="line">	count <span class="keyword">int</span></span><br><span class="line">	sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> mu MyMutex</span><br><span class="line">	mu.Lock()</span><br><span class="line">	<span class="keyword">var</span> mu2 = mu</span><br><span class="line">	mu.count++</span><br><span class="line">	mu.Unlock()</span><br><span class="line">	mu2.Lock()</span><br><span class="line">	mu2.count++</span><br><span class="line">	mu2.Unlock()</span><br><span class="line">	fmt.Println(mu.count, mu2.count)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果panic：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">fatal error: all goroutines are asleep - deadlock!</span><br><span class="line"></span><br><span class="line">goroutine 1 [semacquire]:</span><br><span class="line">sync.runtime_SemacquireMutex(0xc0000180ac, 0x100ae00)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;src&#x2F;github.com&#x2F;golang&#x2F;go&#x2F;src&#x2F;runtime&#x2F;sema.go:71 +0x3d</span><br><span class="line">sync.(*Mutex).Lock(0xc0000180a8)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;src&#x2F;github.com&#x2F;golang&#x2F;go&#x2F;src&#x2F;sync&#x2F;mutex.go:134 +0x109</span><br><span class="line">main.main()</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;problems&#x2F;concurrent&#x2F;mutex0.go:19 +0xb4</span><br></pre></td></tr></table></figure>
+
+<p>原因：<code>MyMutex</code>和<code>sync.Mutex</code>都是结构体，不包含指针，第16行根据mu新建了mu2对象，2者占用不同的内存区域，但2者的“内容”是相同的，所以mu2新建后就已经是Lock状态。第19行<code>mu2.Lock()</code>所以会死锁。</p>
+<p>修改：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">gopackage main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MyMutex <span class="keyword">struct</span> &#123;</span><br><span class="line">	count <span class="keyword">int</span></span><br><span class="line">	sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> mu MyMutex</span><br><span class="line">	mu.Lock()</span><br><span class="line">	<span class="keyword">var</span> mu2 = mu</span><br><span class="line">	mu.count++</span><br><span class="line">	mu.Unlock()</span><br><span class="line">	mu2.Unlock() <span class="comment">// 先解锁，或新建mu2时移动到mu.Lock之前</span></span><br><span class="line">	mu2.Lock()</span><br><span class="line">	mu2.count++</span><br><span class="line">	mu2.Unlock()</span><br><span class="line">	fmt.Println(mu.count, mu2.count)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Pool"><a href="#Pool" class="headerlink" title="Pool"></a>Pool</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;bytes&quot;</span></span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;runtime&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> pool = sync.Pool&#123;New: <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">interface</span></span>&#123;&#125; &#123; <span class="keyword">return</span> <span class="built_in">new</span>(bytes.Buffer) &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			processRequest(<span class="number">1</span> &lt;&lt; <span class="number">28</span>) <span class="comment">// 256MiB</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			<span class="keyword">for</span> &#123;</span><br><span class="line">				processRequest(<span class="number">1</span> &lt;&lt; <span class="number">10</span>) <span class="comment">// 1KiB</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">var</span> stats runtime.MemStats</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; ; i++ &#123;</span><br><span class="line">		runtime.ReadMemStats(&amp;stats)</span><br><span class="line">		fmt.Printf(<span class="string">&quot;Cycle %d: %d MB\n&quot;</span>, i, stats.Alloc/<span class="number">1024</span>/<span class="number">1024</span>)</span><br><span class="line">		time.Sleep(time.Second)</span><br><span class="line">		runtime.GC()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">processRequest</span><span class="params">(size <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	b := pool.Get().(*bytes.Buffer)</span><br><span class="line">	time.Sleep(<span class="number">500</span> * time.Millisecond)</span><br><span class="line">	b.Grow(size)</span><br><span class="line">	pool.Put(b)</span><br><span class="line">	time.Sleep(<span class="number">1</span> * time.Millisecond)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>可以编译，运行时内存先暴涨，但是过一会会回收掉。结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Cycle 0: 0 MB</span><br><span class="line">Cycle 1: 256 MB</span><br><span class="line">Cycle 2: 513 MB</span><br><span class="line">Cycle 3: 769 MB</span><br><span class="line">Cycle 4: 1281 MB</span><br><span class="line">Cycle 5: 1281 MB</span><br><span class="line">Cycle 6: 1281 MB</span><br><span class="line">Cycle 7: 1537 MB</span><br><span class="line">Cycle 8: 1793 MB</span><br><span class="line">Cycle 9: 2049 MB</span><br><span class="line">Cycle 10: 2049 MB</span><br><span class="line">......</span><br><span class="line">Cycle 107: 14593 MB</span><br><span class="line">Cycle 108: 15105 MB</span><br><span class="line">Cycle 109: 2304 MB</span><br><span class="line">Cycle 110: 0 MB</span><br><span class="line">Cycle 111: 256 MB</span><br><span class="line">Cycle 112: 513 MB</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p><code>sync.Pool</code>用来存放经常使用的临时对象，如果每次这些内存被GC回收，会加大GC的压力，Pool的出现就是为<strong>减缓</strong>GC的压力，而不是完全不让GC回收Pool的内存。</p>
+<p>关于Pool不可错过Dave在<a target="_blank" rel="noopener" href="https://dave.cheney.net/high-performance-go-workshop/gopherchina-2019.html#using_sync_pool">高性能Go程序的这段介绍</a>。</p>
+<h3 id="channel-1"><a href="#channel-1" class="headerlink" title="channel 1"></a>channel 1</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;runtime&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> ch <span class="keyword">chan</span> <span class="keyword">int</span></span><br><span class="line">	<span class="comment">// g1</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ch = <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">1</span>)</span><br><span class="line">		ch &lt;- <span class="number">1</span></span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="comment">//g2</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(ch <span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">		time.Sleep(time.Second)</span><br><span class="line">		&lt;-ch</span><br><span class="line">	&#125;(ch)</span><br><span class="line">	c := time.Tick(<span class="number">1</span> * time.Second)</span><br><span class="line">	<span class="keyword">for</span> <span class="keyword">range</span> c &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;#goroutines: %d\n&quot;</span>, runtime.NumGoroutine())</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果是持续打印<code>#goroutines: 2</code>。<code>ch</code>声明后为<code>nil</code>，在g1中被初始化为缓冲区大小为1的通道，g1向ch写数据后退出；通过参数把ch传递给g2时，ch还是<code>nil</code>，所以在g2内部ch为nil，从nil的通道读数据会阻塞，所以g2无法退出；另外Main协程不会退出，会持续遍历通道<code>c</code>，感谢<a target="_blank" rel="noopener" href="https://github.com/Bububuger">Bububuger</a>提醒，定时器的通道并不统计在<code>NumGoroutine</code>中，所以会打印存在2个goroutine。</p>
+<h3 id="channel-2"><a href="#channel-2" class="headerlink" title="channel 2"></a>channel 2</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> ch <span class="keyword">chan</span> <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">var</span> count <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ch &lt;- <span class="number">1</span></span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		count++</span><br><span class="line">		<span class="built_in">close</span>(ch)</span><br><span class="line">	&#125;()</span><br><span class="line">	&lt;-ch</span><br><span class="line">	fmt.Println(count)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ch只声明，未进行初始化，所以panic：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">panic: close of nil channel</span><br><span class="line"></span><br><span class="line">goroutine 34 [running]:</span><br><span class="line">main.main.func2(0xc000096000, 0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;problems&#x2F;concurrent&#x2F;channel1.go:13 +0x33</span><br><span class="line">created by main.main</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;problems&#x2F;concurrent&#x2F;channel1.go:11 +0x87</span><br><span class="line">exit status 2</span><br></pre></td></tr></table></figure>
+
+<p>修改为下面这样，还有问题吗？：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// var ch chan int</span></span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">var</span> count <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ch &lt;- <span class="number">1</span></span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		count++</span><br><span class="line">		<span class="built_in">close</span>(ch)</span><br><span class="line">	&#125;()</span><br><span class="line">	&lt;-ch</span><br><span class="line">	fmt.Println(count)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样会panic，典型的channel由非发送者关闭，造成在关闭的channel上写数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1</span><br><span class="line">panic: send on closed channel</span><br><span class="line"></span><br><span class="line">goroutine 4 [running]:</span><br><span class="line">main.main.func1(0xc000070060)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;problems&#x2F;concurrent&#x2F;channel1.go:10 +0x37</span><br><span class="line">created by main.main</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;problems&#x2F;concurrent&#x2F;channel1.go:9 +0x80</span><br><span class="line">exit status 2</span><br></pre></td></tr></table></figure>
+
+<h3 id="Map-1"><a href="#Map-1" class="headerlink" title="Map 1"></a>Map 1</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> m sync.Map</span><br><span class="line">	m.LoadOrStore(<span class="string">&quot;a&quot;</span>, <span class="number">1</span>)</span><br><span class="line">	m.Delete(<span class="string">&quot;a&quot;</span>)</span><br><span class="line">	fmt.Println(m.Len())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>无法编译，因为Map没有Len()方法。</p>
+<h3 id="Map-2"><a href="#Map-2" class="headerlink" title="Map 2"></a>Map 2</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;sync&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Map <span class="keyword">struct</span> &#123;</span><br><span class="line">	m <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line">	sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Get</span><span class="params">(key <span class="keyword">int</span>)</span> <span class="params">(<span class="keyword">int</span>, <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> m.Unlock()</span><br><span class="line">	i, ok := m.m[key]</span><br><span class="line">	<span class="keyword">return</span> i, ok</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Put</span><span class="params">(key, value <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> m.Unlock()</span><br><span class="line">	m.m[key] = value</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Len</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">len</span>(m.m)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">2</span>)</span><br><span class="line">	m := Map&#123;m: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>)&#125;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++ &#123;</span><br><span class="line">			m.Put(i, i)</span><br><span class="line">		&#125;</span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++ &#123;</span><br><span class="line">			m.Len()</span><br><span class="line">		&#125;</span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>能正常编译和运行。map不是协程安全的，需要锁的保护，但Len()的实现并没有加锁，当map写数据时，并且调用Len读长度，则存在map的并发读写问题，因为不是同时读写map所存的内容，所以可以编译和运行，但存在读取的map内存长度不准确问题。map定义和len的声明如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A header for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// Note: the format of the hmap is also encoded in cmd/compile/internal/gc/reflect.go.</span></span><br><span class="line">	<span class="comment">// Make sure this stays in sync with the compiler&#x27;s definition.</span></span><br><span class="line">	count     <span class="keyword">int</span> <span class="comment">// # live cells == size of map.  Must be first (used by len() builtin)</span></span><br><span class="line">	flags     <span class="keyword">uint8</span></span><br><span class="line">	B         <span class="keyword">uint8</span>  <span class="comment">// log_2 of # of buckets (can hold up to loadFactor * 2^B items)</span></span><br><span class="line">	noverflow <span class="keyword">uint16</span> <span class="comment">// approximate number of overflow buckets; see incrnoverflow for details</span></span><br><span class="line">	hash0     <span class="keyword">uint32</span> <span class="comment">// hash seed</span></span><br><span class="line"></span><br><span class="line">	buckets    unsafe.Pointer <span class="comment">// array of 2^B Buckets. may be nil if count==0.</span></span><br><span class="line">	oldbuckets unsafe.Pointer <span class="comment">// previous bucket array of half the size, non-nil only when growing</span></span><br><span class="line">	nevacuate  <span class="keyword">uintptr</span>        <span class="comment">// progress counter for evacuation (buckets less than this have been evacuated)</span></span><br><span class="line"></span><br><span class="line">	extra *mapextra <span class="comment">// optional fields</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The len built-in function returns the length of v, according to its type:</span></span><br><span class="line"><span class="comment">//	Array: the number of elements in v.</span></span><br><span class="line"><span class="comment">//	Pointer to array: the number of elements in *v (even if v is nil).</span></span><br><span class="line"><span class="comment">//	Slice, or map: the number of elements in v; if v is nil, len(v) is zero.</span></span><br><span class="line"><span class="comment">//	String: the number of bytes in v.</span></span><br><span class="line"><span class="comment">//	Channel: the number of elements queued (unread) in the channel buffer;</span></span><br><span class="line"><span class="comment">//	if v is nil, len(v) is zero.</span></span><br><span class="line"><span class="comment">// For some arguments, such as a string literal or a simple array expression, the</span></span><br><span class="line"><span class="comment">// result can be a constant. See the Go language specification&#x27;s &quot;Length and</span></span><br><span class="line"><span class="comment">// capacity&quot; section for details.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">len</span><span class="params">(v Type)</span> <span class="title">int</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="slice"><a href="#slice" class="headerlink" title="slice"></a>slice</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">2</span>)</span><br><span class="line">	<span class="keyword">var</span> ints = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>, <span class="number">1000</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++ &#123;</span><br><span class="line">			ints = <span class="built_in">append</span>(ints, i)</span><br><span class="line">		&#125;</span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++ &#123;</span><br><span class="line">			ints = <span class="built_in">append</span>(ints, i)</span><br><span class="line">		&#125;</span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">	fmt.Println(<span class="built_in">len</span>(ints))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先，slice不是协程安全的，自身也又没锁的保护，多协程访问存在并发问题：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;</span><br><span class="line">	array unsafe.Pointer</span><br><span class="line">	<span class="built_in">len</span>   <span class="keyword">int</span></span><br><span class="line">	<span class="built_in">cap</span>   <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其次，append中有可能还会分配新的内存空间，切片可能指向了新的内存区域：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The append built-in function appends elements to the end of a slice. If</span></span><br><span class="line"><span class="comment">// it has sufficient capacity, the destination is resliced to accommodate the</span></span><br><span class="line"><span class="comment">// new elements. If it does not, a new underlying array will be allocated.</span></span><br><span class="line"><span class="comment">// Append returns the updated slice. It is therefore necessary to store the</span></span><br><span class="line"><span class="comment">// result of append, often in the variable holding the slice itself:</span></span><br><span class="line"><span class="comment">//	slice = append(slice, elem1, elem2)</span></span><br><span class="line"><span class="comment">//	slice = append(slice, anotherSlice...)</span></span><br><span class="line"><span class="comment">// As a special case, it is legal to append a string to a byte slice, like this:</span></span><br><span class="line"><span class="comment">//	slice = append([]byte(&quot;hello &quot;), &quot;world&quot;...)</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">append</span><span class="params">(slice []Type, elems ...Type)</span> []<span class="title">Type</span></span></span><br></pre></td></tr></table></figure>
+
+<p>所以，两个协程同时写，是不安全的，并且大概率可能存在数据丢失，所以结果可能不是2000。</p>
+<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><p><a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/tree/master/problems">golang_step_by_step</a></p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/05/03/go-concurrent-problems1/">http://lessisbetter.site/2019/05/03/go-concurrent-problems1/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/04/26/ethereum-keys-transform/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/04/26/ethereum-keys-transform/" class="post-title-link" itemprop="url">以太坊密钥转换</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-04-26 10:04:00" itemprop="dateCreated datePublished" datetime="2019-04-26T10:04:00+08:00">2019-04-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>以太坊的每一个账号私钥都通过密码加密存放到一个keystore文件中，如果创建一个账户涉及：</p>
+<ol>
+<li>生成ECDSA密钥</li>
+<li>使用密码</li>
+<li>将加密信息生成json格式，等待写入到keystore文件</li>
+<li>创建keystore文件</li>
+<li>将信息写入到keystore文件</li>
+</ol>
+<p>经过测试，这一个过程需要耗时大约5s，也就是每创建一个账户都要耗时5s，如果要创建1万个测试账号，需要5万秒，需要将近14小时，需要进行并发，才能尽量减少时间浪费，但是，使用5s才生成1个账号，还是太浪费了。</p>
+<p>读取1个keystore文件涉及：</p>
+<ol>
+<li>读keystore文件</li>
+<li>对数据进行解密，将账号保存到内存</li>
+</ol>
+<p>经过测试，这个过程需要耗时大约3s，1万个账号顺序读取需要大约8小时。</p>
+<p><strong>能不能并发读取？</strong><br>不能。读取keystore时，指定的是keystore文件所在的目录，它会读取所有的keystore文件，在内存中保存到1个<code>Keystore</code>对象中。</p>
+<p>如果我们写一个测试程序，以太坊账号的管理，简直是一个噩梦。</p>
+<p><strong>有没有其他办法，能够加快账号的读取，交易的签名等？</strong></p>
+<p><strong>交易的签名本质</strong>是使用go的<code>ecdsa.PrivateKey</code>，没有以太坊这些账户加密和解密操作，这些操作是上述测试耗时的原因，直接使用<code>ecdsa.PrivateKey</code>，使用后保存到文件，使用时从文件读取，可以从若干小时，降低到不到1s。</p>
+<p>我们使用<code>ecdsa.PrivateKey</code>的思路：</p>
+<ol>
+<li>使用<code>ecdsa.GenerateKey()</code>生成私钥</li>
+<li>私钥能转为16进制字符串，把字符串保存到文本文件，每一行都是1个私钥的16进制</li>
+<li>使用时从文件读取每一个账号的16进制字符串，然后转换成所有的私钥</li>
+</ol>
+<p><strong>16进制字符串和<code>ecdsa.PrivateKey</code>相互转换是非常简单的</strong>，<code>ecdsa.Private</code>和以太坊的账号转换，则是非常乱的，整理出来了一幅图，没这幅图，每次看都要梳理一段时间，浪费生命。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-eth-keys-transform.png"></p>
+<p>图注：</p>
+<ol>
+<li><code>keystore</code>代表包名，<code>Keystore</code>代表类型</li>
+<li>以<code>()</code>为函数，否则为类型</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/04/14/golang-scheduler-4-explore-source-code/" class="post-title-link" itemprop="url">Go调度器系列（4）源码阅读与探索</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-04-14 15:38:59" itemprop="dateCreated datePublished" datetime="2019-04-14T15:38:59+08:00">2019-04-14</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>各位朋友，这次想跟大家分享一下Go调度器源码阅读相关的知识和经验，网络上已经有很多剖析源码的好文章，所以这篇文章<strong>不是又一篇源码剖析文章，注重的不是源码分析分享，而是带给大家一些学习经验，希望大家能更好的阅读和掌握Go调度器的实现</strong>。</p>
+<p>本文主要分2个部分：</p>
+<ol>
+<li><strong>解决如何阅读源码的问题</strong>。阅读源码本质是把脑海里已经有的调度设计，看看到底是不是这么实现的，是怎么实现的。</li>
+<li><strong>带给你一个探索Go调度器实现的办法</strong>。源码都到手了，你可以修改、<strong>窥探</strong>，通过这种方式解决阅读源码过程中的疑问，验证一些想法。比如：负责调度的是g0，怎么才能<code>schedule()</code>在执行时，当前是g0呢？</li>
+</ol>
+<h2 id="如何阅读源码"><a href="#如何阅读源码" class="headerlink" title="如何阅读源码"></a>如何阅读源码</h2><h3 id="阅读前提"><a href="#阅读前提" class="headerlink" title="阅读前提"></a>阅读前提</h3><p>阅读Go源码前，最好已经掌握Go调度器的设计和原理，如果你还无法回答以下问题：</p>
+<ol>
+<li>为什么需要Go调度器？</li>
+<li>Go调度器与系统调度器有什么区别和关系/联系？</li>
+<li>G、P、M是什么，三者的关系是什么？</li>
+<li>P有默认几个？</li>
+<li>M同时能绑定几个P？</li>
+<li>M怎么获得G？</li>
+<li>M没有G怎么办？</li>
+<li>为什么需要全局G队列？</li>
+<li>Go调度器中的负载均衡的2种方式是什么？</li>
+<li>work stealing是什么？什么原理？</li>
+<li>系统调用对G、P、M有什么影响？</li>
+<li>Go调度器抢占是什么样的？一定能抢占成功吗？</li>
+</ol>
+<p>建议阅读Go调度器系列文章，以及文章中的参考资料：</p>
+<ol>
+<li><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">Go调度器系列（1）起源</a></li>
+<li><a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">Go调度器系列（2）宏观看调度器</a></li>
+<li><a href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">Go调度器系列（3）图解调度原理</a></li>
+</ol>
+<h3 id="优秀源码资料推荐"><a href="#优秀源码资料推荐" class="headerlink" title="优秀源码资料推荐"></a>优秀源码资料推荐</h3><p>既然你已经能回答以上问题，说明你对Go调度器的设计已经有了一定的掌握，关于Go调度器源码的优秀资料已经有很多，我这里推荐2个：</p>
+<ol>
+<li><strong>雨痕的Go源码剖析</strong>六章并发调度，不止是源码，是以源码为基础进行了详细的Go调度器介绍：<a target="_blank" rel="noopener" href="https://github.com/qyuhen/book">https://github.com/qyuhen/book</a></li>
+<li><strong>Go夜读</strong>第12期，golang中goroutine的调度，M、P、G各自的一生状态，以及转换关系：<a target="_blank" rel="noopener" href="https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/">https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/</a></li>
+</ol>
+<p>Go调度器的源码还涉及GC等，阅读源码时，可以暂时先跳过，主抓调度的逻辑。</p>
+<p>另外，Go调度器涉及汇编，也许你不懂汇编，不用担心，雨痕的文章对汇编部分有进行解释。</p>
+<p>最后，送大家一幅流程图，画出了主要的调度流程，大家也可边阅读边画，增加理解，<strong>高清版可到博客下载（原图原文跳转）</strong>。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-shcedule-flow.png"></p>
+<h2 id="如何探索调度器"><a href="#如何探索调度器" class="headerlink" title="如何探索调度器"></a>如何探索调度器</h2><p>这部分教你探索Go调度器的源码，验证想法，主要思想就是，下载Go的源码，添加调试打印，编译修改的源文件，生成修改的go，然后使用修改go运行测试代码，观察结果。</p>
+<h3 id="下载和编译Go"><a href="#下载和编译Go" class="headerlink" title="下载和编译Go"></a>下载和编译Go</h3><ol>
+<li><p>Github下载，并且换到go1.11.2分支，本文所有代码修改都基于go1.11.2版本。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ GODIR=<span class="variable">$GOPATH</span>/src/github.com/golang/go</span><br><span class="line">$ mkdir -p <span class="variable">$GODIR</span></span><br><span class="line">$ <span class="built_in">cd</span> <span class="variable">$GODIR</span>/..</span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/golang/go.git</span><br><span class="line">$ <span class="built_in">cd</span> go</span><br><span class="line">$ git fetch origin go1.11.2</span><br><span class="line">$ git checkout origin/go1.11.2</span><br><span class="line">$ git checkout -b go1.11.2</span><br><span class="line">$ git checkout go1.11.2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>初次编译，会跑测试，耗时长一点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> <span class="variable">$GODIR</span>/src</span><br><span class="line">$ ./all.bash</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以后每次修改go源码后可以这样，4分钟左右可以编译完成</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span>  <span class="variable">$GODIR</span>/src</span><br><span class="line">$ time ./make.bash</span><br><span class="line">Building Go cmd/dist using /usr/<span class="built_in">local</span>/go.</span><br><span class="line">Building Go toolchain1 using /usr/<span class="built_in">local</span>/go.</span><br><span class="line">Building Go bootstrap cmd/go (go_bootstrap) using Go toolchain1.</span><br><span class="line">Building Go toolchain2 using go_bootstrap and Go toolchain1.</span><br><span class="line">Building Go toolchain3 using go_bootstrap and Go toolchain2.</span><br><span class="line">Building packages and commands <span class="keyword">for</span> linux/amd64.</span><br><span class="line">---</span><br><span class="line">Installed Go <span class="keyword">for</span> linux/amd64 <span class="keyword">in</span> /home/xxx/go/src/github.com/golang/go</span><br><span class="line">Installed commands <span class="keyword">in</span> /home/xxx/go/src/github.com/golang/go/bin</span><br><span class="line"></span><br><span class="line">real	1m11.675s</span><br><span class="line">user	4m4.464s</span><br><span class="line">sys	0m18.312s</span><br></pre></td></tr></table></figure>
+<p>编译好的go和gofmt在<code>$GODIR/bin</code>目录。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ll <span class="variable">$GODIR</span>/bin</span><br><span class="line">total 16044</span><br><span class="line">-rwxrwxr-x 1 vnt vnt 13049123 Apr 14 10:53 go</span><br><span class="line">-rwxrwxr-x 1 vnt vnt  3377614 Apr 14 10:53 gofmt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为了防止我们修改的go和过去安装的go冲突，创建igo软连接，指向修改的go。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p ~/testgo/bin</span><br><span class="line">$ <span class="built_in">cd</span> ~/testgo/bin</span><br><span class="line">$ ln -sf <span class="variable">$GODIR</span>/bin/go igo</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，把<code>~/testgo/bin</code>加入到<code>PATH</code>，就能使用<code>igo</code>来编译代码了，运行下igo，应当获得go1.11.2的版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ igo version</span><br><span class="line">go version go1.11.2 linux/amd64</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>当前，已经掌握编译和使用修改的go的办法，接下来就以1个简单的例子，教大家如何验证想法。</p>
+<h3 id="验证schedule-由g0执行"><a href="#验证schedule-由g0执行" class="headerlink" title="验证schedule()由g0执行"></a>验证schedule()由g0执行</h3><p>阅读源码的文章，你已经知道了g0是负责调度的，并且g0是全局变量，可在runtime包的任何地方直接使用，看到<code>schedule()</code>代码如下（所在文件：<code>$GODIR/src/runtime/proc.go</code>）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// One round of scheduler: find a runnable goroutine and execute it.</span></span><br><span class="line"><span class="comment">// Never returns.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">schedule</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获取当前g，调度时这个g应当是g0</span></span><br><span class="line">	_g_ := getg()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _g_.m.locks != <span class="number">0</span> &#123;</span><br><span class="line">		throw(<span class="string">&quot;schedule: holding locks&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// m已经被某个g锁定，先停止当前m，等待g可运行时，再执行g，并且还得到了g所在的p</span></span><br><span class="line">	<span class="keyword">if</span> _g_.m.lockedg != <span class="number">0</span> &#123;</span><br><span class="line">		stoplockedm()</span><br><span class="line">		execute(_g_.m.lockedg.ptr(), <span class="literal">false</span>) <span class="comment">// Never returns.</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 省略...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>问题</strong>：既然g0是负责调度的，为何<code>schedule()</code>每次还都执行<code>_g_ := getg()</code>，直接使用g0不行吗？<code>schedule()</code>真的是g0执行的吗？</p>
+<p>在<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">《Go调度器系列（2）宏观看调度器》</a>这篇文章中我曾介绍了trace的用法，阅读代码时发现<strong>使用<code>debug.schedtrace</code>和<code>print()</code>函数可以用作打印调试信息</strong>，那我们是不是可以使用这种方法打印我们想获取的信息呢？当然可以。</p>
+<p>另外，注意<code>print()</code>并不是<code>fmt.Print()</code>，也不是C语言的<code>printf</code>，所以不是格式化输出，它是汇编实现的，我们不深入去了解它的实现了，现在要掌握它的用法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The print built-in function formats its arguments in an</span></span><br><span class="line"><span class="comment">// implementation-specific way and writes the result to standard error.</span></span><br><span class="line"><span class="comment">// Print is useful for bootstrapping and debugging; it is not guaranteed</span></span><br><span class="line"><span class="comment">// to stay in the language.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">print</span><span class="params">(args ...Type)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>从上面可以看到，它接受可变长参数，我们使用的时候只需要传进去即可，但要手动控制格式。</p>
+<p>我们修改<code>schedule()</code>函数，使用<code>debug.schedtrace &gt; 0</code>控制打印，加入3行代码，把goid给打印出来，如果始终打印goid为0，则代表调度确实是由g0执行的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> debug.schedtrace &gt; <span class="number">0</span> &#123;</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">&quot;schedule(): goid = &quot;</span>, _g_.goid, <span class="string">&quot;\n&quot;</span>) <span class="comment">// 会是0吗？是的</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>schedule()</code>如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// One round of scheduler: find a runnable goroutine and execute it.</span></span><br><span class="line"><span class="comment">// Never returns.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">schedule</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获取当前g，调度时这个g应当是g0</span></span><br><span class="line">	_g_ := getg()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> debug.schedtrace &gt; <span class="number">0</span> &#123;</span><br><span class="line">		<span class="built_in">print</span>(<span class="string">&quot;schedule(): goid = &quot;</span>, _g_.goid, <span class="string">&quot;\n&quot;</span>) <span class="comment">// 会是0吗？是的</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _g_.m.locks != <span class="number">0</span> &#123;</span><br><span class="line">		throw(<span class="string">&quot;schedule: holding locks&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译igo：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd  $GODIR&#x2F;src</span><br><span class="line">$ .&#x2F;make.bash</span><br></pre></td></tr></table></figure>
+
+<p>编写一个简单的demo（不能更简单）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下，你会发现所有的<code>schedule()</code>函数调用都打印<code>goid = 0</code>，足以证明Go调度器的调度由g0完成（如果你认为还是缺乏说服力，可以写复杂一些的demo）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ GODEBUG=schedtrace=1000 igo run demo1.go</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">SCHED 0ms: gomaxprocs=8 idleprocs=6 threads=4 spinningthreads=1 idlethreads=0 runqueue=0 [0 0 0 0 0 0 0 0]</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">// 省略几百行</span><br></pre></td></tr></table></figure>
+
+<p><strong>启发比结论更重要，希望各位朋友在学习Go调度器的时候，能多一些自己的探索和研究，而不仅仅停留在看看别人文章之上</strong>。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://golang.org/doc/install/source">Installing Go from source</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/">http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/04/04/golang-scheduler-3-principle-with-graph/" class="post-title-link" itemprop="url">Go调度器系列（3）图解调度原理</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-04-04 13:02:19" itemprop="dateCreated datePublished" datetime="2019-04-04T13:02:19+08:00">2019-04-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>如果你已经阅读了前2篇文章：<a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">《调度起源》</a>和<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">《宏观看调度器》</a>，你对G、P、M肯定已经不再陌生，我们这篇文章就介绍Go调度器的基本原理，本文总结了12个主要的场景，覆盖了以下内容：</p>
+<ol>
+<li>G的创建和分配。</li>
+<li>P的本地队列和全局队列的负载均衡。</li>
+<li>M如何寻找G。</li>
+<li>M如何从G1切换到G2。</li>
+<li>work stealing，M如何去偷G。</li>
+<li>为何需要自旋线程。</li>
+<li>G进行系统调用，如何保证P的其他G’可以被执行，而不是饿死。</li>
+<li>Go调度器的抢占。</li>
+</ol>
+<h3 id="12场景"><a href="#12场景" class="headerlink" title="12场景"></a>12场景</h3><blockquote>
+<p>提示：图在前，场景描述在后。</p>
+</blockquote>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331190809649-4030489.png"></p>
+<blockquote>
+<p>上图中三角形、正方形、圆形分别代表了M、P、G，正方形连接的绿色长方形代表了P的本地队列。</p>
+</blockquote>
+<p><strong>场景1</strong>：p1拥有g1，m1获取p1后开始运行g1，g1使用<code>go func()</code>创建了g2，为了局部性g2优先加入到p1的本地队列。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331190826838-4030506.png"></p>
+<p><strong>场景2</strong>：<strong>g1运行完成后(函数：<code>goexit</code>)，m上运行的goroutine切换为g0，g0负责调度时协程的切换（函数：<code>schedule</code>）</strong>。从p1的本地队列取g2，从g0切换到g2，并开始运行g2(函数：<code>execute</code>)。实现了<strong>线程m1的复用</strong>。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331160718646-4019638.png"></p>
+<p><strong>场景3</strong>：假设每个p的本地队列只能存4个g。g2要创建了6个g，前4个g（g3, g4, g5, g6）已经加入p1的本地队列，p1本地队列满了。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331160728024-4019648.png"></p>
+<blockquote>
+<p>蓝色长方形代表全局队列。</p>
+</blockquote>
+<p><strong>场景4</strong>：g2在创建g7的时候，发现p1的本地队列已满，需要执行<strong>负载均衡</strong>，把p1中本地队列中前一半的g，还有新创建的g<strong>转移</strong>到全局队列（实现中并不一定是新的g，如果g是g2之后就执行的，会被保存在本地队列，利用某个老的g替换新g加入全局队列），这些g被转移到全局队列时，会被打乱顺序。所以g3,g4,g7被转移到全局队列。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331161138353-4019898.png"></p>
+<p><strong>场景5</strong>：g2创建g8时，p1的本地队列未满，所以g8会被加入到p1的本地队列。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331162734830-4020854.png"></p>
+<p><strong>场景6</strong>：<strong>在创建g时，运行的g会尝试唤醒其他空闲的p和m执行</strong>。假定g2唤醒了m2，m2绑定了p2，并运行g0，但p2本地队列没有g，m2此时为自旋线程（没有G但为运行状态的线程，不断寻找g，后续场景会有介绍）。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331162717486-4020837.png"></p>
+<p><strong>场景7</strong>：m2尝试从全局队列(GQ)取一批g放到p2的本地队列（函数：<code>findrunnable</code>）。m2从全局队列取的g数量符合下面的公式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">n &#x3D; min(len(GQ)&#x2F;GOMAXPROCS + 1, len(GQ&#x2F;2))</span><br></pre></td></tr></table></figure>
+
+<p>公式的含义是，至少从全局队列取1个g，但每次不要从全局队列移动太多的g到p本地队列，给其他p留点。这是<strong>从全局队列到P本地队列的负载均衡</strong>。</p>
+<p>假定我们场景中一共有4个P，所以m2只从能从全局队列取1个g（即g3）移动p2本地队列，然后完成从g0到g3的切换，运行g3。</p>
+<p><img src="http://img.lessisbetter.site/2020-09-go-scheduler-p8.png"></p>
+<p><strong>场景8</strong>：假设g2一直在m1上运行，经过2轮后，m2已经把g7、g4也挪到了p2的本地队列并完成运行，全局队列和p2的本地队列都空了，如上图左边。</p>
+<p><strong>全局队列已经没有g，那m就要执行work stealing：从其他有g的p哪里偷取一半g过来，放到自己的P本地队列</strong>。p2从p1的本地队列尾部取一半的g，本例中一半则只有1个g8，放到p2的本地队列，情况如上图右边。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331170113457-4022873.png"></p>
+<p><strong>场景9</strong>：p1本地队列g5、g6已经被其他m偷走并运行完成，当前m1和m2分别在运行g2和g8，m3和m4没有goroutine可以运行，m3和m4处于<strong>自旋状态</strong>，它们不断寻找goroutine。为什么要让m3和m4自旋，自旋本质是在运行，线程在运行却没有执行g，就变成了浪费CPU？销毁线程不是更好吗？可以节约CPU资源。创建和销毁CPU都是浪费时间的，我们<strong>希望当有新goroutine创建时，立刻能有m运行它</strong>，如果销毁再新建就增加了时延，降低了效率。当然也考虑了过多的自旋线程是浪费CPU，所以系统中最多有GOMAXPROCS个自旋的线程，多余的没事做线程会让他们休眠（见函数：<code>notesleep()</code>）。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331182939318-4028179.png"></p>
+<p><strong>场景10</strong>：假定当前除了m3和m4为自旋线程，还有m5和m6为自旋线程，g8创建了g9，g8进行了<strong>阻塞的系统调用</strong>，m2和p2立即解绑，p2会执行以下判断：如果p2本地队列有g、全局队列有g或有空闲的m，p2都会立马唤醒1个m和它绑定，否则p2则会加入到空闲P列表，等待m来获取可用的p。本场景中，p2本地队列有g，可以和其他自旋线程m5绑定。</p>
+<p><strong>场景11</strong>：（无图场景）g8创建了g9，假如g8进行了<strong>非阻塞系统调用</strong>（CGO会是这种方式，见<code>cgocall()</code>），m2和p2会解绑，但m2会记住p，然后g8和m2进入系统调用状态。当g8和m2退出系统调用时，会尝试获取p2，如果无法获取，则获取空闲的p，如果依然没有，g8会被记为可运行状态，并加入到全局队列。</p>
+<p><strong>场景12</strong>：（无图场景）Go调度在go1.12实现了抢占，应该更精确的称为<strong>请求式抢占</strong>，那是因为go调度器的抢占和OS的线程抢占比起来很柔和，不暴力，不会说线程时间片到了，或者更高优先级的任务到了，执行抢占调度。<strong>go的抢占调度柔和到只给goroutine发送1个抢占请求，至于goroutine何时停下来，那就管不到了</strong>。抢占请求需要满足2个条件中的1个：1）G进行系统调用超过20us，2）G运行超过10ms。调度器在启动的时候会启动一个单独的线程sysmon，它负责所有的监控工作，其中1项就是抢占，发现满足抢占条件的G时，就发出抢占请求。</p>
+<h3 id="场景融合"><a href="#场景融合" class="headerlink" title="场景融合"></a>场景融合</h3><p>如果把上面所有的场景都融合起来，就能构成下面这幅图了，它从整体的角度描述了Go调度器各部分的关系。图的上半部分是G的创建、负债均衡和work stealing，下半部分是M不停寻找和执行G的迭代过程。</p>
+<p>如果你看这幅图还有些似懂非懂，建议赶紧开始看<a href="github.com/qyuhen/book">雨痕大神的Golang源码剖析</a>，章节：并发调度。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-arch.png"></p>
+<p>总结，Go调度器和OS调度器相比，是相当的轻量与简单了，但它已经足以撑起goroutine的调度工作了，并且让Go具有了原生（强大）并发的能力，这是伟大的。如果你记住的不多，你一定要记住这一点：<strong>Go调度本质是把大量的goroutine分配到少量线程上去执行，并利用多核并行，实现更强大的并发。</strong></p>
+<h3 id="下集预告"><a href="#下集预告" class="headerlink" title="下集预告"></a>下集预告</h3><p>下篇会是源码层面的内容了，关于源码分析的书籍、文章可以先看起来了，先剧透一篇图，希望阅读下篇文章赶紧关注本公众号。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-flow.png"></p>
+<h3 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h3><p><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">Go调度器系列（1）起源</a><br><a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">Go调度器系列（2）宏观看调度器</a></p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>在学习调度器的时候，看了很多文章，这里列一些重要的：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://morsmachine.dk/go-scheduler">The Go scheduler</a></li>
+<li><a target="_blank" rel="noopener" href="https://rakyll.org/scheduler/">Go’s work-stealing scheduler</a>，<a target="_blank" rel="noopener" href="https://lingchao.xin/post/gos-work-stealing-scheduler.html">中文翻译版</a></li>
+<li><a target="_blank" rel="noopener" href="https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/">Go夜读：golang 中 goroutine 的调度</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html">Scheduling In Go : Part I、II、III </a>，<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/cb6881a2661d">中文翻译版</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/qyuhen/book">雨痕大神的golang源码剖析</a></li>
+<li><a target="_blank" rel="noopener" href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/">也谈goroutine调度器</a></li>
+<li><a target="_blank" rel="noopener" href="https://speakerdeck.com/kavya719/the-scheduler-saga">kavya的调度PPT</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/golang/proposal/blob/master/design/24543-non-cooperative-preemption.md">抢占的设计提案，Proposal: Non-cooperative goroutine preemption</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/03/26/golang-scheduler-2-macro-view/" class="post-title-link" itemprop="url">Go调度器系列（2）宏观看调度器</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-26 17:29:29" itemprop="dateCreated datePublished" datetime="2019-03-26T17:29:29+08:00">2019-03-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>上一篇文章<a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">《Go语言高阶：调度器系列（1）起源》</a>，学goroutine调度器之前的一些背景知识，<strong>这篇文章则是为了对调度器有个宏观的认识，从宏观的3个角度，去看待和理解调度器是什么样子的，但仍然不涉及具体的调度原理</strong>。</p>
+<p>三个角度分别是：</p>
+<ol>
+<li>调度器的宏观组成</li>
+<li>调度器的生命周期</li>
+<li>GMP的可视化感受</li>
+</ol>
+<p>在开始前，先回忆下调度器相关的3个缩写：</p>
+<ul>
+<li><strong>G</strong>: goroutine，每个G都代表1个goroutine </li>
+<li><strong>M</strong>: 工作线程，是Go语言定义出来在用户层面描述系统线程的对象 ，每个M代表一个系统线程</li>
+<li><strong>P</strong>: 处理器，它包含了运行Go代码的资源。</li>
+</ul>
+<p>3者的简要关系是P拥有G，M必须和一个P关联才能运行P拥有的G。 </p>
+<h3 id="调度器的功能"><a href="#调度器的功能" class="headerlink" title="调度器的功能"></a>调度器的功能</h3><p><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">《Go语言高阶：调度器系列（1）起源》</a>中介绍了协程和线程的关系，协程需要运行在线程之上，线程由CPU进行调度。</p>
+<p>在Go中，<strong>线程是运行goroutine的实体，调度器的功能是把可运行的goroutine分配到工作线程上</strong>。</p>
+<p>Go的调度器也是经过了多个版本的开发才是现在这个样子的，</p>
+<ul>
+<li>1.0版本发布了最初的、最简单的调度器，是G-M模型，存在4类问题</li>
+<li>1.1版本重新设计，修改为G-P-M模型，奠定当前调度器基本模样</li>
+<li><a target="_blank" rel="noopener" href="https://golang.org/doc/go1.2#preemption">1.2版本</a>加入了抢占式调度，防止协程不让出CPU导致其他G饿死</li>
+</ul>
+<blockquote>
+<p>在<code>$GOROOT/src/runtime/proc.go</code>的开头注释中包含了对Scheduler的重要注释，介绍Scheduler的设计曾拒绝过3种方案以及原因，本文不再介绍了，希望你不要忽略为数不多的官方介绍。</p>
+</blockquote>
+<h3 id="Scheduler的宏观组成"><a href="#Scheduler的宏观组成" class="headerlink" title="Scheduler的宏观组成"></a>Scheduler的宏观组成</h3><p><a target="_blank" rel="noopener" href="https://tonybai.com/">Tony Bai</a>在<a target="_blank" rel="noopener" href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/">《也谈goroutine调度器》</a>中的这幅图，展示了goroutine调度器和系统调度器的关系，而不是把二者割裂开来，并且从宏观的角度展示了调度器的重要组成。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-goroutine-scheduler-model.png"></p>
+<p>自顶向下是调度器的4个部分：</p>
+<ol>
+<li><strong>全局队列</strong>（Global Queue）：存放等待运行的G。</li>
+<li><strong>P的本地队列</strong>：同全局队列类似，存放的也是等待运行的G，存的数量有限，不超过256个。新建G’时，G’优先加入到P的本地队列，如果队列满了，则会把本地队列中一半的G移动到全局队列。</li>
+<li><strong>P列表</strong>：所有的P都在程序启动时创建，并保存在数组中，最多有GOMAXPROCS个。</li>
+<li><strong>M</strong>：线程想运行任务就得获取P，从P的本地队列获取G，P队列为空时，M也会尝试从全局队列<strong>拿</strong>一批G放到P的本地队列，或从其他P的本地队列<strong>偷</strong>一半放到自己P的本地队列。M运行G，G执行之后，M会从P获取下一个G，不断重复下去。</li>
+</ol>
+<p><strong>Goroutine调度器和OS调度器是通过M结合起来的，每个M都代表了1个内核线程，OS调度器负责把内核线程分配到CPU的核上执行</strong>。</p>
+<h3 id="调度器的生命周期"><a href="#调度器的生命周期" class="headerlink" title="调度器的生命周期"></a>调度器的生命周期</h3><p>接下来我们从另外一个宏观角度——生命周期，认识调度器。</p>
+<p>所有的Go程序运行都会经过一个完整的调度器生命周期：从创建到结束。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-scheduler-lifetime.png"></p>
+<p>即使下面这段简单的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// main.main</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;Hello scheduler&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也会经历如上图所示的过程：</p>
+<ol>
+<li>runtime创建最初的线程m0和goroutine g0，并把2者关联。</li>
+<li>调度器初始化：初始化m0、栈、垃圾回收，以及创建和初始化由GOMAXPROCS个P构成的P列表。</li>
+<li>示例代码中的main函数是<code>main.main</code>，<code>runtime</code>中也有1个main函数——<code>runtime.main</code>，代码经过编译后，<code>runtime.main</code>会调用<code>main.main</code>，程序启动时会为<code>runtime.main</code>创建goroutine，称它为main goroutine吧，然后把main goroutine加入到P的本地队列。</li>
+<li>启动m0，m0已经绑定了P，会从P的本地队列获取G，获取到main goroutine。</li>
+<li>G拥有栈，M根据G中的栈信息和调度信息设置运行环境</li>
+<li>M运行G</li>
+<li>G退出，再次回到M获取可运行的G，这样重复下去，直到<code>main.main</code>退出，<code>runtime.main</code>执行Defer和Panic处理，或调用<code>runtime.exit</code>退出程序。</li>
+</ol>
+<p>调度器的生命周期几乎占满了一个Go程序的一生，<code>runtime.main</code>的goroutine执行之前都是为调度器做准备工作，<code>runtime.main</code>的goroutine运行，才是调度器的真正开始，直到<code>runtime.main</code>结束而结束。</p>
+<h3 id="GMP的可视化感受"><a href="#GMP的可视化感受" class="headerlink" title="GMP的可视化感受"></a>GMP的可视化感受</h3><p>上面的两个宏观角度，都是根据文档、代码整理出来，最后我们从可视化角度感受下调度器，有2种方式。</p>
+<p><strong>方式1：go tool trace</strong></p>
+<p>trace记录了运行时的信息，能提供可视化的Web页面。</p>
+<p>简单测试代码：main函数创建trace，trace会运行在单独的goroutine中，然后main打印”Hello trace”退出。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 创建trace文件</span></span><br><span class="line">	f, err := os.Create(<span class="string">&quot;trace.out&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> f.Close()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动trace goroutine</span></span><br><span class="line">	err = trace.Start(f)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> trace.Stop()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// main</span></span><br><span class="line">	fmt.Println(<span class="string">&quot;Hello trace&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行程序和运行trace：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  trace git:(master) ✗ go run trace1.go</span><br><span class="line">Hello trace</span><br><span class="line">➜  trace git:(master) ✗ ls</span><br><span class="line">trace.out trace1.go</span><br><span class="line">➜  trace git:(master) ✗</span><br><span class="line">➜  trace git:(master) ✗ go tool trace trace.out</span><br><span class="line">2019/03/24 20:48:22 Parsing trace...</span><br><span class="line">2019/03/24 20:48:22 Splitting trace...</span><br><span class="line">2019/03/24 20:48:22 Opening browser. Trace viewer is listening on http://127.0.0.1:55984</span><br></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-go-tool-trace.png" alt="trace1"></p>
+<p>从上至下分别是goroutine（G）、堆、线程（M）、Proc（P）的信息，从左到右是时间线。用鼠标点击颜色块，最下面会列出详细的信息。</p>
+<p>我们可以发现：</p>
+<ul>
+<li><code>runtime.main</code>的goroutine是<code>g1</code>，这个编号应该永远都不变的，<code>runtime.main</code>是在<code>g0</code>之后创建的第一个goroutine。</li>
+<li>g1中调用了<code>main.main</code>，创建了<code>trace goroutine g18</code>。g1运行在P2上，g18运行在P0上。</li>
+<li>P1上实际上也有goroutine运行，可以看到短暂的竖线。</li>
+</ul>
+<p>go tool trace的资料并不多，如果感兴趣可阅读：<a target="_blank" rel="noopener" href="https://making.pusher.com/go-tool-trace/">https://making.pusher.com/go-tool-trace/</a> ，中文翻译是：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ">https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ</a> 。</p>
+<p><strong>方式2：Debug trace</strong></p>
+<p>示例代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.main</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">		time.Sleep(time.Second)</span><br><span class="line">		fmt.Println(<span class="string">&quot;Hello scheduler&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译和运行，运行过程会打印trace：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  one_routine2 git:(master) ✗ go build .</span><br><span class="line">➜  one_routine2 git:(master) ✗ GODEBUG=schedtrace=1000 ./one_routine2</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SCHED 0ms: gomaxprocs&#x3D;8 idleprocs&#x3D;5 threads&#x3D;5 spinningthreads&#x3D;1 idlethreads&#x3D;0 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">SCHED 1001ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 2002ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 3004ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 4005ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 5013ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br></pre></td></tr></table></figure>
+
+<p>看到这密密麻麻的文字就有点担心，不要愁！因为每行字段都是一样的，各字段含义如下：</p>
+<ul>
+<li>SCHED：调试信息输出标志字符串，代表本行是goroutine调度器的输出；</li>
+<li>0ms：即从程序启动到输出这行日志的时间；</li>
+<li>gomaxprocs: P的数量，本例有8个P；</li>
+<li>idleprocs: 处于idle状态的P的数量；通过gomaxprocs和idleprocs的差值，我们就可知道执行go代码的P的数量；</li>
+<li>threads: os threads/M的数量，包含scheduler使用的m数量，加上runtime自用的类似sysmon这样的thread的数量；</li>
+<li>spinningthreads: 处于自旋状态的os thread数量；</li>
+<li>idlethread: 处于idle状态的os thread的数量；</li>
+<li>runqueue=0： Scheduler全局队列中G的数量；</li>
+<li><code>[0 0 0 0 0 0 0 0]</code>: 分别为8个P的local queue中的G的数量。</li>
+</ul>
+<p>看第一行，含义是：刚启动时创建了8个P，其中5个空闲的P，共创建5个M，其中1个M处于自旋，没有M处于空闲，8个P的本地队列都没有G。</p>
+<p>再看个复杂版本的，加上<code>scheddetail=1</code>可以打印更详细的trace信息。</p>
+<p>命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">➜  one_routine2 git:(master) ✗ GODEBUG=schedtrace=1000,scheddetail=1 ./one_routine2</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-for-print-syscall.png"><br><em>截图可能更代码匹配不起来，最初代码是for死循环，后面为了减少打印加了限制循环5次</em></p>
+<p>每次分别打印了每个P、M、G的信息，P的数量等于<code>gomaxprocs</code>，M的数量等于<code>threads</code>，主要看圈黄的地方：</p>
+<ul>
+<li>第1处：P1和M2进行了绑定。</li>
+<li>第2处：M2和P1进行了绑定，但M2上没有运行的G。</li>
+<li>第3处：代码中使用fmt进行打印，会进行系统调用，P1系统调用的次数很多，说明我们的用例函数基本在P1上运行。</li>
+<li>第4处和第5处：M0上运行了G1，G1的状态为3（系统调用），G进行系统调用时，M会和P解绑，但M会记住之前的P，所以M0仍然记绑定了P1，而P1称未绑定M。</li>
+</ul>
+<h3 id="总结时刻"><a href="#总结时刻" class="headerlink" title="总结时刻"></a>总结时刻</h3><p>这篇文章，从3个宏观的角度介绍了调度器，也许你依然不知道调度器的原理，心里感觉模模糊糊，没关系，一步一步走，通过这篇文章希望你了解了：</p>
+<ol>
+<li>Go调度器和OS调度器的关系</li>
+<li>Go调度器的生命周期/总体流程</li>
+<li>P的数量等于GOMAXPROCS</li>
+<li>M需要通过绑定的P获取G，然后执行G，不断重复这个过程</li>
+</ol>
+<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><p>本文所有示例代码都在Github，可通过阅读原文访问：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/tree/master/scheduler">golang_step_by_step/tree/master/scheduler</a></p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/28058856">Go程序的“一生”</a></li>
+<li><a target="_blank" rel="noopener" href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/">也谈goroutine调度器</a></li>
+<li><a target="_blank" rel="noopener" href="https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs">Debug trace, 当前调度器设计人Dmitry Vyukov的文章</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ">Go tool trace中文翻译</a></li>
+<li><a target="_blank" rel="noopener" href="https://dave.cheney.net/tag/godebug">Dave关于GODEBUG的介绍</a></li>
+</ul>
+<blockquote>
+<p>最近的感受是：自己懂是一个层次，能写出来需要抬升一个层次，给他人讲懂又需要抬升一个层次。希望朋友们有所收获。</p>
+</blockquote>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/15/ethereum-broadcast-transaction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/03/15/ethereum-broadcast-transaction/" class="post-title-link" itemprop="url">以太坊交易广播：从宏观到微观</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-15 21:01:43" itemprop="dateCreated datePublished" datetime="2019-03-15T21:01:43+08:00">2019-03-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>从宏观看，交易在区块链网络中的传播，像广度搜索算法，也像湖面上的水纹，一圈圈向外扩散。但实际场景由于网络通信环境，可能效果上并非一圈一圈向外的，但总体上是向外扩散。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-tx-macro.png"></p>
+<p>从微观上讲，两个节点间交易的传播如下图。从钱包到节点，节点把可打包的交易发送给相连的节点。主要流程如下：</p>
+<ol>
+<li>钱包（浏览器、APP）发送交易到节点。</li>
+<li>节点把收到的交易插入<code>txpool</code>。</li>
+<li>可打包（<code>nonce</code>值连续）的交易加入<code>txpool.pending</code>，不可打包的交易(<code>nonce</code>值存在断开)插入到<code>txpool.queued</code>。</li>
+<li>交易进入<code>txpool.pending</code>后，<code>txpool</code>发布<code>NewTxsEvent</code>。</li>
+<li><code>Protocol Manager</code>收到事件后，<code>txBroadcastLoop</code>将交易加入到连接的peer的交易队列（得缓冲一下，不一定能很快发，毕竟连接上有很多类型的数据需要传送）。</li>
+<li>各peer协程从各自的交易队列取交易合成消息，发送给peer。</li>
+<li>peer收到交易消息后，加入<code>txpool</code>，回到步骤2。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-03-tx-micro.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/12/distribute-system-network-model/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/03/12/distribute-system-network-model/" class="post-title-link" itemprop="url">分布式系统基础：网络模型</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-12 14:43:41" itemprop="dateCreated datePublished" datetime="2019-03-12T14:43:41+08:00">2019-03-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>狭义上的分布式系统是指通过网络连接的计算机系统, 每个计算节点承担独立的计算和存储, 节点之间通过网络协同工作, 因此整个系统中的事件可以同时发生. 广义上的分布式系统是一个非常相对的概念, 比如多核CPU的计算也包含在内。</p>
+<p>了解分布式系统不得不提网络模型，<a target="_blank" rel="noopener" href="https://danielw.cn/network-failure-models">《分布式系统中的网络模型和故障模型》</a>这篇文章给了很好的解释:</p>
+<ol>
+<li><p><strong>同步网络(synchronous network)</strong>: 这里的同步网络和编程中的同步阻塞io和异步非阻塞io是两回事, 不要弄混了. 同步网络是指:</p>
+<ol>
+<li><p>所有节点的时钟漂移有上限, </p>
+</li>
+<li><p>网络的传输时间有上限, </p>
+</li>
+<li><p>所有节点的计算速度一样. </p>
+<p>这意味着整个网络按照round运行, 每个round中任何节点都要执行完本地计算并且可以完成一个任意大小消息的传输. <strong>一个发出的消息如果在一个round内（或者说超时时间内）没有到达, 那么一定是网络中断造成的, 这个消息会丢失, 不会延迟到第二个round到达</strong>. 在现实生活中这种网络比较少, 尽管很少, 同步网络仍然是在计算机科学中是不可缺少的一个模型, 在这种模型下可以解决一些问题, 比如拜占庭式故障. 但我们每天打交道的网络大多都是异步网络.</p>
+</li>
+</ol>
+</li>
+<li><p><strong>异步网络(asynchornous network)</strong>: <strong>和同步网络相反, 节点的时钟漂移无上限, 消息的传输延迟无上限（无法区分消息丢失还是延迟）, 节点计算的速度不可预料</strong>. 这就是和我们每天打交道的网络类型. 在异步网络中, 有些故障非常难解决, 比如当你发给一个节点一个消息之后几秒钟都没有收到他的应答, 有可能这个节点计算非常慢, 但是也可能是节点crash或者网络延迟造成的, 你很难判断到底是发生了什么样的故障.</p>
+</li>
+</ol>
+<p>现实世界中99%场景都是异步网络，同步网络是比较理想的场景，经常拿来做研究，如果在同步网络下都无法解决的问题，更不可能在异步网络中解决。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/12/distribute-system-network-partition/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/03/12/distribute-system-network-partition/" class="post-title-link" itemprop="url">分布式系统基础：网络分区</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-12 14:42:01" itemprop="dateCreated datePublished" datetime="2019-03-12T14:42:01+08:00">2019-03-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>分布式系统永远离不开对网络分区的考虑，大名鼎鼎的CAP定理更是指出有P的情况下，只能A和C二选一，虽然CAP的提出人Brewer在2012年又写文章说大家对CAP是有误解的，尤其是三选二，但这不在讨论范围，我们只探究下网络分区。</p>
+<p>下图来自Wiki。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-Network_Partition_for_Optimization-2.png"></p>
+<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>WIKI给的定义是：<strong>网络分区指由于网络设备的failure，造成网络分裂为多个独立的组</strong>。</p>
+<p>Gilbert和Lynch在论文中定义分区容忍性的：<strong>网络允许丢失一个节点发给另一个节点的任意多的消息</strong>。</p>
+<p>我认为Gilbert和Lynch给的更有通用意义，因为造成网络分区的不仅仅是网络设备的failure，两个节点无法再交互的时候就形成分区了，分区原因有：</p>
+<ul>
+<li>网络设备failure：比如网线断了，交换机故障了。</li>
+<li>节点failure：节点的软件或者硬件坏了，节点成为故障节点。当故障的节点非常多，故障节点和正常节点就不在1个分区，如果正常的节点数量达不到quorum，分布式系统无法正常运作。</li>
+</ul>
+<p>所以我认为网络分区的原因即有Network failure又有Node failure。</p>
+<h3 id="网络分区和网络模型"><a href="#网络分区和网络模型" class="headerlink" title="网络分区和网络模型"></a>网络分区和网络模型</h3><p><img src="http://img.lessisbetter.site/2019-03-network-partion-1.jpg"></p>
+<p>我们考虑下网络分区的检测。</p>
+<ul>
+<li>同步网络下，橘黄色节点和青色节点间的通信中断，就当网线断裂好了，节点向对方发送的消息如果在超时时间内没有收到响应，就可以认为消息丢失，形成了网络分区。</li>
+<li>异步网络下，通信差是一种常态，消息的传递是非常不可靠的，消息无限延时，也可能丢失，根本无法确认消息是否到达对方节点，所以也无法确认/检测是否形成分区。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/03/10/golang-scheduler-1-history/" class="post-title-link" itemprop="url">Go调度器系列（1）起源</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-10 17:25:57" itemprop="dateCreated datePublished" datetime="2019-03-10T17:25:57+08:00">2019-03-10</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>如果把语言比喻为武侠小说中的武功，如果只是会用，也就是达到四五层，如果用的熟练也就六七层，如果能见招拆招也得八九层，如果你出神入化，立于不败之地十层。</p>
+<p>如果你想真正掌握一门语言的，怎么也得八层以上，需要你深入了解这门语言方方面面的细节。</p>
+<p>希望以后对Go语言的掌握能有八九层，怎么能不懂调度器！？</p>
+<p>Google、百度、微信搜索了许多Go语言调度的文章，这些文章上来就讲调度器是什么样的，它由哪些组成，它的运作原理，搞的我只能从这些零散的文章中形成调度器的“概貌”，这是我想要的结果，但这还不够。</p>
+<p>学习不仅要知其然，还要知其所以然。</p>
+<p>学习之前，先学知识点的历史，再学知识，这样你就明白，为什么它是当下这个样子。</p>
+<p>所以，我打算写一个goroutine调度器的系列文章，从历史背景讲起，循序渐进，希望大家能对goroutine调度器有一个全面的认识。</p>
+<p>这篇文章介绍调度器相关的历史背景，请慢慢翻阅。</p>
+<h3 id="远古时代"><a href="#远古时代" class="headerlink" title="远古时代"></a>远古时代</h3><p><img src="http://img.lessisbetter.site/2019-03-Eniac.jpg"></p>
+<p>上面这个大家伙是ENIAC，它诞生在宾夕法尼亚大学，是世界第一台真正的通用计算机，和现代的计算机相比，它是相当的“笨重”，它的计算能力，跟现代人手普及的智能手机相比，简直是一个天上一个地下，ENIAC在地下，智能手机在天上。</p>
+<p>它上面没有操作系统，更别提进程、线程和协程了。</p>
+<h3 id="进程时代"><a href="#进程时代" class="headerlink" title="进程时代"></a>进程时代</h3><p><img src="http://img.lessisbetter.site/2019-03-apple-II.jpeg"></p>
+<p>后来，现代化的计算机有了操作系统，每个程序都是一个进程，但是操作系统在一段时间只能运行一个进程，直到这个进程运行完，才能运行下一个进程，这个时期可以成为<strong>单进程时代——串行时代</strong>。</p>
+<p>和ENIAC相比，单进程是有了几万倍的提度，但依然是太慢了，比如进程要读数据阻塞了，CPU就在哪浪费着，伟大的程序员们就想了，不能浪费啊，<strong>怎么才能充分的利用CPU呢？</strong></p>
+<p>后来操作系统就具有了<strong>最早的并发能力：多进程并发</strong>，当一个进程阻塞的时候，切换到另外等待执行的进程，这样就能尽量把CPU利用起来，CPU就不浪费了。</p>
+<h3 id="线程时代"><a href="#线程时代" class="headerlink" title="线程时代"></a>线程时代</h3><p><img src="http://img.lessisbetter.site/2019-03-Macintosh.jpeg"></p>
+<p>多进程真实个好东西，有了对进程的调度能力之后，伟大的程序员又发现，进程拥有太多资源，在创建、切换和销毁的时候，都会占用很长的时间，CPU虽然利用起来了，但CPU有很大的一部分都被用来进行进程调度了，<strong>怎么才能提高CPU的利用率呢？</strong></p>
+<p>大家希望能有一种轻量级的进程，调度不怎么花时间，这样CPU就有更多的时间用在执行任务上。</p>
+<p>后来，操作系统支持了线程，线程在进程里面，线程运行所需要资源比进程少多了，跟进程比起来，切换简直是“不算事”。</p>
+<p>一个进程可以有多个线程，CPU在执行调度的时候切换的是线程，如果下一个线程也是当前进程的，就只有线程切换，“很快”就能完成，如果下一个线程不是当前的进程，就需要切换进程，这就得费点时间了。</p>
+<p>这个时代，<strong>CPU的调度切换的是进程和线程</strong>。多线程看起来很美好，但实际多线程编程却像一坨屎，一是由于线程的设计本身有点复杂，而是由于需要考虑很多底层细节，比如锁和冲突检测。</p>
+<h3 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h3><p><img src="http://img.lessisbetter.site/2019-macbook-steve.jpeg"></p>
+<p>多进程、多线程已经提高了系统的并发能力，但是在当今互联网高并发场景下，为每个任务都创建一个线程是不现实的，因为会消耗大量的内存（每个线程的内存占用级别为MB），线程多了之后调度也会消耗大量的CPU。伟大的程序员们有开始想了，<strong>如何才能充分利用CPU、内存等资源的情况下，实现更高的并发</strong>？</p>
+<p>既然线程的资源占用、调度在高并发的情况下，依然是比较大的，是否有一种东西，更加轻量？</p>
+<p>你可能知道：线程分为内核态线程和用户态线程，用户态线程需要绑定内核态线程，CPU并不能感知用户态线程的存在，它只知道它在运行1个线程，这个线程实际是内核态线程。</p>
+<p><strong>用户态线程实际有个名字叫协程（co-routine）</strong>，为了容易区分，我们使用协程指用户态线程，使用线程指内核态线程。</p>
+<blockquote>
+<p>User-level threads, Application-level threads, Green threads都指一样的东西，就是不受OS感知的线程，如果你Google coroutine相关的资料，会看到它指的就是用户态线程，在<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Green_threads">Green threads的维基百科</a>里，看Green threads的实现列表，你会看到好很多coroutine实现，比如Java、Lua、Go、Erlang、Common Lisp、Haskell、Rust、PHP、Stackless Python，所以，我认为用户态线程就是协程。</p>
+</blockquote>
+<p>协程跟线程是有区别的，线程由CPU调度是抢占式的，<strong>协程由用户态调度是协作式的</strong>，一个协程让出CPU后，才执行下一个协程。</p>
+<p>协程和线程有3种映射关系：</p>
+<ul>
+<li>N:1，N个协程绑定1个线程，优点就是<strong>协程在用户态线程即完成切换，不会陷入到内核态，这种切换非常的轻量快速</strong>。但也有很大的缺点，1个进程的所有协程都绑定在1个线程上，一是某个程序用不了硬件的多核加速能力，二是一旦某协程阻塞，造成线程阻塞，本进程的其他协程都无法执行了，根本就没有并发的能力了。</li>
+<li>1:1，1个协程绑定1个线程，这种最容易实现。协程的调度都由CPU完成了，不存在N:1缺点，但有一个缺点是协程的创建、删除和切换的代价都由CPU完成，有点略显昂贵了。</li>
+<li>M:N，M个协程绑定N个线程，是N:1和1:1类型的结合，克服了以上2种模型的缺点，但实现起来最为复杂。</li>
+</ul>
+<p>协程是个好东西，不少语言支持了协程，比如：Lua、Erlang、Java（C++即将支持），就算语言不支持，也有库支持协程，比如C语言的<a target="_blank" rel="noopener" href="https://github.com/cloudwu/coroutine/">coroutine</a>（云风大牛作品）、Kotlin的kotlinx.coroutines、Python的gevent。</p>
+<h3 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h3><p><strong>Go语言的诞生就是为了支持高并发</strong>，有2个支持高并发的模型：CSP和Actor。<a target="_blank" rel="noopener" href="https://golang.org/doc/faq">鉴于Occam和Erlang都选用了CSP</a>(来自Go FAQ)，并且效果不错，Go也选了CSP，但与前两者不同的是，Go把channel作为头等公民。</p>
+<p>就像前面说的多线程编程太不友好了，<strong>Go为了提供更容易使用的并发方法，使用了goroutine和channel</strong>。goroutine来自协程的概念，让一组可复用的函数运行在一组线程之上，即使有协程阻塞，该线程的其他协程也可以被<code>runtime</code>调度，转移到其他可运行的线程上。最关键的是，程序员看不到这些底层的细节，这就降低了编程的难度，提供了更容易的并发。</p>
+<p>Go中，协程被称为goroutine（Rob Pike说goroutine不是协程，因为他们并不完全相同），它非常轻量，一个goroutine只占几KB，并且这几KB就足够goroutine运行完，这就能在有限的内存空间内支持大量goroutine，支持了更多的并发。虽然一个goroutine的栈只占几KB，但实际是可伸缩的，如果需要更多内容，<code>runtime</code>会自动为goroutine分配。</p>
+<h3 id="Go语言的老调度器"><a href="#Go语言的老调度器" class="headerlink" title="Go语言的老调度器"></a>Go语言的老调度器</h3><p>终于来到了Go语言的调度器环节。</p>
+<p><strong>调度器的任务是在用户态完成goroutine的调度，而调度器的实现好坏，对并发实际有很大的影响，并且Go的调度器就是M:N类型的，实现起来也是最复杂</strong>。</p>
+<p>现在的Go语言调度器是2012年重新设计的（<a target="_blank" rel="noopener" href="https://golang.org/s/go11sched">设计方案</a>），在这之前的调度器称为老调度器，老调度器的实现不太好，存在性能问题，所以用了4年左右就被替换掉了，老调度器大概是下面这个样子：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-old-scheduler.png"></p>
+<p>最下面是操作系统，中间是runtime，runtime在Go中很重要，许多程序运行时的工作都由runtime完成，调度器就是runtime的一部分，虚线圈出来的为调度器，它有两个重要组成：</p>
+<ul>
+<li><strong>M，代表线程</strong>，它要运行goroutine。</li>
+<li>Global G Queue，是全局goroutine队列，所有的goroutine都保存在这个队列中，<strong>goroutine用G进行代表</strong>。</li>
+</ul>
+<p>M想要执行、放回G都必须访问全局G队列，并且M有多个，即多线程访问同一资源需要加锁进行保证互斥/同步，所以全局G队列是有互斥锁进行保护的。</p>
+<p>老调度器有4个缺点：</p>
+<ol>
+<li>创建、销毁、调度G都需要每个M获取锁，这就形成了<strong>激烈的锁竞争</strong>。</li>
+<li>M转移G会造成<strong>延迟和额外的系统负载</strong>。比如当G中包含创建新协程的时候，M创建了G’，为了继续执行G，需要把G’交给M’执行，也造成了<strong>很差的局部性</strong>，因为G’和G是相关的，最好放在M上执行，而不是其他M’。</li>
+<li>M中的mcache是用来存放小对象的，mcache和栈都和M关联造成了大量的内存开销和差的局部性。</li>
+<li>系统调用导致频繁的线程阻塞和取消阻塞操作增加了系统开销。</li>
+</ol>
+<h3 id="Go语言的新调度器"><a href="#Go语言的新调度器" class="headerlink" title="Go语言的新调度器"></a>Go语言的新调度器</h3><p>面对以上老调度的问题，Go设计了新的调度器，设计文稿：<a target="_blank" rel="noopener" href="https://golang.org/s/go11sched">https://golang.org/s/go11sched</a></p>
+<p>新调度器引入了：</p>
+<ul>
+<li><strong>P</strong>：<strong>Processor，它包含了运行goroutine的资源</strong>，如果线程想运行goroutine，必须先获取P，P中还包含了可运行的G队列。</li>
+<li>work stealing：当M绑定的P没有可运行的G时，它可以从其他运行的M’那里偷取G。</li>
+</ul>
+<p>现在，<strong>调度器中3个重要的缩写你都接触到了，所有文章都用这几个缩写，请牢记</strong>：</p>
+<ul>
+<li><strong>G</strong>: goroutine </li>
+<li><strong>M</strong>: 工作线程 </li>
+<li><strong>P</strong>: 处理器，它包含了运行Go代码的资源，M必须和一个P关联才能运行G。 </li>
+</ul>
+<p>这篇文章的目的不是介绍调度器的实现，而是调度器的一些理念，帮助你后面更好理解调度器的实现，所以我们回归到调度器设计思想上。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-thoughts-of-scheduler.png" alt="thoughts-of-scheduler"></p>
+<p>调度器的有<strong>两大思想</strong>：</p>
+<p><strong>复用线程</strong>：协程本身就是运行在一组线程之上，不需要频繁的创建、销毁线程，而是对线程的复用。在调度器中复用线程还有2个体现：1）work stealing，当本线程无可运行的G时，尝试从其他线程绑定的P偷取G，而不是销毁线程。2）hand off，当本线程因为G进行系统调用阻塞时，线程释放绑定的P，把P转移给其他空闲的线程执行。</p>
+<p><strong>利用并行</strong>：GOMAXPROCS设置P的数量，当GOMAXPROCS大于1时，就最多有GOMAXPROCS个线程处于运行状态，这些线程可能分布在多个CPU核上同时运行，使得并发利用并行。另外，GOMAXPROCS也限制了并发的程度，比如GOMAXPROCS = 核数/2，则最多利用了一半的CPU核进行并行。</p>
+<p>调度器的<strong>两小策略</strong>：</p>
+<p><strong>抢占</strong>：在coroutine中要等待一个协程主动让出CPU才执行下一个协程，在Go中，一个goroutine最多占用CPU 10ms，防止其他goroutine被饿死，这就是goroutine不同于coroutine的一个地方。</p>
+<p><strong>全局G队列</strong>：在新的调度器中依然有全局G队列，但功能已经被弱化了，当M执行work stealing从其他P偷不到G时，它可以从全局G队列获取G。</p>
+<p>上面提到并行了，关于并发和并行再说一下：Go创始人Rob Pike一直在强调go是并发，不是并行，因为Go做的是在一段时间内完成几十万、甚至几百万的工作，而不是同一时间同时在做大量的工作。<strong>并发可以利用并行提高效率，调度器是有并行设计的</strong>。</p>
+<p>并行依赖多核技术，每个核上在某个时间只能执行一个线程，当我们的CPU有8个核时，我们能同时执行8个线程，这就是并行。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-concurrency-parallelism.png"></p>
+<h3 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h3><p>这篇文章的主要目的是为后面介绍Go语言调度器做铺垫，由远及近的方式简要介绍了多进程、多线程、协程、并发和并行有关的“史料”，希望你了解为什么Go采用了goroutine，又为何调度器如此重要。</p>
+<p>如果你等不急了，想了解Go调度器相关的原理，看下这些文章：</p>
+<ul>
+<li>设计方案：<a target="_blank" rel="noopener" href="https://golang.org/s/go11sched">https://golang.org/s/go11sched</a></li>
+<li>代码中关于调度器的描述：<a target="_blank" rel="noopener" href="https://golang.org/src/runtime/proc.go">https://golang.org/src/runtime/proc.go</a></li>
+<li>引用最多的调度器文章：<a target="_blank" rel="noopener" href="https://morsmachine.dk/go-scheduler">https://morsmachine.dk/go-scheduler</a></li>
+<li>kavya的PPT，目前看到的讲调度最好的PPT：<a target="_blank" rel="noopener" href="https://speakerdeck.com/kavya719/the-scheduler-saga">https://speakerdeck.com/kavya719/the-scheduler-saga</a></li>
+<li>work stealing论文：<a target="_blank" rel="noopener" href="http://supertech.csail.mit.edu/papers/steal.pdf">http://supertech.csail.mit.edu/papers/steal.pdf</a></li>
+<li>分析调度器的论文（就问你6不6，还有论文研究）：<a target="_blank" rel="noopener" href="http://www.cs.columbia.edu/~aho/cs6998/reports/12-12-11_DeshpandeSponslerWeiss_GO.pdf">http://www.cs.columbia.edu/~aho/cs6998/reports/12-12-11_DeshpandeSponslerWeiss_GO.pdf</a></li>
+</ul>
+<p><strong>声明</strong>：关于老调度器的资料已经完全搜不到，根据新版调度器设计方案的描述，想象着写了老调度器这一章，可能存在错误。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Computer#History">https://en.wikipedia.org/wiki/Computer#History</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Process_(computing)#History">https://en.wikipedia.org/wiki/Process_(computing)#History</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Thread_(computing)#History">https://en.wikipedia.org/wiki/Thread_(computing)#History</a></li>
+<li><a target="_blank" rel="noopener" href="https://golang.org/doc/faq#goroutines">https://golang.org/doc/faq#goroutines</a></li>
+<li><a target="_blank" rel="noopener" href="https://golang.org/s/go11sched">https://golang.org/s/go11sched</a></li>
+<li><a target="_blank" rel="noopener" href="https://golang.org/src/runtime/proc.go">https://golang.org/src/runtime/proc.go</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history">http://lessisbetter.site/2019/03/10/golang-scheduler-1-history</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/04/ssh-problems/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/03/04/ssh-problems/" class="post-title-link" itemprop="url">SSH问题记录</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-04 11:07:20" itemprop="dateCreated datePublished" datetime="2019-03-04T11:07:20+08:00">2019-03-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>最近经常连国外的服务器，出现了连不上、连上又经常断开的问题。</p>
+<h4 id="连不上1"><a href="#连不上1" class="headerlink" title="连不上1"></a>连不上1</h4><p>发现卡在：<code>debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</code>上，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -v xxx@47.88.217.222</span><br><span class="line">OpenSSH_7.9p1, LibreSSL 2.7.3</span><br><span class="line">debug1: Reading configuration data &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;config</span><br><span class="line">debug1: Reading configuration data &#x2F;etc&#x2F;ssh&#x2F;ssh_config</span><br><span class="line">debug1: &#x2F;etc&#x2F;ssh&#x2F;ssh_config line 48: Applying options for *</span><br><span class="line">debug1: Connecting to 47.88.217.222 [47.88.217.222] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_rsa type 0</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_rsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_dsa type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_dsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ecdsa type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ecdsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ed25519 type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ed25519-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_xmss type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_xmss-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_7.9</span><br><span class="line">debug1: Remote protocol version 2.0, remote software version OpenSSH_7.2p2 Ubuntu-4ubuntu2.4</span><br><span class="line">debug1: match: OpenSSH_7.2p2 Ubuntu-4ubuntu2.4 pat OpenSSH_7.0*,OpenSSH_7.1*,OpenSSH_7.2*,OpenSSH_7.3*,OpenSSH_7.4*,OpenSSH_7.5*,OpenSSH_7.6*,OpenSSH_7.7* compat 0x04000002</span><br><span class="line">debug1: Authenticating to 47.88.217.222:22 as &#39;nameXXX&#39;</span><br><span class="line">debug1: SSH2_MSG_KEXINIT sent</span><br><span class="line">debug1: SSH2_MSG_KEXINIT received</span><br><span class="line">debug1: kex: algorithm: curve25519-sha256@libssh.org</span><br><span class="line">debug1: kex: host key algorithm: ecdsa-sha2-nistp256</span><br><span class="line">debug1: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</span><br></pre></td></tr></table></figure>
+
+<p>Google一下，</p>
+<ul>
+<li>原因：MTU太大了，造成了丢包。</li>
+<li>方案：把MTU改小，服务器和本机最好都修改，因为无论哪一方的报文再大被丢包都会造成连接失败。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ifconfig eth0 mtu 1200</span><br></pre></td></tr></table></figure>
+
+<p>或</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;1460&quot; &gt; &#x2F;sys&#x2F;class&#x2F;net&#x2F;eth0&#x2F;mtu</span><br></pre></td></tr></table></figure>
+
+<h3 id="连不上2"><a href="#连不上2" class="headerlink" title="连不上2"></a>连不上2</h3><p>使用iterm2保存了机器的Profile，连接的时候报错，在本机ssh命令连接正常，错误如下图：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-fail1.png"></p>
+<p>出现: <code>command not found</code>。</p>
+<ul>
+<li>原因：iterm的profile配置中，Command那项只显示一行，把它ctrl-a全部拷贝出来，发现不仅<code>ssh vnt@47..123</code>，后面还多了2行ip，启动的时候把ip当命令发给服务器，导致出现了此错误。</li>
+<li>方案：修改Command只包含ssh命令。</li>
+</ul>
+<h3 id="连接断开"><a href="#连接断开" class="headerlink" title="连接断开"></a>连接断开</h3><p>都是国外服务器，通信延迟有点高，ping一下，延迟都在300ms以上，经常操作着就卡住了，然后一会报错：<code>packet_write_wait:  Broken pipe</code>。</p>
+<ul>
+<li>原因：通信不好造成连接断开。</li>
+<li>方案：加心跳配置。</li>
+</ul>
+<p>服务器端或客户端其中一边加就行了，优先加客户端，因为我Mac经常连各种服务器：</p>
+<p>文件：~/.ssh/config</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ServerAliveInterval 60</span><br></pre></td></tr></table></figure>
+
+<p>如果服务器被多人连，服务器端也得设置：</p>
+<p>文件： /etc/ssh/sshd_config</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClientAliveInterval 60</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+</body>
+</html>

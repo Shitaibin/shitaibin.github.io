@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="网上写govendor的博文不少，但从安装到介绍，总看上去有些沉重，下面奉上一篇简单的教程，3分钟入门。 第1部分 简明教程2步走，3分钟轻松搞定Go项目的依赖。 第1步 安装1go get -u github.com&#x2F;kardianos&#x2F;govendor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go依赖包管理工具，3分钟掌握govendor">
+<meta property="og:url" content="http://lessisbetter.site/2018/11/17/An-introduction-to-Govendor/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="网上写govendor的博文不少，但从安装到介绍，总看上去有些沉重，下面奉上一篇简单的教程，3分钟入门。 第1部分 简明教程2步走，3分钟轻松搞定Go项目的依赖。 第1步 安装1go get -u github.com&#x2F;kardianos&#x2F;govendor">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-11-17T12:25:34.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.772Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="govendor">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2018/11/17/An-introduction-to-Govendor/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go依赖包管理工具，3分钟掌握govendor | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC1%E9%83%A8%E5%88%86-%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">第1部分 简明教程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC1%E6%AD%A5-%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">第1步 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC2%E6%AD%A5-%E4%B8%BA%E9%A1%B9%E7%9B%AE%E5%A2%9E%E5%8A%A0%E4%BE%9D%E8%B5%96"><span class="nav-number">1.2.</span> <span class="nav-text">第2步 为项目增加依赖</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC2%E9%83%A8%E5%88%86-%E6%8E%88%E4%B9%8B%E4%BB%A5%E6%B8%94"><span class="nav-number">2.</span> <span class="nav-text">第2部分 授之以渔</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC1%E4%B8%AA-%E9%81%87%E5%88%B0govendor%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">第1个 遇到govendor问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC2%E4%B8%AA-govendor%E5%81%9A%E4%BA%86%E5%95%A5"><span class="nav-number">2.2.</span> <span class="nav-text">第2个 govendor做了啥</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#govendor%E8%BF%9B%E9%98%B6"><span class="nav-number">3.</span> <span class="nav-text">govendor进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E5%AE%9Apackage%E7%89%88%E6%9C%AC%E3%80%81%E5%88%86%E6%94%AF%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">指定package版本、分支：@</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E5%AE%8C%E6%95%B4%E7%9A%84package%E5%8C%85%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">下载完整的package包：&#x2F;^</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/11/17/An-introduction-to-Govendor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go依赖包管理工具，3分钟掌握govendor
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-17 20:25:34" itemprop="dateCreated datePublished" datetime="2018-11-17T20:25:34+08:00">2018-11-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>网上写govendor的博文不少，但从安装到介绍，总看上去有些<strong>沉重</strong>，下面奉上一篇简单的教程，3分钟入门。</p>
+<h1 id="第1部分-简明教程"><a href="#第1部分-简明教程" class="headerlink" title="第1部分 简明教程"></a>第1部分 简明教程</h1><p>2步走，3分钟轻松搞定Go项目的依赖。</p>
+<h2 id="第1步-安装"><a href="#第1步-安装" class="headerlink" title="第1步 安装"></a>第1步 安装</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get -u github.com/kardianos/govendor</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h2 id="第2步-为项目增加依赖"><a href="#第2步-为项目增加依赖" class="headerlink" title="第2步 为项目增加依赖"></a>第2步 为项目增加依赖</h2><ol>
+<li>进入到项目目录</li>
+<li>使用<code>govendor init</code>命令初始化项目的依赖</li>
+<li>运行<code>govendor fetch</code>命令增加依赖</li>
+<li>打开<code>./vendor/vendor.json</code>查看依赖的包</li>
+</ol>
+<p>步骤：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> path/to/project</span><br><span class="line">govendor init</span><br><span class="line">govendor fetch project_url_with_out_http</span><br><span class="line">cat vendor/vendor.json</span><br></pre></td></tr></table></figure>
+
+<p>举个例子：项目awesome依赖<code>github.com/go-clang/bootstrap</code>，过程是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd awesome</span><br><span class="line">govendor init</span><br><span class="line">govendor fetch github.com&#x2F;go-clang&#x2F;bootstrap</span><br><span class="line">cat vendor&#x2F;vendor.json</span><br></pre></td></tr></table></figure>
+
+<h1 id="第2部分-授之以渔"><a href="#第2部分-授之以渔" class="headerlink" title="第2部分 授之以渔"></a>第2部分 授之以渔</h1><h2 id="第1个-遇到govendor问题"><a href="#第1个-遇到govendor问题" class="headerlink" title="第1个 遇到govendor问题"></a>第1个 遇到govendor问题</h2><p>govendor当然还有其他丰富功能，比如：</p>
+<ol>
+<li>依赖的包更新了，怎么更新依赖？</li>
+<li>不依赖这个包， 怎么移除？</li>
+<li>怎么快速查看已经依赖的包？</li>
+<li>怎么知道哪些包过期了，或者丢失了？</li>
+</ol>
+<p>你可能想到时候遇到<strong>再百度或者Google</strong>一下，看看别人的博客或教程，这种方法太弱了，<strong>浪费自己的时间，不能专心工作</strong>。</p>
+<p><strong>正确的姿势</strong>：</p>
+<ol>
+<li>使用<code>govendor --help</code>列出各种命令。</li>
+<li>使用Ctrl+F开启终端搜索，寻找要使用的命令。</li>
+</ol>
+<p>比如：</p>
+<ol>
+<li>增加包，搜add，会得到add和fetch这2个命令。</li>
+<li>更新包，搜update，会得到update和fetch这2个命令。</li>
+<li>删除包，搜remove，得到remove这个命令。</li>
+<li>查看已经依赖的包，搜list，得到list、status、license命令，而符合你的是list，并且知道了status能列出过期的包。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">➜  project_name git:(develop) govendor --<span class="built_in">help</span></span><br><span class="line">govendor (v1.0.9): record dependencies and copy into vendor folder</span><br><span class="line">	-govendor-licenses    Show govendor<span class="string">&#x27;s licenses.</span></span><br><span class="line"><span class="string">	-version              Show govendor version</span></span><br><span class="line"><span class="string">	-cpuprofile &#x27;</span>file<span class="string">&#x27;    Writes a CPU profile to &#x27;</span>file<span class="string">&#x27; for debugging.</span></span><br><span class="line"><span class="string">	-memprofile &#x27;</span>file<span class="string">&#x27;    Writes a heap profile to &#x27;</span>file<span class="string">&#x27; for debugging.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Sub-Commands</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	init     Create the &quot;vendor&quot; folder and the &quot;vendor.json&quot; file.</span></span><br><span class="line"><span class="string">	list     List and filter existing dependencies and packages.</span></span><br><span class="line"><span class="string">	add      Add packages from $GOPATH.</span></span><br><span class="line"><span class="string">	update   Update packages from $GOPATH.</span></span><br><span class="line"><span class="string">	remove   Remove packages from the vendor folder.</span></span><br><span class="line"><span class="string">	status   Lists any packages missing, out-of-date, or modified locally.</span></span><br><span class="line"><span class="string">	fetch    Add new or update vendor folder packages from remote repository.</span></span><br><span class="line"><span class="string">	sync     Pull packages into vendor folder from remote repository with revisions</span></span><br><span class="line"><span class="string">  	             from vendor.json file.</span></span><br><span class="line"><span class="string">	migrate  Move packages from a legacy tool to the vendor folder with metadata.</span></span><br><span class="line"><span class="string">	get      Like &quot;go get&quot; but copies dependencies into a &quot;vendor&quot; folder.</span></span><br><span class="line"><span class="string">	license  List discovered licenses for the given status or import paths.</span></span><br><span class="line"><span class="string">	shell    Run a &quot;shell&quot; to make multiple sub-commands more efficient for large</span></span><br><span class="line"><span class="string">	             projects.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	go tool commands that are wrapped:</span></span><br><span class="line"><span class="string">	  &quot;+status&quot; package selection may be used with them</span></span><br><span class="line"><span class="string">	fmt, build, install, clean, test, vet, generate, tool</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Status Types</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	+local    (l) packages in your project</span></span><br><span class="line"><span class="string">	+external (e) referenced packages in GOPATH but not in current project</span></span><br><span class="line"><span class="string">	+vendor   (v) packages in the vendor folder</span></span><br><span class="line"><span class="string">	+std      (s) packages in the standard library</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	+excluded (x) external packages explicitly excluded from vendoring</span></span><br><span class="line"><span class="string">	+unused   (u) packages in the vendor folder, but unused</span></span><br><span class="line"><span class="string">	+missing  (m) referenced packages but not found</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	+program  (p) package is a main package</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	+outside  +external +missing</span></span><br><span class="line"><span class="string">	+all      +all packages</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	Status can be referenced by their initial letters.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Package specifier</span></span><br><span class="line"><span class="string">	&lt;path&gt;[::&lt;origin&gt;][&#123;/...|/^&#125;][@[&lt;version-spec&gt;]]</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Ignoring files with build tags, or excluding packages from being vendored:</span></span><br><span class="line"><span class="string">	The &quot;vendor.json&quot; file contains a string field named &quot;ignore&quot;.</span></span><br><span class="line"><span class="string">	It may contain a space separated list of build tags to ignore when</span></span><br><span class="line"><span class="string">	listing and copying files.</span></span><br><span class="line"><span class="string">	This list may also contain package prefixes (containing a &quot;/&quot;, possibly</span></span><br><span class="line"><span class="string">	as last character) to exclude when copying files in the vendor folder.</span></span><br><span class="line"><span class="string">	If &quot;foo/&quot; appears in this field, then package &quot;foo&quot; and all its sub-packages</span></span><br><span class="line"><span class="string">	(&quot;foo/bar&quot;, …) will be excluded (but package &quot;bar/foo&quot; will not).</span></span><br><span class="line"><span class="string">	By default the init command adds the &quot;test&quot; tag to the ignore list.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">If using go1.5, ensure GO15VENDOREXPERIMENT=1 is set.</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="第2个-govendor做了啥"><a href="#第2个-govendor做了啥" class="headerlink" title="第2个 govendor做了啥"></a>第2个 govendor做了啥</h2><p>govendor“安装”软件包的时候做了啥呢？其实就是把依赖的包下载到<code>project_dir/vendor</code>目录，这个目录结构和<code>$GOPATH/src</code>下的相同，但如果下载一些比较大的会发现，govendor并不会下载依赖包的所有文件，而是上层的部分文件。想深入了解govendor？入门后再研究吧。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">➜  awesome git:(master) ✗ tree .</span><br><span class="line">.</span><br><span class="line">├── awesome</span><br><span class="line">├── hi.go</span><br><span class="line">└── vendor</span><br><span class="line">    ├── github.com</span><br><span class="line">    │   └── go-clang</span><br><span class="line">    │       └── bootstrap</span><br><span class="line">    │           ├── AUTHORS</span><br><span class="line">    │           ├── CONTRIBUTORS</span><br><span class="line">    │           ├── LICENSE</span><br><span class="line">    │           ├── Makefile</span><br><span class="line">    │           └── README.md</span><br><span class="line">    └── vendor.json</span><br></pre></td></tr></table></figure>
+
+<h1 id="govendor进阶"><a href="#govendor进阶" class="headerlink" title="govendor进阶"></a>govendor进阶</h1><h2 id="指定package版本、分支："><a href="#指定package版本、分支：" class="headerlink" title="指定package版本、分支：@"></a>指定package版本、分支：<code>@</code></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">govendor fetch path&#x2F;to&#x2F;package@version1</span><br></pre></td></tr></table></figure>
+
+<h2 id="下载完整的package包："><a href="#下载完整的package包：" class="headerlink" title="下载完整的package包：/^"></a>下载完整的package包：<code>/^</code></h2><p>govendor默认不下载完整的包，编译过程可能提示某文件不存在，尝试下载完整的package。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">govendor fetch path&#x2F;to&#x2F;package&#x2F;^</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/govendor/" rel="tag"># govendor</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/11/16/golang-introduction-to-pipeline/" rel="prev" title="Golang并发模型：轻松入门流水线模型">
+                  <i class="fa fa-chevron-left"></i> Golang并发模型：轻松入门流水线模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/11/17/Golang-detecting-date-racing/" rel="next" title="轻松检测Golang并发的数据竞争">
+                  轻松检测Golang并发的数据竞争 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '1ff120c4fe5257193aed1464a259aa6c',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

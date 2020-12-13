@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第一篇。 Protocol Buffers介绍Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：https:&#x2F;&#x2F;github.com">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go是如何实现protobuf的编解码的(1)：原理">
+<meta property="og:url" content="http://lessisbetter.site/2019/08/26/protobuf-in-go/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第一篇。 Protocol Buffers介绍Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：https:&#x2F;&#x2F;github.com">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-protoc.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
+<meta property="article:published_time" content="2019-08-26T12:52:58.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.798Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="RPC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-protoc.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go是如何实现protobuf的编解码的(1)：原理 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Protocol-Buffers%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">Protocol Buffers介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Protocol-buffers%E7%9A%84%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81"><span class="nav-number">2.</span> <span class="nav-text">Protocol buffers的多语言支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AAHello-World%E6%A0%B7%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">一个Hello World样例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85protoc%E5%92%8Cprotoc-gen-go"><span class="nav-number">3.1.</span> <span class="nav-text">安装protoc和protoc-gen-go</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hello-world"><span class="nav-number">3.2.</span> <span class="nav-text">Hello world</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89proto%E6%96%87%E4%BB%B6"><span class="nav-number">3.2.1.</span> <span class="nav-text">定义proto文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91proto%E6%96%87%E4%BB%B6"><span class="nav-number">3.2.2.</span> <span class="nav-text">编译proto文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E5%86%99Go%E8%AF%AD%E8%A8%80%E7%A8%8B%E5%BA%8F"><span class="nav-number">3.2.3.</span> <span class="nav-text">编写Go语言程序</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">4.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go是如何实现protobuf的编解码的(1)：原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-26 20:52:58" itemprop="dateCreated datePublished" datetime="2019-08-26T20:52:58+08:00">2019-08-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：</p>
+<ol>
+<li><a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的(1): 原理</a></li>
+<li><a href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">Go是如何实现protobuf的编解码的(2): 源码</a></li>
+</ol>
+<p>本编是第一篇。</p>
+<h2 id="Protocol-Buffers介绍"><a href="#Protocol-Buffers介绍" class="headerlink" title="Protocol Buffers介绍"></a>Protocol Buffers介绍</h2><p>Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：<a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf%E3%80%82">https://github.com/protocolbuffers/protobuf。</a></p>
+<p>Protobuf主要用于不同的编程语言的协作RPC场景下，定义需要序列化的数据格式。Protobuf本质上仅仅是<strong>一种用于交互的结构式定义</strong>，从功能上<strong>和XML、JSON</strong>等各种其他的交互形式都<strong>并无本质不同，只负责定义不负责数据编解码</strong>。</p>
+<p>其官方介绍如下：</p>
+<blockquote>
+<p>Protocol buffers are Google’s language-neutral, platform-neutral, extensible <strong>mechanism for serializing structured data</strong> – think XML, but smaller, faster, and simpler. You <strong>define how you want your data to be structured</strong> once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages.</p>
+</blockquote>
+<h2 id="Protocol-buffers的多语言支持"><a href="#Protocol-buffers的多语言支持" class="headerlink" title="Protocol buffers的多语言支持"></a>Protocol buffers的多语言支持</h2><p>protobuf是支持多种编程语言的，即多种编程语言的类型数据可以转换成protobuf定义的类型数据，各种语言的类型对应可以看此<a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto3#scalar">介绍</a>。</p>
+<p>我们介绍一下protobuf对多语言的支持原理。protobuf有个程序叫<strong>protoc</strong>，它是一个编译程序，<strong>负责把proto文件编译成对应语言的文件</strong>，它已经支持了C++、C#、Java、Python，而对于Go和Dart需要安装插件才能配合生成对于语言的文件。</p>
+<p>对于C++，protoc可以把<code>a.proto</code>，编译成<code>a.pb.h</code>和<code>a.pb.cc</code>。</p>
+<p>对于Go，protoc需要使用插件<strong>protoc-gen-go</strong>，把<code>a.proto</code>，编译成<code>a.pb.go</code>，其中包含了定义的数据类型，它的序列化和反序列化函数等。</p>
+<p><img src="http://img.lessisbetter.site/2019-09-protoc.png"></p>
+<p>敲黑板，对Go语言，protoc只负责利用protoc-gen-go把proto文件编译成Go语言文件，并不负责序列化和反序列化，生成的Go语言文件中的序列化和反序列化操作都是只是wrapper。</p>
+<p>那Go语言对protobuf的序列化和反序列化，是由谁完成的？</p>
+<p>由<code>github.com/golang/protobuf/proto</code>完成，它负责把结构体等序列化成proto数据(<code>[]byte</code>)，把proto数据反序列化成Go结构体。</p>
+<p><img src="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png"></p>
+<p>OK，原理部分就铺垫这些，看一个简单样例，了解protoc和protoc-gen-go的使用，以及进行序列化和反序列化操作。</p>
+<h2 id="一个Hello-World样例"><a href="#一个Hello-World样例" class="headerlink" title="一个Hello World样例"></a>一个Hello World样例</h2><p>根据上面的介绍，Go语言使用protobuf我们要先安装2个工具：protoc和protoc-gen-go。</p>
+<h3 id="安装protoc和protoc-gen-go"><a href="#安装protoc和protoc-gen-go" class="headerlink" title="安装protoc和protoc-gen-go"></a>安装protoc和protoc-gen-go</h3><p>首先去<a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf/releases/tag/v3.9.1">下载页</a>下载符合你系统的protoc，本文示例版本如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">➜  protoc-3.9.0-osx-x86_64 tree .</span><br><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">│   └── protoc</span><br><span class="line">├── include</span><br><span class="line">│   └── google</span><br><span class="line">│       └── protobuf</span><br><span class="line">│           ├── any.proto</span><br><span class="line">│           ├── api.proto</span><br><span class="line">│           ├── compiler</span><br><span class="line">│           │   └── plugin.proto</span><br><span class="line">│           ├── descriptor.proto</span><br><span class="line">│           ├── duration.proto</span><br><span class="line">│           ├── empty.proto</span><br><span class="line">│           ├── field_mask.proto</span><br><span class="line">│           ├── source_context.proto</span><br><span class="line">│           ├── struct.proto</span><br><span class="line">│           ├── timestamp.proto</span><br><span class="line">│           ├── type.proto</span><br><span class="line">│           └── wrappers.proto</span><br><span class="line">└── readme.txt</span><br><span class="line"></span><br><span class="line">5 directories, 14 files</span><br></pre></td></tr></table></figure>
+
+<p><strong>protoc的安装</strong>步骤在readme.txt中：</p>
+<blockquote>
+<p>To install, simply place this binary somewhere in your PATH.</p>
+</blockquote>
+<p>把<code>protoc-3.9.0-osx-x86_64/bin</code>加入到PATH。</p>
+<blockquote>
+<p>If you intend to use the included well known types then don’t forget to<br>copy the contents of the ‘include’ directory somewhere as well, for example<br>into ‘/usr/local/include/‘.</p>
+</blockquote>
+<p>如果使用已经定义好的类型，即上面include目录<code>*.proto</code>文件中的类型，把include目录下文件，拷贝到<code>/usr/local/include/</code>。</p>
+<p><strong>安装protoc-gen-go：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get –u github.com&#x2F;golang&#x2F;protobuf&#x2F;protoc-gen-go</span><br></pre></td></tr></table></figure>
+
+<p>检查安装，应该能查到这2个程序的位置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric git:(release-1.4) which protoc</span><br><span class="line">&#x2F;usr&#x2F;local&#x2F;bin&#x2F;protoc</span><br><span class="line">➜  fabric git:(release-1.4) which protoc-gen-go</span><br><span class="line">&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;bin&#x2F;protoc-gen-go</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world"></a>Hello world</h3><p>创建了一个使用protoc的小玩具，项目地址<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/tree/master/protobuf/helloworld1">Github: golang_step_by_step</a>。</p>
+<p>它的目录结构如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  protobuf git:(master) tree helloworld1</span><br><span class="line">helloworld1</span><br><span class="line">├── main.go</span><br><span class="line">├── request.proto</span><br><span class="line">└── types</span><br><span class="line">    └── request.pb.go</span><br></pre></td></tr></table></figure>
+
+<h4 id="定义proto文件"><a href="#定义proto文件" class="headerlink" title="定义proto文件"></a>定义proto文件</h4><p>使用proto3，定义一个Request，<code>request.proto</code>内容如下：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// file: request.proto</span></span><br><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"><span class="keyword">package</span> helloworld;</span><br><span class="line"><span class="keyword">option</span> go_package=<span class="string">&quot;./types&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">Request</span> </span>&#123;</span><br><span class="line">    <span class="built_in">string</span> data = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>syntax：protobuf版本，现在是proto3</li>
+<li>package：不完全等价于Go的package，最好另行设定<code>go_package</code>，指定根据protoc文件生成的go语言文件的package名称。</li>
+<li>message：会编译成Go的<code>struct</code>。<ul>
+<li><code>string data = 1</code>：代表request的成员data是string类型，该成员的id是1，protoc给每个成员都定义一个编号，编解码的时候使用编号代替使用成员名称，压缩数据量。</li>
+</ul>
+</li>
+</ul>
+<h4 id="编译proto文件"><a href="#编译proto文件" class="headerlink" title="编译proto文件"></a>编译proto文件</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ protoc --go_out=. ./request.proto</span><br></pre></td></tr></table></figure>
+
+<p><code>--go_out</code>指明了要把<code>./request.proto</code>编译成Go语言文件，生成的是<code>./types/request.pb.go</code>，注意观察一下为Request结构体生产的2个方法<code>XXX_Unmarshal</code>和<code>XXX_Marshal</code>，文件内容如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// file: ./types/request.pb.go</span></span><br><span class="line"><span class="comment">// Code generated by protoc-gen-go. DO NOT EDIT.</span></span><br><span class="line"><span class="comment">// source: request.proto</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> types</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	fmt <span class="string">&quot;fmt&quot;</span></span><br><span class="line">	math <span class="string">&quot;math&quot;</span></span><br><span class="line"></span><br><span class="line">	proto <span class="string">&quot;github.com/golang/protobuf/proto&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Reference imports to suppress errors if they are not otherwise used.</span></span><br><span class="line"><span class="keyword">var</span> _ = proto.Marshal</span><br><span class="line"><span class="keyword">var</span> _ = fmt.Errorf</span><br><span class="line"><span class="keyword">var</span> _ = math.Inf</span><br><span class="line"></span><br><span class="line"><span class="comment">// This is a compile-time assertion to ensure that this generated file</span></span><br><span class="line"><span class="comment">// is compatible with the proto package it is being compiled against.</span></span><br><span class="line"><span class="comment">// A compilation error at this line likely means your copy of the</span></span><br><span class="line"><span class="comment">// proto package needs to be updated.</span></span><br><span class="line"><span class="keyword">const</span> _ = proto.ProtoPackageIsVersion3 <span class="comment">// please upgrade the proto package</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Request <span class="keyword">struct</span> &#123;</span><br><span class="line">	Data                 <span class="keyword">string</span>   <span class="string">`protobuf:&quot;bytes,1,opt,name=data,proto3&quot; json:&quot;data,omitempty&quot;`</span></span><br><span class="line">	<span class="comment">// 以下是protobuf自动填充的字段，protobuf需要使用</span></span><br><span class="line">	XXX_NoUnkeyedLiteral <span class="keyword">struct</span>&#123;&#125; <span class="string">`json:&quot;-&quot;`</span></span><br><span class="line">	XXX_unrecognized     []<span class="keyword">byte</span>   <span class="string">`json:&quot;-&quot;`</span></span><br><span class="line">	XXX_sizecache        <span class="keyword">int32</span>    <span class="string">`json:&quot;-&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">Reset</span><span class="params">()</span></span>         &#123; *m = Request&#123;&#125; &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123; <span class="keyword">return</span> proto.CompactTextString(m) &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*Request)</span> <span class="title">ProtoMessage</span><span class="params">()</span></span>    &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*Request)</span> <span class="title">Descriptor</span><span class="params">()</span> <span class="params">([]<span class="keyword">byte</span>, []<span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> fileDescriptor_7f73548e33e655fe, []<span class="keyword">int</span>&#123;<span class="number">0</span>&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 反序列化函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">XXX_Unmarshal</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> xxx_messageInfo_Request.Unmarshal(m, b)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 序列化函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">XXX_Marshal</span><span class="params">(b []<span class="keyword">byte</span>, deterministic <span class="keyword">bool</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> xxx_messageInfo_Request.Marshal(b, m, deterministic)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">XXX_Merge</span><span class="params">(src proto.Message)</span></span> &#123;</span><br><span class="line">	xxx_messageInfo_Request.Merge(m, src)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">XXX_Size</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> xxx_messageInfo_Request.Size(m)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">XXX_DiscardUnknown</span><span class="params">()</span></span> &#123;</span><br><span class="line">	xxx_messageInfo_Request.DiscardUnknown(m)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> xxx_messageInfo_Request proto.InternalMessageInfo</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取字段</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">GetData</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> m != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> m.Data</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	proto.RegisterType((*Request)(<span class="literal">nil</span>), <span class="string">&quot;helloworld.Request&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123; proto.RegisterFile(<span class="string">&quot;request.proto&quot;</span>, fileDescriptor_7f73548e33e655fe) &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> fileDescriptor_7f73548e33e655fe = []<span class="keyword">byte</span>&#123;</span><br><span class="line">	<span class="comment">// 91 bytes of a gzipped FileDescriptorProto</span></span><br><span class="line">	<span class="number">0x1f</span>, <span class="number">0x8b</span>, <span class="number">0x08</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x02</span>, <span class="number">0xff</span>, <span class="number">0xe2</span>, <span class="number">0xe2</span>, <span class="number">0x2d</span>, <span class="number">0x4a</span>, <span class="number">0x2d</span>, <span class="number">0x2c</span>,</span><br><span class="line">	<span class="number">0x4d</span>, <span class="number">0x2d</span>, <span class="number">0x2e</span>, <span class="number">0xd1</span>, <span class="number">0x2b</span>, <span class="number">0x28</span>, <span class="number">0xca</span>, <span class="number">0x2f</span>, <span class="number">0xc9</span>, <span class="number">0x17</span>, <span class="number">0xe2</span>, <span class="number">0xca</span>, <span class="number">0x48</span>, <span class="number">0xcd</span>, <span class="number">0xc9</span>, <span class="number">0xc9</span>,</span><br><span class="line">	<span class="number">0x2f</span>, <span class="number">0xcf</span>, <span class="number">0x2f</span>, <span class="number">0xca</span>, <span class="number">0x49</span>, <span class="number">0x51</span>, <span class="number">0x92</span>, <span class="number">0xe5</span>, <span class="number">0x62</span>, <span class="number">0x0f</span>, <span class="number">0x82</span>, <span class="number">0x48</span>, <span class="number">0x0a</span>, <span class="number">0x09</span>, <span class="number">0x71</span>, <span class="number">0xb1</span>,</span><br><span class="line">	<span class="number">0xa4</span>, <span class="number">0x24</span>, <span class="number">0x96</span>, <span class="number">0x24</span>, <span class="number">0x4a</span>, <span class="number">0x30</span>, <span class="number">0x2a</span>, <span class="number">0x30</span>, <span class="number">0x6a</span>, <span class="number">0x70</span>, <span class="number">0x06</span>, <span class="number">0x81</span>, <span class="number">0xd9</span>, <span class="number">0x4e</span>, <span class="number">0x9c</span>, <span class="number">0x51</span>,</span><br><span class="line">	<span class="number">0xec</span>, <span class="number">0x7a</span>, <span class="number">0xfa</span>, <span class="number">0x25</span>, <span class="number">0x95</span>, <span class="number">0x05</span>, <span class="number">0xa9</span>, <span class="number">0xc5</span>, <span class="number">0x49</span>, <span class="number">0x6c</span>, <span class="number">0x60</span>, <span class="number">0xcd</span>, <span class="number">0xc6</span>, <span class="number">0x80</span>, <span class="number">0x00</span>, <span class="number">0x00</span>,</span><br><span class="line">	<span class="number">0x00</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0x2e</span>, <span class="number">0x52</span>, <span class="number">0x69</span>, <span class="number">0xb5</span>, <span class="number">0x4d</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="编写Go语言程序"><a href="#编写Go语言程序" class="headerlink" title="编写Go语言程序"></a>编写Go语言程序</h4><p>下面这段测试程序就是创建了一个请求，序列化又反序列化的过程。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// file: main.go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;./types&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/golang/protobuf/proto&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	req := &amp;types.Request&#123;Data: <span class="string">&quot;Hello LIB&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Marshal</span></span><br><span class="line">	encoded, err := proto.Marshal(req)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;Encode to protobuf data error: %v&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Unmarshal</span></span><br><span class="line">	<span class="keyword">var</span> unmarshaledReq types.Request</span><br><span class="line">	err = proto.Unmarshal(encoded, &amp;unmarshaledReq)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;Unmarshal to struct error: %v&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Printf(<span class="string">&quot;req: %v\n&quot;</span>, req.String())</span><br><span class="line">	fmt.Printf(<span class="string">&quot;unmarshaledReq: %v\n&quot;</span>, unmarshaledReq.String())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  helloworld1 git:(master) go run main.go</span><br><span class="line">req: data:&quot;Hello LIB&quot;</span><br><span class="line">unmarshaledReq: data:&quot;Hello LIB&quot;</span><br></pre></td></tr></table></figure>
+
+<p>以上都是铺垫，下一节的proto包怎么实现编解码才是重点，protobuf用法可以去翻：</p>
+<ol>
+<li>官方介绍：<a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto3">protoc3介绍</a>，<a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/encoding">编码介绍</a>，<a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/gotutorial">Go教程</a></li>
+<li>煎鱼<a target="_blank" rel="noopener" href="https://eddycjy.gitbook.io/golang/di-4-ke-grpc/install">grpc系列文章</a></li>
+</ol>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2015/02/26/serialization-vs-deserialization.html">https://tech.meituan.com/2015/02/26/serialization-vs-deserialization.html</a><br>《序列化和反序列化》出自美团技术团队，值得一读。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/golang/protobuf">https://github.com/golang/protobuf</a><br>Go支持protocol buffer的仓库，Readme，值得详读。</li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/gotutorial">https://developers.google.com/protocol-buffers/docs/gotutorial</a><br>Google Protocol Buffers的Go语言tutorial，值得详细阅读和实操。</li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/overview">https://developers.google.com/protocol-buffers/docs/overview</a><br>Google Protocol Buffers的Overview，介绍了什么是Protocol Buffers，它的原理、历史（起源），以及和XML的对比，必读。</li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto3">https://developers.google.com/protocol-buffers/docs/proto3</a><br>《Language Guide (proto3)》这篇文章介绍了proto3的定义，也可以理解为<code>.proto</code>文件的语法，就如同Go语言的语法，不懂语法怎么编写<code>.proto</code>文件？读这篇文章会了解很多原理，以及可以少踩坑，必读。</li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/reference/go-generated">https://developers.google.com/protocol-buffers/docs/reference/go-generated</a><br>《Go Generated Code》这篇文章详细介绍了protoc是怎么用<code>.protoc</code>生成<code>.pb.go</code>的，可选。</li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/encoding#">https://developers.google.com/protocol-buffers/docs/encoding#</a><br>《Protocol Buffers Encoding》这篇介绍编码原理，可选。</li>
+<li><a target="_blank" rel="noopener" href="https://godoc.org/github.com/golang/protobuf/proto">https://godoc.org/github.com/golang/protobuf/proto</a><br>《package proto文档》可以把proto包当做Go语言操作protobuf数据的SDK，它实现了结构体和protobuf数据的转换，它和<code>.pb.go</code>文件配合使用。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/RPC/" rel="tag"># RPC</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/08/22/etcd-raft-source-data-flow/" rel="prev" title="Etcd Raft架构设计和源码剖析2：数据流">
+                  <i class="fa fa-chevron-left"></i> Etcd Raft架构设计和源码剖析2：数据流
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/08/27/protobuf-in-go-2/" rel="next" title="Go是如何实现protobuf的编解码的(2)：源码">
+                  Go是如何实现protobuf的编解码的(2)：源码 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'fb0ce07cb51ef0162780f3427ceff109',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

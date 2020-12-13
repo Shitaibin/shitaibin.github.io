@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="云原生、Go语言、区块链">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Go语言充电站">
+<meta property="og:url" content="http://lessisbetter.site/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="云原生、Go语言、区块链">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="云原生 k8s kubernetes 区块链 Go语言 后端 技术 人生 编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/11/18/modify-oh-my-zsh-themes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/18/modify-oh-my-zsh-themes/" class="post-title-link" itemprop="url">Oh my zsh</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-18 20:09:49" itemprop="dateCreated datePublished" datetime="2020-11-18T20:09:49+08:00">2020-11-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>选择oh my zsh的原因在于它提供了很多插件和主题。</p>
+<p>zsh的配置文件为：<code>~/.zshrc</code>，oh my zsh的许多配置也在此添加。</p>
+<h3 id="主题"><a href="#主题" class="headerlink" title="主题"></a>主题</h3><p>习惯使用<a target="_blank" rel="noopener" href="https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/gallois.zsh-theme">gallois主题</a>，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。</p>
+<p><img src="http://img.lessisbetter.site/2020-11-old-gallois.png"></p>
+<p>oh my zsh的所有主题配置都在<code>.oh-my-zsh/themes/</code>目录，文件名称同主题名称，可以对这些主题的一些配置进行修改。</p>
+<p>注释掉配置文件中关于git的设置，打开新终端后，就可以不显示git分支信息了。</p>
+<p><img src="http://img.lessisbetter.site/2020-11-new-gallois.png"></p>
+<p>从此复制出的代码，在也没有多余文本。</p>
+<h3 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h3><p>插件目录在：<code>~/.oh-my-zsh/plugins</code>，从中可以浏览自己需要的插件。</p>
+<p>比如我常用的插件为：<code>plugins=(git autojump docker kubectl extract)</code>，添加到<code>~/.zshrc</code>即可。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/11/17/kustomize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/17/kustomize/" class="post-title-link" itemprop="url">Kustomize：自定义YAML资源文件</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-17 09:54:12" itemprop="dateCreated datePublished" datetime="2020-11-17T09:54:12+08:00">2020-11-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h3 id="kustomize简介"><a href="#kustomize简介" class="headerlink" title="kustomize简介"></a>kustomize简介</h3><p><a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/kustomize">kustomize</a>是一个自定义管理原始的YAML模板资源文件的工具，同时无需修改原始的YAML文件。</p>
+<p>对于kustomize的理解是，它借助了docker镜像的类似概念：可以一层层的进行覆盖。</p>
+<p>Kustmoize有Base和Overlay 2个概念，被依赖的层成为base，当前进行覆盖操作的层成为overlay。所以1个overlay，也可以是另外overlay的base。</p>
+<p><img src="http://img.lessisbetter.site/2020-11-kustomize-base-overlay.png" alt="Kustomize base和overlay"></p>
+<p>在kubectl v1.14之后，其中融合了kustomize，也就说如果安装了kubectl无需安装kustomize，即可使用kustomize。</p>
+<p>把kustmoize的资源文件部署到集群有2个办法：</p>
+<ol>
+<li>通过kubectl内置的kustomize：<code>kubectl apply -k $KUSTOMIZE_DIR</code> 应用到集群。</li>
+<li>集合kustomize和kubectl: <code>kustomize build $KUSTOMIZE_DIR | kubectl apply -f -</code>应用到集群。</li>
+</ol>
+<h3 id="base"><a href="#base" class="headerlink" title="base"></a>base</h3><p>nginx-deployment.yaml:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">image:</span> <span class="string">nginx:1.9.1</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">mountPath:</span> <span class="string">/user/share/nginx/html</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">      <span class="attr">restartPolicy:</span> <span class="string">Always</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">emptyDir:</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>kustomization.yaml :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">commonLabels:</span><br><span class="line">        app: kustomize-nginx</span><br><span class="line"></span><br><span class="line">resources:</span><br><span class="line">- nginx-deployment.yaml</span><br></pre></td></tr></table></figure>
+
+<p>build的效果就是，把列出来的resources中的label，都换成<code>app: kustomize-nginx</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">$ diff &lt;(kustomize build .) nginx-deployment.yaml</span><br><span class="line">4,5d3</span><br><span class="line">&lt;   labels:</span><br><span class="line">&lt;     app: kustomize-nginx</span><br><span class="line">6a5,6</span><br><span class="line">&gt;   labels:</span><br><span class="line">&gt;     app: nginx</span><br><span class="line">10c10</span><br><span class="line">&lt;       app: kustomize-nginx</span><br><span class="line">---</span><br><span class="line">&gt;       app: nginx</span><br><span class="line">14c14</span><br><span class="line">&lt;         app: kustomize-nginx</span><br><span class="line">---</span><br><span class="line">&gt;         app: nginx</span><br><span class="line">17,24c17,24</span><br><span class="line">&lt;       - image: nginx:1.9.1</span><br><span class="line">&lt;         name: nginx</span><br><span class="line">&lt;         ports:</span><br><span class="line">&lt;         - containerPort: 80</span><br><span class="line">&lt;           name: http</span><br><span class="line">&lt;         volumeMounts:</span><br><span class="line">&lt;         - mountPath: &#x2F;user&#x2F;share&#x2F;nginx&#x2F;html</span><br><span class="line">&lt;           name: data</span><br><span class="line">---</span><br><span class="line">&gt;         - image: nginx:1.9.1</span><br><span class="line">&gt;           name: nginx</span><br><span class="line">&gt;           ports:</span><br><span class="line">&gt;             - containerPort: 80</span><br><span class="line">&gt;               name: http</span><br><span class="line">&gt;           volumeMounts:</span><br><span class="line">&gt;             - mountPath: &#x2F;user&#x2F;share&#x2F;nginx&#x2F;html</span><br><span class="line">&gt;               name: data</span><br><span class="line">27,28c27,28</span><br><span class="line">&lt;       - emptyDir: &#123;&#125;</span><br><span class="line">&lt;         name: data</span><br><span class="line">---</span><br><span class="line">&gt;         - name: data</span><br><span class="line">&gt;           emptyDir: &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>应用到k8s，并且查看label。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;base]$ kubectl apply -k .</span><br><span class="line">deployment.apps&#x2F;nginx created</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;base]$ kubectl get deploy -o wide</span><br><span class="line">NAME    READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES        SELECTOR</span><br><span class="line">nginx   1&#x2F;1     1            1           7s    nginx        nginx:1.9.1   app&#x3D;kustomize-nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="overlay"><a href="#overlay" class="headerlink" title="overlay"></a>overlay</h3><h4 id="修改副本数量"><a href="#修改副本数量" class="headerlink" title="修改副本数量"></a>修改副本数量</h4><p>kustomization.yaml:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">namePrefix: testing-</span><br><span class="line">commonLabels:</span><br><span class="line">        app: kustomize-nginx</span><br><span class="line">        variant: testing</span><br><span class="line">        group: test</span><br><span class="line"></span><br><span class="line">bases: </span><br><span class="line">- ..&#x2F;..&#x2F;base</span><br><span class="line"></span><br><span class="line">patchesStrategicMerge:</span><br><span class="line">- nginx-deployment.yaml</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>namePrefix</code>: 资源前缀，比如deployment名称以<code>namePrefix: testing-</code>开头。</p>
+</li>
+<li><p><code>commonLabels</code>：会使用的标签</p>
+</li>
+<li><p><code>bases</code>：所基于的base文件</p>
+</li>
+<li><p><code>patchesStrategicMerge</code>：用合并的方式做path，列出涉及的文件。</p>
+</li>
+</ul>
+<p>nginx-deployment.yaml 为patch的内容：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>名称<code>metadata.name</code>应当与base中的名称相同，因为使用名称做匹配，所做的patch是当前overlay，名为nginx的deployment的副本数量为2。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -k .</span><br><span class="line">deployment.apps&#x2F;testing-nginx created</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;testing]$</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;testing]$ kubectl get deployment</span><br><span class="line">NAME            READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">nginx           1&#x2F;1     1            1           19m</span><br><span class="line">testing-nginx   2&#x2F;2     2            2           8s</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="覆盖镜像"><a href="#覆盖镜像" class="headerlink" title="覆盖镜像"></a>覆盖镜像</h4><p>kustomization.yaml:</p>
+<ul>
+<li>前缀设置为develop，更新相应tag</li>
+<li>通过<code>images</code>更新镜像</li>
+<li>Nginx deployment的副本数量修改为5，这种方式与<a href="#%E4%BF%AE%E6%94%B9%E5%89%AF%E6%9C%AC%E6%95%B0%E9%87%8F">上一个修改副本数量</a>相比更简洁。</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">namePrefix:</span> <span class="string">dev-</span></span><br><span class="line"><span class="attr">commonLabels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">dev-nginx</span></span><br><span class="line">        <span class="attr">variant:</span> <span class="string">dev</span></span><br><span class="line">        <span class="attr">group:</span> <span class="string">develop</span></span><br><span class="line"></span><br><span class="line"><span class="attr">bases:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">../../base</span></span><br><span class="line"><span class="attr">images:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">          <span class="attr">newTag:</span> <span class="number">1.19</span><span class="number">.0</span></span><br><span class="line"><span class="attr">replicas:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">          <span class="attr">count:</span> <span class="number">5</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>部署到集群：发现kubectl内置的kustomize的<code>replicas</code>并没有得到支持，可能是内置的kustomize版本较老，使用kustomize + kubectl的方式可以部署到集群。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$ kubectl delete -k develop</span><br><span class="line">error: json: unknown field &quot;replicas&quot;</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$ kustomize build develop | kubectl apply -f -</span><br><span class="line">deployment.apps&#x2F;dev-nginx created</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$ kubectl get deploy -o wide</span><br><span class="line">NAME            READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES         SELECTOR</span><br><span class="line">dev-nginx       5&#x2F;5     5            5           17s   nginx        nginx:1.19.0   app&#x3D;dev-nginx,group&#x3D;develop,variant&#x3D;dev</span><br><span class="line">nginx           1&#x2F;1     1            1           10h   nginx        nginx:1.9.1    app&#x3D;kustomize-nginx</span><br><span class="line">testing-nginx   2&#x2F;2     2            2           10h   nginx        nginx:1.9.1    app&#x3D;kustomize-nginx,group&#x3D;test,variant&#x3D;testing</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a target="_blank" rel="noopener" href="https://kubectl.docs.kubernetes.io/references/kustomize/images/">https://kubectl.docs.kubernetes.io/references/kustomize/images/</a></p>
+<h4 id="更多功能"><a href="#更多功能" class="headerlink" title="更多功能"></a>更多功能</h4><p>参考<a target="_blank" rel="noopener" href="https://kubectl.docs.kubernetes.io/zh/api-reference/kustomization/bases/">kustomize reference</a>。</p>
+<h3 id="kustomize常用命令"><a href="#kustomize常用命令" class="headerlink" title="kustomize常用命令"></a>kustomize常用命令</h3><h4 id="build"><a href="#build" class="headerlink" title="build"></a>build</h4><p>使用配置文件生成资源的YAML文件，并打印到标准输出。配合kubectl命令可以把资源部署到集群。</p>
+<h4 id="edit"><a href="#edit" class="headerlink" title="edit"></a>edit</h4><p>通过命令行修改<code>kustomization.yaml</code>文件。这种办法可以方便的放到脚本中去修改<code>kustomization.yaml</code>，而不是手动去修改。比如operator-sdk的样例，通过edit命令指定资源所要使用的镜像。</p>
+<p><strong>edit的set命令</strong>可以做以下几样事：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Available Commands:</span><br><span class="line">  image       Sets images and their new names, new tags or digests in the kustomization file</span><br><span class="line">  nameprefix  Sets the value of the namePrefix field in the kustomization file.</span><br><span class="line">  namespace   Sets the value of the namespace field in the kustomization file</span><br><span class="line">  namesuffix  Sets the value of the nameSuffix field in the kustomization file.</span><br><span class="line">  replicas    Sets replicas count for resources in the kustomization file</span><br></pre></td></tr></table></figure>
+
+<p>通过命令行修改前缀和镜像：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay]$ cp -r develop develop-dabin</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;develop-dabin]$ kustomize edit set nameprefix &quot;develop-dabin-&quot;</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;develop-dabin]$ kustomize edit set image &quot;nginx:1.18.0&quot;</span><br><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples&#x2F;kustomize&#x2F;overlay&#x2F;develop-dabin]$ head kustomization.yaml</span><br><span class="line">namePrefix: develop-dabin-</span><br><span class="line">commonLabels:</span><br><span class="line">  app: dev-nginx</span><br><span class="line">  group: develop</span><br><span class="line">  variant: dev</span><br><span class="line"></span><br><span class="line">images:</span><br><span class="line">- name: nginx</span><br><span class="line">  newTag: 1.18.0</span><br><span class="line">replicas:</span><br></pre></td></tr></table></figure>
+
+<p>edit命令除了set外，还有add、remove、fix，能够更加完整的通过命令编辑<code>kustomization.yaml</code>文件。</p>
+<p>本文样例：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/notes/tree/master/kubernetes/examples/kustomize">examples/kustomize</a> 。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://kubectl.docs.kubernetes.io/references/kustomize/nameprefix/">kustomization.yaml的写法</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/11/16/k8s-jsonpath/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/16/k8s-jsonpath/" class="post-title-link" itemprop="url">利用JSONPath提取Kubernetes资源信息</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-16 16:52:00" itemprop="dateCreated datePublished" datetime="2020-11-16T16:52:00+08:00">2020-11-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h3 id="JSONPath基础"><a href="#JSONPath基础" class="headerlink" title="JSONPath基础"></a>JSONPath基础</h3><p>XML有一个非常强大的解析工具是XPath，用于提取XML中的内容。之后也出现了一种高效提取JSON内容的工具，它被称为JSONPath。</p>
+<p>JSONPath现在有很多不同的实现，不同的实现支持的提取语法略有不同，比如Goessner的JSONPath如下：</p>
+<p><img src="http://img.lessisbetter.site/2020-11-goessner-jsonpath.png" alt="goessner jsonpath"></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson/wiki/JSONPath#3-%E6%94%AF%E6%8C%81%E8%AF%AD%E6%B3%95">fastjson的JSONPath</a>支持的更加丰富。</p>
+<p>示例JSON内容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;store&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;book&quot;</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;reference&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;Nigel Rees&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Sayings of the Century&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">8.95</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;fiction&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;Evelyn Waugh&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Sword of Honour&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">12.99</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;fiction&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;Herman Melville&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;Moby Dick&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;isbn&quot;</span>: <span class="string">&quot;0-553-21311-3&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">8.99</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;category&quot;</span>: <span class="string">&quot;fiction&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;author&quot;</span>: <span class="string">&quot;J. R. R. Tolkien&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;The Lord of the Rings&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;isbn&quot;</span>: <span class="string">&quot;0-395-19395-8&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">22.99</span></span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        <span class="attr">&quot;bicycle&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;color&quot;</span>: <span class="string">&quot;red&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;price&quot;</span>: <span class="number">19.95</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;expensive&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>以例子讲解几个最常用的语法：</p>
+<table>
+<thead>
+<tr>
+<th>语法</th>
+<th>语法含义</th>
+<th>例子</th>
+<th>例子含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$</td>
+<td>JSON内容的根对象，所有的JSONPath都是以<code>$</code>为开头。</td>
+<td><code>$</code></td>
+<td><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$">JSON内容本身</a>。</td>
+</tr>
+<tr>
+<td>.</td>
+<td>后面跟子对象。</td>
+<td><code>$.expensive</code></td>
+<td><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.expensive">提取根对象的expensive字段的值</a>。</td>
+</tr>
+<tr>
+<td>..</td>
+<td>递归扫描子对象。</td>
+<td><code>$..price</code></td>
+<td><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..price">提取对象中所有price字段的值，结果会包含所有book和bicycle中的价格</a>。</td>
+</tr>
+<tr>
+<td>[num]</td>
+<td>以下标访问数组。语法类似Python，num为负数时，代表倒数。</td>
+<td><code>$.store.book[0]</code></td>
+<td><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.store.book%5B0%5D">获取第一本书</a>。</td>
+</tr>
+<tr>
+<td>[num1, num2,num3]</td>
+<td>以下标获取数据中多个数据。</td>
+<td><code>$.store.book[0,2]</code></td>
+<td><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.store.book%5B0,2%5D">获取第1、3本书</a>。</td>
+</tr>
+<tr>
+<td>[start:end]</td>
+<td>获取数组区间[start, end)的数据。</td>
+<td><code>$.store.book[0:2]</code></td>
+<td><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.store.book%5B0:2%5D">获取前2本书</a>。</td>
+</tr>
+<tr>
+<td>[start:end:step]</td>
+<td>获取数组区间[start, end)的数据，但以step为步长提取数据。<strong>但不是所有JSONPath实现都支持</strong>。</td>
+<td><code>$.store.book[0:3:2]</code></td>
+<td>获取第1~3本书，以步长为2提取，也即是第1、3本书。</td>
+</tr>
+<tr>
+<td>[*]</td>
+<td>通配符，匹配所有子对象。</td>
+<td><code>$.store.*.price</code></td>
+<td><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.store.*.price">匹配store子对象中的价格，因为book的价格，是更下一级，所以只能匹配到bicycle的价格</a>。</td>
+</tr>
+<tr>
+<td>?()</td>
+<td>过滤符，可以理解成SQL的Where。</td>
+<td><code>$.store.[?(@.category==&quot;fiction&quot;)].author</code></td>
+<td><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.store.%5B?(@.category==%22fiction%22).author%5D">获取类别为fiction的书籍作者列表</a>。</td>
+</tr>
+<tr>
+<td>@</td>
+<td>当前对象，配合<code>?()</code>很好用。</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="k8s使用jsonpath"><a href="#k8s使用jsonpath" class="headerlink" title="k8s使用jsonpath"></a>k8s使用jsonpath</h3><p>kubectl没有提供查看Pod内容器的名称，怎么办呢？可以利用jsonpath或者go template实现。</p>
+<p>json格式输出结果通常是嵌套多层，使用jsonpath可以忽略中间层次，而go template不行，这是jsonpath比go template好用的地方。</p>
+<p>看一个略微复杂k8s使用jsonpath列出所有pod的所有容器名称和镜像的样例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range .spec.containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
+
+<p>发现<code>jsonpath=&#39;&#39;</code>与标准的jsonpath并不一样：</p>
+<ul>
+<li>没有<code>$</code></li>
+<li>一堆<code>&#123;&#125;</code></li>
+<li>还有<code>range, &#123;&quot;\n&quot;&#125;</code>等</li>
+</ul>
+<p>那是因为<a target="_blank" rel="noopener" href="https://kubernetes.io/docs/reference/kubectl/jsonpath/">k8s对jsonpath的支持</a>有以下特性：</p>
+<ol>
+<li>在jsonpath中使用<code>&quot;&quot;</code>包含文本，这样在输出的结果可以显示自定义的字符串，还能进行换行、Tab等。</li>
+<li>支持使用<code>range .. end</code>迭代数组，原生的jsonpath没有办法提取数组元素中的多个子对象，使用range达成效果，比如想获得容器的名称镜像。</li>
+<li>支持<code>-num</code>获取数组的倒数位置的元素</li>
+<li>可以省略<code>$</code>，太好了</li>
+<li>每一段jsonpath使用<code>&#123;&#125;</code>连接</li>
+</ol>
+<p>刚开始使用jsonpath时，有种眼花缭乱的感觉，我们就拆解下上面的样例jsonpath。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;.items[*].metadata.name&#125;&#39;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.lessisbetter.site/2020-11-1-pod-name.png"></p>
+<p>先提取每个pod的名称，这个还和原生的jsonpath一样。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.lessisbetter.site/2020-11-2-pod-name-range.png"></p>
+<p>因为每个pod还要取容器名称和镜像，所以最好每个pod占一行，我们需要使用<code>range .. end</code>处理每一个pod，列pod所含的容器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125;&#123;&quot;\n&quot;&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.spec.containers[*].name&#125;, &#123;.spec.containers[*].image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#39;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.lessisbetter.site/2020-11-3-pod-containers.png"></p>
+<p>可以看到每个pod内可能包含多个容器，所以也得用<code>range .. end</code>去处理pod的每一个container。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range .spec.containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.lessisbetter.site/2020-11-4-pod-contianers-image.png"></p>
+<p>上面提到使用jsonpath可以简化层级，因为<code>containers</code>这个名词在层级中是独有的，不像<code>name</code>可能是存在于多个层级，所以可以使用<code>..</code>简化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[*]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range ..containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.lessisbetter.site/2020-11-5-simplify-pod-containers.png"></p>
+<p>最后看一下过滤的使用，只想列出<code>weave</code>的pod的容器和镜像：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --all-namespaces -o&#x3D;jsonpath&#x3D;&#39;&#123;range .items[?(@.metadata.name&#x3D;&#x3D;&quot;weave-net-sqjzh&quot;)]&#125;&#123;&quot;pod: &quot;&#125;&#123;.metadata.name&#125; &#123;&quot;\n&quot;&#125;&#123;range ..containers[*]&#125;&#123;&quot;\tcontainer: &quot;&#125;&#123;.name&#125;&#123;&quot;\n\timage: &quot;&#125;&#123;.image&#125;&#123;&quot;\n&quot;&#125;&#123;end&#125;&#123;end&#125;&#39;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://img.lessisbetter.site/2020-11-6-pod-filter.png"></p>
+<h3 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h3><p>使用JSONPath获取：</p>
+<ol>
+<li>Pod的名称和IP</li>
+<li>Pod退出原因</li>
+</ol>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://goessner.net/articles/JsonPath/">goessner: JSONPath - XPath for JSON</a></li>
+<li><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/reference/kubectl/jsonpath/">Kubernetes JSONPath Support</a>，<a target="_blank" rel="noopener" href="http://docs.kubernetes.org.cn/67.html">一个中文版本</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/11/10/dockerfile-go/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/10/dockerfile-go/" class="post-title-link" itemprop="url">Go程序Dockerfile模板</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-10 13:25:04" itemprop="dateCreated datePublished" datetime="2020-11-10T13:25:04+08:00">2020-11-10</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build时设置版本 --build-arg GO_VERSION=1.13，默认为go1.15</span></span><br><span class="line"><span class="keyword">ARG</span> GO_VERSION=<span class="number">1.15</span></span><br><span class="line"><span class="keyword">FROM</span> golang:$&#123;GO_VERSION&#125; AS builder</span><br><span class="line"><span class="keyword">ENV</span> GOPROXY=<span class="string">&quot;https://goproxy.cn&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> APP_PATH=<span class="string">&quot;/app/goapp&quot;</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> <span class="string">&quot;/app&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 拷贝构建文件</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> . .</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> go mod download</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o <span class="variable">$&#123;APP_PATH&#125;</span> .</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> ls </span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建运行镜像</span></span><br><span class="line"><span class="keyword">FROM</span> alpine:<span class="number">3.10</span> AS final</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> APP_PATH=<span class="string">&quot;/app/goapp&quot;</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> <span class="string">&quot;/app&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 拷贝程序，如有必要另外拷贝其他文件</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> --from=builder <span class="variable">$&#123;APP_PATH&#125;</span> <span class="variable">$&#123;APP_PATH&#125;</span> </span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行程序</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> [<span class="string">&quot;/app/goapp&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>构建命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t app:1.0 --build-arg GO_VERSION&#x3D;1.13 .</span><br></pre></td></tr></table></figure>
+
+
+<p>模板说明：</p>
+<ol>
+<li>构建命令不指定<code>--build-arg GO_VERSION=1.13</code>时，默认使用go1.15进行编译。</li>
+<li>使用<code>alpine</code>作为运行基础镜像，减小镜像大小。</li>
+<li>Dockerfile文件放到main.go所在目录。</li>
+<li>把<code>goapp</code>替换成真正的程序名称。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/11/10/dockerfile-arg/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/10/dockerfile-arg/" class="post-title-link" itemprop="url">Dockerfile ARG指令</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-10 10:52:35" itemprop="dateCreated datePublished" datetime="2020-11-10T10:52:35+08:00">2020-11-10</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Docker的文档关于<a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact">ARG和FROM指令配合使用</a>做了详细说明：</p>
+<p>ARG用于传入外部参数，定义在FROM指令前，FROM后的其他指令无法使用ARG定义的环境变量，如果FROM指令后的指令要使用ARG定义的值，需要在FROM后再次定义。如果FROM不使用定义的ARG，可以直接定义到FROM后。</p>
+<h3 id="传递参数"><a href="#传递参数" class="headerlink" title="传递参数"></a>传递参数</h3><h3 id="定义在FROM前"><a href="#定义在FROM前" class="headerlink" title="定义在FROM前"></a>定义在FROM前</h3><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ARG</span> UBUNTU_VERSION=<span class="number">16.04</span></span><br><span class="line"><span class="keyword">FROM</span> ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> env | grep UBUNTU_VERSION</span></span><br></pre></td></tr></table></figure>
+
+<p>从结果可以看到FROM后的指令<strong>无法访问</strong>ARG定义的<code>UBUNTU_VERSION</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ docker build -t test:afterfrom .</span><br><span class="line">Sending build context to Docker daemon  37.38kB</span><br><span class="line">Step 1&#x2F;3 : ARG UBUNTU_VERSION&#x3D;16.04</span><br><span class="line">Step 2&#x2F;3 : FROM ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"> ---&gt; 4b22027ede29</span><br><span class="line">Step 3&#x2F;3 : RUN env | grep UBUNTU_VERSION</span><br><span class="line"> ---&gt; Running in 8e93ca5e376b</span><br><span class="line">The command &#39;&#x2F;bin&#x2F;sh -c env | grep UBUNTU_VERSION&#39; returned a non-zero code: 1</span><br></pre></td></tr></table></figure>
+
+<h3 id="定义在FROM后"><a href="#定义在FROM后" class="headerlink" title="定义在FROM后"></a>定义在FROM后</h3><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ARG</span> UBUNTU_VERSION=<span class="number">16.04</span></span><br><span class="line"><span class="keyword">FROM</span> ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"><span class="keyword">ARG</span> UBUNTU_VERSION</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> env | grep UBUNTU_VERSION</span></span><br></pre></td></tr></table></figure>
+
+<p>从结果可以看到FROM后的指令<strong>可以访问</strong>ARG定义的<code>UBUNTU_VERSION</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ docker build -t test:afterfrom .</span><br><span class="line">Sending build context to Docker daemon  37.38kB</span><br><span class="line">Step 1&#x2F;4 : ARG UBUNTU_VERSION&#x3D;16.04</span><br><span class="line">Step 2&#x2F;4 : FROM ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"> ---&gt; 4b22027ede29</span><br><span class="line">Step 3&#x2F;4 : ARG UBUNTU_VERSION</span><br><span class="line"> ---&gt; Using cache</span><br><span class="line"> ---&gt; e3bae0875e66</span><br><span class="line">Step 4&#x2F;4 : RUN env | grep UBUNTU_VERSION</span><br><span class="line"> ---&gt; Running in 02438aff1f75</span><br><span class="line">UBUNTU_VERSION&#x3D;16.04</span><br><span class="line">Removing intermediate container 02438aff1f75</span><br><span class="line"> ---&gt; 646eec496165</span><br><span class="line">Successfully built 646eec496165</span><br><span class="line">Successfully tagged test:afterfrom</span><br></pre></td></tr></table></figure>
+
+<h3 id="传递多个ARG参数"><a href="#传递多个ARG参数" class="headerlink" title="传递多个ARG参数"></a>传递多个ARG参数</h3><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ARG</span> UBUNTU_VERSION=<span class="number">16.04</span></span><br><span class="line"><span class="keyword">ARG</span> FILE_NAME=test</span><br><span class="line"><span class="keyword">FROM</span> ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">ARG</span> FILE_NAME</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /<span class="built_in">test</span>/</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> touch <span class="variable">$&#123;FILE_NAME&#125;</span></span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> ls <span class="variable">$&#123;FILE_NAME&#125;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>传递多个参数需要多次使用<code>--build-arg</code>，可以看到传递的<code>FILE_NAME=app</code>生效了，而不是默认值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">$ docker build -t test:twoargs --build-arg UBUNTU_VERSION&#x3D;18.04 --build-arg FILE_NAME&#x3D;app .</span><br><span class="line">Sending build context to Docker daemon  37.38kB</span><br><span class="line">Step 1&#x2F;7 : ARG UBUNTU_VERSION&#x3D;16.04</span><br><span class="line">Step 2&#x2F;7 : ARG FILE_NAME&#x3D;test</span><br><span class="line">Step 3&#x2F;7 : FROM ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line">18.04: Pulling from library&#x2F;ubuntu</span><br><span class="line">171857c49d0f: Pull complete</span><br><span class="line">419640447d26: Pull complete</span><br><span class="line">61e52f862619: Pull complete</span><br><span class="line">Digest: sha256:646942475da61b4ce9cc5b3fadb42642ea90e5d0de46111458e100ff2c7031e6</span><br><span class="line">Status: Downloaded newer image for ubuntu:18.04</span><br><span class="line"> ---&gt; 56def654ec22</span><br><span class="line">Step 4&#x2F;7 : ARG FILE_NAME</span><br><span class="line"> ---&gt; Running in bee623328f35</span><br><span class="line">Removing intermediate container bee623328f35</span><br><span class="line"> ---&gt; 52f803da2959</span><br><span class="line">Step 5&#x2F;7 : WORKDIR &#x2F;test&#x2F;</span><br><span class="line"> ---&gt; Running in fa4542584af1</span><br><span class="line">Removing intermediate container fa4542584af1</span><br><span class="line"> ---&gt; 5ebd782db9b8</span><br><span class="line">Step 6&#x2F;7 : RUN touch $&#123;FILE_NAME&#125;</span><br><span class="line"> ---&gt; Running in 0cd5723b744d</span><br><span class="line">Removing intermediate container 0cd5723b744d</span><br><span class="line"> ---&gt; 920c6bd75bab</span><br><span class="line">Step 7&#x2F;7 : RUN ls $&#123;FILE_NAME&#125;</span><br><span class="line"> ---&gt; Running in b94a33093ddf</span><br><span class="line">app</span><br><span class="line">Removing intermediate container b94a33093ddf</span><br><span class="line"> ---&gt; 804bf831059a</span><br><span class="line">Successfully built 804bf831059a</span><br><span class="line">Successfully tagged test:twoargs</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/09/28/misunderstanding-iowait/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/09/28/misunderstanding-iowait/" class="post-title-link" itemprop="url">被误解的iowait</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-28 16:57:19" itemprop="dateCreated datePublished" datetime="2020-09-28T16:57:19+08:00">2020-09-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>有一个cpu指标叫<code>iowait</code>或者<code>wa</code>，在top、iostat、vmstat命令中都可以看到这一项。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[~]$ top</span><br><span class="line">top - 08:58:06 up 26 days, 23:20,  1 user,  load average: 0.07, 0.23, 0.26</span><br><span class="line">Tasks: 164 total,   1 running, 111 sleeping,   0 stopped,   0 zombie</span><br><span class="line">%Cpu(s):  2.5 us,  1.2 sy,  0.0 ni, 96.2 id,  0.1 wa,  0.0 hi,  0.1 si,  0.0 st</span><br><span class="line">KiB Mem :  8167548 total,   698220 free,   996640 used,  6472688 buff&#x2F;cache</span><br><span class="line">KiB Swap:        0 total,        0 free,        0 used.  7061988 avail Mem</span><br><span class="line"></span><br><span class="line">[~]$ iostat</span><br><span class="line">Linux 4.15.0-112-generic (shitaibin-x) 	09&#x2F;28&#x2F;20 	_x86_64_	(4 CPU)</span><br><span class="line"></span><br><span class="line">avg-cpu:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">           1.02    0.00    0.55    0.86    0.00   97.56</span><br><span class="line"></span><br><span class="line">Device             tps    kB_read&#x2F;s    kB_wrtn&#x2F;s    kB_read    kB_wrtn</span><br><span class="line">loop0             0.00         0.00         0.00          5          0</span><br><span class="line">vda              13.32         2.65        84.15    6182326  196098973</span><br><span class="line"></span><br><span class="line">[~]$</span><br><span class="line">[~]$</span><br><span class="line">[~]$ vmstat</span><br><span class="line">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----</span><br><span class="line"> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</span><br><span class="line"> 0  0      0 685616 177356 6306652    0    0     1    21    5    3  1  1 98  1  0</span><br></pre></td></tr></table></figure>
+
+<p>这个指标的字面含义是等待IO的时间（百分比），很多人会认为这个指标暗示这IO瓶颈，然而这是有一定无解的，iowait高不一定有IO瓶颈。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iowait &#x3D; CPU空闲时间 &#x2F; CPU总时间 ，前提CPU在等待至少一项IO操作完成</span><br></pre></td></tr></table></figure>
+
+<p>所以它真正的含义是有未完成的IO操作时，CPU空闲的时间。</p>
+<p>这2个资料都把iowait讲解的很清晰，并且举例iowait和IO瓶颈无关的例子。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://linuxperf.com/?p=33">理解iowait</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.inspurpower.com/upload/file/1583309942.pdf">浪潮：CPU iowait详解</a></li>
+</ul>
+<p>例子：</p>
+<ul>
+<li>低iowait，高IO的例子：IO高同时CPU计算也高，这样CPU的空闲时间少，造成iowait比较低，CPU密集掩盖了IO密集。</li>
+<li>高iowait，低IO的例子：CPU计算很少，CPU基本空闲，但也有1个进程在IO，所以iowait高，但实际IO根本没任何瓶颈。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/09/06/deloy-k8s-on-ubuntu16/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/09/06/deloy-k8s-on-ubuntu16/" class="post-title-link" itemprop="url">Ubuntu 16.04上部署单机Kubernetes</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-06 08:33:55" itemprop="dateCreated datePublished" datetime="2020-09-06T08:33:55+08:00">2020-09-06</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在公司都是用现成的K8s集群，没自己搭过，想知道搭建集群涉及哪些组件、做了什么，于是自己搭了一下，没想象的顺利，动作做到位了，也就不会有太多问题。</p>
+<p>许多资料都是基于Centos7的，包括《Kubernetes权威指南》，手头只有Ubuntu 16.04，刚好也是支持K8s最低Ubuntu版本，就在Ubuntu上面部署。Ubuntu与Centos部署K8s并没有太大区别，唯一区别是安装kubeadm等软件的不同，由于k8s本身也是运行在容器中，其他的过程二者都相同了，这种设计也极大的方便了k8s集群的搭建。</p>
+<p><strong>没有阿里云，搭建一个K8s集群还是挺费劲的</strong>。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
+<li><code>/etc/hosts</code>中加入：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 k8s-master</span><br></pre></td></tr></table></figure>
+
+
+<ol start="2">
+<li><p>关闭防火墙：<code>ufw status</code></p>
+</li>
+<li><p><a href="https://lessisbetter.site/2020/09/05/docker-proxy-and-registry-mirror/">安装Docker，并设置镜像加速器</a>。</p>
+</li>
+</ol>
+<h2 id="安装软件"><a href="#安装软件" class="headerlink" title="安装软件"></a>安装软件</h2><p>Ubuntu 16.04上利用阿里云安装kubeadm、kubelet、kubectl</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update &amp;&amp; sudo apt-get install -y apt-transport-https curl</span><br><span class="line">curl -s http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F;doc&#x2F;apt-key.gpg | sudo apt-key add -</span><br><span class="line">cat &lt;&lt;EOF | sudo tee &#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;kubernetes.list</span><br><span class="line">deb http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;apt&#x2F; kubernetes-xenial main</span><br><span class="line">EOF</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install -y kubelet kubeadm kubectl</span><br><span class="line">sudo apt-mark hold kubelet kubeadm kubectl</span><br></pre></td></tr></table></figure>
+
+<p>centos 7上利用阿里云镜像安装kubeadm、kubelet、kubectl</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt; &#x2F;etc&#x2F;yum.repos.d&#x2F;kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name&#x3D;Kubernetes</span><br><span class="line">baseurl&#x3D;http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;yum&#x2F;repos&#x2F;kubernetes-el7-x86_64</span><br><span class="line">enabled&#x3D;1</span><br><span class="line">gpgcheck&#x3D;1</span><br><span class="line">repo_gpgcheck&#x3D;1</span><br><span class="line">gpgkey&#x3D;http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;yum&#x2F;doc&#x2F;yum-key.gpg http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;yum&#x2F;doc&#x2F;rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"># 将 SELinux 设置为 permissive 模式（相当于将其禁用）</span><br><span class="line">setenforce 0</span><br><span class="line">sed -i &#39;s&#x2F;^SELINUX&#x3D;enforcing$&#x2F;SELINUX&#x3D;permissive&#x2F;&#39; &#x2F;etc&#x2F;selinux&#x2F;config</span><br><span class="line"></span><br><span class="line">yum install -y kubelet kubeadm kubectl --disableexcludes&#x3D;kubernetes</span><br><span class="line"></span><br><span class="line">systemctl enable --now kubelet</span><br></pre></td></tr></table></figure>
+
+<p>二进制程序安装位置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[~]$ which kubectl kubeadm kubectl</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;kubectl</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;kubeadm</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;kubectl</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="部署Master节点"><a href="#部署Master节点" class="headerlink" title="部署Master节点"></a>部署Master节点</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kubeadm init \</span><br><span class="line">  --kubernetes-version&#x3D;v1.19.0 \</span><br><span class="line">  --image-repository registry.cn-hangzhou.aliyuncs.com&#x2F;google_containers \</span><br><span class="line">  --pod-network-cidr&#x3D;10.24.0.0&#x2F;16 \</span><br><span class="line">  --ignore-preflight-errors&#x3D;Swap</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>--image-repository</code> ： 由于<code>k8s.gcr.io</code>由于网络原因无法访问，使用阿里云提供的k8s镜像仓库，快速下载k8s相关的镜像</li>
+<li><code>--ignore-preflight-errors</code> ： 部署时忽略swap问题</li>
+<li><code>--pod-network-cidr</code> ：设置pod的ip区间</li>
+</ul>
+<p>遇到错误需要重置集群：<code>kubeadm reset</code></p>
+<p>遇到错误参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/pu20065226/p/10641312.html">kubernetes安装过程报错及解决方法</a></p>
+<h2 id="拷贝kubectl配置"><a href="#拷贝kubectl配置" class="headerlink" title="拷贝kubectl配置"></a>拷贝kubectl配置</h2><p>切回普通用户，拷贝当前集群的配置给kubectl使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p $HOME&#x2F;.kube</span><br><span class="line">sudo cp -i &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf $HOME&#x2F;.kube&#x2F;config</span><br><span class="line">sudo chown $(id -u):$(id -g) $HOME&#x2F;.kube&#x2F;config</span><br></pre></td></tr></table></figure>
+
+<p>查看集群信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dabin@ubuntu:~$ kubectl cluster-info</span><br><span class="line">Kubernetes master is running at https:&#x2F;&#x2F;192.168.0.103:6443</span><br><span class="line">KubeDNS is running at https:&#x2F;&#x2F;192.168.0.103:6443&#x2F;api&#x2F;v1&#x2F;namespaces&#x2F;kube-system&#x2F;services&#x2F;kube-dns:dns&#x2F;proxy</span><br></pre></td></tr></table></figure>
+
+<h2 id="k8s主节点部署后的情况"><a href="#k8s主节点部署后的情况" class="headerlink" title="k8s主节点部署后的情况"></a>k8s主节点部署后的情况</h2><p>k8s本身不负责容器之间的通信，集群启动后，集群的Pod直接还不能通信，需要安装网络插件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get node</span><br><span class="line">NAME         STATUS     ROLES    AGE    VERSION</span><br><span class="line">k8s-master   NotReady   master   5m8s   v1.19.0</span><br><span class="line">$ kubectl get pod -n kube-system -owide</span><br><span class="line"></span><br><span class="line">NAME                                  READY   STATUS    RESTARTS   AGE   IP         NODE          NOMINATED NODE   READINESS GATES</span><br><span class="line">coredns-6c76c8bb89-9wnfb              0&#x2F;1     Pending   0          56s   &lt;none&gt;     &lt;none&gt;        &lt;none&gt;           &lt;none&gt;</span><br><span class="line">coredns-6c76c8bb89-glkdx              0&#x2F;1     Pending   0          56s   &lt;none&gt;     &lt;none&gt;        &lt;none&gt;           &lt;none&gt;</span><br><span class="line">etcd-shitaibin-x                      0&#x2F;1     Running   0          70s   10.0.0.3   shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kube-apiserver-shitaibin-x            1&#x2F;1     Running   0          70s   10.0.0.3   shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kube-controller-manager-shitaibin-x   1&#x2F;1     Running   0          70s   10.0.0.3   shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kube-proxy-7gpjx                      1&#x2F;1     Running   0          56s   10.0.0.3   shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kube-scheduler-shitaibin-x            0&#x2F;1     Running   0          70s   10.0.0.3   shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
+
+<p>从上面可以看到master节点为 NotReady 状态，coredns 服务也没有分配ip。</p>
+<p>从下面的Condition和Events可以看到节点会进行4项检测：</p>
+<ol>
+<li>节点内存是否充足</li>
+<li>节点磁盘是否有压力</li>
+<li>节点Pid是否充足</li>
+<li>kubelet是否就绪</li>
+</ol>
+<p>从Events可以kubelet启动了2次，而内存、磁盘压力、pid条件检查进行了4次。</p>
+<p>从Condition的kubelet消息中看到CNI网络插件还未就绪，导致kubelet并没有ready。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe nodes shitaibin-x</span><br><span class="line">Name:               shitaibin-x</span><br><span class="line">Roles:              master</span><br><span class="line">...</span><br><span class="line">Conditions:</span><br><span class="line">  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message</span><br><span class="line">  ----             ------  -----------------                 ------------------                ------                       -------</span><br><span class="line">  MemoryPressure   False   Wed, 28 Oct 2020 08:40:18 +0000   Wed, 28 Oct 2020 08:40:07 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available</span><br><span class="line">  DiskPressure     False   Wed, 28 Oct 2020 08:40:18 +0000   Wed, 28 Oct 2020 08:40:07 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure</span><br><span class="line">  PIDPressure      False   Wed, 28 Oct 2020 08:40:18 +0000   Wed, 28 Oct 2020 08:40:07 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available</span><br><span class="line">  Ready            False   Wed, 28 Oct 2020 08:40:18 +0000   Wed, 28 Oct 2020 08:40:07 +0000   KubeletNotReady              runtime network not ready: NetworkReady&#x3D;false reason:NetworkPluginNotReady message:docker: network plugin is not ready: cni config uninitialized</span><br><span class="line">....</span><br><span class="line">Events:</span><br><span class="line">  Type    Reason                   Age                  From        Message</span><br><span class="line">  ----    ------                   ----                 ----        -------</span><br><span class="line">  Normal  Starting                 111s                 kubelet     Starting kubelet.</span><br><span class="line">  Normal  NodeHasSufficientMemory  110s (x3 over 110s)  kubelet     Node shitaibin-x status is now: NodeHasSufficientMemory</span><br><span class="line">  Normal  NodeHasNoDiskPressure    110s (x3 over 110s)  kubelet     Node shitaibin-x status is now: NodeHasNoDiskPressure</span><br><span class="line">  Normal  NodeHasSufficientPID     110s (x3 over 110s)  kubelet     Node shitaibin-x status is now: NodeHasSufficientPID</span><br><span class="line">  Normal  NodeAllocatableEnforced  110s                 kubelet     Updated Node Allocatable limit across pods</span><br><span class="line">  Normal  Starting                 88s                  kubelet     Starting kubelet.</span><br><span class="line">  Normal  NodeHasSufficientMemory  88s                  kubelet     Node shitaibin-x status is now: NodeHasSufficientMemory</span><br><span class="line">  Normal  NodeHasNoDiskPressure    88s                  kubelet     Node shitaibin-x status is now: NodeHasNoDiskPressure</span><br><span class="line">  Normal  NodeHasSufficientPID     88s                  kubelet     Node shitaibin-x status is now: NodeHasSufficientPID</span><br><span class="line">  Normal  NodeAllocatableEnforced  87s                  kubelet     Updated Node Allocatable limit across pods</span><br><span class="line">  Normal  Starting                 66s                  kube-proxy  Starting kube-proxy.</span><br></pre></td></tr></table></figure>
+
+<p>查看kubelet进程启动配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ps -ef | grep kubelet</span><br><span class="line">root      5549     1  2 08:40 ?        00:00:07 &#x2F;usr&#x2F;bin&#x2F;kubelet --bootstrap-kubeconfig&#x3D;&#x2F;etc&#x2F;kubernetes&#x2F;bootstrap-kubelet.conf --kubeconfig&#x3D;&#x2F;etc&#x2F;kubernetes&#x2F;kubelet.conf --config&#x3D;&#x2F;var&#x2F;lib&#x2F;kubelet&#x2F;config.yaml --network-plugin&#x3D;cni --pod-infra-container-image&#x3D;registry.cn-hangzhou.aliyuncs.com&#x2F;google_containers&#x2F;pause:3.2</span><br></pre></td></tr></table></figure>
+
+<p>通过<code>--network-plugin=cni</code>可以看到默认使用CNI作为网络插件。</p>
+<p>主机<code>/etc/cni/net.d</code>目录保存CNI的配置，发现目前为空。<code>/opt/cni/bin</code>目录为CNI插件程序所在的位置，可以看到已经有flannel等插件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ls &#x2F;etc&#x2F;cni&#x2F;net.d</span><br><span class="line">ls: cannot access &#39;&#x2F;etc&#x2F;cni&#x2F;net.d&#39;: No such file or directory</span><br><span class="line">$ ls &#x2F;opt&#x2F;cni&#x2F;bin</span><br><span class="line">bandwidth  bridge  dhcp  firewall  flannel  host-device  host-local  ipvlan  loopback  macvlan  portmap  ptp  sbr  static  tuning  vlan</span><br></pre></td></tr></table></figure>
+
+<p>接下来安装CNI网络插件。</p>
+<h2 id="安装CNI网络插件"><a href="#安装CNI网络插件" class="headerlink" title="安装CNI网络插件"></a>安装CNI网络插件</h2><p>k8s的<a target="_blank" rel="noopener" href="https://kubernetes.io/zh/docs/concepts/cluster-administration/addons/">文档</a>列举了多种选择，这里提供2种：</p>
+<p>较为简便的weave，它提供overlay network:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f &quot;https:&#x2F;&#x2F;cloud.weave.works&#x2F;k8s&#x2F;net?k8s-version&#x3D;$(kubectl version | base64 | tr -d &#39;\n&#39;)&quot;</span><br></pre></td></tr></table></figure>
+
+<p>flannel，也是overlay network模型:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;coreos&#x2F;flannel&#x2F;master&#x2F;Documentation&#x2F;kube-flannel.yml</span><br></pre></td></tr></table></figure>
+
+<p>本机选择了weave：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dabin@ubuntu:~$ kubectl apply -f &quot;https:&#x2F;&#x2F;cloud.weave.works&#x2F;k8s&#x2F;net?k8s-version&#x3D;$(kubectl version | base64 | tr -d &#39;\n&#39;)&quot;</span><br><span class="line">serviceaccount&#x2F;weave-net created</span><br><span class="line">clusterrole.rbac.authorization.k8s.io&#x2F;weave-net created</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io&#x2F;weave-net created</span><br><span class="line">role.rbac.authorization.k8s.io&#x2F;weave-net created</span><br><span class="line">rolebinding.rbac.authorization.k8s.io&#x2F;weave-net created</span><br><span class="line">daemonset.apps&#x2F;weave-net created</span><br></pre></td></tr></table></figure>
+
+<p>查看weave的配置和可执行程序：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ ls &#x2F;etc&#x2F;cni&#x2F;net.d</span><br><span class="line">10-weave.conflist</span><br><span class="line">$ ls &#x2F;opt&#x2F;cni&#x2F;bin</span><br><span class="line">bandwidth  dhcp      flannel      host-local  loopback  portmap  sbr     tuning  weave-ipam  weave-plugin-2.7.0</span><br><span class="line">bridge     firewall  host-device  ipvlan      macvlan   ptp      static  vlan    weave-net</span><br><span class="line">$</span><br><span class="line">$ cat &#x2F;etc&#x2F;cni&#x2F;net.d&#x2F;10-weave.conflist</span><br><span class="line">&#123;</span><br><span class="line">    &quot;cniVersion&quot;: &quot;0.3.0&quot;,</span><br><span class="line">    &quot;name&quot;: &quot;weave&quot;,</span><br><span class="line">    &quot;plugins&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;name&quot;: &quot;weave&quot;,</span><br><span class="line">            &quot;type&quot;: &quot;weave-net&quot;,</span><br><span class="line">            &quot;hairpinMode&quot;: true</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;type&quot;: &quot;portmap&quot;,</span><br><span class="line">            &quot;capabilities&quot;: &#123;&quot;portMappings&quot;: true&#125;,</span><br><span class="line">            &quot;snat&quot;: true</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>安装之后节点变为Ready，coredns也拥有了ip：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get node</span><br><span class="line">NAME         STATUS   ROLES    AGE   VERSION</span><br><span class="line">k8s-master   Ready    master   10m   v1.19.0</span><br><span class="line"></span><br><span class="line">$ kubectl get pod -n kube-system -owide</span><br><span class="line">NAME                                  READY   STATUS    RESTARTS   AGE     IP          NODE          NOMINATED NODE   READINESS GATES</span><br><span class="line">coredns-6c76c8bb89-9wnfb              1&#x2F;1     Running   0          19m     10.32.0.9   shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">coredns-6c76c8bb89-glkdx              1&#x2F;1     Running   0          19m     10.32.0.8   shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">etcd-shitaibin-x                      1&#x2F;1     Running   0          20m     10.0.0.3    shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kube-apiserver-shitaibin-x            1&#x2F;1     Running   0          20m     10.0.0.3    shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kube-controller-manager-shitaibin-x   1&#x2F;1     Running   0          20m     10.0.0.3    shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kube-proxy-7gpjx                      1&#x2F;1     Running   0          19m     10.0.0.3    shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">kube-scheduler-shitaibin-x            1&#x2F;1     Running   0          20m     10.0.0.3    shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">weave-net-72p6p                       2&#x2F;2     Running   0          2m36s   10.0.0.3    shitaibin-x   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="开启master调度"><a href="#开启master调度" class="headerlink" title="开启master调度"></a>开启master调度</h2><p>master节点默认是不可被调度的，不可在master上部署任务，在单节点下，只有master一个节点，部署资源后会出现以下错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe pod mysql</span><br><span class="line">Events:</span><br><span class="line">  Type     Reason            Age                From               Message</span><br><span class="line">  ----     ------            ----               ----               -------</span><br><span class="line">  Warning  FailedScheduling  22s (x2 over 22s)  default-scheduler  0&#x2F;1 nodes are available: 1 node(s) had taint &#123;node-role.kubernetes.io&#x2F;master: &#125;, that the pod didn&#39;t tolerate.</span><br></pre></td></tr></table></figure>
+
+<p>Event的告警信息提示，当前节点存在一个污点<code>node-role.kubernetes.io/master:</code>，而pod却不容忍这个污点。</p>
+<p>查看master节点的信息，确实可以看到一个不允许调度的污点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get nodes shitaibin-x -o yaml | grep -10 taint</span><br><span class="line">...</span><br><span class="line">spec:</span><br><span class="line">  podCIDR: 10.24.0.0&#x2F;24</span><br><span class="line">  podCIDRs:</span><br><span class="line">  - 10.24.0.0&#x2F;24</span><br><span class="line">  taints:</span><br><span class="line">  - effect: NoSchedule</span><br><span class="line">    key: node-role.kubernetes.io&#x2F;master</span><br></pre></td></tr></table></figure>
+
+<p>有2个办法解决这个问题，让资源可以调度到master节点上：</p>
+<ol>
+<li>所有的资源声明文件中，都设置容忍这个污点，</li>
+<li>master节点上删除这个污点</li>
+</ol>
+<p>我们是一个测试环境，采取第2种办法更简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># --all为所有节点上的污点</span><br><span class="line"># 最后的-代表移除污点</span><br><span class="line">kubectl taint nodes --all node-role.kubernetes.io&#x2F;master-</span><br></pre></td></tr></table></figure>
+
+<p>移除污点记录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[~]$ kubectl taint nodes shitaibin-x node-role.kubernetes.io&#x2F;master-</span><br><span class="line">node&#x2F;shitaibin-x untainted</span><br><span class="line">[~]$</span><br><span class="line">[~]$ kubectl get nodes shitaibin-x -o yaml | grep -10 taint</span><br><span class="line">[~]$</span><br><span class="line">[~]$ kubectl describe pod | grep -10 Events</span><br><span class="line">...</span><br><span class="line">Events:</span><br><span class="line">  Type     Reason            Age                  From               Message</span><br><span class="line">  ----     ------            ----                 ----               -------</span><br><span class="line">  Warning  FailedScheduling  27s (x7 over 7m38s)  default-scheduler  0&#x2F;1 nodes are available: 1 node(s) had taint &#123;node-role.kubernetes.io&#x2F;master: &#125;, that the pod didn&#39;t tolerate.</span><br><span class="line">  Normal   Scheduled         17s                  default-scheduler  Successfully assigned default&#x2F;mysql-0 to shitaibin-x</span><br><span class="line">  Normal   Pulled            15s                  kubelet            Container image &quot;mysql:5.6&quot; already present on machine</span><br><span class="line">  Normal   Created           14s                  kubelet            Created container mysql</span><br><span class="line">  Normal   Started           14s                  kubelet            Started container mysql</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试集群"><a href="#测试集群" class="headerlink" title="测试集群"></a>测试集群</h2><p>部署一个Pod进行测试，Pod能Running，代表Docker、K8s的配置基本没问题了：</p>
+<p>声明文件为<code>twocontainers.yaml</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1 #指定当前描述文件遵循v1版本的Kubernetes API</span><br><span class="line">kind: Pod #我们在描述一个pod</span><br><span class="line">metadata:</span><br><span class="line">  name: twocontainers #指定pod的名称</span><br><span class="line">  namespace: default #指定当前描述的pod所在的命名空间</span><br><span class="line">  labels: #指定pod标签</span><br><span class="line">    app: twocontainers</span><br><span class="line">  annotations: #指定pod注释</span><br><span class="line">    version: v0.5.0</span><br><span class="line">    releasedBy: david</span><br><span class="line">    purpose: demo</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: sise #容器的名称</span><br><span class="line">      image: quay.io&#x2F;openshiftlabs&#x2F;simpleservice:0.5.0 #创建容器所使用的镜像</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 9876 #应用监听的端口</span><br><span class="line">    - name: shell #容器的名称</span><br><span class="line">      image: centos:7 #创建容器所使用的镜像</span><br><span class="line">      command: #容器启动命令</span><br><span class="line">        - &quot;bin&#x2F;bash&quot;</span><br><span class="line">        - &quot;-c&quot;</span><br><span class="line">        - &quot;sleep 10000&quot;</span><br></pre></td></tr></table></figure>
+
+<p>部署Pod：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f twocontainers.yaml</span><br></pre></td></tr></table></figure>
+
+<p>几分钟后可以看pod状态是否为running。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dabin@k8s-master:~&#x2F;workspace&#x2F;notes&#x2F;kubernetes&#x2F;examples$ kubectl get pods</span><br><span class="line">NAME            READY   STATUS    RESTARTS   AGE</span><br><span class="line">twocontainers   2&#x2F;2     Running   2          83m</span><br></pre></td></tr></table></figure>
+
+<p>如果不是，查看Pod部署遇到的问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl describe pod twocontainers</span><br></pre></td></tr></table></figure>
+
+<h2 id="清空k8s环境"><a href="#清空k8s环境" class="headerlink" title="清空k8s环境"></a>清空k8s环境</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; remove_k8s.sh</span><br><span class="line"># 重置k8s</span><br><span class="line">sudo kubeadm reset -f</span><br><span class="line"># 删除kubectl配置文件</span><br><span class="line">sudo rm -rf ~&#x2F;.kube</span><br><span class="line"># 卸载和清理程序配置文件</span><br><span class="line">sudo apt-get -y purge kubeadm kubectl kubelet kubernetes-cni</span><br><span class="line"># 卸载自安装依赖</span><br><span class="line">sudo apt-get -y autoremove</span><br><span class="line"></span><br><span class="line"># 删除遗留的文件</span><br><span class="line">sudo rm -rf ~&#x2F;.kube&#x2F;</span><br><span class="line">sudo rm -rf &#x2F;etc&#x2F;kubernetes&#x2F;</span><br><span class="line">sudo rm -rf &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;kubelet.service.d</span><br><span class="line">sudo rm -rf &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;kubelet.service</span><br><span class="line">sudo rm -rf &#x2F;etc&#x2F;cni</span><br><span class="line">sudo rm -rf &#x2F;opt&#x2F;cni</span><br><span class="line">sudo rm -rf &#x2F;var&#x2F;lib&#x2F;etcd</span><br><span class="line">sudo rm -rf &#x2F;var&#x2F;etcd</span><br></pre></td></tr></table></figure>
+
+<h2 id="更快的部署方法？"><a href="#更快的部署方法？" class="headerlink" title="更快的部署方法？"></a>更快的部署方法？</h2><p>利用<a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/kind">kind</a>，使用Docker快速部署一个<strong>本地测试、开发</strong>k8s环境。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GO111MODULE&#x3D;&quot;on&quot; go get sigs.k8s.io&#x2F;kind@v0.9.0 &amp;&amp; kind create cluster</span><br></pre></td></tr></table></figure>
+
+<h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><ol>
+<li>人人必备的神书《Kuerbenetes权威指南》</li>
+<li><a target="_blank" rel="noopener" href="https://kubernetes.io/zh/docs/setup/independent/create-cluster-kubeadm/">K8S中文文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pu20065226/p/10641312.html">kubernetes安装过程报错及解决方法</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/09/05/docker-proxy-and-registry-mirror/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/09/05/docker-proxy-and-registry-mirror/" class="post-title-link" itemprop="url">Docker网络代理和仓库镜像加速</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-05 14:48:04" itemprop="dateCreated datePublished" datetime="2020-09-05T14:48:04+08:00">2020-09-05</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>对于Docker官方镜像仓库<code>Registry</code>，没有仓库镜像加速，寸步难行。</p>
+<p>对于国外非Docker官方镜像仓库，并且还被墙的仓库<code>Registry</code>，没有网络代理，寸步难行。</p>
+<p>镜像仓库加速器<code>Registry Mirrors</code>，是国内对官方<code>Registry</code>的”镜像(mirror)”，当拉取image时，Docker Daemon先去 <code>Registry Mirrors</code> 拉去镜像，如果没找到镜像，<code>Registry Mirrors</code>找官方<code>Registry</code>拉去镜像，然后再返回给本地。</p>
+<p>网络代理是给Docker设置http和https代理，最原始的方式，适合有代理的情况。主要用于服务器上有<strong>稳定可访问</strong>的代理或者当前主机上有稳定代理的情况。对于代理和docker不在同一台机器上时，稳定可访问就成了一个问题，比如代理在笔记本上，IP随时都可能变化，服务器连接笔记本做代理，就算法上稳定可访问，而docker也在笔记本上运行，通过环回地址就能稳定访问。</p>
+<p>**不推荐给Docker设置代理，而应当优先使用<code>Registry Mirrors</code>**。代理也是有副作用的，你需要保证非本机能稳定连接到代理，并且能够转发数据，不然端口拒绝访问、TLS握手失败等问题，需要花费更多的时间。</p>
+<p>可访问的Registry有：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://quay.io/">quay.io</a> : 只是访问慢一些而已，可以拉下镜像来</li>
+</ul>
+<h2 id="镜像仓库加速器-推荐"><a href="#镜像仓库加速器-推荐" class="headerlink" title="镜像仓库加速器(推荐)"></a>镜像仓库加速器(推荐)</h2><p>如果指定拉某个镜像仓库的镜像，镜像加速器是用不上的。如果该仓库可以访问，非本机有代理的情况，无需配置网络代理。</p>
+<p>看如何配置<a target="_blank" rel="noopener" href="https://yeasy.gitbooks.io/docker_practice/install/mirror.html">Docker镜像加速器</a>。</p>
+<p>推荐使用阿里云、七牛、DaoCloud的镜像仓库加速器。</p>
+<p><code>/etc/docker/daemon.json</code> 配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;insecure-registries&quot;:[&quot;192.168.9.8:80&quot;],</span><br><span class="line">    &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后冲抵daemon：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl daemon-reload</span><br><span class="line">$ sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="为Docker-Daemon设置网络代理-不推荐"><a href="#为Docker-Daemon设置网络代理-不推荐" class="headerlink" title="为Docker Daemon设置网络代理(不推荐)"></a>为Docker Daemon设置网络代理(不推荐)</h2><p>我Mac上的http、https、socks5代理，http和https监听的是7890端口，sock5监听的是7891端口。</p>
+<p>拉镜像时，可以看到docker连接了7890端口走http代理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;private&#x2F;tmp]$ lsof -i:7890</span><br><span class="line">COMMAND     PID      USER   FD   TYPE             DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">....</span><br><span class="line">com.docke 73371 shitaibin   50u  IPv4 0xa8184ba4240fbe99      0t0  TCP localhost:58847-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   53u  IPv4 0xa8184ba4035deb09      0t0  TCP localhost:58857-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   58u  IPv4 0xa8184ba42d889861      0t0  TCP localhost:58893-&gt;localhost:7890 (ESTABLISHED)</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://docs.docker.com/network/proxy/">官方设置代理教程</a>，2选1:</p>
+<ol>
+<li>给Docker客户端设置代理，拉去镜像、创建新容器时，客户端会把变量发送给Daemon。支持17.07及以上版本，这是官方推荐方式。</li>
+<li>给Daemon设置代理，通过环境变量的方式。支持17.06及以下版本，不推荐。</li>
+</ol>
+<p>给Daemon设置的代理的另外方法：</p>
+<p>创建Daemon的代理配置文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;docker.service.d</span><br><span class="line">sudo touch &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;docker.service.d&#x2F;http-proxy.conf</span><br></pre></td></tr></table></figure>
+
+<p>内容为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">Environment&#x3D;&quot;HTTP_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;NO_PROXY&#x3D;localhost,127.0.0.1,10.96.0.0&#x2F;16, 10.244.0.0&#x2F;16&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后重启Daemon：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br><span class="line"></span><br><span class="line">systemctl show --property&#x3D;Environment docker</span><br></pre></td></tr></table></figure>
+
+<h2 id="关于Docker代理的另外一件事：容器内的代理-几乎不用"><a href="#关于Docker代理的另外一件事：容器内的代理-几乎不用" class="headerlink" title="关于Docker代理的另外一件事：容器内的代理(几乎不用)"></a>关于Docker代理的另外一件事：容器内的代理(几乎不用)</h2><p>默认情况<code>~/.docker/config.json</code>是docker客户端的配置文件，其中可以配置Http和Https代理，这些环境变量会通过<code>--build-arg</code>的方式，在执行<code>docker build</code>时传递到镜像中。</p>
+<p><strong>容器内的服务通常不需要代理，所以这个无需设置</strong>。</p>
+<p>看个测试demo，config.json内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"> <span class="attr">&quot;proxies&quot;</span>:</span><br><span class="line"> &#123;</span><br><span class="line">   <span class="attr">&quot;default&quot;</span>:</span><br><span class="line">   &#123;</span><br><span class="line">     <span class="attr">&quot;httpProxy&quot;</span>: <span class="string">&quot;http://127.0.0.1:3001&quot;</span>,</span><br><span class="line">     <span class="attr">&quot;httpsProxy&quot;</span>: <span class="string">&quot;http://127.0.0.1:3001&quot;</span>,</span><br><span class="line">     <span class="attr">&quot;noProxy&quot;</span>: <span class="string">&quot;*.test.example.com,.example2.com&quot;</span></span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Dockerfile如下：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> busybox</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> env</span></span><br></pre></td></tr></table></figure>
+
+<p>构建过程如下，可以看到设置了http等环境变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ docker build .</span><br><span class="line">Sending build context to Docker daemon  2.048kB</span><br><span class="line">Step 1&#x2F;2 : FROM busybox</span><br><span class="line"> ---&gt; f0b02e9d092d</span><br><span class="line">Step 2&#x2F;2 : RUN env</span><br><span class="line"> ---&gt; Running in 2a8fe4fad631</span><br><span class="line">HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">no_proxy&#x3D;*.test.example.com,.example2.com</span><br><span class="line">HOSTNAME&#x3D;2a8fe4fad631</span><br><span class="line">SHLVL&#x3D;1</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">NO_PROXY&#x3D;*.test.example.com,.example2.com</span><br><span class="line">https_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">http_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">PWD&#x3D;&#x2F;</span><br><span class="line">HTTP_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">Removing intermediate container 2a8fe4fad631</span><br><span class="line"> ---&gt; 89c86d136d8d</span><br><span class="line">Successfully built 89c86d136d8d</span><br></pre></td></tr></table></figure>
+
+<p>启动容器后http环境变量依然生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;test]$ docker run -it --rm 89c86d136d8d sh</span><br><span class="line">&#x2F; # env</span><br><span class="line">HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">no_proxy&#x3D;*.test.example.com,.example2.com</span><br><span class="line">HOSTNAME&#x3D;e9c131f55062</span><br><span class="line">SHLVL&#x3D;1</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">NO_PROXY&#x3D;*.test.example.com,.example2.com</span><br><span class="line">https_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">http_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">TERM&#x3D;xterm</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">PWD&#x3D;&#x2F;</span><br><span class="line">HTTP_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/09/01/cgroup-3-cpu-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/09/01/cgroup-3-cpu-md/" class="post-title-link" itemprop="url">Docker容器基础3：Cgroup - cpu, cpuacct, cpuset子系统</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-01 23:00:24" itemprop="dateCreated datePublished" datetime="2020-09-01T23:00:24+08:00">2020-09-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h2><p>Ubuntu 18.04，内核版本4.15，机器拥有4核。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[~]$ cat &#x2F;proc&#x2F;version</span><br><span class="line">Linux version 4.15.0-112-generic (buildd@lcy01-amd64-027) (gcc version 7.5.0 (Ubuntu 7.5.0-3ubuntu1~18.04)) #113-Ubuntu SMP Thu Jul 9 23:41:39 UTC 2020</span><br><span class="line">[~]$</span><br><span class="line">[~]$ cat &#x2F;etc&#x2F;os-release</span><br><span class="line">NAME&#x3D;&quot;Ubuntu&quot;</span><br><span class="line">VERSION&#x3D;&quot;18.04.3 LTS (Bionic Beaver)&quot;</span><br><span class="line">...</span><br><span class="line">[~]$ cat &#x2F;proc&#x2F;cpuinfo | grep &quot;processor&quot; | wc -l</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+
+<h2 id="CPU相关子系统简介"><a href="#CPU相关子系统简介" class="headerlink" title="CPU相关子系统简介"></a>CPU相关子系统简介</h2><p>有关CPU的cgroup subsystem有3个：</p>
+<ul>
+<li>cpu : 用来<strong>限制</strong>cgroup的CPU使用率</li>
+<li>cpuacct : 用来<strong>统计</strong>cgroup的CPU的使用率</li>
+<li>cpuset : 用来绑定cgroup到指定CPU的哪个核上和NUMA节点</li>
+</ul>
+<p>每个子系统都有多个配置项和指标文件，主要介绍下图常用的配置项：</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpux.png" alt="cpu、cpuacct、cpuset的指标"></p>
+<h3 id="cpu"><a href="#cpu" class="headerlink" title="cpu"></a>cpu</h3><p>cpu子系统用来限制cgroup如何使用CPU的时间，也就是调度，它提供了3种调度办法，并且这3种调度办法都可以在启动容器时进行配置，分别是：</p>
+<ul>
+<li>share ：相对权重的CPU调度</li>
+<li>cfs ：完全公平调度</li>
+<li>rt ：实时调度</li>
+</ul>
+<p>share调度的配置项和原理如下：</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpu-share.png" alt="cpu share调度"></p>
+<p>cfs 是Completely Fair Scheduler的缩写，代表完全公平调度，它利用 <code>cpu.cfs_quota_us</code> 和 <code>cpu.cfs_period_us</code> 实现公平调度，这两个文件内容组合使用可以限制进程在长度为 <code>cfs_period_us</code> 的时间内，只能被分配到总量为 <code>cfs_quota_us</code> 的 CPU 时间。CFS的指标如下：</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpu-cfs.png" alt="cpu cfs调度"></p>
+<p><strong>注意</strong>： </p>
+<ol>
+<li><code>cfs_period_us</code> 取值范围1000~1000000：1ms ~ 1s，<code>cfs_quota_us</code>的最小值为1000，当设置的值不在取值范围时，会报 <code>write xxx: invalid argument</code> 的错误。</li>
+<li>只有这2个参数都有意义时，才能把任务写入到 tasks 文件。</li>
+</ol>
+<p>rt 是RealTime的缩写，它是实时调度，它与cfs调度的区别是cfs不会保证进程的CPU使用率一定要达到设置的比率，而rt会严格保证，让进程的占用率达到这个比率，适合实时性较强的任务，它包含 <code>cpu.rt_period_us</code> 和 <code>cpu.rt_runtime_us</code> 2个配置项。</p>
+<h3 id="cpuacct"><a href="#cpuacct" class="headerlink" title="cpuacct"></a>cpuacct</h3><p>cpuacct包含非常多的统计指标，常用的有以下4个文件：</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpuacct.png" alt="cpuacct常用指标文件"></p>
+<h3 id="cpuset"><a href="#cpuset" class="headerlink" title="cpuset"></a>cpuset</h3><p>为啥需要cpuset？</p>
+<p>比如：</p>
+<ol>
+<li>多核可以提高并发、并行，但是核太多了，会影响进程执行的局部性，降低效率。</li>
+<li>一个服务器上部署多种应用，不同的应用不同的核。</li>
+</ol>
+<p>cpuset也包含居多的配置项，主要是分为cpu和mem 2类，mem与NUMA有关，其常用的配置项如下图:</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpuset.png" alt="cpuset常用配置项"></p>
+<h2 id="利用Docker演示Cgroup-CPU限制"><a href="#利用Docker演示Cgroup-CPU限制" class="headerlink" title="利用Docker演示Cgroup CPU限制"></a>利用Docker演示Cgroup CPU限制</h2><h3 id="cpu-1"><a href="#cpu-1" class="headerlink" title="cpu"></a>cpu</h3><h4 id="不限制cpu的情况"><a href="#不限制cpu的情况" class="headerlink" title="不限制cpu的情况"></a>不限制cpu的情况</h4><p>stress为基于ubuntu:16.04安装stress做出来的镜像，利用stress来测试cpu限制。</p>
+<p>Dockerfile如下：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">From</span> ubuntu:<span class="number">16.04</span></span><br><span class="line"><span class="comment"># Using Aliyun mirror</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mv /etc/apt/sources.list /root/sources.list.bak</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> sed -e s/security.ubuntu/mirrors.aliyun/ -e s/archive.ubuntu/mirrors.aliyun/ -e s/archive.canonical/mirrors.aliyun/ -e s/esm.ubuntu/mirrors.aliyun/ /root/sources.list.bak &gt; /etc/apt/sources.list</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get install -y stress</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /root</span></span><br></pre></td></tr></table></figure>
+
+<p>启动容器不做任何cpu限制，利用 <code>stress -c 2</code> 开启另外2个stress线程，共3个：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu]$ docker run --rm -it stress:16.04</span><br><span class="line">root@5fad38726740:&#x2F;# stress -c 2</span><br><span class="line">stress: info: [12] dispatching hogs: 2 cpu, 0 io, 1 vm, 0 hdd</span><br></pre></td></tr></table></figure>
+
+<p>在<code>cgroup/cpu,cpuacct</code>下，找到该容器对应的目录，查看 <code>cfs_period_us</code> 和 <code>cfs_quota_us</code> 的默认值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;docker-5fad38726740b90b93c06972fe4a9f11391a38aaeb3e922f10c3269fa32e1873.scope]$ cat cpu.cfs_period_us</span><br><span class="line">100000</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;docker-5fad38726740b90b93c06972fe4a9f11391a38aaeb3e922f10c3269fa32e1873.scope]$ cat cpu.cfs_quota_us</span><br><span class="line">-1</span><br></pre></td></tr></table></figure>
+
+<p>查看主机CPU利用率，为3个stress进程，每1个都100%，它们属于同一个cgroup：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">5616 root      20   0  109872 102336     36 R 100.0  1.3   0:07.46 stress</span><br><span class="line">5617 root      20   0    7468     88      0 R 100.0  0.0   0:07.45 stress</span><br><span class="line">5615 root      20   0    7468     88      0 R 100.0  0.0   0:07.45 stress</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="限制cpu的情况"><a href="#限制cpu的情况" class="headerlink" title="限制cpu的情况"></a>限制cpu的情况</h4><p><code>--cpu-quota</code>设置5000，开stress分配到另外2个核。</p>
+<p>[/sys/fs/cgroup/cpu]$ docker run –rm -it –cpu-quota=5000 stress:16.04<br>root@7e79005d7ca1:/#<br>root@7e79005d7ca1:/# stress  -c 2<br>stress: info: [13] dispatching hogs: 2 cpu, 0 io, 1 vm, 0 hdd</p>
+<p>查看 <code>cfs_period_us</code> 和 <code>cfs_quota_us</code> 的设置，<code>5000/100000 = 5%</code> ， 即限制该容器的CPU使用率不得超过5%。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;docker-7e79005d7ca1b338d870d3dc79af3f1cd38ace195ebd685a09575f6acee36a07.scope]$ cat cpu.cfs_quota_us</span><br><span class="line">5000</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;docker-7e79005d7ca1b338d870d3dc79af3f1cd38ace195ebd685a09575f6acee36a07.scope]$ cat cpu.cfs_period_us</span><br><span class="line">100000</span><br></pre></td></tr></table></figure>
+
+<p>利用top可以看到3个进程总cpu使用率5.1%。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">5411 root      20   0    7468     92      0 R   1.7  0.0   0:00.53 stress</span><br><span class="line">5412 root      20   0  109872 102500     36 R   1.7  1.3   0:00.30 stress</span><br><span class="line">5413 root      20   0    7468     92      0 R   1.7  0.0   0:00.35 stress</span><br></pre></td></tr></table></figure>
+
+<h3 id="cpuacct-1"><a href="#cpuacct-1" class="headerlink" title="cpuacct"></a>cpuacct</h3><p>查看<code>cpuacct.stat, cpuacct.usage, cpuacct.usage_percpu</code>，一定要同时输出这几个文件，不然可能有时间差，利用python可以计算每个核上的时间之和为<code>usage</code>，即该容器占用的cpu总时间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct]$ cat cpuacct.*</span><br><span class="line">user 20244450 &#x2F;&#x2F; cpuacct.stat</span><br><span class="line">system 52361  &#x2F;&#x2F; cpuacct.stat</span><br><span class="line">204310768947624  &#x2F;&#x2F; cpuacct.usage</span><br><span class="line">61143521333219 32616883199042 73804985004267 36745379411096 &#x2F;&#x2F; cpuacct.usage_percpu</span><br><span class="line"></span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct]$ python</span><br><span class="line">Python 2.7.5 (default, Apr 11 2018, 07:36:10)</span><br><span class="line">[GCC 4.8.5 20150623 (Red Hat 4.8.5-28)] on linux2</span><br><span class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span><br><span class="line">&gt;&gt;&gt; sum &#x3D; 61143521333219+32616883199042+73804985004267+36745379411096</span><br><span class="line">&gt;&gt;&gt; dist &#x3D; sum - 204310768947624</span><br><span class="line">&gt;&gt;&gt; dist</span><br><span class="line">0</span><br><span class="line">&gt;&gt;&gt; sum</span><br><span class="line">204310768947624</span><br><span class="line">&gt;&gt;&gt; sum2 &#x3D; 20244450+52361</span><br><span class="line">&gt;&gt;&gt; sum2</span><br><span class="line">20296811</span><br></pre></td></tr></table></figure>
+
+<h3 id="cpuset-1"><a href="#cpuset-1" class="headerlink" title="cpuset"></a>cpuset</h3><p>启动容器，然后使用stress占用1个核：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu]$ docker run --rm -it stress:16.04</span><br><span class="line">root@a907df624697:~#</span><br><span class="line">root@a907df624697:~# stress -c 1</span><br><span class="line">stress: info: [12] dispatching hogs: 1 cpu, 0 io, 0 vm, 0 hdd</span><br></pre></td></tr></table></figure>
+
+<p>top显示占用100%CPU。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">6633 root      20   0    7480     92      0 R 100.0  0.0   0:12.13 stress</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>cpuset 能看到可使用的核为： 0~3。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset&#x2F;docker&#x2F;a907df624697a19631929c1e9e971d2893afddbf6befb0dd44be3cf0024a3e0d]$ cat cpuset.cpus</span><br><span class="line">0-3</span><br></pre></td></tr></table></figure>
+
+<p>使用cpuacct查看CPU情况使用统计，可以看到用了4个核上的使用时间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu&#x2F;docker&#x2F;a907df624697a19631929c1e9e971d2893afddbf6befb0dd44be3cf0024a3e0d]$ cat cpuacct.usage cpuacct.usage_all</span><br><span class="line">153015464879</span><br><span class="line">cpu user system</span><br><span class="line">0 45900415963 0</span><br><span class="line">1 4675002 0</span><br><span class="line">2 63537634967 0</span><br><span class="line">3 43572738947 0</span><br></pre></td></tr></table></figure>
+
+<p>现在创建一个新容器，限制只能用1，3这2个核：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu]$ docker run --rm -it --cpuset-cpus 1,3 stress:16.04</span><br><span class="line">root@0ce61a38e7c9:~# stress -c 1</span><br><span class="line">stress: info: [10] dispatching hogs: 1 cpu, 0 io, 0 vm, 0 hdd</span><br></pre></td></tr></table></figure>
+
+<p>查看可以使用的核：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ cat cpuset.cpus</span><br><span class="line">1,3</span><br></pre></td></tr></table></figure>
+
+<p><code>cpuacct.usage_all</code> 显示只有1、3两个核的数据在使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ cat cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 0 0</span><br><span class="line">1 37322884717 0</span><br><span class="line">2 0 0</span><br><span class="line">3 21332956940 0</span><br></pre></td></tr></table></figure>
+
+<p>现在切换到root账号，把 <code>sched_load_balance</code> 标记设置为0，不进行核间的负载均衡，然后利用 <code>cpuacct.usage_all</code> 查看每个核上的时间，隔几秒前后查询2次，可以发现3号核的cpu使用时间停留在<code>21332956940</code>，而核1的cpu使用时间从<code>185084024837</code> 增加到 <code>221479683602</code>， 说明设置之后stress线程一致在核1上运行，不再进行负载均衡。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ echo 0 &gt; cpuset.sched_load_balance</span><br><span class="line"></span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ cat cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 0 0</span><br><span class="line">1 185084024837 0</span><br><span class="line">2 0 0</span><br><span class="line">3 21332956940 0</span><br><span class="line"></span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ cat cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 0 0</span><br><span class="line">1 221479683602 0</span><br><span class="line">2 0 0</span><br><span class="line">3 21332956940 0</span><br></pre></td></tr></table></figure>
+<h2 id="利用Go演示Cgroup-CPU限制"><a href="#利用Go演示Cgroup-CPU限制" class="headerlink" title="利用Go演示Cgroup CPU限制"></a>利用Go演示Cgroup CPU限制</h2><p>测试程序：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/notes/blob/master/docker/codes/02.2.cgroup_cpu.go">02.2.cgroup_cpu.go</a> 。</p>
+<p>该程序接受1个入参，代表测试类型：</p>
+<ul>
+<li>空或<code>nolimit</code>: 无限制</li>
+<li><code>cpu</code> : 执行cpu限制，利用cfs把cpu使用率控制在5%</li>
+<li><code>cpuset</code> : 限制只使用核1和核3</li>
+</ul>
+<p>测试程序的执行动作如下：</p>
+<ol>
+<li>程序首先在cpu和cpuset中创建2个cgroup，</li>
+<li>按传入的参数设置限制或不设置限制</li>
+<li>利用<code>/proc/self/exe</code>启动进程</li>
+<li>把进程加入到2个cgroup的tasks，即加入cgroup</li>
+<li>进程会创建3个goroutine不断的去消耗cpu，它们会占用3个线程</li>
+</ol>
+<p>当CPU使用率不限制时，3个线程会分配到3个核上执行，所以进程的CPU使用率应当达到300%。</p>
+<p>利用测试程序分3组实验，然后利用 <code>top</code>、<code>cpuacct.usage_all</code>、<code>cpuset.cpu</code> 3个角度查看CPU限制和使用情况。</p>
+<h3 id="不限制CPU"><a href="#不限制CPU" class="headerlink" title="不限制CPU"></a>不限制CPU</h3><ol>
+<li>启动测试程序，进程id为4805，进入Namespace后进程id变为1，可以看到启动了3个worker协程。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;home&#x2F;ubuntu&#x2F;workspace&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.2.cgroup_cpu.go</span><br><span class="line">---------- 1 ------------</span><br><span class="line">Test type: No limit</span><br><span class="line">cmdPid: 4805</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">worker 2 start</span><br><span class="line">worker 0 start</span><br><span class="line">worker 1 start</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>top查看进程的CPU占用率为300%，符合预期。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">4805 root      20   0    3376   1004    836 R 300.0  0.0   4:41.09 exe</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>利用cpuacct查看每个核上的使用时间：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuacct]$ cat test_cpu_limit&#x2F;cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 8046597390 0</span><br><span class="line">1 34269979109 0</span><br><span class="line">2 26597651949 0</span><br><span class="line">3 33886705168 0</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>利用cpuset.cpus查看使用的cpu核：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset]$ cat test_cpuset_limit&#x2F;cpuset.cpus</span><br><span class="line">0-3</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="使用cpu限制CPU使用率"><a href="#使用cpu限制CPU使用率" class="headerlink" title="使用cpu限制CPU使用率"></a>使用cpu限制CPU使用率</h3><ol>
+<li>启动测试程序：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;home&#x2F;ubuntu&#x2F;workspace&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.2.cgroup_cpu.go cpu</span><br><span class="line">---------- 1 ------------</span><br><span class="line">Test type: Cpu limit</span><br><span class="line">cmdPid: 4937</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">worker 2 start</span><br><span class="line">worker 1 start</span><br><span class="line">worker 0 start</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>top查看进程的CPU占用率为5.0%，符合预期。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">4937 root      20   0    3376   1004    836 R   5.3  0.0   0:08.40 exe</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>利用cpuacct查看每个核上的使用时间，由于没有限制使用的cpu核，所以每个核上都还有运行时间</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuacct]$ cat test_cpu_limit&#x2F;cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 2036903414 0</span><br><span class="line">1 44170 0</span><br><span class="line">2 4428266075 0</span><br><span class="line">3 4356927661 0</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>利用cpuset.cpus查看使用的cpu核</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset]$ cat test_cpuset_limit&#x2F;cpuset.cpus</span><br><span class="line">0-3</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用cpuset限制CPU占用的核"><a href="#使用cpuset限制CPU占用的核" class="headerlink" title="使用cpuset限制CPU占用的核"></a>使用cpuset限制CPU占用的核</h3><ol>
+<li>启动测试程序，这次与前面的不同，看到只起来了2个worker协程在运行，因为机器上的Go版本是go1.10，还不支持抢占，当协程为for循环时，2个协程都持续运行，不让出cpu，只有2个核时，第3个协程无法运行。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;home&#x2F;ubuntu&#x2F;workspace&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.2.cgroup_cpu.go cpuset</span><br><span class="line">---------- 1 ------------</span><br><span class="line">Test type: Cpuset limit</span><br><span class="line">cmdPid: 5063</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">worker 2 start</span><br><span class="line">worker 0 start</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>top查看进程的CPU占用率为200%，符合只使用2个核的预期。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">5063 root      20   0    3376   1004    836 R 199.7  0.0   4:21.49 exe</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>利用cpuacct查看每个核上的使用时间，只有核1和3上有时间统计，说明只使用了核1和3</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuacct]$ cat test_cpu_limit&#x2F;cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 0 0</span><br><span class="line">1 24172994458 0</span><br><span class="line">2 0 0</span><br><span class="line">3 24213057511 0</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>利用cpuset.cpus查看使用的cpu核</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset]$ cat test_cpuset_limit&#x2F;cpuset.cpus</span><br><span class="line">1,3</span><br></pre></td></tr></table></figure>
+
+<h2 id="推荐资料"><a href="#推荐资料" class="headerlink" title="推荐资料"></a>推荐资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups/">Linux Kernel关于cgroup cpu、cpuset的文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://union-click.jd.com/jdc?e=&p=AyIGZRtSFwsWB1EcXhUyFQ5WEloVCxMBURxrUV1KWQorAlBHU0VeBUVNR0ZbSkdETlcNVQtHRVNSUVNLXANBRA1XB14DS10cQQVYD21XHgBcGFIUAhsGUx9cJQEbBTJbEmFdcHkRSANGBhBDCnkmEVQeC2UaaxUDEwVWEl8RBhM3ZRtcJUN8B1QaUxMCFAFlGmsVBhoOUx9fFwESB1IfaxICGzeDtdnBl4nT2YZrJTIRN2UrWyUBIkU7HQxBABEGBhILHVdGAgcaXB0DQARWHQ4QVhFVVhkLEVciBVQaXxw=">阿里同学的书《自己动手写Docker》</a></li>
+<li><a target="_blank" rel="noopener" href="https://my.oschina.net/xiaominmin/blog/3068364">解决写 cpu.cfs_quota_us <code>invalid argument</code>问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/xftony/article/details/80536562">解决写 cpuset.tasks <code>No space</code> 问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/raymondshiquan/articles/2727037.html">cgroup使用踩坑</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/08/30/cgroup-2-memory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/08/30/cgroup-2-memory/" class="post-title-link" itemprop="url">Docker容器基础2：Cgroup - memory子系统</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-30 10:45:08" itemprop="dateCreated datePublished" datetime="2020-08-30T10:45:08+08:00">2020-08-30</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="测试环境版本"><a href="#测试环境版本" class="headerlink" title="测试环境版本"></a>测试环境版本</h2><p>测试机采用的Ubuntu 16.04 与 Linux 4.4.0 内核版本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[~]$ cat &#x2F;etc&#x2F;issue</span><br><span class="line">Ubuntu 16.04.4 LTS \n \l</span><br><span class="line">[~]$</span><br><span class="line">[~]$ cat &#x2F;proc&#x2F;version</span><br><span class="line">Linux version 4.4.0-117-generic (buildd@lgw01-amd64-057) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.9) ) #141-Ubuntu SMP Tue Mar 13 12:01:47 UTC 2018</span><br></pre></td></tr></table></figure>
+
+<p><strong>提醒</strong>：Linux内核版本至少要大于 4.3 这样cgroup的功能才是全的，否则Linux内核版本过低，由于功能不全可能无法运行提供的Demo，目前已知无法运行的内核版本有：<code>Linux version 3.10.0</code>。</p>
+<h2 id="Cgroup-memory子系统介绍"><a href="#Cgroup-memory子系统介绍" class="headerlink" title="Cgroup memory子系统介绍"></a>Cgroup memory子系统介绍</h2><p>cgroup的memory子系统全称为 Memory Resource Controller ，它能够限制cgroup中所有任务的使用的内存和交换内存进行限制，并且采取control措施：当OOM时，是否要kill进程。</p>
+<p>memroy包含了很多设置指标和统计指标：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ ls memory.*</span><br><span class="line">memory.failcnt                  memory.kmem.tcp.limit_in_bytes      memory.memsw.limit_in_bytes      memory.soft_limit_in_bytes</span><br><span class="line">memory.force_empty              memory.kmem.tcp.max_usage_in_bytes  memory.memsw.max_usage_in_bytes  memory.stat</span><br><span class="line">memory.kmem.failcnt             memory.kmem.tcp.usage_in_bytes      memory.memsw.usage_in_bytes      memory.swappiness</span><br><span class="line">memory.kmem.limit_in_bytes      memory.kmem.usage_in_bytes          memory.move_charge_at_immigrate  memory.usage_in_bytes</span><br><span class="line">memory.kmem.max_usage_in_bytes  memory.limit_in_bytes               memory.numa_stat                 memory.use_hierarchy</span><br><span class="line">memory.kmem.slabinfo            memory.max_usage_in_bytes           memory.oom_control</span><br><span class="line">memory.kmem.tcp.failcnt         memory.memsw.failcnt                memory.pressure_level</span><br></pre></td></tr></table></figure>
+
+<p>下图进行了汇总，虚线所圈出的指标为常用指标，每个指标的含义也如图所标注：</p>
+<p><img src="http://img.lessisbetter.site/2020-08-cgroup-memory.png" alt="cgroup memory subsystem"></p>
+<p>所有指标的含义可以参考<a target="_blank" rel="noopener" href="https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups/memory.txt">Linux Kernel关于cgroup memory</a>的介绍。</p>
+<h2 id="利用Docker演示Cgroup内存限制"><a href="#利用Docker演示Cgroup内存限制" class="headerlink" title="利用Docker演示Cgroup内存限制"></a>利用Docker演示Cgroup内存限制</h2><ol>
+<li>创建一个容器，限制为内存为128MB</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[~]$ docker run --rm -itd -m 128m stress:16.04</span><br><span class="line">fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>容器内利用<code>stress</code>使用100MB内存</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[~]$ docker exec -it fda7bbf29 bash</span><br><span class="line">root@fda7bbf297d9:&#x2F;# stress --vm-bytes 100m --vm-keep -m 1</span><br><span class="line">stress: info: [23739] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>在memory子系统目录下，利用容器id找到与当前容器相关的cgroup目录</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice]$ find . -name &quot;*fda7bbf29*&quot; -print</span><br><span class="line">.&#x2F;var-lib-docker-containers-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f-shm.mount</span><br><span class="line">.&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope</span><br></pre></td></tr></table></figure>
+
+<p><code>./docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope</code> 目录为当前容器的内存cgroup节点。</p>
+<ol start="4">
+<li>查看该容器的内存使用量、限制，以及统计信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ cat memory.usage_in_bytes memory.limit_in_bytes memory.stat</span><br><span class="line">106049536 &#x2F;&#x2F; memory.usage_in_bytes</span><br><span class="line">134217728 &#x2F;&#x2F; memory.limit_in_bytes</span><br><span class="line">cache 0   &#x2F;&#x2F; 以下为memory.stat</span><br><span class="line">rss 105943040</span><br><span class="line">swap 0</span><br><span class="line">...</span><br><span class="line">hierarchical_memory_limit 134217728</span><br><span class="line">hierarchical_memsw_limit 268435456</span><br><span class="line">...</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用量为 ： 106049536 / 1024 / 1024 = 101.14 MB</li>
+<li>限制为 ： 134217728 / 1024 / 1024 = 128MB</li>
+</ul>
+<p>stat文件：</p>
+<ul>
+<li>rss ：105943040 / 1024 / 1024 = 101.03 MB</li>
+<li>hierarchical_memory_limit ： 134217728 / 1024 / 1024 = 128MB</li>
+</ul>
+<p>stat中rss的值与 <code>usage_in_bytes</code> 有稍微的出入，原因是 <code>usage_in_bytes</code> 的值为近视值，而之所以近似，是因为内核采用的是异步统计，造成统计值和当下的值存在误差。</p>
+<p>该cgroup中所有tasks所占用的真实内存可以使用：<code>stat.rss + stat.cache + stat.swap</code> ，在上面的例子中 cache 和 swap 都为0，所以 rss 的值就是真实的内存使用量。</p>
+<p>之所以存在 <code>usage_in_bytes</code> ， 这样做的目的是通过一个值可以快速获取内存的使用量，而无需进行计算。</p>
+<p>利用<code>docker.stats</code> 查看内存占用情况:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ docker stats</span><br><span class="line">CONTAINER           CPU %               MEM USAGE &#x2F; LIMIT     MEM %               NET I&#x2F;O             BLOCK I&#x2F;O           PIDS</span><br><span class="line">fda7bbf297d9        99.50%              101.1 MiB &#x2F; 128 MiB   79.01%              648 B &#x2F; 648 B       0 B &#x2F; 0 B           4</span><br></pre></td></tr></table></figure>
+
+<p>可以看到usage和limit分别为101.1MB和128MB，usage与cgroup中 <code>usage_in_bytes</code> 是一致的，limit与容器启动时的配置一致。</p>
+<p>top命令查看进程占用内存情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ top</span><br><span class="line">....</span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">13025 root      20   0  109872 102336     36 R  93.8  1.3   6:39.09 stress</span><br></pre></td></tr></table></figure>
+
+<p>可以看到<code>RES</code>为 102336 KB，即 99.9 MB，小于cgroup中统计的内存使用量，原因是因为cgroup中除了stress还有其他任务，比如docker中运行的ssh。</p>
+<p>可以查看该group的进程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ cat cgroup.procs</span><br><span class="line">13780</span><br><span class="line">13792</span><br><span class="line">13793</span><br><span class="line">21124</span><br><span class="line">21221</span><br></pre></td></tr></table></figure>
+
+<p>从 <code>pstree -p</code> 可以查看整个进程树:</p>
+<p><img src="http://img.lessisbetter.site/2020-cgroup-memory-pstree.png"></p>
+<h2 id="利用Go演示Cgroup内存限制"><a href="#利用Go演示Cgroup内存限制" class="headerlink" title="利用Go演示Cgroup内存限制"></a>利用Go演示Cgroup内存限制</h2><h3 id="测试源码"><a href="#测试源码" class="headerlink" title="测试源码"></a>测试源码</h3><p>cgroup的演示<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/notes/blob/master/docker/codes/02.1.cgroup.go">源码</a> ，关于源码中的<code>/proc/self/exe</code>看<a href="#%E8%A1%A5%E5%85%85%E5%B0%8F%E7%9F%A5%E8%AF%86">补充小知识</a>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="comment">// 参考《自动动手写Docker》</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;io/ioutil&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;os/exec&quot;</span></span><br><span class="line">	<span class="string">&quot;path&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">	<span class="string">&quot;syscall&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> CgroupMemoryHierarchyMount = <span class="string">&quot;/sys/fs/cgroup/memory&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> os.Args[<span class="number">0</span>] == <span class="string">&quot;/proc/self/exe&quot;</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;---------- 2 ------------&quot;</span>)</span><br><span class="line">		fmt.Printf(<span class="string">&quot;Current pid: %d\n&quot;</span>, syscall.Getpid())</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 创建stress子进程，施加内存压力</span></span><br><span class="line">		allocMemSize := <span class="string">&quot;99m&quot;</span> <span class="comment">// 另外1项测试为99m</span></span><br><span class="line">		fmt.Printf(<span class="string">&quot;allocMemSize: %v\n&quot;</span>, allocMemSize)</span><br><span class="line">		stressCmd := fmt.Sprintf(<span class="string">&quot;stress --vm-bytes %s --vm-keep -m 1&quot;</span>, allocMemSize)</span><br><span class="line">		cmd := exec.Command(<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, stressCmd)</span><br><span class="line">		cmd.SysProcAttr = &amp;syscall.SysProcAttr&#123;&#125;</span><br><span class="line">		cmd.Stdin = os.Stdin</span><br><span class="line">		cmd.Stdout = os.Stdout</span><br><span class="line">		cmd.Stderr = os.Stderr</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> err := cmd.Run(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Printf(<span class="string">&quot;stress run error: %v&quot;</span>, err)</span><br><span class="line">			os.Exit(<span class="number">-1</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">&quot;---------- 1 ------------&quot;</span>)</span><br><span class="line">	cmd := exec.Command(<span class="string">&quot;/proc/self/exe&quot;</span>)</span><br><span class="line">	cmd.SysProcAttr = &amp;syscall.SysProcAttr&#123;</span><br><span class="line">		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWNS | syscall.CLONE_NEWPID,</span><br><span class="line">	&#125;</span><br><span class="line">	cmd.Stdin = os.Stdin</span><br><span class="line">	cmd.Stdout = os.Stdout</span><br><span class="line">	cmd.Stderr = os.Stderr</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动子进程</span></span><br><span class="line">	<span class="keyword">if</span> err := cmd.Start(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;/proc/self/exe start error: %v&quot;</span>, err)</span><br><span class="line">		os.Exit(<span class="number">-1</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	cmdPid := cmd.Process.Pid</span><br><span class="line">	fmt.Printf(<span class="string">&quot;cmdPid: %d\n&quot;</span>, cmdPid)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建子cgroup</span></span><br><span class="line">	memoryGroup := path.Join(CgroupMemoryHierarchyMount, <span class="string">&quot;test_memory_limit&quot;</span>)</span><br><span class="line">	os.Mkdir(memoryGroup, <span class="number">0755</span>)</span><br><span class="line">	<span class="comment">// 设定内存限制</span></span><br><span class="line">	ioutil.WriteFile(path.Join(memoryGroup, <span class="string">&quot;memory.limit_in_bytes&quot;</span>),</span><br><span class="line">		[]<span class="keyword">byte</span>(<span class="string">&quot;100m&quot;</span>), <span class="number">0644</span>)</span><br><span class="line">	<span class="comment">// 将进程加入cgroup</span></span><br><span class="line">	ioutil.WriteFile(path.Join(memoryGroup, <span class="string">&quot;tasks&quot;</span>),</span><br><span class="line">		[]<span class="keyword">byte</span>(strconv.Itoa(cmdPid)), <span class="number">0644</span>)</span><br><span class="line"></span><br><span class="line">	cmd.Process.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>源码运行解读：</p>
+<ol>
+<li>使用<code>go run</code>运行程序，或build后运行程序时，程序的名字是<code>02.1.cgroup</code>，所以不满足<code>os.Args[0] == &quot;/proc/self/exe&quot;</code>会被跳过。</li>
+<li>然后使用<code>&quot;/proc/self/exe&quot;</code>新建了子进程，子进程此时叫：<code>&quot;/proc/self/exe&quot;</code></li>
+<li>创建cgroup <code>test_memory_limit</code>，然后设置内存限制为100MB</li>
+<li>把子进程加入到cgroup <code>test_memory_limit</code></li>
+<li>等待子进程结束</li>
+<li>子进程干了啥呢？子进程其实还是当前程序，只不过它的名字是<code>&quot;/proc/self/exe&quot;</code>，符合最初的if语句，之后它会创建stress子进程，然后运行stress，可以修改<code>allocMemSize</code>设置stress所要占用的内存</li>
+</ol>
+<h3 id="不超越内存限制情况"><a href="#不超越内存限制情况" class="headerlink" title="不超越内存限制情况"></a>不超越内存限制情况</h3><p>源码默认在启动stress时，stress占用99m内存，cgroup限制最多使用100m内存。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.1.cgroup.go</span><br><span class="line">---------- 1 ------------</span><br><span class="line">cmdPid: 2533</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">allocMemSize: 99m</span><br><span class="line">stress: info: [6] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，子进程<code>&quot;/proc/self/exe&quot;</code>运行后取得的pid为 <strong>2533</strong> ，在新的Namespace中，子进程<code>&quot;/proc/self/exe&quot;</code>的pid已经变成1，然后利用stress打了99M内存。</p>
+<p>使用top查看资源使用情况，stress进程内存RES大约为99M，pid 为 <strong>2539</strong> 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND</span><br><span class="line">2539 root      20   0  103940 101680    284 R 93.8  9.9   0:06.09 stress</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat memory.limit_in_bytes</span><br><span class="line">104857600</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ # 104857600 刚好为100MB</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat memory.usage_in_bytes</span><br><span class="line">2617344</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat tasks</span><br><span class="line">2533 &lt;--- &#x2F;prof&#x2F;self&#x2F;exe进程</span><br><span class="line">2534</span><br><span class="line">2535</span><br><span class="line">2536</span><br><span class="line">2537</span><br><span class="line">2538</span><br><span class="line">2539 &lt;--- stress进程</span><br></pre></td></tr></table></figure>
+
+<p>tasks下都是在cgroup <code>test_memory_limit</code> 中的进程，这些是Host中真实的进程号，通过<code>pstree -p</code>查看进程树，看看这些都是哪些进程：</p>
+<p><img src="http://img.lessisbetter.site/2020-08-cgroup.png" alt="Cgroup限制内存的进程树"></p>
+<p>进程树佐证了前面的代码执行流程分析大致是对的，只不过这其中还涉及一些创建子进程的具体手段，比如stress是通过sh命令创建出来的。</p>
+<h3 id="内存超过限制被Kill情况"><a href="#内存超过限制被Kill情况" class="headerlink" title="内存超过限制被Kill情况"></a>内存超过限制被Kill情况</h3><p>内存超过cgroup限制的内存会怎么样？会OOM吗？</p>
+<p>如果将stress内存提高到占用101MB，大于cgroup中内存的限制100M时，整个group中的进程就会被Kill。</p>
+<p>修改代码，将 <code>allocMemSize</code> 设置为 <code>101m</code> ，然后重新运行程序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.1.cgroup.go                                                                        *[master]</span><br><span class="line">---------- 1 ------------</span><br><span class="line">cmdPid: 21492</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">allocMemSize: 101m</span><br><span class="line">stress: info: [6] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd</span><br><span class="line">stress: FAIL: [6] (415) &lt;-- worker 7 got signal 9</span><br><span class="line">stress: WARN: [6] (417) now reaping child worker processes</span><br><span class="line">stress: FAIL: [6] (421) kill error: No such process</span><br><span class="line">stress: FAIL: [6] (451) failed run completed in 0s</span><br><span class="line">2020&#x2F;08&#x2F;27 17:38:52 exit status 1</span><br></pre></td></tr></table></figure>
+
+<p><code>stress: FAIL: [6] (415) &lt;-- worker 7 got signal 9</code> 说明收到了信号9，即SIGKILL 。</p>
+<h2 id="补充小知识"><a href="#补充小知识" class="headerlink" title="补充小知识"></a>补充小知识</h2><p>在演示源码中，使用到<code>&quot;/proc/self/exe&quot;</code>，它在Linux是一个特殊的软链接，它指向当前正在运行的程序，比如执行<code>ll</code>查看该文件时，它就执行了<code>/usr/bin/ls</code>，因为当前的程序是<code>ls</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[~]$ ll &#x2F;proc&#x2F;self&#x2F;exe</span><br><span class="line">lrwxrwxrwx 1 centos centos 0 8月  27 12:44 &#x2F;proc&#x2F;self&#x2F;exe -&gt; &#x2F;usr&#x2F;bin&#x2F;ls</span><br></pre></td></tr></table></figure>
+
+<p>演示代码中的技巧就是通过<code>&quot;/proc/self/exe&quot;</code>重新启动一个子进程，只不过进程名称叫<code>&quot;/proc/self/exe&quot;</code>而已。如果代码中没有那句if判断，又会执行到创建子进程，最终会导致递归溢出。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>memory是cgroup的一个子系统，主要用来控制一组进程的内存资源，对最大使用量进行限制和控制。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups/memory.txt">Linux Kernel关于cgroup memory</a></li>
+<li><a target="_blank" rel="noopener" href="https://union-click.jd.com/jdc?e=&p=AyIGZRtSFwsWB1EcXhUyFQ5WEloVCxMBURxrUV1KWQorAlBHU0VeBUVNR0ZbSkdETlcNVQtHRVNSUVNLXANBRA1XB14DS10cQQVYD21XHgBcGFIUAhsGUx9cJQEbBTJbEmFdcHkRSANGBhBDCnkmEVQeC2UaaxUDEwVWEl8RBhM3ZRtcJUN8B1QaUxMCFAFlGmsVBhoOUx9fFwESB1IfaxICGzeDtdnBl4nT2YZrJTIRN2UrWyUBIkU7HQxBABEGBhILHVdGAgcaXB0DQARWHQ4QVhFVVhkLEVciBVQaXxw=">阿里同学的书《自己动手写Docker》</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+</body>
+</html>

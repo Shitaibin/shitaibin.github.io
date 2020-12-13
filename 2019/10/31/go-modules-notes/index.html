@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="教程资料 简单操作：https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000016703769 多项介绍：https:&#x2F;&#x2F;learnku.com&#x2F;golang&#x2F;t&#x2F;33859 官方教程：https:&#x2F;&#x2F;blog.golang.org&#x2F;using-go-modules  问题汇总replace 使用http或https在使用go replace时，有2点注意：  目标仓库不能带协议头，比">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go Modules 方法、问题汇总贴">
+<meta property="og:url" content="http://lessisbetter.site/2019/10/31/go-modules-notes/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="教程资料 简单操作：https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000016703769 多项介绍：https:&#x2F;&#x2F;learnku.com&#x2F;golang&#x2F;t&#x2F;33859 官方教程：https:&#x2F;&#x2F;blog.golang.org&#x2F;using-go-modules  问题汇总replace 使用http或https在使用go replace时，有2点注意：  目标仓库不能带协议头，比">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-31T09:07:59.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.824Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/10/31/go-modules-notes/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go Modules 方法、问题汇总贴 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%99%E7%A8%8B%E8%B5%84%E6%96%99"><span class="nav-number">1.</span> <span class="nav-text">教程资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB"><span class="nav-number">2.</span> <span class="nav-text">问题汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#replace-%E4%BD%BF%E7%94%A8http%E6%88%96https"><span class="nav-number">2.1.</span> <span class="nav-text">replace 使用http或https</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gitlab-%E4%BB%93%E5%BA%93%E6%B2%A1%E5%BC%80%E5%90%AFhttps"><span class="nav-number">2.2.</span> <span class="nav-text">Gitlab 仓库没开启https</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go-Modules-%E4%BB%A3%E7%90%86"><span class="nav-number">2.3.</span> <span class="nav-text">Go Modules 代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93"><span class="nav-number">2.4.</span> <span class="nav-text">私有仓库</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/10/31/go-modules-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go Modules 方法、问题汇总贴
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-10-31 17:07:59" itemprop="dateCreated datePublished" datetime="2019-10-31T17:07:59+08:00">2019-10-31</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="教程资料"><a href="#教程资料" class="headerlink" title="教程资料"></a>教程资料</h2><ul>
+<li>简单操作：<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000016703769">https://segmentfault.com/a/1190000016703769</a></li>
+<li>多项介绍：<a target="_blank" rel="noopener" href="https://learnku.com/golang/t/33859">https://learnku.com/golang/t/33859</a></li>
+<li>官方教程：<a target="_blank" rel="noopener" href="https://blog.golang.org/using-go-modules">https://blog.golang.org/using-go-modules</a></li>
+</ul>
+<h2 id="问题汇总"><a href="#问题汇总" class="headerlink" title="问题汇总"></a>问题汇总</h2><h3 id="replace-使用http或https"><a href="#replace-使用http或https" class="headerlink" title="replace 使用http或https"></a>replace 使用http或https</h3><p>在使用go replace时，有2点注意：</p>
+<ul>
+<li>目标仓库不能带协议头，比如http、https，要从域名或者IP开始</li>
+<li>版本号格式要符合语义格式化，测试版本是否符合规则：<a target="_blank" rel="noopener" href="https://play.golang.org/p/S_Jz3-Uxh_T">Go playground 样例代码</a></li>
+</ul>
+<p>直接修改 <code>go.mod</code> 文件格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">replace github.com&#x2F;hyperledger&#x2F;fabric v1.4.1 &#x3D;&gt; 192.168.9.251&#x2F;hyperledger&#x2F;fabric v1.4.1-alpha.11-yx</span><br></pre></td></tr></table></figure>
+
+<p>或使用命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go mod edit -replace&#x3D;github.com&#x2F;hyperledger&#x2F;fabric@v1.4.1&#x3D;192.168.9.251&#x2F;hyperledger&#x2F;fabric@v1.4.1</span><br></pre></td></tr></table></figure>
+
+<h3 id="Gitlab-仓库没开启https"><a href="#Gitlab-仓库没开启https" class="headerlink" title="Gitlab 仓库没开启https"></a>Gitlab 仓库没开启https</h3><p>go mod 默认使用 go get 下载依赖，而 go get 默认使用 https，如果 Gitlab 仓库没有启用 https，需要使用 <code>-insecure</code> 让go get走http。</p>
+<p>问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GOPROXY&#x3D;&quot;&quot; go get github.com&#x2F;hyperledger&#x2F;fabric@v1.4.1</span><br><span class="line">go: 192.168.9.251&#x2F;hyperledger&#x2F;fabric@v1.4.1-alpha.11-yx: unrecognized import path &quot;192.168.9.251&#x2F;hyperledger&#x2F;fabric&quot; (https fetch: Get https:&#x2F;&#x2F;192.168.9.251&#x2F;hyperledger&#x2F;fabric?go-get&#x3D;1: dial tcp 192.168.9.251:443: connect: connection refused)</span><br><span class="line">go: error loading module requirements</span><br></pre></td></tr></table></figure>
+
+<p>方案：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOPROXY&#x3D;&quot;&quot; go get -insecure github.com&#x2F;hyperledger&#x2F;fabric@v1.4.1</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注解：遇到问题时，使用 <code>go get -v</code> 可以看到更多信息，有助分析问题。</p>
+</blockquote>
+<h3 id="Go-Modules-代理"><a href="#Go-Modules-代理" class="headerlink" title="Go Modules 代理"></a>Go Modules 代理</h3><p>由于某些网络原因，国内下载 Github 等处的依赖，不够流程，需要设置代理，不同版本的设置如下：</p>
+<ul>
+<li><p>go1.12</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>go1.13</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ export GOPRIVATE&#x3D;192.168.9.251</span><br><span class="line">$ export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn,direct</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="私有仓库"><a href="#私有仓库" class="headerlink" title="私有仓库"></a>私有仓库</h3><p>如果仓库设置为私有，这要求用户必须登录才能访问仓库。</p>
+<p>Go Modules 默认使用 go get 下载依赖，go get 利用 https 或者 http, 但下载过程没有设置用户名和密码的地方，下载依赖时，可能遇到一下错误：</p>
+<ul>
+<li>connection refused</li>
+<li>unkown revision</li>
+</ul>
+<p>可以通过设置Github/Gitlab Access Token结果，通过token的方式，访问仓库，token的获取方式为，登录Gitlab仓库，进入以下页面：</p>
+<p>Gitlab User Setting -&gt; Access Tokens</p>
+<p>在此页面复制下顶端的 <code>Your New Personal Access Token</code>, 然后填写token名字和勾选下方的权限进行创建 Token。</p>
+<p>然后执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global \</span><br><span class="line">url.<span class="string">&quot;http://oauth2:<span class="variable">$&#123;your_access_token&#125;</span>@ip_address_or_domain&quot;</span>.insteadOf \</span><br><span class="line"><span class="string">&quot;http://ip_address_or_domain&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>后面再去 go get 的时候，就可顺利下载依赖。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/10/31/fabric-sdk-go-configure-graph/" rel="prev" title="fabric-sdk-go 配置项分类">
+                  <i class="fa fa-chevron-left"></i> fabric-sdk-go 配置项分类
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/11/10/how-fabric-verify-signatures/" rel="next" title="Fabric 1.4源码解读 5：Fabric是如何验证签名的？">
+                  Fabric 1.4源码解读 5：Fabric是如何验证签名的？ <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'd5b477bdc2529bf5eb2a7f55c8ff81c2',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

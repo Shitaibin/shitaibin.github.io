@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="channel是大家在Go中用的最频繁的特性，也是Go最自豪的特性之一，你有没有思考过：  Why：为什么要设计channel？ What：channel是什么样的？ How：channel是如何实现的？  这篇文章，就来回答这3个问题。 channel解决什么问题？在Golang诞生之前，各编程语言都使用多线程进行编程，但多线程复杂、混乱、难以管理，对开发者并不是多么友好。 Golang是Goo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解channel：设计+源码">
+<meta property="og:url" content="http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="channel是大家在Go中用的最频繁的特性，也是Go最自豪的特性之一，你有没有思考过：  Why：为什么要设计channel？ What：channel是什么样的？ How：channel是如何实现的？  这篇文章，就来回答这3个问题。 channel解决什么问题？在Golang诞生之前，各编程语言都使用多线程进行编程，但多线程复杂、混乱、难以管理，对开发者并不是多么友好。 Golang是Goo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-pipeline.jpeg">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-channel_design.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-channel_design_qrcode.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-channel_source_qrcode.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="article:published_time" content="2019-03-03T07:32:15.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.788Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-03-pipeline.jpeg">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>深入理解channel：设计+源码 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#channel%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">channel解决什么问题？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#channel%E6%98%AF%E6%80%8E%E4%B9%88%E8%AE%BE%E8%AE%A1%E7%9A%84%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">channel是怎么设计的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#channel%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">channel是怎么实现的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E5%AD%A6%E5%88%B0%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">我学到了什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">链接</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解channel：设计+源码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-03 15:32:15" itemprop="dateCreated datePublished" datetime="2019-03-03T15:32:15+08:00">2019-03-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>channel是大家在Go中用的最频繁的特性，也是Go最自豪的特性之一，你有没有思考过：</p>
+<ul>
+<li>Why：为什么要设计channel？</li>
+<li>What：channel是什么样的？</li>
+<li>How：channel是如何实现的？</li>
+</ul>
+<p>这篇文章，就来回答这3个问题。</p>
+<h3 id="channel解决什么问题？"><a href="#channel解决什么问题？" class="headerlink" title="channel解决什么问题？"></a>channel解决什么问题？</h3><p>在Golang诞生之前，各编程语言都使用多线程进行编程，但多线程复杂、混乱、难以管理，对开发者并不是多么友好。</p>
+<p>Golang是Google为了解决高并发搜索而设计的，它们想使用简单的方式，高效解决并发问题，最后做成了，然后又把Golang开源了出来，以及到处推广，所以Golang自从诞生之初，就风风火火。</p>
+<p>从Golang文档中，我们可以知道，为啥Golang设计了channel，以及channel解决了什么问题？</p>
+<p><a target="_blank" rel="noopener" href="https://golang.org/doc/#go_concurrency_patterns">Go Concurrency Patterns:</a></p>
+<blockquote>
+<p>Concurrency is the key to designing high performance network services. Go’s concurrency primitives (goroutines and channels) provide a simple and efficient means of expressing concurrent execution. In this talk we see how tricky concurrency problems can be solved gracefully with simple Go code.</p>
+</blockquote>
+<p>Golang使用<code>goroutine</code>和<code>channel</code>简单、高效的解决并发问题，<strong>channel解决的是goroutine之间的通信</strong>。</p>
+<h3 id="channel是怎么设计的？"><a href="#channel是怎么设计的？" class="headerlink" title="channel是怎么设计的？"></a>channel是怎么设计的？</h3><p>我们以为channel是一个通道：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-pipeline.jpeg"></p>
+<p>实际上，channel的内在是这样的：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-channel_design.png"></p>
+<p>channel设计涉及的数据结构很简单，这就是<strong>channel的本质</strong>：</p>
+<ul>
+<li>基于数组的循环队列，有缓冲的channel用它暂存数据</li>
+<li>基于链表的单向队列，用于保存阻塞在此channel上的goroutine</li>
+<li>锁，用于实现goroutine对channel并发安全，保证某一时刻只有1个goroutine操作channel，</li>
+</ul>
+<p>我本来想自己码一篇channel的设计文章，但已经有大牛：Kavya深入分析了Channel的设计，我也相信自己写的肯定不如他好，所以我把<strong>Kavya在Gopher Con上的PPT推荐给你，如果你希望成为Go大牛，你一定要读一下，现在请收藏好</strong>。</p>
+<p>Kavya在Gopher Con上的演讲主题是：理解channel，他并不是教你如何使用channel，而是<strong>把channel的设计和goroutine的调度结合起来，从内在方式向你介绍</strong>。这份PPT足足有80页，包含了大量的动画，非常容易理解，你会了解到：</p>
+<ul>
+<li>channel的创建</li>
+<li>各种场景的发送和接收</li>
+<li>goroutine的调度</li>
+<li>goroutine的阻塞和唤醒</li>
+<li>channel和goroutine在select操作下</li>
+</ul>
+<p>Kavya的PPT应该包含了channel的80%的设计思想，但也有一些缺失，需要你阅读源码：</p>
+<ul>
+<li>channel关闭时，gorontine的处理</li>
+<li>创建channel时，不同的创建方法</li>
+<li>读channel时的非阻塞操作</li>
+<li>…</li>
+</ul>
+<p>PPT在此：<a target="_blank" rel="noopener" href="https://speakerdeck.com/kavya719/understanding-channels">Understanding Channels</a>，如果你有心，还可以在这个网站看到Kavya关于goroutine调度的PPT，福利哦😝。(访问不了请翻墙，或阅读原文从博客文章最下面看Github备份)</p>
+<p>微信二维码跳转：<br><img src="http://img.lessisbetter.site/2019-03-channel_design_qrcode.png"></p>
+<h3 id="channel是怎么实现的？"><a href="#channel是怎么实现的？" class="headerlink" title="channel是怎么实现的？"></a>channel是怎么实现的？</h3><p><a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/chan.go">chan.go</a>是channel的主要实现文件，只有700行，十分佩服Go团队，<strong>实现的如此精简，却发挥如此大的作用</strong>！！！</p>
+<p>看完Kavya的PPT，你已经可以直接看channel的源码了，如果有任何问题，思考一下你也可以想通，如果有任何问题可博客文章留言或公众号私信进行讨论。</p>
+<p>另外，推荐一篇在Medium（国外高质量文章社区）上获得500+赞的源码分析文章，非常详细。</p>
+<p>文章链接：<a target="_blank" rel="noopener" href="https://codeburst.io/diving-deep-into-the-golang-channels-549fd4ed21a8">Diving deep into the golang channels</a></p>
+<p>微信二维码跳转：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-channel_source_qrcode.png"></p>
+<h3 id="我学到了什么？"><a href="#我学到了什么？" class="headerlink" title="我学到了什么？"></a>我学到了什么？</h3><p>阅读channel源码我学到了一些东西，分享给大家。</p>
+<p>channel的4个特性的实现：</p>
+<ul>
+<li>channel的goroutine安全，是通过mutex实现的。</li>
+<li>channel的FIFO，是通过循环队列实现的。</li>
+<li>channel的通信：在goroutine间传递数据，是通过仅共享hchan+数据拷贝实现的。</li>
+<li>channel的阻塞是通过goroutine自己挂起，唤醒goroutine是通过对方goroutine唤醒实现的。</li>
+</ul>
+<p>channel的其他实现：</p>
+<ul>
+<li>发送goroutine是可以访问接收goroutine的内存空间的，接收goroutine也是可以直接访问发送goroutine的内存空间的，看<code>sendDirect</code>、<code>recvDirect</code>函数。</li>
+<li>无缓冲的channel始终都是直接访问对方goroutine内存的方式，把手伸到别人的内存，把数据放到接收变量的内存，或者从发送goroutine的内存拷贝到自己内存。省掉了对方再加锁获取数据的过程。</li>
+<li>有缓冲的channel在缓冲区空时，接收数据的goroutine无法读数据，会把自己阻塞放到接收链表，当发送goroutine到来时，发送goroutine直接使用<code>sendDirect</code>把数据放到第一个阻塞的接收goroutine，然后把它唤醒。<code>recvDirect</code>在有缓冲区通道的情况，反过来。</li>
+<li>接收goroutine读不到数据和发送goroutine无法写入数据时，是把自己挂起的（创建一个节点，插入到双向链表的尾部），这就是channel的阻塞操作。阻塞的接收goroutine是由发送goroutine唤醒的，阻塞的发送goroutine是由接收goroutine唤醒的，看<code>gopark</code>、<code>goready</code>函数在<code>chan.go</code>中的调用。</li>
+<li>接收goroutine当channel关闭时，读channel会得到0值，并不是channel保存了0值，而是它发现channel关闭了，把接收数据的变量的值设置为0值。</li>
+<li>channel的操作/调用，是通过reflect实现的，可以看reflect包的<code>makechan</code>, <code>chansend</code>, <code>chanrecv</code>函数。</li>
+<li>channel关闭时，所有在channel上读数据的g都会收到通知。其实并非关闭channel的g给每个接收的g发送信号，而是关闭channel的g，把channel关闭后，会唤醒每一个读取channel的g，它们发现channel关闭了，把待读的数据设置为零值并返回，所以这并非一次性的事件通知，。看到这种本质，你应当理解下面这种奇淫巧计：这种“通知”效果并不一定需要接收数据的g先启动，先把channel关闭了，然后启动读取channel的g依然是可行的，代码无需任何改变，任何逻辑也都无需改变，它会发现channel关闭了，然后走原来的逻辑。</li>
+</ul>
+<p>如果阅读<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/chan_test.go">chan_test.go</a>还会学到一些骚操作，比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> &lt;-stopCh &#123;</span><br><span class="line">    <span class="comment">// do stop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而不是写成：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> stop := &lt;-stopCh; stop &#123;</span><br><span class="line">    <span class="comment">// do stop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这就是关于channel的设计和实现的分享，希望你通过Kavya的PPT和代码阅读能深入了解channel。</p>
+<h3 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h3><ul>
+<li>chan.go：<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/chan.go">https://github.com/golang/go/blob/master/src/runtime/chan.go</a></li>
+<li>chan_test.go：<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/chan_test.go">https://github.com/golang/go/blob/master/src/runtime/chan_test.go</a></li>
+<li>Understanding channels在Github的备份: <a target="_blank" rel="noopener" href="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/files/GopherCon_v10.0.pdf">https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/files/GopherCon_v10.0.pdf</a></li>
+</ul>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a target="_blank" rel="noopener" href="http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/">http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/03/01/linux-location-of-process/" rel="prev" title="查看Linux运行程序的文件路径">
+                  <i class="fa fa-chevron-left"></i> 查看Linux运行程序的文件路径
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/03/04/ssh-problems/" rel="next" title="SSH问题记录">
+                  SSH问题记录 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'd5e5f82582823c8de1625df7df06ea73',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

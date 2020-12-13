@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用fabric-sdk-go操作链码">
+<meta property="og:url" content="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sd-go.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk-config.yaml.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-byfn-sdk.png">
+<meta property="article:published_time" content="2019-09-02T06:55:16.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.781Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="Fabric">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>使用fabric-sdk-go操作链码 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fabric-sdk-go%E9%A1%B9%E7%9B%AE%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">fabric-sdk-go项目简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8SDK%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.</span> <span class="nav-text">使用SDK步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SDK%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6config-yaml"><span class="nav-number">4.</span> <span class="nav-text">SDK配置文件config.yaml</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8go-mod%E7%AE%A1%E7%90%86%E4%BE%9D%E8%B5%96"><span class="nav-number">5.</span> <span class="nav-text">使用go mod管理依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAClient"><span class="nav-number">6.</span> <span class="nav-text">创建Client</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8config-yaml%E5%88%9B%E5%BB%BAfabsdk"><span class="nav-number">6.1.</span> <span class="nav-text">利用config.yaml创建fabsdk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BARC"><span class="nav-number">6.2.</span> <span class="nav-text">创建RC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BACC"><span class="nav-number">6.3.</span> <span class="nav-text">创建CC</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%A1%E7%90%86%E6%93%8D%E4%BD%9C"><span class="nav-number">7.</span> <span class="nav-text">管理操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E9%93%BE%E7%A0%81"><span class="nav-number">7.1.</span> <span class="nav-text">安装链码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%93%BE%E7%A0%81"><span class="nav-number">7.2.</span> <span class="nav-text">实例化链码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%87%E7%BA%A7%E9%93%BE%E7%A0%81"><span class="nav-number">7.3.</span> <span class="nav-text">升级链码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%93%8D%E4%BD%9C"><span class="nav-number">8.</span> <span class="nav-text">查询操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E9%93%BE%E7%A0%81"><span class="nav-number">8.1.</span> <span class="nav-text">调用链码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E9%93%BE%E7%A0%81"><span class="nav-number">8.2.</span> <span class="nav-text">查询链码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E9%A1%B9%E7%9B%AE"><span class="nav-number">9.</span> <span class="nav-text">示例项目</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用fabric-sdk-go操作链码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-02 14:55:16" itemprop="dateCreated datePublished" datetime="2019-09-02T14:55:16+08:00">2019-09-02</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。</p>
+<p><img src="http://img.lessisbetter.site/2019-09-fabric-sdk.png" alt="fabric sdk"></p>
+<h2 id="fabric-sdk-go项目简介"><a href="#fabric-sdk-go项目简介" class="headerlink" title="fabric-sdk-go项目简介"></a>fabric-sdk-go项目简介</h2><p><a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric-sdk-go">fabric-sdk-go</a>是Fabric官方的Go语言SDK，它的目录结构如下：</p>
+<p><img src="http://img.lessisbetter.site/2019-09-fabric-sd-go.png" alt="fabric sdk go"></p>
+<p>有2个目录需要注意一下，internal和third_party，它们两个包含了sdk依赖的一些代码，来自于fabric、fabric-ca，当使用到fabric的一些类型时，应当使用以下的方式，而不是直接导入fabric或者fabric-ca：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/xxx&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>pkg目录是sdk的主要实现，<a target="_blank" rel="noopener" href="https://godoc.org/github.com/hyperledger/fabric-sdk-go">doc 文档</a>介绍了不同目录所提供的功能，以及给出了接口调用样例：</p>
+<ul>
+<li>pkg/fabsdk：主package，主要用来生成fabsdk以及各种其他pkg使用的option context。</li>
+<li>pkg/client/channel：主要用来调用、查询链码，或者注册链码事件。</li>
+<li>pkg/client/resmgmt：主要用来fabric网络的管理，比如创建、加入通道，安装、实例化和升级链码。</li>
+<li>pkg/client/event:配合channel模块来进行链码事件注册和过滤。</li>
+<li>pkg/client/ledger：主要用来账本的查询，查询区块、交易、配置等。</li>
+<li>pkg/client/msp：主要用来管理fabric的成员关系。</li>
+</ul>
+<blockquote>
+<p>想用好fabric-go-sdk，建议仔细看看<a target="_blank" rel="noopener" href="https://godoc.org/github.com/hyperledger/fabric-sdk-go">doc 文档</a>。</p>
+</blockquote>
+<h2 id="使用SDK步骤"><a href="#使用SDK步骤" class="headerlink" title="使用SDK步骤"></a>使用SDK步骤</h2><ol>
+<li>为client编写配置文件config.yaml</li>
+<li>为client创建fabric sdk实例fabsdk</li>
+<li>为client创建resource manage client，<strong>简称RC</strong>，RC用来进行管理操作的client，比如通道的创建，链码的安装、实例化和升级等</li>
+<li>为client创建channel client，<strong>简称CC</strong>，CC用来链码的调用、查询以及链码事件的注册和取消注册</li>
+</ol>
+<h2 id="SDK配置文件config-yaml"><a href="#SDK配置文件config-yaml" class="headerlink" title="SDK配置文件config.yaml"></a>SDK配置文件config.yaml</h2><p>client使用sdk与fabric网络交互，需要告诉sdk两类信息：</p>
+<ol>
+<li>我是谁：即当前client的信息，包含所属组织、密钥和证书文件的路径等，这是每个client专用的信息。</li>
+<li>对方是谁：即fabric网络结构的信息，channel、org、orderer和peer等的怎么组合起当前fabric网络的，这些结构信息应当与<code>configytx.yaml</code>中是一致的。这是通用配置，每个客户端都可以拿来使用。另外，这部分信息并不需要是完整fabric网络信息，如果当前client只和部分节点交互，那配置文件中只需要包含所使用到的网络信息。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-09-fabric-sdk-config.yaml.png" alt="fabric sdk config"></p>
+<p>这里提供一个适合<a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric-samples/tree/release-1.4/first-network">BFYN</a>的精简配置文件<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/config/org1sdk-config.yaml">fabric-sdk-go-sample/config.yaml</a>。</p>
+<h2 id="使用go-mod管理依赖"><a href="#使用go-mod管理依赖" class="headerlink" title="使用go mod管理依赖"></a>使用go mod管理依赖</h2><p>fabric-sdk-go目前本身使用go modules管理依赖，从<a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric-sdk-go/blob/master/go.mod">go.mod</a>可知，依赖的一些包指定了具体的版本，如果项目依赖的版本和sdk依赖的版本不同，会产生编译问题。</p>
+<p>建议项目也使用go moudles管理依赖，然后相同的软件包可以使用相同的版本，可以这样操作：</p>
+<ol>
+<li>go mod init初始化好项目的go.mod文件。</li>
+<li>编写代码，完成后运行go mod run，会自动下载依赖的项目，但版本可能与fabric-sdk-go中的依赖版本不同，编译存在问题。</li>
+<li>把<a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric-sdk-go/blob/master/go.mod">go.mod</a>中的内容复制到项目的go.mod中，然后保存，go mod会自动合并相同的依赖，运行go mod tidy，会自动添加新的依赖或删除不需要的依赖。</li>
+</ol>
+<p>项目的go mod样例可以参考<a target="_blank" rel="noopener" href="https://github.com/securekey/fabric-examples/blob/master/fabric-cli/cmd/fabric-cli/go.mod">securekey/fabric-examples … /go.mod</a>，<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/go.mod">shitaibin/fabric-sdk-go-sample/go.mod</a>。</p>
+<h2 id="创建Client"><a href="#创建Client" class="headerlink" title="创建Client"></a>创建Client</h2><h3 id="利用config-yaml创建fabsdk"><a href="#利用config-yaml创建fabsdk" class="headerlink" title="利用config.yaml创建fabsdk"></a>利用config.yaml创建fabsdk</h3><p>通过<code>config.FromFile</code>解析配置文件，然后通过<code>fabsdk.New</code>创建sdk实例。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;github.com/hyperledger/fabric-sdk-go/pkg/core/config&quot;</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;github.com/hyperledger/fabric-sdk-go/pkg/fabsdk&quot;</span></span><br><span class="line"></span><br><span class="line">sdk, err := fabsdk.New(config.FromFile(c.ConfigPath))</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  log.Panicf(<span class="string">&quot;failed to create fabric sdk: %s&quot;</span>, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建RC"><a href="#创建RC" class="headerlink" title="创建RC"></a>创建RC</h3><p>管理员账号才能进行fabric网络的管理操作，所以创建rc一定要使用管理员账号。</p>
+<p>通过<code>fabsdk.WithOrg(&quot;Org1&quot;)</code>和<code>fabsdk.WithUser(&quot;Admin&quot;)</code>指定Org1的Admin账户，使用<code>sdk.Context</code>创建<strong>clientProvider</strong>，然后通过<code>resmgmt.New</code>创建rc。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> 	<span class="string">&quot;github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt&quot;</span></span><br><span class="line"></span><br><span class="line">rcp := sdk.Context(fabsdk.WithUser(<span class="string">&quot;Admin&quot;</span>), fabsdk.WithOrg(<span class="string">&quot;Org1&quot;</span>))</span><br><span class="line">rc, err := resmgmt.New(rcp)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  log.Panicf(<span class="string">&quot;failed to create resource client: %s&quot;</span>, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建CC"><a href="#创建CC" class="headerlink" title="创建CC"></a>创建CC</h3><p>创建cc使用用户账号，进行链码的调用和查询，使用<code>sdk.ChannelContext</code>创建<strong>channelProvider</strong>，需要指定channelID和用户User1，然后通过<code>channel.New</code>创建cc，此cc就是调用channelID对应channel上链码的channel client。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> 	<span class="string">&quot;github.com/hyperledger/fabric-sdk-go/pkg/client/channel&quot;</span></span><br><span class="line"></span><br><span class="line">ccp := sdk.ChannelContext(ChannelID, fabsdk.WithUser(<span class="string">&quot;User1&quot;</span>))</span><br><span class="line">cc, err := channel.New(ccp)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  log.Panicf(<span class="string">&quot;failed to create channel client: %s&quot;</span>, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="管理操作"><a href="#管理操作" class="headerlink" title="管理操作"></a>管理操作</h2><h3 id="安装链码"><a href="#安装链码" class="headerlink" title="安装链码"></a>安装链码</h3><p>安装链码使用<code>rc.InstallCC</code>接口，需要指定<code>resmgmt.InstallCCRequest</code>以及在哪些peers上面安装。<code>resmgmt.InstallCCRequest</code>指明了链码ID、链码路径、链码版本以及打包后的链码。</p>
+<p>打包链码需要使用到链码路径<code>CCPath</code>和<code>GoPath</code>，<code>GoPath</code>即本机的<code>$GOPATH</code>，<code>CCPath</code>是相对于<code>GoPath</code>的<strong>相对路径</strong>，如果路径设置不对，会造成sdk找不到链码。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pack the chaincode</span></span><br><span class="line">ccPkg, err := gopackager.NewCCPackage(<span class="string">&quot;github.com/hyperledger/fabric-samples/chaincode/chaincode_example02/go/&quot;</span>, <span class="string">&quot;/Users/shitaibin/go&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">&quot;pack chaincode error&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// new request of installing chaincode</span></span><br><span class="line">req := resmgmt.InstallCCRequest&#123;</span><br><span class="line">  Name:    c.CCID,</span><br><span class="line">  Path:    c.CCPath,</span><br><span class="line">  Version: v,</span><br><span class="line">  Package: ccPkg,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">reqPeers := resmgmt.WithTargetEndpoints(<span class="string">&quot;peer0.org1.example.com&quot;</span>)</span><br><span class="line">resps, err := rc.InstallCC(req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">&quot;installCC error&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="实例化链码"><a href="#实例化链码" class="headerlink" title="实例化链码"></a>实例化链码</h3><p>实例化链码需要使用<code>rc.InstantiateCC</code>接口，需要通过ChannelID、<code>resmgmt.InstantiateCCRequest</code>和peers，指明在哪个channel上实例化链码，请求包含了链码的ID、路径、版本，以及初始化参数和背书策略，背书策略可以通过<code>cauthdsl.FromString</code>生成。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// endorser policy</span></span><br><span class="line">org1OrOrg2 := <span class="string">&quot;OR(&#x27;Org1MSP.member&#x27;,&#x27;Org2MSP.member&#x27;)&quot;</span></span><br><span class="line">ccPolicy, err := cauthdsl.FromString(org1OrOrg2)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">&quot;gen policy from string error&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// new request</span></span><br><span class="line">args := packArgs([]<span class="keyword">string</span>&#123;<span class="string">&quot;init&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;100&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;200&quot;</span>&#125;)</span><br><span class="line">req := resmgmt.InstantiateCCRequest&#123;</span><br><span class="line">  Name:    c.CCID,</span><br><span class="line">  Path:    c.CCPath,</span><br><span class="line">  Version: v,</span><br><span class="line">  Args:    args,</span><br><span class="line">  Policy:  ccPolicy,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line">reqPeers := resmgmt.WithTargetEndpoints(<span class="string">&quot;peer0.org1.example.com&quot;</span>)</span><br><span class="line">resp, err := rc.InstantiateCC(ChannelID, req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">&quot;instantiate chaincode error&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="升级链码"><a href="#升级链码" class="headerlink" title="升级链码"></a>升级链码</h3><p>升级链码和实例化链码是非常相似的，不同点只在请求是<code>resmgmt.UpgradeCCRequest</code>，调用的接口是<code>rc.UpgradeCC</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// endorser policy</span></span><br><span class="line">org1AndOrg2 := <span class="string">&quot;AND(&#x27;Org1MSP.member&#x27;,&#x27;Org2MSP.member&#x27;)&quot;</span></span><br><span class="line">ccPolicy, err := c.genPolicy(org1AndOrg2)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">&quot;gen policy from string error&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// new request</span></span><br><span class="line">args := packArgs([]<span class="keyword">string</span>&#123;<span class="string">&quot;init&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;100&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;200&quot;</span>&#125;)</span><br><span class="line">req := resmgmt.UpgradeCCRequest&#123;</span><br><span class="line">  Name:    c.CCID,</span><br><span class="line">  Path:    c.CCPath,</span><br><span class="line">  Version: v,</span><br><span class="line">  Args:    args,</span><br><span class="line">  Policy:  ccPolicy,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line">reqPeers := resmgmt.WithTargetEndpoints(<span class="string">&quot;peer0.org1.example.com&quot;</span>)</span><br><span class="line">resp, err := rc.UpgradeCC(ChannelID, req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">&quot;instantiate chaincode error&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="查询操作"><a href="#查询操作" class="headerlink" title="查询操作"></a>查询操作</h2><h3 id="调用链码"><a href="#调用链码" class="headerlink" title="调用链码"></a>调用链码</h3><p>调用链码使用<code>cc.Execute</code>接口，使用入参<code>channel.Request</code>和peers指明要让哪些peer上执行链码，进行背书。<code>channel.Request</code>指明了要调用的链码，以及链码内要Invoke的函数args，args是序列化的结果，序列化是自定义的，只要链码能够按相同的规则进行反序列化即可。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new channel request for invoke</span></span><br><span class="line">args := packArgs([]<span class="keyword">string</span>&#123;<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;10&quot;</span>&#125;)</span><br><span class="line">req := channel.Request&#123;</span><br><span class="line">  ChaincodeID: c.CCID,</span><br><span class="line">  Fcn:         <span class="string">&quot;invoke&quot;</span>,</span><br><span class="line">  Args:        args,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line"><span class="comment">// peers is needed</span></span><br><span class="line">reqPeers := channel.WithTargetEndpoints(<span class="string">&quot;peer0.org1.example.com&quot;</span>)</span><br><span class="line">resp, err := cc.Execute(req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">&quot;invoke chaincode error&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">log.Printf(<span class="string">&quot;invoke chaincode tx: %s&quot;</span>, resp.TransactionID)</span><br></pre></td></tr></table></figure>
+
+<h3 id="查询链码"><a href="#查询链码" class="headerlink" title="查询链码"></a>查询链码</h3><p>查询和调用链码是非常相似的，使用相同的<code>channel.Request</code>，指明了Invoke链码中的<code>query</code>函数，然后调用<code>cc.Query</code>进行查询操作，这样节点不会对请求进行背书。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new channel request for query</span></span><br><span class="line">req := channel.Request&#123;</span><br><span class="line">  ChaincodeID: c.CCID,</span><br><span class="line">  Fcn:         <span class="string">&quot;query&quot;</span>,</span><br><span class="line">  Args:        packArgs([]<span class="keyword">string</span>&#123;keys&#125;),</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line">reqPeers := channel.WithTargetEndpoints(peer)</span><br><span class="line">resp, err := cc.Query(req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">&quot;query chaincode error&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">log.Printf(<span class="string">&quot;query chaincode tx: %s&quot;</span>, resp.TransactionID)</span><br><span class="line">log.Printf(<span class="string">&quot;result: %v&quot;</span>, <span class="keyword">string</span>(resp.Payload))</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例项目"><a href="#示例项目" class="headerlink" title="示例项目"></a>示例项目</h2><p>本文的基础是创建了一个结合fabric byfn的示例项目，在byfn的基础之上对链码进行安装、实例化、升级，调用和查询等操作，项目的使用可见项目<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/fabric-sdk-go-sample">README文档</a>，项目地址：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/fabric-sdk-go-sample">https://github.com/Shitaibin/fabric-sdk-go-sample</a> ，项目样例执行后，可见新部署和升级成功的链码容器，操作日志可见项目。</p>
+<p><img src="http://img.lessisbetter.site/2019-09-byfn-sdk.png" alt="byfn-sdk"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/Fabric/" rel="tag"># Fabric</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/08/27/protobuf-in-go-2/" rel="prev" title="Go是如何实现protobuf的编解码的(2)：源码">
+                  <i class="fa fa-chevron-left"></i> Go是如何实现protobuf的编解码的(2)：源码
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/09/02/hyperledger-projects/" rel="next" title="Hyperledger项目介绍">
+                  Hyperledger项目介绍 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'b815b7a203fb0d81c2cd43ee05fd4aad',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

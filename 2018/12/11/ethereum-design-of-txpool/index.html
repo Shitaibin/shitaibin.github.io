@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：  txpool的在交易中的位置和作用。 txpool的功能，核心组成部分queued和pending。 txpool如何实现它的功能。 txpool源码的重要关注点。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊源码分析：交易缓冲池txpool">
+<meta property="og:url" content="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：  txpool的在交易中的位置和作用。 txpool的功能，核心组成部分queued和pending。 txpool如何实现它的功能。 txpool源码的重要关注点。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-txpool-position.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-txpool-module-interactive.png">
+<meta property="og:image" content="http://img.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
+<meta property="article:published_time" content="2018-12-11T02:51:00.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.773Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="以太坊">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2018-txpool-position.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>以太坊源码分析：交易缓冲池txpool | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%8A%9F%E8%83%BD%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.</span> <span class="nav-text">缓存功能的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E5%8C%BA%E5%9D%97%E6%89%93%E5%8C%85%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.</span> <span class="nav-text">为区块打包服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%85%E7%90%86%E4%BA%A4%E6%98%93"><span class="nav-number">3.</span> <span class="nav-text">清理交易</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%83%A9%E7%BD%9A%E6%81%B6%E6%84%8F%E8%B4%A6%E5%8F%B7"><span class="nav-number">4.</span> <span class="nav-text">惩罚恶意账号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E7%82%B9%E5%85%B3%E6%B3%A8%E7%9A%84%E6%BA%90%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">重点关注的源码</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          以太坊源码分析：交易缓冲池txpool
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-11 10:51:00" itemprop="dateCreated datePublished" datetime="2018-12-11T10:51:00+08:00">2018-12-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：</p>
+<ol>
+<li>txpool的在交易中的位置和作用。</li>
+<li>txpool的功能，核心组成部分queued和pending。</li>
+<li>txpool如何实现它的功能。</li>
+<li>txpool源码的重要关注点。</li>
+</ol>
+<a id="more"></a>
+
+<p>以太坊内部有个重要的内部功能是txpool，从字面意思就能看出来，交易池就是存放交易的池子。它在以太坊中的位置如下图，只要有新交易，无论是本节点创建的，还是其他peer节点广播来的，都会先加入到交易池里，在打包区块的时候，就从这个池子里提取，区块产生之后，共识区块，交易上链。</p>
+<p><img src="http://img.lessisbetter.site/2018-txpool-position.png" alt="txpool主图"></p>
+<p>txpool有4个功能：</p>
+<ol>
+<li>作为存放交易的缓冲区，大量交易到来时，先存起来</li>
+<li>为打包区块服务，合适交易会被打包到区块</li>
+<li>清理交易</li>
+<li>当交易的数量多于缓冲区大小时，过滤/惩罚发送大量交易的账户（攻击者）</li>
+</ol>
+<p>我们来一张稍微详细点的模块交互图，看txpool怎么实现上面4个功能的。</p>
+<p><img src="http://img.lessisbetter.site/2018-txpool-module-interactive.png" alt="txpool模块交互"></p>
+<h3 id="缓存功能的设计"><a href="#缓存功能的设计" class="headerlink" title="缓存功能的设计"></a>缓存功能的设计</h3><p>txpool中的交易分为queued和pending 2种，其中<strong>queued存放未来的、当前无法执行的交易</strong>。以太坊使用nonce值决定某个账户的交易顺序，多条交易值nonce值必须连续，如果和过去的交易不连续，则无法执行，我们不妨使用nonce值，标记交易的号码，nonce为10的交易，称为第10号交易。举个例子，当前账户的nonce是10，txpool中有该账户的第100号交易，但txpool中没有第11~99号交易，这些交易的缺失，造成第100号交易无法执行，所以第100号交易就是未来的交易、不可执行的交易，存放在queue中。</p>
+<p><strong>pending存放可执行的交易</strong>。比如我们把上面的11<del>99号交易补全了，那么11</del>100号交易都可以进入到pending，因为这些交易都是连续的，都可以打包进区块。</p>
+<p>当节点收到交易（本地节点发起的或peer广播来的）时，会先存放到queued，txpool在某些情况下，把queued中可执行的交易，转移到pending中。</p>
+<h3 id="为区块打包服务"><a href="#为区块打包服务" class="headerlink" title="为区块打包服务"></a>为区块打包服务</h3><p><strong>这是txpool最核心的功能</strong>，worker在打包区块的时候，会获取<strong>所有的pending交易</strong>，但这些交易还存在txpool中，worker只是读取出来，至于txpool何时删除交易，稍后从txpool清理交易的角度单独在看。</p>
+<h3 id="清理交易"><a href="#清理交易" class="headerlink" title="清理交易"></a>清理交易</h3><p>txpool清理交易有以下<strong>几种条件</strong>，符合任意以下1条的，都是<strong>无效交易，会被从pending或者queued中移除</strong>：</p>
+<ol>
+<li>交易的nonce值已经低于账户在当前高度上的nonce值，代表交易已过期，交易已经上链就属于这种情况</li>
+<li>交易的GasLimit大于区块的GasLimit，区块容不下交易</li>
+<li>账户的余额已不足以支持该交易要消耗的费用</li>
+<li>交易的数量超过了queued和pending的缓冲区大小，需要进行清理</li>
+</ol>
+<p>交易清理主要有<strong>3个场景</strong>：</p>
+<ol>
+<li><p>txpool订阅了<code>ChainHeadEvent</code>事件，该事件代表主链上有新区块产生，txpool会根据最新的区块，检查每个账号的交易，有些无效的会被删除，有些由于区块回滚会从pending移动到queued，然后把queued中可执行的交易移动到pending，为下一轮区块打包组号准备。</p>
+</li>
+<li><p>queued交易移动到pending被称为“提升”（promote），这个过程中，同样会检查交易，当交易不符合以上条件时，就会被直接从queued中删除。</p>
+</li>
+<li><p>删除停留在queued中超过3小时的交易，3小时这个超时时间是可以通过<code>geth</code>的启动参数调整的。txpool记录了某个账户交易进入pending的时间，如果这个时间超过了3小时，代表该账号的交易迟迟不能被主链打包，既然无法被主链接受，就删除掉在queued中本来就无法执行的交易。</p>
+</li>
+</ol>
+<h3 id="惩罚恶意账号"><a href="#惩罚恶意账号" class="headerlink" title="惩罚恶意账号"></a>惩罚恶意账号</h3><p>这也是txpool很重要的一个属性，可以防止恶意账户以发起大量垃圾交易。防止恶意用户造成：</p>
+<ol>
+<li>占用txpool空间</li>
+<li>浪费节点大量内存和CPU</li>
+<li>降低打包性能</li>
+</ol>
+<p><strong>只有当交易的总数量超过缓冲区大小时，txpool才会认为有恶意账户发起大量交易。</strong>pending和queued缓冲区大小不同，但处理策略类似：</p>
+<ol>
+<li>pending的缓冲区容量是4096，当pending的交易数量多于此时，就会运行检查，每个账号的交易数量是否多于16，把这些账号搜集出来，进行循环依次清理，什么意思呢？就是每轮只删除（移动到queued）这些账号的每个账号1条交易，然后看数量是否降下来了，不满足再进行下一轮，直到满足。</li>
+<li>queued的缓冲区容量是1024，超过之后清理策略和pending差不多，但这里可是真删除了。</li>
+</ol>
+<p>该部分功能未抽象成单独的函数，而是在<code>promoteExecutables()</code>中，就是在每次把queued交易转移到pending后执行的。</p>
+<p><strong>本地交易的特权</strong>，txpool虽然对交易有诸多限制，但如果交易是本节点的账号发起的，以上数量限制等都对他无效。所以，如果你用本节点账号不停的发送交易，并不会被认为是攻击者，你用<code>txpool.status</code>命令，可以查看到交易的数量，肯定可以大于4096，我曾达到过60000+。</p>
+<h3 id="重点关注的源码"><a href="#重点关注的源码" class="headerlink" title="重点关注的源码"></a>重点关注的源码</h3><p>txpool的主要设计上面就讲完了，如果你想把txpool的代码阅读一番，我建议你重点关注一下这些函数和变量，按图索骥能就完全掌握txpool的实现。</p>
+<ul>
+<li><code>TxPoolConfig</code>：txpool的配置参数</li>
+<li><code>chainHeadCh</code>：txpool订阅了新区块事件</li>
+<li><code>pending</code>：pending的交易，每个账号都有一个交易列表</li>
+<li><code>queue</code>：queued的交易，每个账号都有一个交易列表</li>
+<li><code>loop</code>：txpool的事件处理函数</li>
+<li><code>addTx</code>：添加1条交易的源头，你能找到类似的函数</li>
+<li><code>promoteExecutables</code>：queued交易移动到pending</li>
+<li><code>reset</code>：根据当前区块的最新高度，重置txpool中的交易</li>
+</ul>
+<p>仔细阅读一遍，你会发现txpool会涉及多个锁（TxPool.mu, TxPool.all, TxPool.priced.all），所以当txpool中的交易很多时，它的性能是很低的，这也会影响到区块的打包。</p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/">http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/</a></li>
+</ol>
+</blockquote>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
+
+<img src="http://img.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
+
+
+<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"># 以太坊</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/12/02/golang-exit-goroutine-in-3-ways/" rel="prev" title="Golang并发模型：并发协程的优雅退出">
+                  <i class="fa fa-chevron-left"></i> Golang并发模型：并发协程的优雅退出
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/12/11/gongzhonghao-articles/" rel="next" title="公众号文章列表">
+                  公众号文章列表 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'f1fd00d31640341a37d75e0af4df6b2b',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

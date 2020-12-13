@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="昨天睡前了看了一本收藏已久的书，是关于投资的，叫《伟大的时代-深度解读价值投资》，这是一本采访了国内价值投资者的书籍，从这些投资者的话语里，看到了一些共性的东西，寻找垄断企业持续发展的根因，也就获得了投资收益，这个果。 今天起床后，就想到了因果关系、面试、个人能力，在这些角度进行了一些思考，在此记录下思考的成果，这篇文章会介绍：  因果关系应该关注因，还是关注果？ 如何从因果关系角度，建设个人能力">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从因果关系谈个人能力建设和面试">
+<meta property="og:url" content="http://lessisbetter.site/2020/03/01/causal-relationship-and-personal-ability/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="昨天睡前了看了一本收藏已久的书，是关于投资的，叫《伟大的时代-深度解读价值投资》，这是一本采访了国内价值投资者的书籍，从这些投资者的话语里，看到了一些共性的东西，寻找垄断企业持续发展的根因，也就获得了投资收益，这个果。 今天起床后，就想到了因果关系、面试、个人能力，在这些角度进行了一些思考，在此记录下思考的成果，这篇文章会介绍：  因果关系应该关注因，还是关注果？ 如何从因果关系角度，建设个人能力">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-03-cr-monopoly.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-03-cr-root-cause.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-03-cr-personal-ability.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-03-cr-continuelearn.png">
+<meta property="article:published_time" content="2020-03-01T03:13:38.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.765Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="职业发展">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2020-03-cr-monopoly.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2020/03/01/causal-relationship-and-personal-ability/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>从因果关系谈个人能力建设和面试 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%B7%E5%80%BC%E6%8A%95%E8%B5%84%E4%B8%AD%E7%9A%84%E5%9B%A0%E6%9E%9C%E5%85%B3%E7%B3%BB"><span class="nav-number">1.</span> <span class="nav-text">价值投资中的因果关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E6%B3%A8%E5%9B%A0%EF%BC%8C%E8%BF%98%E6%98%AF%E5%85%B3%E6%B3%A8%E6%9E%9C%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">关注因，还是关注果？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BB%8E%E5%9B%A0%E6%9E%9C%E5%85%B3%E7%B3%BB%E8%A7%92%E5%BA%A6%EF%BC%8C%E5%BB%BA%E8%AE%BE%E4%B8%AA%E4%BA%BA%E8%83%BD%E5%8A%9B%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">如何从因果关系角度，建设个人能力？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BB%8E%E5%9B%A0%E6%9E%9C%E5%85%B3%E7%B3%BB%E8%A7%92%E5%BA%A6%EF%BC%8C%E5%8F%91%E7%8E%B0%E4%BC%98%E7%A7%80%E7%9A%84%E9%9D%A2%E8%AF%95%E8%80%85%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">如何从因果关系角度，发现优秀的面试者？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">5.</span> <span class="nav-text">结语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9C%E8%A7%81"><span class="nav-number">6.</span> <span class="nav-text">远见</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/01/causal-relationship-and-personal-ability/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从因果关系谈个人能力建设和面试
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-01 11:13:38" itemprop="dateCreated datePublished" datetime="2020-03-01T11:13:38+08:00">2020-03-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>昨天睡前了看了一本收藏已久的书，是关于投资的，叫<a target="_blank" rel="noopener" href="https://book.douban.com/subject/30450383/">《伟大的时代-深度解读价值投资》</a>，这是一本采访了国内价值投资者的书籍，从这些投资者的话语里，看到了一些共性的东西，寻找垄断企业持续发展的根因，也就获得了投资收益，这个果。</p>
+<p>今天起床后，就想到了因果关系、面试、个人能力，在这些角度进行了一些思考，在此记录下思考的成果，这篇文章会介绍：</p>
+<ul>
+<li>因果关系应该关注因，还是关注果？</li>
+<li>如何从因果关系角度，建设个人能力？</li>
+<li>如何从因果关系角度，发现优秀的面试者？</li>
+</ul>
+<h3 id="价值投资中的因果关系"><a href="#价值投资中的因果关系" class="headerlink" title="价值投资中的因果关系"></a>价值投资中的因果关系</h3><p>这些投资者的共性是，都提到了要寻找垄断，并且能够持续垄断的企业，并投资这些企业。</p>
+<p><strong>垄断是“果”，持续垄断也是过，它们需要“因”</strong>。</p>
+<p>怎么才能有垄断，并且持续垄断呢？</p>
+<p>需要找到企业的文化、价值观、制度，这些软性的东西、虚的东西，是企业<strong>不断发展和进化</strong>的根基，这些是企业保持垄断，或成长为垄断的基石，垄断创造收益，收益是实。应了阿里一句话：把虚做实，把实做虚。</p>
+<p>所以，企业文化、价值观和制度是“因”，垄断是“果”。</p>
+<p>如果垄断是“因”，企业收益就是“果”。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-cr-monopoly.png"></p>
+<p>收益的因不只有垄断，但垄断可以带来巨大收益。</p>
+<h3 id="关注因，还是关注果？"><a href="#关注因，还是关注果？" class="headerlink" title="关注因，还是关注果？"></a>关注因，还是关注果？</h3><p>从企业文化、垄断和收益，这3者看，因果关系可以形成链条，组成一条因果链，一个元素即可以是因，又可以是果。</p>
+<p>比如，垄断是企业文化的果，是收益的因。</p>
+<p>说关注因是对的，关注果也是对的，关注因果链中，<strong>关注最根本的“因”，才是最对的</strong>。</p>
+<p>说一个开发者最容易体会的例子：解决bug，需要定位问题的“根因”，只解决中间原因，并不能真正解决bug。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-cr-root-cause.png"></p>
+<h3 id="如何从因果关系角度，建设个人能力？"><a href="#如何从因果关系角度，建设个人能力？" class="headerlink" title="如何从因果关系角度，建设个人能力？"></a>如何从因果关系角度，建设个人能力？</h3><p>我把<strong>中级</strong>技术开发者的能力，分成5个维度：技术深度、技术广度、商业思维能力、管理能力和演讲能力。</p>
+<p>不同岗位、层次看到的能力维度是不一样的，比如CTO在找技术总监时的岗位时，需要有体系建设的能力。所以上面强调的是中级开发者。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-cr-personal-ability.png"></p>
+<p>这5个维度的能力是因，项目、职位、收入这些是果。</p>
+<p>果是我们的目标，是我们要达到的地方。而因才是我们要关注的地方。</p>
+<p>建设能力，能力就转变成了“果”，那对应的因是什么呢？</p>
+<p>建设能力的“因”是<strong>持续学习</strong>。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-cr-continuelearn.png"></p>
+<p>这几年的付费学习，可把持续学习给玩坏了，总是弥漫着一种贩卖焦虑的气息，但不可否认的是，持续学习的人，总有机会。</p>
+<p>持续学习，有很多种通俗的说法:</p>
+<ol>
+<li>活到老，学到老。</li>
+<li>永不止步。</li>
+<li>不给自己设限。</li>
+<li>Stay foolish, Stay hungry。——乔布斯</li>
+<li>…</li>
+</ol>
+<p>关于技术上的持续学习，曹大（Xargin）最近这篇文章值得一看<a target="_blank" rel="noopener" href="https://xargin.com/how-to-learn/">《工程师应该怎么学习》</a>。</p>
+<h3 id="如何从因果关系角度，发现优秀的面试者？"><a href="#如何从因果关系角度，发现优秀的面试者？" class="headerlink" title="如何从因果关系角度，发现优秀的面试者？"></a>如何从因果关系角度，发现优秀的面试者？</h3><p>我考察候选人的经历不是特别多，1年下来，简历筛选过几百份，候选人也面过几十个了，有一些体会，今天就借着因果关系，浅谈一下。</p>
+<p><strong>面试的本质，是挖掘面试者当前的能力和持续学习的能力</strong>。</p>
+<p>上面这句代表2个观点：</p>
+<ol>
+<li>简历是“果”，能力是“因”。</li>
+<li>招进来能持续创建价值是未来的“果”，持续学习是“因”。</li>
+</ol>
+<p>阿里有句土话，用来招聘很适合：没有过程的结果是垃圾，没有结果的过程是放屁。</p>
+<p>上半句用来筛选简历，如果简历只写自己参与、做过了什么，而没有成果，这份简历就是垃圾，而写不出好简历的面试者，能力大概率也不优秀。</p>
+<p>下半句用来面试，面试者是怎么取得这些成果的，TA具有哪些能力才取得了这些成果？</p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>因果关系，还让我深刻的想到一句话：<strong>抓住事物的主要矛盾</strong>。</p>
+<p>咱们国家的发展，不一直就是党和政府在抓主要矛盾，解决主要矛盾的过程吗。</p>
+<h3 id="远见"><a href="#远见" class="headerlink" title="远见"></a>远见</h3><p>在世界读书日那天，美团技术团队推荐了许多书，其中有一本关于职业生涯的书籍：《<strong>远见：如何规划职业生涯3大阶段</strong>》，书很薄，也很容易理解，读完之后对职业生涯的认知提升了几个Level，值得深度阅读并实践，推荐给不断让自己更优秀的你。</p>
+<p>下面是<strong>美团点评酒旅事业群前端团队负责人郭凯</strong>的推荐语：</p>
+<blockquote>
+<p>我们不仅要找到热爱的工作，而且要建立热爱的生活。职业生涯就像是一场至少长达45年的马拉松，这本书介绍了远见思维和三大职业生涯阶段，并介绍了如何应对职场和生活的冲突。我辈应该多行动、少忧虑，并且提前做好中长期的职业思考和职业规划。如果用“远见”的思维看待眼前的影响和困难，就根本不值得一提。用“远见”的思维，长期有耐心，每天前进30公里。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%81%8C%E4%B8%9A%E5%8F%91%E5%B1%95/" rel="tag"># 职业发展</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/01/03/fabric-peer-ledger/" rel="prev" title="Fabric 1.4源码解读 9：从账本角度看Peer">
+                  <i class="fa fa-chevron-left"></i> Fabric 1.4源码解读 9：从账本角度看Peer
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03/03/contribute-to-fabric/" rel="next" title="向Fabric贡献代码">
+                  向Fabric贡献代码 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'ca0eb4392d5d55fd5066928e6e00596e',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

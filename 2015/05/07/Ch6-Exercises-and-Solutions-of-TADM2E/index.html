@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http:&#x2F;&#x2F;www.algorithm.cs.sunysb.edu&#x2F;algowiki&#x2F;index.php&#x2F;Weighted-graphs-TADM2E 该页面答案，也是由用户编辑的，不确定是完全的正确。 MST6-2 最短路径与MST题目 Is the path between two vertices in a mi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法设计手册第二版第六章课后习题解答">
+<meta property="og:url" content="http://lessisbetter.site/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http:&#x2F;&#x2F;www.algorithm.cs.sunysb.edu&#x2F;algowiki&#x2F;index.php&#x2F;Weighted-graphs-TADM2E 该页面答案，也是由用户编辑的，不确定是完全的正确。 MST6-2 最短路径与MST题目 Is the path between two vertices in a mi">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-05-07T12:36:44.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.808Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="TADM">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>算法设计手册第二版第六章课后习题解答 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AEWiki%E5%8F%8A%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88"><span class="nav-number">1.</span> <span class="nav-text">题目Wiki及参考答案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MST"><span class="nav-number">2.</span> <span class="nav-text">MST</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E4%B8%8EMST"><span class="nav-number">2.1.</span> <span class="nav-text">6-2 最短路径与MST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E4%B8%8EMST"><span class="nav-number">2.2.</span> <span class="nav-text">6-3 最短路径与MST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-Prim%E5%92%8CKruskal%E5%BE%97%E5%88%B0MST%E6%98%AF%E5%90%A6%E7%9B%B8%E5%90%8C"><span class="nav-number">2.3.</span> <span class="nav-text">6-4 Prim和Kruskal得到MST是否相同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-Prim%E5%92%8CKruskal%E8%BE%B9%E6%9D%83%E5%80%BC%E6%98%AF%E5%90%A6%E5%8F%AF%E4%B8%BA%E8%B4%9F"><span class="nav-number">2.4.</span> <span class="nav-text">6-5 Prim和Kruskal边权值是否可为负</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-6-%E6%B7%BB%E5%8A%A0%E8%BE%B9%EF%BC%8C%E8%8E%B7%E5%BE%97%E6%96%B0%E7%9A%84MST"><span class="nav-number">2.5.</span> <span class="nav-text">6-6 添加边，获得新的MST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-7-%E6%94%B9%E5%8F%98%E6%9D%83%E5%80%BC%EF%BC%8CMST%E6%98%AF%E5%90%A6%E6%94%B9%E5%8F%98%EF%BC%8C%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E6%98%AF%E5%90%A6%E6%94%B9%E5%8F%98"><span class="nav-number">2.6.</span> <span class="nav-text">6-7 改变权值，MST是否改变，最短路径是否改变</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-8-%E5%B7%B2%E6%9C%80%E5%B0%8F%E7%9A%84%E4%BB%A3%E4%BB%B7%E6%94%B9%E5%8F%98MST"><span class="nav-number">2.7.</span> <span class="nav-text">6-8 已最小的代价改变MST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-9-%E6%9C%80%E5%B0%8F%E8%BF%9E%E9%80%9A%E5%AD%90%E9%9B%86"><span class="nav-number">2.8.</span> <span class="nav-text">6-9 最小连通子集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-10-feedback-edge-set"><span class="nav-number">2.9.</span> <span class="nav-text">6-10 feedback-edge set</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E6%9F%A5%E9%9B%86"><span class="nav-number">3.</span> <span class="nav-text">并查集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-12-%E8%AE%BE%E8%AE%A1%E5%B9%B6%E6%9F%A5%E9%9B%86%E5%8F%8A%E7%AE%97%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">6-12 设计并查集及算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84"><span class="nav-number">4.</span> <span class="nav-text">最短路径</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-14-%E5%8D%95%E7%9B%AE%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84"><span class="nav-number">4.1.</span> <span class="nav-text">6-14 单目的最短路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-16-MST%E4%B8%8ESPT"><span class="nav-number">4.2.</span> <span class="nav-text">6-16 MST与SPT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-17-MST%E7%9A%84%E8%BE%B9%E4%B8%8ESP%E7%9A%84%E8%BE%B9"><span class="nav-number">4.3.</span> <span class="nav-text">6-17 MST的边与SP的边</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-18-%E9%A1%B6%E7%82%B9%E6%9C%89%E6%9D%83%E5%80%BC"><span class="nav-number">4.4.</span> <span class="nav-text">6-18 顶点有权值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-19-%E6%9C%80%E5%B0%8F%E6%9C%89%E5%90%91%E7%8E%AF"><span class="nav-number">4.5.</span> <span class="nav-text">6-19 最小有向环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-20-%E6%9C%80%E9%95%BF%E8%B7%AF%E5%BE%84"><span class="nav-number">4.6.</span> <span class="nav-text">6-20 最长路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-21-SSSP-%E7%BA%BF%E6%80%A7%E6%97%B6%E9%97%B4"><span class="nav-number">4.7.</span> <span class="nav-text">6-21 SSSP 线性时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-22-%E9%95%BF%E5%BA%A6%E4%B8%BAk%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84"><span class="nav-number">4.8.</span> <span class="nav-text">6-22 长度为k的最短路径</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法设计手册第二版第六章课后习题解答
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-05-07 20:36:44" itemprop="dateCreated datePublished" datetime="2015-05-07T20:36:44+08:00">2015-05-07</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>列出的解答仅为自己的思路，仅供参考，欢迎指出错误。</p>
+</blockquote>
+<h2 id="题目Wiki及参考答案"><a href="#题目Wiki及参考答案" class="headerlink" title="题目Wiki及参考答案"></a>题目Wiki及参考答案</h2><p><a target="_blank" rel="noopener" href="http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Weighted-graphs-TADM2E">http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Weighted-graphs-TADM2E</a></p>
+<p>该页面答案，也是由用户编辑的，不确定是完全的正确。</p>
+<h2 id="MST"><a href="#MST" class="headerlink" title="MST"></a>MST</h2><h3 id="6-2-最短路径与MST"><a href="#6-2-最短路径与MST" class="headerlink" title="6-2 最短路径与MST"></a>6-2 最短路径与MST</h3><p>题目</p>
+<p>Is the path between two vertices in a minimum spanning tree necessarily a shortest path between the two vertices in the full graph? Give a proof or a counterexample.</p>
+<a id="more"></a>
+
+<p>解答</p>
+<p>MST中两点间的路径不是该两点在整个图中的最短路径。</p>
+<p><strong>反例：</strong>使用习题5-1的图，使用Kruskal得到的MST是：</p>
+<p>路径A-&gt;I：A-&gt;D-&gt;G-&gt;J-&gt;I。路径长度为13，而在整个图中，路劲为A-&gt;I，长度为9。结果已显然。</p>
+<h3 id="6-3-最短路径与MST"><a href="#6-3-最短路径与MST" class="headerlink" title="6-3 最短路径与MST"></a>6-3 最短路径与MST</h3><p>题目</p>
+<p>Assume that all edges in the graph have distinct edge weights (i.e., no pair of edges have the same weight). Is the path between a pair of vertices in a minimum spanning tree necessarily a shortest path between the two vertices in the full graph? Give a proof or a counterexample.</p>
+<p>解答</p>
+<p>否。</p>
+<p>考虑B到D的路径，在图中路径长度为6，而在MST中路径长度为7。</p>
+<h3 id="6-4-Prim和Kruskal得到MST是否相同"><a href="#6-4-Prim和Kruskal得到MST是否相同" class="headerlink" title="6-4 Prim和Kruskal得到MST是否相同"></a>6-4 Prim和Kruskal得到MST是否相同</h3><p>题目</p>
+<p>Can Prim’s and Kruskal’s algorithm yield different minimum spanning trees? Explain why or why not.</p>
+<p>解答</p>
+<p>在6-1中，Prim与Kruskal就可以产生不同MST。只有当MST本身唯一的时候，由Prim与Kruskal得到的MST才是相同的。</p>
+<p>MST唯一的条件：所有边的权值都不相同。</p>
+<h3 id="6-5-Prim和Kruskal边权值是否可为负"><a href="#6-5-Prim和Kruskal边权值是否可为负" class="headerlink" title="6-5 Prim和Kruskal边权值是否可为负"></a>6-5 Prim和Kruskal边权值是否可为负</h3><p>题目</p>
+<p>Does either Prim’s and Kruskal’s algorithm work if there are negative edge weights? Explain why or why not.</p>
+<p>解答</p>
+<p>思考得到的想法和Wiki页面的想法是类似的，但我还不会严谨的证明。</p>
+<p>每条边都会被访问一次，并且只是比较边的大小，既然是仅仅比较大小，那么与正负是没有关系的。不会像Dijkstra那样对边的权值有加法操作，会影响整体的结果。</p>
+<h3 id="6-6-添加边，获得新的MST"><a href="#6-6-添加边，获得新的MST" class="headerlink" title="6-6 添加边，获得新的MST"></a>6-6 添加边，获得新的MST</h3><p>题目</p>
+<p>Suppose we are given the minimum spanning tree T of a given graph G (with n vertices and m edges) and a new edge e=(u,v) of weight w that we will add to G. Give an efficient algorithm to find the minimum spanning tree of the graph G+e. Your algorithm should run in O(n) time to receive full credit.</p>
+<p>解答</p>
+<p>向MST中添加一条边会怎样？对，出现环路。如果增加的边的权值w比从u到v的路径上最大边的权值要小，那么就需要删除掉该最大的边。</p>
+<p>从u开始对MST进行DFS可以得到最大的边，时间O(n)。</p>
+<p>Google了这道题目，得到了一份考卷，对该问题进行了扩展。题目及答案如下：</p>
+<p>Suppose you are given a graph G=(V,E) with edge weights w(e) and a minimum spanning tree T of G. Now, suppose a new edge {u,v} is added to G. Describe (in words) a method for determining if T is still a minimum spanning tree for G.</p>
+<p><em>Examine the path in T from u to v. If any vertex on this path has weight larger than that of the new edge, then T is no longer an MST. We can modify T to obtain a new MST by removing the max weight edge on this path and replacing it with the new edge.</em></p>
+<p>Explain how your method can be implemented to run in O(n) time if both G and T are provided as instances of the wgraph data structure.</p>
+<p><em>Using the wgraph for T, we can do a recursive tree traversal in T, starting at vertex u. Once the traversal reaches v, we “unwind” the recursion, and as we do so, we look for the max weight edge along the u,v path. The runtime for a tree traversal is O(n) and the required changes to T can be done in constant time.</em></p>
+<p>Suppose that instead of a single edge, you are given a set of k new edges to add to G. For small enough k it makes sense to apply your algorithm repeatedly in order to update the MST, but if k is “too large”, it’s more efficient to re-compute the MST from scratch. How big does k have to be (as a function of m and n) in order for this to be a better choice? Assume that the MST is computed using Prim’s algorithm with a d-heap, where d=2.</p>
+<p><em>When d=2, the running time for Prim’s algorithm is O(m log n), so if kn grows faster than this, it makes sense to recompute from scratch. So, if k&gt;(m/n) log n, it makes sense to recompute the MST.</em></p>
+<h3 id="6-7-改变权值，MST是否改变，最短路径是否改变"><a href="#6-7-改变权值，MST是否改变，最短路径是否改变" class="headerlink" title="6-7 改变权值，MST是否改变，最短路径是否改变"></a>6-7 改变权值，MST是否改变，最短路径是否改变</h3><p>题目</p>
+<p>(a) Let T be a minimum spanning tree of a weighted graph G. Construct a new graph G′ by adding a weight of k to every edge of G. Do the edges of T form a minimum spanning tree of G′? Prove the statement or give a counterexample.</p>
+<p>(b) Let P={s,…,t} describe a shortest weighted path between vertices s and t of a weighted graph G. Construct a new graph G′ by adding a weight of k to every edge of G. Does P describe a shortest path from s to t in G′? Prove the statement or give a counterexample.</p>
+<p>解答</p>
+<p>(a) 是的。</p>
+<p>6-5中提到了，MST与权值的具体数值无关，只要能比较边的大小即可。每条边的权值都增加了k，它们依然是可以比较大小的，并且它们的相对大小并没有变化，因此T会是G’的一个MST。</p>
+<p><em>这点我同答案wiki页面是不同的，那里面的回答是“可能是”。</em></p>
+<p>(b) 答案不确定。</p>
+<p>Dijkstra算法：只能处理非负权值的边。<br>Floyd-Warshall算法：能处理包含负边的图，但不能处理存在负边构成环的图。</p>
+<ol>
+<li>只要不存在负权值的边，答案是肯定的，依然是P。</li>
+<li>存在负边时，我不确定。</li>
+</ol>
+<h3 id="6-8-已最小的代价改变MST"><a href="#6-8-已最小的代价改变MST" class="headerlink" title="6-8 已最小的代价改变MST"></a>6-8 已最小的代价改变MST</h3><p>题目</p>
+<p>Devise and analyze an algorithm that takes a weighted graph G and finds the smallest change in the cost to a non-MST edge that would cause a change in the minimum spanning tree of G. Your algorithm must be correct and run in polynomial time.</p>
+<p>解答</p>
+<p>polynomial time：2O(log n), eg. n, nlogn, n10。</p>
+<p>什么样的边会影响最小生成树？</p>
+<p>在图的某个环中，除了这条边e，其他边都是MST中的边，那么只要e小于其中任何一条边的值就可以改变MST。</p>
+<p>再详细一点，边e是环中最大的边，边x是该环剩下的边在MST中最大的边。只要使得边e的值略小于边x的值即可，这样可以保证最小的代价改变MST。</p>
+<p>以6-2中的图为例，边(I,G)、(E,G)是符合条件的，减1即可，其他非MST边减的都大于1才能改变MST。</p>
+<p>假设n个点，m条边，则非MST边有(m-n+1)，根据MST找到每条边所在换，并计算最小变化需要O(n)，则时间复杂度为O(n(m-n))。</p>
+<p><em>我相信这不是最好的解决方案。</em></p>
+<h3 id="6-9-最小连通子集"><a href="#6-9-最小连通子集" class="headerlink" title="6-9 最小连通子集"></a>6-9 最小连通子集</h3><p>题目</p>
+<p>Consider the problem of finding a minimum weight connected subset T of edges from a weighted connected graph G. The weight of T is the sum of all the edge weights in T.</p>
+<p>(a) Why is this problem not just the minimum spanning tree problem? Hint: think negative weight edges.<br>(b) Give an efficient algorithm to compute the minimum weight connected subset T.</p>
+<p>解答</p>
+<p>若保证子图是连通的，那么T至少包含MST。向MST上添加一条边会怎样？</p>
+<ol>
+<li>正边：增加T的权值，不要。</li>
+<li>0：不改变权值，不要。</li>
+<li>负边：减小T的权值，要。</li>
+</ol>
+<p>因此，所有的负边都不能放过。问题来了，是先生成MST，再把所有的负边添加到MST中构成T，还是先得到所有的负边，再使用Kruskal让图连通得到T呢？</p>
+<p>无论哪种方法，<strong>最后T的权值都是一样的</strong>。</p>
+<ol>
+<li>前面证明了，在MST的边与非MST边e构成的环中，边e之所以不在MST中，就是因为它是环里面最大的，虽然现在边e的权值是负的，但仍然是最大的，因此把e添加进来，不会造成要删除其他MST边。最后得到的T的权值必然是最小的。</li>
+<li>先得所有负边，在Kruskal得到的T的权值必然也是最小的，因为它一直都在选最小的边。</li>
+</ol>
+<h3 id="6-10-feedback-edge-set"><a href="#6-10-feedback-edge-set" class="headerlink" title="6-10 feedback-edge set"></a>6-10 feedback-edge set</h3><p>题目</p>
+<p>Let G=(V,E) be an undirected graph. A set F⊆E of edges is called a feedback-edge set if every cycle of G has at least one edge in F.</p>
+<p>(a) Suppose that G is unweighted. Design an efficient algorithm to find a minimum-size feedback-edge set.<br>(b) Suppose that G is a weighted undirected graph with positive edge weights. Design an efficient algorithm to find a minimum-weight feedback-edge set.</p>
+<p>解答</p>
+<p>(a)</p>
+<ol>
+<li>记录每条边属于哪些环。</li>
+<li>拥有最多环的那条边e加入F。</li>
+<li>更新每条边，删除它们e中拥有的边，此时e拥有的边变为了0个。</li>
+<li>重复2-3，直到所有边不拥有环。</li>
+</ol>
+<p>时间复杂度嘛，看样子还是不小的。要找到么一个环，然后标记每条边在几个环内，还要排序，删除，不是一个高效的方案。</p>
+<p>(b)</p>
+<h2 id="并查集"><a href="#并查集" class="headerlink" title="并查集"></a>并查集</h2><h3 id="6-12-设计并查集及算法"><a href="#6-12-设计并查集及算法" class="headerlink" title="6-12 设计并查集及算法"></a>6-12 设计并查集及算法</h3><p>题目</p>
+<p>Devise an efficient data structure to handle the following operations on a weighted directed graph:</p>
+<p>(a) Merge two given components.<br>(b) Locate which component contains a given vertex v.<br>(c) Retrieve a minimum edge from a given component.</p>
+<p>解答</p>
+<p>在课本的并查集操作，得到的并查集是这样的。  </p>
+<p>要想确定两个顶点在不在一个集合内，需要找到代表这个集合的根节点，find的效率并不高，他需要多次递归才能得到根节点。</p>
+<p>如果能提高find的效率，并查集的操作也将提高很多。常见的做法是，<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Disjoint-set_data_structure">路径压缩</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int find(set_union *s, int x)  </span><br><span class="line">&#123;  </span><br><span class="line"> if (s-&gt;p\[x\] !&#x3D; x)  </span><br><span class="line"> s-&gt;p\[x\] &#x3D; find(s, s-&gt;p\[x\]);  </span><br><span class="line">  </span><br><span class="line"> return s-&gt;p\[x\];  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+<h2 id="最短路径"><a href="#最短路径" class="headerlink" title="最短路径"></a>最短路径</h2><h3 id="6-14-单目的最短路径"><a href="#6-14-单目的最短路径" class="headerlink" title="6-14 单目的最短路径"></a>6-14 单目的最短路径</h3><p>题目</p>
+<p>The <em>single-destination shortest path</em> problem for a <strong>directed graph</strong> seeks the shortest path from every vertex to a specified vertex v. Give an efficient algorithm to solve the single-destination shortest paths problem.</p>
+<p>解答</p>
+<p>如果是无向图的话，执行Dijkstra算法即可，然后倒转所有的路径。但是，题目指明是基于有向图的问题。</p>
+<p>另外，Kruskal算法是All-Pairs最短路径，如果想到的算法时间复杂度大于O(n3)，那还不如直接使用Kruskal。</p>
+<p>如上图,假设要求从s到t的最短路径，并且已经求得c1,c2,c3到t的最短路径，那么s到t的最短路径应当为 <code>W[s,t] = min(W[s,c1]+W[c1,t], W[s,c2]+W[c2,t], W[s,c3]+W[c3,t])</code>。</p>
+<p>自然而然，应当想到了递归解法。Oh，接下来貌似你要考虑一下这些问题：</p>
+<ol>
+<li>从哪个点开始递归，可以向dfs中那样使用for循环</li>
+<li>怎么处理环</li>
+</ol>
+<p>再回首想想：<strong>图的解决方案，是对图进行建模，使用已有的算法，而不是设计新的算法</strong></p>
+<p>使用Dijkstra算法。反向建立图G’ = (V’,E’), V = V’, {u,v}∈E, {v,u}属于E’。对G’使用Dijkstra算法得到从v到任意节点的最短路径，倒转所有路径即从所有节点到v的最短路径。</p>
+<h3 id="6-16-MST与SPT"><a href="#6-16-MST与SPT" class="headerlink" title="6-16 MST与SPT"></a>6-16 MST与SPT</h3><p>题目</p>
+<p>Answer all of the following:</p>
+<p>(a) Give an example of a weighted connected graph G=(V,E) and a vertex v, such that the minimum spanning tree of G is the same as the shortest-path spanning tree rooted at v.<br>(b) Give an example of a weighted connected directed graph G=(V,E) and a vertex v, such that the <em>minimum-cost spanning tree</em> of G is very different from the shortest-path spanning tree rooted at v.<br>(c) Can the two trees be completely disjointed?</p>
+<p>解答</p>
+<p>(a) 图G、MST、SP构成的树都是下图：</p>
+<p>(b) minimum-cost spanning tree就是MST，看到这个刚开始还觉得这是不是一个新东西。</p>
+<p>(c) What is ‘completely disjointed’?</p>
+<h3 id="6-17-MST的边与SP的边"><a href="#6-17-MST的边与SP的边" class="headerlink" title="6-17 MST的边与SP的边"></a>6-17 MST的边与SP的边</h3><p>题目</p>
+<p>Either prove the following or give a counterexample:</p>
+<p>(a) Is the path between a pair of vertices in a minimum spanning tree of an undirected graph necessarily the shortest (minimum weight) path?<br>(b) Suppose that the minimum spanning tree of the graph is unique. Is the path between a pair of vertices in a minimum spanning tree of an undirected graph necessarily the shortest (minimum weight) path?</p>
+<p>解答</p>
+<p>(a) 否。见上题(b)。边(A,C)就不在最短路径中。</p>
+<p>(b) 否。见上题(b)。图G的MST是唯一的，那么现在又回到了题(a)。</p>
+<h3 id="6-18-顶点有权值"><a href="#6-18-顶点有权值" class="headerlink" title="6-18 顶点有权值"></a>6-18 顶点有权值</h3><p>题目</p>
+<p>In certain graph problems, vertices have can have weights instead of or in addition to the weights of edges. Let Cv be the cost of vertex v, and C(x,y) the cost of the edge (x,y). This problem is concerned with finding the cheapest path between vertices a and b in a graph G. The cost of a path is the sum of the costs of the edges and vertices encountered on the path.</p>
+<p>(a) Suppose that each edge in the graph has a weight of zero (while non-edges have a cost of ∞). Assume that Cv=1 for all vertices 1≤v≤n (i.e., all vertices have the same cost). Give an efficient algorithm to find the cheapest path from a to b and its time complexity.<br>(b) Now suppose that the vertex costs are not constant (but are all positive) and the edge costs remain as above. Give an efficient algorithm to find the cheapest path from a to b and its time complexity.<br>(c) Now suppose that both the edge and vertex costs are not constant (but are all positive). Give an efficient algorithm to find the cheapest path from a to b and its time complexity.</p>
+<p>解答</p>
+<blockquote>
+<p>6.3.1 Stop and Think<br>Set the weight of each directed edge{i,j} in the input graph to the cost of vertex j. Dijkstra’s algorithm now does the job.</p>
+</blockquote>
+<p>我的解决方案：</p>
+<p>设边{i,j}的权值为W[i,j]。则将其改为W[i,j] = W[i,j] + Cj，然后使用Dijkstra。</p>
+<p>W[i,j]初始化：<br>(a) W[i,j] = 0.<br>(b) W[i,j] = k(常数).<br>(c) W[i,j] 原本值。</p>
+<h3 id="6-19-最小有向环"><a href="#6-19-最小有向环" class="headerlink" title="6-19 最小有向环"></a>6-19 最小有向环</h3><p>题目</p>
+<p>Let G be a weighted directed graph with n vertices and m edges, where all edges have positive weight. A directed cycle is a directed path that starts and ends at the same vertex and contains at least one edge. Give an O(n3) algorithm to find a directed cycle in G of minimum total weight. Partial credit will be given for an O(n2m) algorithm.</p>
+<p>解答</p>
+<p>如果对Floyd的过程比较了解，这个真的很简单，因为Floyd得到的是All-pairs，包括了i到i的最短距离，即<code>g-&gt;weight[i][i]</code>。遍历便可的最小值。</p>
+<p>我在做Floyd的时候，对有向图做了测试，<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/The-Algorithm-Design-Manual/blob/master/floyd.c">github传送门</a>。</p>
+<h3 id="6-20-最长路径"><a href="#6-20-最长路径" class="headerlink" title="6-20 最长路径"></a>6-20 最长路径</h3><p>题目</p>
+<p>Can we modify Dijkstra’s algorithm to solve the single-source longest path problem by changing {\em minimum} to maximum? If so, then prove your algorithm correct. If not, then provide a counterexample.</p>
+<p>解答</p>
+<p>Longest path is basically the <em>Hamiltonian Cycle problem</em> or the <em>Traveling Salesman Problem</em>, and it is NP-hard. So no, and if you find a way, then P=NP.</p>
+<p>The existence or non-existence of an algorithm to find the largest path, in polynomial time, is essentially part of the largest open problem in all of CS (and probably in math).</p>
+<p><a target="_blank" rel="noopener" href="http://cs.stackexchange.com/questions/17980/is-it-possible-to-modify-dijkstra-algorithm-in-order-to-get-the-longest-path">参考资料1</a><br><a target="_blank" rel="noopener" href="http://cs.stackexchange.com/questions/10732/how-to-prove-np-hardness-of-a-longest-path-problem">参考资料2</a></p>
+<h3 id="6-21-SSSP-线性时间"><a href="#6-21-SSSP-线性时间" class="headerlink" title="6-21 SSSP 线性时间"></a>6-21 SSSP 线性时间</h3><p>题目</p>
+<p>Let G=(V,E) be a weighted acyclic directed graph with possibly negative edge weights. Design a linear-time algorithm to solve the single-source shortest-path problem from a given source v.</p>
+<p>解答</p>
+<ol>
+<li><p>使用拓扑排序：O(E+V)<br> <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Topological_sorting#Application_to_shortest_path_finding">参考资料</a></p>
+</li>
+<li><p>Google: linear-time algorithm to solve the single-source shortest-path, 会搜到几篇论文，解决方案是修改Dijkstra算法。</p>
+</li>
+</ol>
+<h3 id="6-22-长度为k的最短路径"><a href="#6-22-长度为k的最短路径" class="headerlink" title="6-22 长度为k的最短路径"></a>6-22 长度为k的最短路径</h3><p>题目</p>
+<p>Let G=(V,E) be a directed weighted graph such that all the weights are positive. Let v and w be two vertices in G and k≤|V| be an integer. Design an algorithm to find the shortest path from v to w that contains exactly k edges. Note that the path need not be simple.</p>
+<p>解答</p>
+<p>注意最后一句：意味着图可能存在环的，并且路径中也可以存在环。</p>
+<p>比如图为：A&lt;-&gt;B，v=A, w=B.<br>k=1时，A-&gt;B;<br>k=2时，不存在。<br>k=3时，A-&gt;B-&gt;A-&gt;B。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/TADM/" rel="tag"># TADM</a>
+              <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/05/04/Ch5-Exercises-and-Solutions-of-TADM2E/" rel="prev" title="算法设计手册第二版第五章课后习题解答">
+                  <i class="fa fa-chevron-left"></i> 算法设计手册第二版第五章课后习题解答
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/05/07/Ch7-Exercises-and-Solutions-of-TADM2E/" rel="next" title="算法设计手册第二版第七章课后习题解答">
+                  算法设计手册第二版第七章课后习题解答 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '8c1ee80b3999b6b275784420e2f826ae',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

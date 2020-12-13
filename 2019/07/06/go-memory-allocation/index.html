@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="新老朋友好久不见，我是大彬，这篇文章准备了很久，不是在拖延，而是中间做了一些其他事情，耽搁了一些。 这篇文章主要介绍Go内存分配和Go内存管理，会轻微涉及内存申请和释放，以及Go垃圾回收。 从非常宏观的角度看，Go的内存管理就是下图这个样子，我们今天主要关注其中标红的部分。   友情提醒： 文章有点长，建议先收藏，后阅读，绝对是学习内存管理的好资料。  本文基于go1.11.2，不同版本Go的内存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go内存分配那些事，就这么简单！">
+<meta property="og:url" content="http://lessisbetter.site/2019/07/06/go-memory-allocation/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="新老朋友好久不见，我是大彬，这篇文章准备了很久，不是在拖延，而是中间做了一些其他事情，耽搁了一些。 这篇文章主要介绍Go内存分配和Go内存管理，会轻微涉及内存申请和释放，以及Go垃圾回收。 从非常宏观的角度看，Go的内存管理就是下图这个样子，我们今天主要关注其中标红的部分。   友情提醒： 文章有点长，建议先收藏，后阅读，绝对是学习内存管理的好资料。  本文基于go1.11.2，不同版本Go的内存">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-manage.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-data-heirarchy.jpg">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-CPU-DRAM.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-mbp-memory.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-Virtual-Memory-in-OS-Operating-System.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-figure_6-1.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-Mutator-Allocator-Collector.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-Memory_Blocks.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-Alignment-Header.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-tcmalloc-Overview.svg">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-tcmalloc-PageHeap.svg">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-detail.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-sizes.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-sizetable.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-size_tranform.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-span-objects.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-classify.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-detail.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-memory-objs.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-mcentral.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-mheap.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="article:published_time" content="2019-07-06T15:19:39.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.786Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="内存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-07-go-memory-manage.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/07/06/go-memory-allocation/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go内存分配那些事，就这么简单！ | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AD%98%E5%82%A8%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.</span> <span class="nav-text">1. 存储基础知识回顾</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E9%87%91%E5%AD%97%E5%A1%94"><span class="nav-number">1.1.</span> <span class="nav-text">存储金字塔</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98"><span class="nav-number">1.2.</span> <span class="nav-text">虚拟内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%88%E5%92%8C%E5%A0%86"><span class="nav-number">1.3.</span> <span class="nav-text">栈和堆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A0%86%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.4.</span> <span class="nav-text">堆内存管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-TCMalloc"><span class="nav-number">2.</span> <span class="nav-text">2. TCMalloc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B2%BE%E5%BD%A9%E6%96%87%E7%AB%A0%E6%8E%A8%E8%8D%90"><span class="nav-number">2.2.</span> <span class="nav-text">精彩文章推荐</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">3. Go内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">3.1.</span> <span class="nav-text">Go内存管理的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Page"><span class="nav-number">3.1.1.</span> <span class="nav-text">Page</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Span"><span class="nav-number">3.1.2.</span> <span class="nav-text">Span</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mcache"><span class="nav-number">3.1.3.</span> <span class="nav-text">mcache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mcentral"><span class="nav-number">3.1.4.</span> <span class="nav-text">mcentral</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mheap"><span class="nav-number">3.1.5.</span> <span class="nav-text">mheap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%A7%E5%B0%8F%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.1.6.</span> <span class="nav-text">大小转换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E8%BD%AC%E6%8D%A2%E8%A1%A8%E5%AD%97%E6%AE%B5"><span class="nav-number">3.1.7.</span> <span class="nav-text">其他转换表字段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-number">3.2.</span> <span class="nav-text">Go内存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%8F%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D"><span class="nav-number">3.2.1.</span> <span class="nav-text">小对象分配</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%BA%E5%AF%B9%E8%B1%A1%E5%AF%BB%E6%89%BEspan"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">为对象寻找span</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BB%8Espan%E5%88%86%E9%85%8D%E5%AF%B9%E8%B1%A1%E7%A9%BA%E9%97%B4"><span class="nav-number">3.2.1.2.</span> <span class="nav-text">从span分配对象空间</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#span%E6%B2%A1%E6%9C%89%E7%A9%BA%E9%97%B4%E6%80%8E%E4%B9%88%E5%88%86%E9%85%8D%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.2.1.3.</span> <span class="nav-text">span没有空间怎么分配对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#mcentral%E5%90%91mcache%E6%8F%90%E4%BE%9Bspan"><span class="nav-number">3.2.1.4.</span> <span class="nav-text">mcentral向mcache提供span</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#mheap%E7%9A%84span%E7%AE%A1%E7%90%86"><span class="nav-number">3.2.1.5.</span> <span class="nav-text">mheap的span管理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#mcentral%E5%90%91mheap%E8%A6%81span"><span class="nav-number">3.2.1.6.</span> <span class="nav-text">mcentral向mheap要span</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#mheap%E5%90%91OS%E7%94%B3%E8%AF%B7%E5%86%85%E5%AD%98"><span class="nav-number">3.2.1.7.</span> <span class="nav-text">mheap向OS申请内存</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%A7%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D"><span class="nav-number">3.2.2.</span> <span class="nav-text">大对象分配</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%92%8C%E5%86%85%E5%AD%98%E9%87%8A%E6%94%BE"><span class="nav-number">3.3.</span> <span class="nav-text">Go垃圾回收和内存释放</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Go%E6%A0%88%E5%86%85%E5%AD%98"><span class="nav-number">4.</span> <span class="nav-text">4. Go栈内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">5. 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">6. 参考资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E5%BD%A9%E8%9B%8B"><span class="nav-number">7.</span> <span class="nav-text">7. 彩蛋</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/07/06/go-memory-allocation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go内存分配那些事，就这么简单！
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-06 23:19:39" itemprop="dateCreated datePublished" datetime="2019-07-06T23:19:39+08:00">2019-07-06</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>新老朋友好久不见，我是大彬，这篇文章准备了很久，不是在拖延，而是中间做了一些其他事情，耽搁了一些。</p>
+<p>这篇文章<strong>主要介绍Go内存分配和Go内存管理</strong>，会轻微涉及内存申请和释放，以及Go垃圾回收。</p>
+<p>从非常宏观的角度看，Go的内存管理就是下图这个样子，我们今天主要关注其中标红的部分。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-go-memory-manage.png" alt="Go内存管理"></p>
+<blockquote>
+<p>友情提醒：</p>
+<p>文章有点长，建议先收藏，后阅读，绝对是学习内存管理的好资料。</p>
+</blockquote>
+<p><strong>本文基于go1.11.2，不同版本Go的内存管理可能存在差别，比如1.9与1.11的mheap定义就是差别比较大的，后续看源码的时候，请注意你的go版本，但无论你用哪个go版本，这都是一个优秀的资料，因为内存管理的思想和框架始终未变。</strong></p>
+<p>Go这门语言抛弃了C/C++中的开发者管理内存的方式：主动申请与主动释放，增加了逃逸分析和GC，将开发者从内存管理中释放出来，让开发者有更多的精力去关注软件设计，而不是底层的内存问题。这是Go语言成为高生产力语言的原因之一。</p>
+<p>我们不需要精通内存的管理，因为它确实很复杂，但掌握内存的管理，可以让你写出更高质量的代码，另外，还能助你定位Bug。</p>
+<p><strong>这篇文章采用层层递进的方式，依次会介绍关于存储的基本知识，Go内存管理的“前辈”TCMalloc，然后是Go的内存管理和分配，最后是总结。这么做的目的是，希望各位能通过全局的认识和思考，拥有更好的编码思维和架构思维。</strong></p>
+<p>最后，这不是一篇源码分析文章，因为Go源码分析的文章已经有很多了，这些源码文章能够帮助你去学习具体的工程实践和奇淫巧计了，文章的末尾会推荐一些优秀文章，如果你对内存感兴趣，建议每一篇都去看一下，挑出自己喜欢的，多花时间研究下。</p>
+<h2 id="1-存储基础知识回顾"><a href="#1-存储基础知识回顾" class="headerlink" title="1. 存储基础知识回顾"></a>1. 存储基础知识回顾</h2><p>这部分我们简单回顾一下计算机存储体系、虚拟内存、栈和堆，以及堆内存的管理，这部分内容对理解和掌握Go内存管理比较重要，建议忘记或不熟悉的朋友不要跳过。</p>
+<h3 id="存储金字塔"><a href="#存储金字塔" class="headerlink" title="存储金字塔"></a>存储金字塔</h3><p><img src="http://img.lessisbetter.site/2019-07-data-heirarchy.jpg" alt="img"></p>
+<p>这幅图表达了计算机的存储体系，从上至下依次是：</p>
+<ul>
+<li>CPU寄存器</li>
+<li>Cache</li>
+<li>内存</li>
+<li>硬盘等辅助存储设备</li>
+<li>鼠标等外接设备</li>
+</ul>
+<p>从上至下，访问速度越来越慢，访问时间越来越长。</p>
+<p>你有没有思考过下面2个简单的问题，如果没有不妨想想：</p>
+<ol>
+<li>如果CPU直接访问硬盘，CPU能充分利用吗？</li>
+<li>如果CPU直接访问内存，CPU能充分利用吗？</li>
+</ol>
+<p>CPU速度很快，但硬盘等持久存储很慢，如果CPU直接访问磁盘，磁盘可以拉低CPU的速度，机器整体性能就会低下，为了弥补这2个硬件之间的速率差异，所以在CPU和磁盘之间增加了比磁盘快很多的内存。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-CPU-DRAM.png" alt="CPU和内存速率差异"></p>
+<p>然而，CPU跟内存的速率也不是相同的，从上图可以看到，CPU的速率提高的很快（摩尔定律），然而内存速率增长的很慢，<em>虽然CPU的速率现在增加的很慢了，但是内存的速率也没增加多少，速率差距很大</em>，从1980年开始CPU和内存速率差距在不断拉大，为了弥补这2个硬件之间的速率差异，所以在CPU跟内存之间增加了比内存更快的Cache，Cache是内存数据的缓存，可以降低CPU访问内存的时间。</p>
+<p>不要以为有了<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/CPU%E7%BC%93%E5%AD%98">Cache</a>就万事大吉了，CPU的速率还在不断增大，Cache也在不断改变，从最初的1级，到后来的2级，到当代的3级Cache，*<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/CPU%E7%BC%93%E5%AD%98#%E5%8E%86%E5%8F%B2%E5%92%8C%E6%9C%AA%E6%9D%A5">（有兴趣看cache历史）</a>*。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-mbp-memory.png" alt="MBP的CPU和Cache信息"></p>
+<p>三级Cache分别是L1、L2、L3，它们的速率是三个不同的层级，L1速率最快，与CPU速率最接近，是RAM速率的100倍，L2速率就降到了RAM的25倍，L3的速率更靠近RAM的速率。</p>
+<p>看到这了，你有没有Get到整个<strong>存储体系的分层设计</strong>？<strong>自顶向下，速率越来越低，访问时间越来越长，从磁盘到CPU寄存器，上一层都可以看做是下一层的缓存。</strong></p>
+<p>看了分层设计，我们看一下内存，毕竟我们是介绍内存管理的文章。</p>
+<h3 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h3><p>虚拟内存是当代操作系统必备的一项重要功能了，它向进程屏蔽了底层了RAM和磁盘，并向进程提供了远超物理内存大小的内存空间。我们看一下虚拟内存的<strong>分层设计</strong>。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-Virtual-Memory-in-OS-Operating-System.png" alt="虚拟内存原理"></p>
+<p>上图展示了某进程访问数据，当Cache没有命中的时候，访问虚拟内存获取数据的过程。</p>
+<p>访问内存，实际访问的是虚拟内存，虚拟内存通过页表查看，当前要访问的虚拟内存地址，是否已经加载到了物理内存，如果已经在物理内存，则取物理内存数据，如果没有对应的物理内存，则从磁盘加载数据到物理内存，并把物理内存地址和虚拟内存地址更新到页表。</p>
+<p>有没有Get到：<strong>物理内存就是磁盘存储缓存层</strong>。</p>
+<p>另外，在没有虚拟内存的时代，物理内存对所有进程是共享的，多进程同时访问同一个物理内存存在并发访问问题。<strong>引入虚拟内存后，每个进程都要各自的虚拟内存，内存的并发访问问题的粒度从多进程级别，可以降低到多线程级别</strong>。</p>
+<h3 id="栈和堆"><a href="#栈和堆" class="headerlink" title="栈和堆"></a>栈和堆</h3><p>我们现在从虚拟内存，再进一层，看虚拟内存中的栈和堆，也就是进程对内存的管理。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-figure_6-1.png" alt="虚拟内存布局"></p>
+<p>上图展示了一个进程的虚拟内存划分，代码中使用的内存地址都是虚拟内存地址，而不是实际的物理内存地址。栈和堆只是虚拟内存上2块不同功能的内存区域：</p>
+<ul>
+<li><p>栈在高地址，从高地址向低地址增长。</p>
+</li>
+<li><p>堆在低地址，从低地址向高地址增长。</p>
+</li>
+</ul>
+<p><strong>栈和堆相比有这么几个好处</strong>：</p>
+<ol>
+<li>栈的内存管理简单，分配比堆上快。</li>
+<li>栈的内存不需要回收，而堆需要，无论是主动free，还是被动的垃圾回收，这都需要花费额外的CPU。</li>
+<li>栈上的内存有更好的局部性，堆上内存访问就不那么友好了，CPU访问的2块数据可能在不同的页上，CPU访问数据的时间可能就上去了。</li>
+</ol>
+<h3 id="堆内存管理"><a href="#堆内存管理" class="headerlink" title="堆内存管理"></a>堆内存管理</h3><p><img src="http://img.lessisbetter.site/2019-07-Mutator-Allocator-Collector.png" alt="内存管理"></p>
+<p>我们再进一层，当我们说内存管理的时候，主要是指堆内存的管理，因为栈的内存管理不需要程序去操心。这小节看下堆内存管理干的是啥，如上图所示主要是3部分：<strong>分配内存块，回收内存块和组织内存块</strong>。</p>
+<p>在一个最简单的内存管理中，堆内存最初会是一个完整的大块，即未分配内存，当来申请的时候，就会从未分配内存，分割出一个小内存块(block)，然后用链表把所有内存块连接起来。需要一些信息描述每个内存块的基本信息，比如大小(size)、是否使用中(used)和下一个内存块的地址(next)，内存块实际数据存储在data中。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-Memory_Blocks.png" alt="内存块链表"></p>
+<p>一个内存块包含了3类信息，如下图所示，元数据、用户数据和对齐字段，内存对齐是为了提高访问效率。下图申请5Byte内存的时候，就需要进行内存对齐。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-Alignment-Header.png" alt="内存块和对齐"></p>
+<p>释放内存实质是把使用的内存块从链表中取出来，然后标记为未使用，当分配内存块的时候，可以从未使用内存块中有先查找大小相近的内存块，如果找不到，再从未分配的内存中分配内存。</p>
+<p>上面这个简单的设计中还没考虑内存碎片的问题，因为随着内存不断的申请和释放，内存上会存在大量的碎片，降低内存的使用率。为了解决内存碎片，可以将2个连续的未使用的内存块合并，减少碎片。</p>
+<p>以上就是内存管理的基本思路，关于基本的内存管理，想了解更多，可以阅读这篇文章《<a target="_blank" rel="noopener" href="http://dmitrysoshnikov.com/compilers/writing-a-memory-allocator/">Writing a Memory Allocator</a>》，本节的3张图片也是来自这片文章。</p>
+<h2 id="2-TCMalloc"><a href="#2-TCMalloc" class="headerlink" title="2. TCMalloc"></a>2. TCMalloc</h2><p><strong>TCMalloc是Thread Cache Malloc的简称，是Go内存管理的起源</strong>，Go的内存管理是借鉴了TCMalloc，随着Go的迭代，Go的内存管理与TCMalloc不一致地方在不断扩大，但<strong>其主要思想、原理和概念都是和TCMalloc一致的</strong>，如果跳过TCMalloc直接去看Go的内存管理，也许你会似懂非懂。</p>
+<p>掌握TCMalloc的理念，<em>无需去关注过多的源码细节</em>，就可以为掌握Go的内存管理打好基础，基础打好了，后面知识才扎实。</p>
+<p>在Linux里，其实有不少的内存管理库，比如glibc的ptmalloc，FreeBSD的jemalloc，Google的tcmalloc等等，为何会出现这么多的内存管理库？本质都是<strong>在多线程编程下，追求更高内存管理效率</strong>：更快的分配是主要目的。</p>
+<p>那如何更快的分配内存？</p>
+<p>我们前面提到：</p>
+<blockquote>
+<p>引入虚拟内存后，让内存的并发访问问题的粒度从多进程级别，降低到多线程级别。</p>
+</blockquote>
+<p>这是<strong>更快分配内存的第一个层次</strong>。</p>
+<p>同一进程的所有线程共享相同的内存空间，他们申请内存时需要加锁，如果不加锁就存在同一块内存被2个线程同时访问的问题。</p>
+<p>TCMalloc的做法是什么呢？<strong>为每个线程预分配一块缓存，线程申请小内存时，可以从缓存分配内存</strong>，这样有2个好处：</p>
+<ol>
+<li>为线程预分配缓存需要进行1次系统调用，后续线程申请小内存时，从缓存分配，都是在用户态执行，没有系统调用，<strong>缩短了内存总体的分配和释放时间，这是快速分配内存的第二个层次</strong>。</li>
+<li>多个线程同时申请小内存时，从各自的缓存分配，访问的是不同的地址空间，无需加锁，<strong>把内存并发访问的粒度进一步降低了，这是快速分配内存的第三个层次</strong>。</li>
+</ol>
+<h3 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h3><p>下面就简单介绍下TCMalloc，细致程度够我们理解Go的内存管理即可。</p>
+<blockquote>
+<p>声明：我没有研究过TCMalloc，以下介绍根据TCMalloc官方资料和其他博主资料总结而来，错误之处请朋友告知我。</p>
+</blockquote>
+<p><img src="http://img.lessisbetter.site/2019-07-tcmalloc-Overview.svg" alt="TCMalloc概要图"></p>
+<p>结合上图，介绍TCMalloc的几个重要概念：</p>
+<ol>
+<li><strong>Page</strong>：操作系统对内存管理以页为单位，TCMalloc也是这样，只不过TCMalloc里的Page大小与操作系统里的大小并不一定相等，而是倍数关系。《<a target="_blank" rel="noopener" href="https://wallenwang.com/2018/11/tcmalloc/">TCMalloc解密</a>》里称x64下Page大小是8KB。</li>
+<li><strong>Span</strong>：一组连续的Page被称为Span，比如可以有2个页大小的Span，也可以有16页大小的Span，Span比Page高一个层级，是为了方便管理一定大小的内存区域，Span是TCMalloc中内存管理的基本单位。</li>
+<li><strong>ThreadCache</strong>：每个线程各自的Cache，一个Cache包含多个空闲内存块链表，每个链表连接的都是内存块，同一个链表上内存块的大小是相同的，也可以说按内存块大小，给内存块分了个类，这样可以根据申请的内存大小，快速从合适的链表选择空闲内存块。由于每个线程有自己的ThreadCache，所以ThreadCache访问是无锁的。</li>
+<li><strong>CentralCache</strong>：是所有线程共享的缓存，也是保存的空闲内存块链表，链表的数量与ThreadCache中链表数量相同，当ThreadCache内存块不足时，可以从CentralCache取，当ThreadCache内存块多时，可以放回CentralCache。由于CentralCache是共享的，所以它的访问是要加锁的。</li>
+<li><strong>PageHeap</strong>：PageHeap是堆内存的抽象，PageHeap存的也是若干链表，链表保存的是Span，当CentralCache没有内存的时，会从PageHeap取，把1个Span拆成若干内存块，添加到对应大小的链表中，当CentralCache内存多的时候，会放回PageHeap。如下图，分别是1页Page的Span链表，2页Page的Span链表等，最后是large span set，这个是用来保存中大对象的。毫无疑问，PageHeap也是要加锁的。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-07-tcmalloc-PageHeap.svg" alt="PageHeap"></p>
+<p>上文提到了小、中、大对象，Go内存管理中也有类似的概念，我们瞄一眼TCMalloc的定义：</p>
+<ol>
+<li>小对象大小：0~256KB</li>
+<li>中对象大小：257~1MB</li>
+<li>大对象大小：&gt;1MB</li>
+</ol>
+<p>小对象的分配流程：ThreadCache -&gt; CentralCache -&gt; HeapPage，大部分时候，ThreadCache缓存都是足够的，不需要去访问CentralCache和HeapPage，无锁分配加无系统调用，分配效率是非常高的。</p>
+<p>中对象分配流程：直接在PageHeap中选择适当的大小即可，128 Page的Span所保存的最大内存就是1MB。</p>
+<p>大对象分配流程：从large span set选择合适数量的页面组成span，用来存储数据。</p>
+<p>通过本节的介绍，你应当对TCMalloc主要思想有一定了解了，我建议再回顾一下上面的内容。</p>
+<p><strong><em>本节图片皆来自《<a target="_blank" rel="noopener" href="https://wallenwang.com/2018/11/tcmalloc/">TCMalloc解密</a>》，图片版权归原作者所有。</em></strong></p>
+<h3 id="精彩文章推荐"><a href="#精彩文章推荐" class="headerlink" title="精彩文章推荐"></a>精彩文章推荐</h3><p>本文对于TCMalloc的介绍并不多，<strong>重要的是3个快速分配内存的层次</strong>，如果想了解更多，可阅读下面文章。</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://goog-perftools.sourceforge.net/doc/tcmalloc.html">TCMalloc</a></li>
+</ol>
+<p><strong>必读</strong>，通过这篇你能掌握TCMalloc的原理和性能，对掌握Go的内存管理有非常大的帮助，虽然如今Go的内存管理与TCMalloc已经相差很大，但是，这是<strong>Go内存管理的起源和“大道”</strong>，这篇文章顶看十几篇Go内存管理的文章。</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://wallenwang.com/2018/11/tcmalloc/">TCMalloc解密</a></li>
+</ol>
+<p><strong>可选</strong>，<strong>异常详细，包含大量精美图片</strong>，看完得花小时级别，理解就需要更多时间了，看完这篇不需要看其他TCMalloc的文章了。</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/aaronjzhang/article/details/8696212">TCMalloc介绍</a></li>
+</ol>
+<p><strong>可选</strong>，算是TCMalloc的文档的中文版，多数是从英文版翻译过来的，如果你英文不好，看看。</p>
+<h2 id="3-Go内存管理"><a href="#3-Go内存管理" class="headerlink" title="3. Go内存管理"></a>3. Go内存管理</h2><p>前面铺垫了那么多，终于到了本文核心的地方。前面的铺垫不是不重要，相反它们很重要，Go语言内存管理源自前面的基础知识和内存管理思维，如果你跳过了前面的内容，建议你回头看一看，它可以帮助你更好的掌握Go内存管理。</p>
+<p>前文提到<strong>Go内存管理源自<a href="#TCMalloc">TCMalloc</a>，但它比TCMalloc还多了2件东西：逃逸分析和垃圾回收</strong>，这是2项提高生产力的绝佳武器。</p>
+<p>这一大章节，我们先介绍Go内存管理和Go内存分配，最后涉及一点垃圾回收和内存释放。</p>
+<h3 id="Go内存管理的基本概念"><a href="#Go内存管理的基本概念" class="headerlink" title="Go内存管理的基本概念"></a>Go内存管理的基本概念</h3><p>前面计算机基础知识回顾，是一种自上而下，从宏观到微观的介绍方式，把目光引入到今天的主题。</p>
+<p>Go内存管理的许多概念在TCMalloc中已经有了，含义是相同的，只是名字有一些变化。先给大家上一幅宏观的图，借助图一起来介绍。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
+<h4 id="Page"><a href="#Page" class="headerlink" title="Page"></a>Page</h4><p>与TCMalloc中的Page相同，x64下1个Page的大小是8KB。上图的最下方，1个浅蓝色的长方形代表1个Page。</p>
+<h4 id="Span"><a href="#Span" class="headerlink" title="Span"></a>Span</h4><p>与TCMalloc中的Span相同，<strong>Span是内存管理的基本单位</strong>，代码中为<code>mspan</code>，<strong>一组连续的Page组成1个Span</strong>，所以上图一组连续的浅蓝色长方形代表的是一组Page组成的1个Span，另外，1个淡紫色长方形为1个Span。</p>
+<h4 id="mcache"><a href="#mcache" class="headerlink" title="mcache"></a>mcache</h4><p>mcache与TCMalloc中的ThreadCache类似，<strong>mcache保存的是各种大小的Span，并按Span class分类，小对象直接从mcache分配内存，它起到了缓存的作用，并且可以无锁访问</strong>。</p>
+<p>但mcache与ThreadCache也有不同点，TCMalloc中是每个线程1个ThreadCache，Go中是<strong>每个P拥有1个mcache</strong>，因为在Go程序中，当前最多有GOMAXPROCS个线程在用户态运行，所以最多需要GOMAXPROCS个mcache就可以保证各线程对mcache的无锁访问，线程的运行又是与P绑定的，把mcache交给P刚刚好。</p>
+<h4 id="mcentral"><a href="#mcentral" class="headerlink" title="mcentral"></a>mcentral</h4><p>mcentral与TCMalloc中的CentralCache类似，<strong>是所有线程共享的缓存，需要加锁访问</strong>，它按Span class对Span分类，串联成链表，当mcache的某个级别Span的内存被分配光时，它会向mcentral申请1个当前级别的Span。</p>
+<p>但mcentral与CentralCache也有不同点，CentralCache是每个级别的Span有1个链表，mcache是每个级别的Span有2个链表，这和mcache申请内存有关，稍后我们再解释。</p>
+<h4 id="mheap"><a href="#mheap" class="headerlink" title="mheap"></a>mheap</h4><p>mheap与TCMalloc中的PageHeap类似，<strong>它是堆内存的抽象，把从OS申请出的内存页组织成Span，并保存起来</strong>。当mcentral的Span不够用时会向mheap申请，mheap的Span不够用时会向OS申请，向OS的内存申请是按页来的，然后把申请来的内存页生成Span组织起来，同样也是需要加锁访问的。</p>
+<p>但mheap与PageHeap也有不同点：mheap把Span组织成了树结构，而不是链表，并且还是2棵树，然后把Span分配到heapArena进行管理，它包含地址映射和span是否包含指针等位图，这样做的主要原因是为了更高效的利用内存：分配、回收和再利用。</p>
+<h4 id="大小转换"><a href="#大小转换" class="headerlink" title="大小转换"></a>大小转换</h4><p>除了以上内存块组织概念，还有几个重要的大小概念，一定要拿出来讲一下，不要忽视他们的重要性，他们是内存分配、组织和地址转换的基础。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-go-memory-sizes.png" alt="Go内存大小转换"></p>
+<ol>
+<li><strong>object size</strong>：代码里简称<code>size</code>，指申请内存的对象大小。</li>
+<li><strong>size class</strong>：代码里简称<code>class</code>，它是size的级别，相当于把size归类到一定大小的区间段，比如size[1,8]属于size class 1，size(8,16]属于size class 2。</li>
+<li><strong>span class</strong>：指span的级别，但span class的大小与span的大小并没有正比关系。span class主要用来和size class做对应，1个size class对应2个span class，2个span class的span大小相同，只是功能不同，1个用来存放包含指针的对象，一个用来存放不包含指针的对象，不包含指针对象的Span就无需GC扫描了。</li>
+<li><strong>num of page</strong>：代码里简称<code>npage</code>，代表Page的数量，其实就是Span包含的页数，用来分配内存。</li>
+</ol>
+<p>在介绍这几个大小之间的换算前，我们得先看下图这个表，这个表决定了映射关系。</p>
+<p>最上面2行是我手动加的，前3列分别是size class，object size和span size，根据这3列做size、size class和num of page之间的转换。</p>
+<p>仔细看一遍这个表，再向下看转换是如何实现的。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-go-sizetable.png" alt="Go内存分配表"></p>
+<p>在Go内存大小转换那幅图中已经标记各大小之间的转换，分别是数组：<code>class_to_size</code>，<code>size_to_class*</code>和<code>class_to_allocnpages</code>，这3个数组内容，就是跟上表的映射关系匹配的。比如<code>class_to_size</code>，从上表看class 1对应的保存对象大小为8，所以<code>class_to_size[1]=8</code>，span大小为8192Byte，即8KB，为1页，所以<code>class_to_allocnpages[1]=1</code>。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-size_tranform.png" alt="Size转换"></p>
+<p><strong>为何不使用函数计算各种转换，而是写成数组？</strong></p>
+<p>有1个很重要的原因：<strong>空间换时间</strong>。你如果仔细观察了，上表中的转换，并不能通过简单的公式进行转换，比如size和size class的关系，并不是正比的。这些数据是使用较复杂的公式计算出来的，公式在<code>makesizeclass.go</code>中，这其中存在指数运算与for循环，造成每次大小转换的时间复杂度为O(N*2^N)。另外，对一个程序而言，内存的申请和管理操作是很多的，如果不能快速完成，就是非常的低效。把以上大小转换写死到数组里，做到了把大小转换的时间复杂度直接降到O(1)。</p>
+<h4 id="其他转换表字段"><a href="#其他转换表字段" class="headerlink" title="其他转换表字段"></a>其他转换表字段</h4><p>第4列num of objects代表是当前size class级别的Span可以保存多少对象数量，第5列tail waste是<code>span%obj</code>计算的结果，因为span的大小并不一定是对象大小的整数倍。</p>
+<p>最后一列max waste代表最大浪费的内存百分比，计算方法在<code>printComment</code>函数中:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printComment</span><span class="params">(w io.Writer, classes []class)</span></span> &#123;</span><br><span class="line">	fmt.Fprintf(w, <span class="string">&quot;// %-5s  %-9s  %-10s  %-7s  %-10s  %-9s\n&quot;</span>, <span class="string">&quot;class&quot;</span>, <span class="string">&quot;bytes/obj&quot;</span>, <span class="string">&quot;bytes/span&quot;</span>, <span class="string">&quot;objects&quot;</span>, <span class="string">&quot;tail waste&quot;</span>, <span class="string">&quot;max waste&quot;</span>)</span><br><span class="line">	prevSize := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> i, c := <span class="keyword">range</span> classes &#123;</span><br><span class="line">		<span class="keyword">if</span> i == <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		spanSize := c.npages * pageSize</span><br><span class="line">		objects := spanSize / c.size</span><br><span class="line">		tailWaste := spanSize - c.size*(spanSize/c.size)</span><br><span class="line">		maxWaste := <span class="keyword">float64</span>((c.size-prevSize<span class="number">-1</span>)*objects+tailWaste) / <span class="keyword">float64</span>(spanSize)</span><br><span class="line">		prevSize = c.size</span><br><span class="line">		fmt.Fprintf(w, <span class="string">&quot;// %5d  %9d  %10d  %7d  %10d  %8.2f%%\n&quot;</span>, i, c.size, spanSize, objects, tailWaste, <span class="number">100</span>*maxWaste)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Fprintf(w, <span class="string">&quot;\n&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Span最浪费内存的场景是：Span内的每一个对象空间保存的对象，实际占用内存是前一个class中对象的大小加1，这样无法占用低一级的Span。一个对象空间未被占用的内存就被浪费了，所以一个Span内对象空间所浪费的内存为：所有对象空间浪费的内存之和+tail waste。</p>
+<blockquote>
+<p>((c.size - (preSize+1)) * objects + tailWaste) / spanSize</p>
+</blockquote>
+<p><img src="http://img.lessisbetter.site/2019-07-span-objects.png" alt="Span内object分布情况"></p>
+<blockquote>
+<p>感谢<a target="_blank" rel="noopener" href="https://github.com/foobar">foobar</a>的提醒max waste的计算。</p>
+</blockquote>
+<h3 id="Go内存分配"><a href="#Go内存分配" class="headerlink" title="Go内存分配"></a>Go内存分配</h3><p>涉及的概念已经讲完了，我们看下Go内存分配原理。</p>
+<p>Go中的内存分类并不像TCMalloc那样分成小、中、大对象，但是它的小对象里又细分了一个Tiny对象，Tiny对象指大小在1Byte到16Byte之间并且不包含指针的对象。小对象和大对象只用大小划定，无其他区分。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-go-memory-classify.png" alt="Go内存对象分类"></p>
+<p>小对象是在mcache中分配的，而大对象是直接从mheap分配的，从小对象的内存分配看起。</p>
+<h4 id="小对象分配"><a href="#小对象分配" class="headerlink" title="小对象分配"></a>小对象分配</h4><p><img src="http://img.lessisbetter.site/2019-07-go-memory-detail.png" alt="Go内存管理"></p>
+<p><a href="#%E5%A4%A7%E5%B0%8F%E8%BD%AC%E6%8D%A2">大小转换</a>这一小节，我们介绍了转换表，size class从1到66共66个，代码中<code>_NumSizeClasses=67</code>代表了实际使用的size class数量，即67个，从0到66，size class 0实际并未使用到。</p>
+<p>上文提到1个size class对应2个span class：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">numSpanClasses = _NumSizeClasses * <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p><code>numSpanClasses</code>为span class的数量为134个，所以span class的下标是从0到133，所以上图中mcache标注了的span class是，<code>span class 0</code>到<code>span class 133</code>。每1个span class都指向1个span，也就是mcache最多有134个span。</p>
+<h5 id="为对象寻找span"><a href="#为对象寻找span" class="headerlink" title="为对象寻找span"></a>为对象寻找span</h5><p>寻找span的流程如下：</p>
+<ol>
+<li>计算对象所需内存大小size </li>
+<li>根据size到size class映射，计算出所需的size class</li>
+<li>根据size class和对象是否包含指针计算出span class</li>
+<li>获取该span class指向的span。</li>
+</ol>
+<p>以分配一个不包含指针的，大小为24Byte的对象为例。</p>
+<p>根据映射表：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// class  bytes/obj  bytes/span  objects  tail waste  max waste</span></span><br><span class="line"><span class="comment">//     1          8        8192     1024           0     87.50%</span></span><br><span class="line"><span class="comment">//     2         16        8192      512           0     43.75%</span></span><br><span class="line"><span class="comment">//     3         32        8192      256           0     46.88%</span></span><br><span class="line"><span class="comment">//     4         48        8192      170          32     31.52%</span></span><br></pre></td></tr></table></figure>
+
+<p>size class 3，它的对象大小范围是(16,32]Byte，24Byte刚好在此区间，所以此对象的size class为3。</p>
+<p>Size class到span class的计算如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// noscan为true代表对象不包含指针</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">makeSpanClass</span><span class="params">(sizeclass <span class="keyword">uint8</span>, noscan <span class="keyword">bool</span>)</span> <span class="title">spanClass</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> spanClass(sizeclass&lt;&lt;<span class="number">1</span>) | spanClass(bool2int(noscan))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以，对应的span class为：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">span class = <span class="number">3</span> &lt;&lt; <span class="number">1</span> | <span class="number">1</span> = <span class="number">7</span></span><br></pre></td></tr></table></figure>
+
+<p>所以该对象需要的是span class 7指向的span。</p>
+<h5 id="从span分配对象空间"><a href="#从span分配对象空间" class="headerlink" title="从span分配对象空间"></a>从span分配对象空间</h5><p>Span可以按对象大小切成很多份，这些都可以从映射表上计算出来，以size class 3对应的span为例，span大小是8KB，每个对象实际所占空间为32Byte，这个span就被分成了256块，可以根据span的起始地址计算出每个对象块的内存地址。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-go-memory-objs.png" alt="Span内对象"></p>
+<p>随着内存的分配，span中的对象内存块，有些被占用，有些未被占用，比如上图，整体代表1个span，蓝色块代表已被占用内存，绿色块代表未被占用内存。</p>
+<p>当分配内存时，只要快速找到第一个可用的绿色块，并计算出内存地址即可，如果需要还可以对内存块数据清零。</p>
+<h5 id="span没有空间怎么分配对象"><a href="#span没有空间怎么分配对象" class="headerlink" title="span没有空间怎么分配对象"></a>span没有空间怎么分配对象</h5><p>span内的所有内存块都被占用时，没有剩余空间继续分配对象，mcache会向mcentral申请1个span，mcache拿到span后继续分配对象。</p>
+<h5 id="mcentral向mcache提供span"><a href="#mcentral向mcache提供span" class="headerlink" title="mcentral向mcache提供span"></a>mcentral向mcache提供span</h5><p>mcentral和mcache一样，都是0~133这134个span class级别，但每个级别都保存了2个span list，即2个span链表：</p>
+<ol>
+<li><code>nonempty</code>：这个链表里的span，所有span都至少有1个空闲的对象空间。这些span是mcache释放span时加入到该链表的。</li>
+<li><code>empty</code>：这个链表里的span，所有的span都不确定里面是否有空闲的对象空间。当一个span交给mcache的时候，就会加入到empty链表。</li>
+</ol>
+<p>这2个东西名称一直有点绕，建议直接把empty理解为没有对象空间就好了。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-go-mcentral.png" alt="mcentral"></p>
+<p><em>实际代码中每1个span class对应1个mcentral，图里把所有mcentral抽象成1个整体了。</em></p>
+<p>mcache向mcentral要span时，mcentral会先从<code>nonempty</code>搜索满足条件的span，如果没有找到再从<code>emtpy</code>搜索满足条件的span，然后把找到的span交给mcache。</p>
+<h5 id="mheap的span管理"><a href="#mheap的span管理" class="headerlink" title="mheap的span管理"></a>mheap的span管理</h5><p>mheap里保存了2棵<strong>二叉排序树</strong>，按span的page数量进行排序：</p>
+<ol>
+<li><code>free</code>：free中保存的span是空闲并且非垃圾回收的span。</li>
+<li><code>scav</code>：scav中保存的是空闲并且已经垃圾回收的span。</li>
+</ol>
+<p>如果是垃圾回收导致的span释放，span会被加入到<code>scav</code>，否则加入到<code>free</code>，比如刚从OS申请的的内存也组成的Span。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-go-mheap.png" alt="mheap"></p>
+<p>mheap中还有arenas，有一组heapArena组成，每一个heapArena都包含了连续的<code>pagesPerArena</code>个span，这个主要是为mheap管理span和垃圾回收服务。</p>
+<p>mheap本身是一个全局变量，它其中的数据，也都是从OS直接申请来的内存，并不在mheap所管理的那部分内存内。</p>
+<h5 id="mcentral向mheap要span"><a href="#mcentral向mheap要span" class="headerlink" title="mcentral向mheap要span"></a>mcentral向mheap要span</h5><p>mcentral向mcache提供span时，如果<code>emtpy</code>里也没有符合条件的span，mcentral会向mheap申请span。</p>
+<p>mcentral需要向mheap提供需要的内存页数和span class级别，然后它优先从<code>free</code>中搜索可用的span，如果没有找到，会从<code>scav</code>中搜索可用的span，如果还没有找到，它会向OS申请内存，再重新搜索2棵树，必然能找到span。如果找到的span比需求的span大，则把span进行分割成2个span，其中1个刚好是需求大小，把剩下的span再加入到<code>free</code>中去，然后设置需求span的基本信息，然后交给mcentral。</p>
+<h5 id="mheap向OS申请内存"><a href="#mheap向OS申请内存" class="headerlink" title="mheap向OS申请内存"></a>mheap向OS申请内存</h5><p>当mheap没有足够的内存时，mheap会向OS申请内存，把申请的内存页保存到span，然后把span插入到<code>free</code>树 。</p>
+<p>在32位系统上，mheap还会预留一部分空间，当mheap没有空间时，先从预留空间申请，如果预留空间内存也没有了，才向OS申请。</p>
+<h4 id="大对象分配"><a href="#大对象分配" class="headerlink" title="大对象分配"></a>大对象分配</h4><p>大对象的分配比小对象省事多了，99%的流程与mcentral向mheap申请内存的相同，所以不重复介绍了，不同的一点在于mheap会记录一点大对象的统计信息，见<code>mheap.alloc_m()</code>。</p>
+<h3 id="Go垃圾回收和内存释放"><a href="#Go垃圾回收和内存释放" class="headerlink" title="Go垃圾回收和内存释放"></a>Go垃圾回收和内存释放</h3><p>如果只申请和分配内存，内存终将枯竭，Go使用垃圾回收收集不再使用的span，调用<code>mspan.scavenge()</code>把span释放给OS（并非真释放，只是告诉OS这片内存的信息无用了，如果你需要的话，收回去好了），然后交给mheap，mheap对span进行span的合并，把合并后的span加入<code>scav</code>树中，等待再分配内存时，由mheap进行内存再分配，Go垃圾回收也是一个很强的主题，计划后面单独写一篇文章介绍。</p>
+<p>现在我们关注一下，Go程序是怎么把内存释放给操作系统的？</p>
+<p>释放内存的函数是<code>sysUnused</code>，它会被<code>mspan.scavenge()</code>调用:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MAC下的实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sysUnused</span><span class="params">(v unsafe.Pointer, n <span class="keyword">uintptr</span>)</span></span> &#123;</span><br><span class="line">	<span class="comment">// MADV_FREE_REUSABLE is like MADV_FREE except it also propagates</span></span><br><span class="line">	<span class="comment">// accounting information about the process to task_info.</span></span><br><span class="line">	madvise(v, n, _MADV_FREE_REUSABLE)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注释说<code>_MADV_FREE_REUSABLE</code>与<code>MADV_FREE</code>的功能类似，它的功能是给内核提供一个建议：<strong>这个内存地址区间的内存已经不再使用，可以回收。但内核是否回收，以及什么时候回收，这就是内核的事情了</strong>。如果内核真把这片内存回收了，当Go程序再使用这个地址时，内核会重新进行虚拟地址到物理地址的映射。所以在内存充足的情况下，内核也没有必要立刻回收内存。</p>
+<h2 id="4-Go栈内存"><a href="#4-Go栈内存" class="headerlink" title="4. Go栈内存"></a>4. Go栈内存</h2><p>最后提一下栈内存。从一个宏观的角度看，内存管理不应当只有堆，也应当有栈。</p>
+<p>每个goroutine都有自己的栈，栈的初始大小是2KB，100万的goroutine会占用2G，但goroutine的栈会在2KB不够用时自动扩容，当扩容为4KB的时候，百万goroutine会占用4GB。</p>
+<p>关于goroutine栈内存管理，有篇很好的文章，饿了么框架技术部的专栏文章：《<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/28409657">聊一聊goroutine stack</a>》，把里面的一段内容摘录下，你感受下：</p>
+<blockquote>
+<p>可以看到在rpc调用(<em>grpc invoke</em>)时，栈会发生扩容(<em>runtime.morestack</em>)，也就意味着在读写routine内的任何rpc调用都会导致栈扩容， 占用的内存空间会扩大为原来的两倍，4kB的栈会变为8kB，100w的连接的内存占用会从8G扩大为16G（全双工，不考虑其他开销），这简直是噩梦。</p>
+</blockquote>
+<p>另外，再推荐一篇曹大翻译的一篇汇编入门文章，里面也介绍了扩栈：<a target="_blank" rel="noopener" href="https://github.com/go-internals-cn/go-internals/blob/master/chapter1_assembly_primer/README.md#%E5%85%B3%E4%BA%8E%E5%8D%8F%E7%A8%8B-%E6%A0%88%E5%8F%8A%E6%A0%88%E5%88%86%E8%A3%82">第一章: Go 汇编入门</a> ，顺便<strong>入门</strong>一下汇编。</p>
+<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h2><p>内存分配原理就不再回顾了，强调2个重要的思想：</p>
+<ol>
+<li><strong>使用缓存提高效率</strong>。在存储的整个体系中到处可见缓存的思想，Go内存分配和管理也使用了缓存，利用缓存一是减少了系统调用的次数，二是降低了锁的粒度，减少加锁的次数，从这2点提高了内存管理效率。</li>
+<li><strong>以空间换时间，提高内存管理效率</strong>。空间换时间是一种常用的性能优化思想，这种思想其实非常普遍，比如Hash、Map、二叉排序树等数据结构的本质就是空间换时间，在数据库中也很常见，比如数据库索引、索引视图和数据缓存等，再如Redis等缓存数据库也是空间换时间的思想。</li>
+</ol>
+<h2 id="6-参考资料"><a href="#6-参考资料" class="headerlink" title="6. 参考资料"></a>6. 参考资料</h2><p>除了文章中已经推荐的文章，再推荐几篇值得读的文章：</p>
+<ol>
+<li>全成的内存分配文章，有不少帮助：<a target="_blank" rel="noopener" href="https://juejin.im/post/5c888a79e51d456ed11955a8#heading-5">https://juejin.im/post/5c888a79e51d456ed11955a8#heading-5</a></li>
+<li>异常详细的源码分析文章，看完这篇我就不想写源码分析的文章了：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/zkweb/p/7880099.html">https://www.cnblogs.com/zkweb/p/7880099.html</a></li>
+<li>从硬件讲起的一篇文章，也是有点意思：<a target="_blank" rel="noopener" href="https://www.infoq.cn/article/IEhRLwmmIM7-11RYaLHR">https://www.infoq.cn/article/IEhRLwmmIM7-11RYaLHR</a></li>
+<li>这篇文章的总流程图很棒：<a target="_blank" rel="noopener" href="http://media.newbmiao.com/blog/malloc.png">http://media.newbmiao.com/blog/malloc.png</a></li>
+</ol>
+<h2 id="7-彩蛋"><a href="#7-彩蛋" class="headerlink" title="7. 彩蛋"></a>7. 彩蛋</h2><p>在查阅资料时，多篇文章都提到了这本书《<a target="_blank" rel="noopener" href="http://man7.org/tlpi/">The Linux Programming Interface</a>》，关于Thread Cache有兴趣去读一下本书第31章。</p>
+<hr>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/07/06/go-memory-allocation/">http://lessisbetter.site/2019/07/06/go-memory-allocation/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/%E5%86%85%E5%AD%98/" rel="tag"># 内存</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/06/09/golang-first-class-function/" rel="prev" title="First class function in Go">
+                  <i class="fa fa-chevron-left"></i> First class function in Go
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/10/fabric-makefile/" rel="next" title="通过Fabric 1.4 的Makefile，轻松掌握Fabric构建">
+                  通过Fabric 1.4 的Makefile，轻松掌握Fabric构建 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'fff5264d342436db65be01c27e8c56c6',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

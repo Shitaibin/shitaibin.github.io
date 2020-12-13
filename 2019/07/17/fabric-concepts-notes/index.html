@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="声明这是一篇信息整合的文章，80%的内容来自Fabric官方文档和网络文章，在此基础上整理和修改，剩下20%为操作记录。 官方文档资料链接 https:&#x2F;&#x2F;hyperledger-fabric.readthedocs.io&#x2F;en&#x2F;release-1.4&#x2F;glossary.htmlFabric术语表，所有概念都能在这找到，建议详读几遍，有疑问时也可以随时来查，会有新的理解。  https:&#x2F;&#x2F;hyp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="快速入门Fabric核心概念和框架">
+<meta property="og:url" content="http://lessisbetter.site/2019/07/17/fabric-concepts-notes/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="声明这是一篇信息整合的文章，80%的内容来自Fabric官方文档和网络文章，在此基础上整理和修改，剩下20%为操作记录。 官方文档资料链接 https:&#x2F;&#x2F;hyperledger-fabric.readthedocs.io&#x2F;en&#x2F;release-1.4&#x2F;glossary.htmlFabric术语表，所有概念都能在这找到，建议详读几遍，有疑问时也可以随时来查，会有新的理解。  https:&#x2F;&#x2F;hyp">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-arch.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-network.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabirc-org.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-chaincode-lifecycle.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-invoke-chaincode.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-chaincode_swimlane.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-tx-flow.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-txflow-step1.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-txflow-step2.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-txflow-step3.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-txflow-step4.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-txflow-step5.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-blocks-3.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-txflow-step6.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-storage.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-storage.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-storage-flow.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-storage-file.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-kafka.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-gossip-push.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-gossip-pull.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-deliver-data.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-fabric-request-data.png">
+<meta property="article:published_time" content="2019-07-17T10:54:56.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.776Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="Fabric">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-07-fabric-arch.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/07/17/fabric-concepts-notes/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>快速入门Fabric核心概念和框架 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E8%B5%84%E6%96%99%E9%93%BE%E6%8E%A5"><span class="nav-number">1.1.</span> <span class="nav-text">官方文档资料链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E6%96%87%E7%AB%A0"><span class="nav-number">1.2.</span> <span class="nav-text">网络文章</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%94%E8%AE%B0%E6%91%98%E5%BD%95"><span class="nav-number">2.</span> <span class="nav-text">笔记摘录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E5%BA%8F%E8%8A%82%E7%82%B9"><span class="nav-number">2.2.</span> <span class="nav-text">排序节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#peer%E8%8A%82%E7%82%B9%E8%A7%92%E8%89%B2"><span class="nav-number">2.3.</span> <span class="nav-text">peer节点角色</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%83%8C%E4%B9%A6%E8%8A%82%E7%82%B9-Endorser-Peer"><span class="nav-number">2.3.1.</span> <span class="nav-text">背书节点(Endorser Peer)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E8%8A%82%E7%82%B9%EF%BC%88Leading-Peer%EF%BC%89"><span class="nav-number">2.3.2.</span> <span class="nav-text">主节点（Leading Peer）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E8%B4%A6%E8%8A%82%E7%82%B9%EF%BC%88Committer-Peer%EF%BC%89"><span class="nav-number">2.3.3.</span> <span class="nav-text">记账节点（Committer Peer）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%94%9A%E8%8A%82%E7%82%B9%EF%BC%88Anchor-Peer%EF%BC%89"><span class="nav-number">2.3.4.</span> <span class="nav-text">锚节点（Anchor Peer）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">2.4.</span> <span class="nav-text">客户端</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SDK"><span class="nav-number">2.4.1.</span> <span class="nav-text">SDK</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%93%BE%E7%A0%81"><span class="nav-number">2.5.</span> <span class="nav-text">链码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%83%8C%E4%B9%A6%E7%AD%96%E7%95%A5%EF%BC%88Endorser-Policy%EF%BC%89"><span class="nav-number">2.5.1.</span> <span class="nav-text">背书策略（Endorser Policy）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E9%93%BE%E7%A0%81"><span class="nav-number">2.5.2.</span> <span class="nav-text">系统链码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">2.5.3.</span> <span class="nav-text">生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E7%A0%81%E7%AE%A1%E7%90%86"><span class="nav-number">2.5.4.</span> <span class="nav-text">链码管理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%93%E5%8C%85%E9%93%BE%E7%A0%81"><span class="nav-number">2.5.5.</span> <span class="nav-text">打包链码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AD%BE%E5%90%8D%E9%93%BE%E7%A0%81"><span class="nav-number">2.5.6.</span> <span class="nav-text">签名链码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E9%93%BE%E7%A0%81"><span class="nav-number">2.5.7.</span> <span class="nav-text">安装链码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%93%BE%E7%A0%81"><span class="nav-number">2.5.8.</span> <span class="nav-text">实例化链码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E9%93%BE%E7%A0%81"><span class="nav-number">2.5.9.</span> <span class="nav-text">调用链码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%87%E7%BA%A7%E9%93%BE%E7%A0%81"><span class="nav-number">2.5.10.</span> <span class="nav-text">升级链码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%83%BD%E6%98%AF%E4%BA%A4%E6%98%93"><span class="nav-number">2.5.11.</span> <span class="nav-text">都是交易</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E7%A0%81%E5%BC%80%E5%8F%91"><span class="nav-number">2.5.12.</span> <span class="nav-text">链码开发</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E9%81%93"><span class="nav-number">2.6.</span> <span class="nav-text">通道</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA"><span class="nav-number">2.6.1.</span> <span class="nav-text">创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">2.6.2.</span> <span class="nav-text">配置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E6%98%93"><span class="nav-number">2.7.</span> <span class="nav-text">交易</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.7.1.</span> <span class="nav-text">类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B"><span class="nav-number">2.7.2.</span> <span class="nav-text">流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8F%90%E6%A1%88"><span class="nav-number">2.7.2.1.</span> <span class="nav-text">客户端提案</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%83%8C%E4%B9%A6%E8%8A%82%E7%82%B9%E4%B8%BA%E6%8F%90%E6%A1%88%E8%83%8C%E4%B9%A6"><span class="nav-number">2.7.2.2.</span> <span class="nav-text">背书节点为提案背书</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%94%B6%E9%9B%86%E6%8F%90%E6%A1%88%E8%83%8C%E4%B9%A6"><span class="nav-number">2.7.2.3.</span> <span class="nav-text">客户端收集提案背书</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#orderer%E6%8E%92%E5%BA%8F%E4%BA%A4%E6%98%93"><span class="nav-number">2.7.2.4.</span> <span class="nav-text">orderer排序交易</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#peer%E9%AA%8C%E8%AF%81%E5%8C%BA%E5%9D%97"><span class="nav-number">2.7.2.5.</span> <span class="nav-text">peer验证区块</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8C%BA%E5%9D%97%E5%86%99%E5%85%A5%E8%B4%A6%E6%9C%AC"><span class="nav-number">2.7.2.6.</span> <span class="nav-text">区块写入账本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%8E%B7%E5%8F%96%E4%BA%A4%E6%98%93%E7%BB%93%E6%9E%9C"><span class="nav-number">2.7.2.7.</span> <span class="nav-text">客户端获取交易结果</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%84"><span class="nav-number">2.7.3.</span> <span class="nav-text">结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A6%E6%9C%AC"><span class="nav-number">2.8.</span> <span class="nav-text">账本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">2.8.1.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95"><span class="nav-number">2.8.2.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE"><span class="nav-number">2.8.3.</span> <span class="nav-text">链</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B1%E8%AF%86-%E6%8E%92%E5%BA%8F%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.9.</span> <span class="nav-text">共识&#x2F;排序服务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#kafka"><span class="nav-number">2.9.1.</span> <span class="nav-text">kafka</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Raft"><span class="nav-number">2.9.2.</span> <span class="nav-text">Raft</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1"><span class="nav-number">2.10.</span> <span class="nav-text">通信</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Gossip"><span class="nav-number">2.10.1.</span> <span class="nav-text">Gossip</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8E%A8%E9%80%81%E6%95%B0%E6%8D%AE"><span class="nav-number">2.10.1.1.</span> <span class="nav-text">推送数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8B%89%E5%8E%BB%E6%95%B0%E6%8D%AE"><span class="nav-number">2.10.1.2.</span> <span class="nav-text">拉去数据</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5"><span class="nav-number">2.10.2.</span> <span class="nav-text">数据同步</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91"><span class="nav-number">2.11.</span> <span class="nav-text">应用开发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fabric%E7%BD%91%E7%BB%9C"><span class="nav-number">2.12.</span> <span class="nav-text">Fabric网络</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/07/17/fabric-concepts-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          快速入门Fabric核心概念和框架
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-17 18:54:56" itemprop="dateCreated datePublished" datetime="2019-07-17T18:54:56+08:00">2019-07-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h2><p>这是一篇信息整合的文章，80%的内容来自Fabric官方文档和网络文章，在此基础上整理和修改，剩下20%为操作记录。</p>
+<h3 id="官方文档资料链接"><a href="#官方文档资料链接" class="headerlink" title="官方文档资料链接"></a>官方文档资料链接</h3><ul>
+<li><p><a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html</a><br>Fabric术语表，所有概念都能在这找到，建议详读几遍，有疑问时也可以随时来查，会有新的理解。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/Fabric-FAQ.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/Fabric-FAQ.html</a></p>
+<p>这篇FAQ，也会解决很多疑问。</p>
+</li>
+</ul>
+<p><strong>剩下的官方文档链接都加入到了下面的笔记中</strong>。</p>
+<h3 id="网络文章"><a href="#网络文章" class="headerlink" title="网络文章"></a>网络文章</h3><p><a target="_blank" rel="noopener" href="https://blog.51cto.com/9291927/category29.html">天山老妖S：HyperLeger Fabric SDK开发系列文章</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.taohui.pub/2018/05/26/%e5%8c%ba%e5%9d%97%e9%93%be%e5%bc%80%e6%ba%90%e5%ae%9e%e7%8e%b0hyperledger-fabric%e6%9e%b6%e6%9e%84%e8%af%a6%e8%a7%a3/">陶辉：区块链开源实现hyperledger fabric架构详解</a></p>
+<p><a target="_blank" rel="noopener" href="https://shanma.pro/tutorial/hyperledger/16632.html">Hyperledger Fabric 开发系列文章</a></p>
+<h2 id="笔记摘录"><a href="#笔记摘录" class="headerlink" title="笔记摘录"></a>笔记摘录</h2><h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p><img src="http://img.lessisbetter.site/2019-07-fabric-arch.png" alt="HyperLeger Fabric架构"></p>
+<p> Fabric网络是通过组织（organization）来划分的，每个组织内都包含承担不同功能的Peer 节点，每个Peer节点又可以担任多种角色。<strong>所有的组织共用一个统一的Orderer排序服务集群</strong>。基于Hyperledger Fabric区块链网络的设计时需要考虑组织之间的业务关系以及内部每个模块之间的联系，统一进行规划。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-network.png"></p>
+<p>每个组织通常拥有自己的客户端、Peer节点和CA节点，并且可以根据需要创建一个或多个不同的类型节点。Orderer节点不属于某个组织的实体，属于组织共同维护的节点。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-fabirc-org.png"></p>
+<h3 id="排序节点"><a href="#排序节点" class="headerlink" title="排序节点"></a>排序节点</h3><p>orderer负责排序和打包区块。排序服务节点只是决定交易处理的顺序，并不对交易的合法性进行校验，也无需去管之前的交易是否合法，也不负责维护账本信息，只有记账节点才有账本写入权限。peer验证交易后会给交易打上交易是否合法。</p>
+<p>排序服务节点接收包含背书签名的交易，对未打包的交易进行排序生成区块，广播给Peer节点中的主节点。排序服务提供的是原子广播，保证同一个链上的节点接收到相同的消息，并且有相同的逻辑顺序。排序服务独立于Peer进程存在并且以先来先服务的方式对Fabric网络上的所有通道进行排序交易。</p>
+<p>Tx排序的依据是什么？根据每个通道按时间顺序调用，创建每个通道的交易区块。</p>
+<p>出块的依据是什么？交易数、时间？都可以，具体见<a href="#orderer%E6%8E%92%E5%BA%8F%E4%BA%A4%E6%98%93">orderer排序交易</a>。</p>
+<h3 id="peer节点角色"><a href="#peer节点角色" class="headerlink" title="peer节点角色"></a>peer节点角色</h3><p>peer文档：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/peers/peers.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/peers/peers.html</a></p>
+<p>peer节点负责背书和验证交易，以及Org之间的通信。</p>
+<p>每个Org可以有多个Peer，每个Peer节点都是记账节点，并且可担任多种角色：</p>
+<ul>
+<li>Endorser Peer（背书节点）</li>
+<li>Leading Peer（主节点）</li>
+<li>Committer Peer（记账节点）</li>
+<li>Anchor Peer（锚节点）</li>
+</ul>
+<h4 id="背书节点-Endorser-Peer"><a href="#背书节点-Endorser-Peer" class="headerlink" title="背书节点(Endorser Peer)"></a>背书节点(Endorser Peer)</h4><p>部分Peer节点会执行交易并对结果进行签名背书。背书节点是动态的角色，是与具体链码绑定的，由链码的背书策略指定。</p>
+<p>只有在应用程序向节点发起交易背书请求时才成为背书节点，其它时候是普通的记账节点，只负责验证交易并记账。</p>
+<h4 id="主节点（Leading-Peer）"><a href="#主节点（Leading-Peer）" class="headerlink" title="主节点（Leading Peer）"></a>主节点（Leading Peer）</h4><p>主节点负责和Orderer排序服务节点通信，从排序服务节点处获取最新的区块，并把区块分发到本channel内同组织的其他节点。可以使用配置文件强制设置，也可以选举产生。</p>
+<blockquote>
+<p>注意：主节点不是指Raft中的leader，是指org中的主节点(leading peer)。</p>
+</blockquote>
+<h4 id="记账节点（Committer-Peer）"><a href="#记账节点（Committer-Peer）" class="headerlink" title="记账节点（Committer Peer）"></a>记账节点（Committer Peer）</h4><p>负责验证区块里的交易，然后将区块提交（写入/追加）到其通道账本的副本。记账节点还将每个块中的每个交易标记为<strong>有效或无效</strong>，通过验证的为有效，否则为无效。</p>
+<h4 id="锚节点（Anchor-Peer）"><a href="#锚节点（Anchor-Peer）" class="headerlink" title="锚节点（Anchor Peer）"></a>锚节点（Anchor Peer）</h4><p>在一个通道上可以被所有其它Peer节点发现的Peer节点，通道上的每个组织都有一个或多个锚节点，多个锚节点可以用来防止单点故障，通过锚节点实现不同组织的Peer节点发现通道上的所有组织的锚节点。</p>
+<p>举个例子，peer0.org1是org1的锚节点，它连接peer0.org2时，如果peer0.org2知道org3的锚节点peer0.org3，那么会告诉peer0.org1，org3的锚节点是peer0.org3，以后peer0.org1就可以直接和peer0.org3通信了。</p>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>2种：1. CLI，2. SDK.</p>
+<h4 id="SDK"><a href="#SDK" class="headerlink" title="SDK"></a>SDK</h4><p>Fabric提供了三种语言版本的SDK，分别如下：</p>
+<ol>
+<li>Fabric Nodejs SDK</li>
+<li>Fabric Java SDK</li>
+<li>Fabric Go SDK</li>
+</ol>
+<p>Fabric区块链应用可以通过SDK访问Fabric区块链网络中的多种资源，包括账本、交易、链码、事件、权限管理等。应用程序代表用户与Fabric区块链网络进行交互，Fabric SDK API提供了如下功能：</p>
+<ol>
+<li>创建通道</li>
+<li>将peer节点加入通道</li>
+<li>在peer节点安装链码</li>
+<li>在通道实例化链码</li>
+<li>通过链码调用交易</li>
+<li>查询交易或区块的账本</li>
+</ol>
+<h3 id="链码"><a href="#链码" class="headerlink" title="链码"></a>链码</h3><p>链码即智能合约，链码分系统链码和用户链码，在没有特殊强调的时候，链码就是指用户链码。</p>
+<p>链码操作包含3个基本操作：安装（install）、实例化（instantiation）和调用（Invoke），以及其他操作比如打包、签名。</p>
+<p>用户链码被编译成一个独立的应用程序，运行于隔离的Docker容器中，在链码部署的时候会自动生成链码的Docker镜像，链码容器通过gRPC协议与相应的Peer节点进行交互，以操作分布式账本中的数据。</p>
+<p>一个channel内链码只需实例化1次，所有运行链码的节点都需要安装该链码，如果只需要验证交易，并不需要安装链码，因为实例化后，可以通过gRPC通信与链码容器交互验证链码。</p>
+<h4 id="背书策略（Endorser-Policy）"><a href="#背书策略（Endorser-Policy）" class="headerlink" title="背书策略（Endorser Policy）"></a>背书策略（Endorser Policy）</h4><p><strong>背书策略是背书节点如何决策交易是否合法的条件</strong>。链码实例化时可指定背书策略，当记账节点接收到交易时，会获知相关链码信息，然后检查链码的背书策略，判断交易是否满足背书策略，若满足则标注交易为合法。</p>
+<p>背书策略可分为主体Principal(P)和阈值Threshold(T)两部分，具体如下：</p>
+<ul>
+<li>Principal指定由哪些成员进行背书。</li>
+<li>Threshold接受两个输入，分别为阈值t和若干个P的集合n，只要交易中包含了n中t个成员的背书则认为交易合法。</li>
+</ul>
+<p>背书策略可以指定某几个组织内的任意成员身份进行背书，或者要求至少有一个管理员身份进行背书等等。</p>
+<ul>
+<li>T(1, ‘A’, ‘B’) 则需要A，B中任意成员背书。</li>
+<li>T(1, ‘A’, T(2, ‘B’, ‘C’))则需要A成员背书或B，C成员同时背书。</li>
+</ul>
+<p>目前客户端已经实现对背书策略的支持，可以通过-P来指定背书策略，结合AND、OR来组合成员，完成成员身份（admin、member）的集合。</p>
+<p><code>-P OR ( &#39;Org1.admin&#39; , AND (&#39;Org2.member&#39; , &#39;Org3.member&#39;) )</code></p>
+<blockquote>
+<p>可以把OR、AND理解为函数，函数内为参数。</p>
+</blockquote>
+<p>上述背书策略指定要么Org1的admin进行背书，或者Org2和Org3的成员同时进行背书，才满足背书策略。</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#endorsement-policy">https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#endorsement-policy</a></p>
+<h4 id="系统链码"><a href="#系统链码" class="headerlink" title="系统链码"></a>系统链码</h4><p>系统链码与用户链码有相同的编程模型，但<strong>系统链码运行在Peer节点，用户链码则在隔离的容器中运行。因此，系统链码内置为Peer节点的可执行文件中，不遵循用户链码的生命周期，安装、实例化、升级不适用于系统链码</strong>。</p>
+<p>系统链码用于减少Peer节点与用户链码进行gRPC通信的开销，同时权衡管理的灵活性。系统链码只能通过Peer节点的二进制文件升级，必须通过一组固定的参数进行注册，但<strong>不具有背书策略</strong>。</p>
+<p>Hyperledger Fabric系统链码实现了一系列系统功能，以便系统集成人员能够根据需求对其进行修改与替换。</p>
+<p>常见系统链码如下：</p>
+<ul>
+<li>生命周期系统链码（LSCC ）：负责对用户链码的生命周期进行管理。</li>
+<li>配置系统链码（CSCC）：处理在Peer节点上的通道配置。</li>
+<li>查询系统链码（QSCC）：提供账本的查询API，例如获取区块以及交易。</li>
+<li>背书系统链码（ESCC）：背书过程的管理和配置。</li>
+<li>验证系统链码（VSCC）：处理交易验证，包括检查背书策略以及多进程并发控制。</li>
+</ul>
+<p><strong>这样容易记：一共5个SCC，前2个与配置相关，后3个与操作相关，配置有生命周期和配置，操作有背书、验证和查询</strong>。</p>
+<p>在修改或者替换系统链码（LSCC、ESCC、VSCC）时必须注意，因为系统链码在主交易执行的路径中。VSCC在将区块提交至账本前，所有在通道的Peer节点会计算相同的验证以避免账本分歧（不确定性）。如果VSCC被改变或者替换，需要特别小心。</p>
+<h4 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h4><p>通过install安装链码，通过instantiate实例化链码，然后可以通过invoke、query调用链码和查询链码。<br>如果需要升级链码，则需要先install安装新版本的链码，通过upgrade升级链码。在install安装链码前，可以通过package打包并签名生成打包文件，然后再通过install安装。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-chaincode-lifecycle.png"></p>
+<h4 id="链码管理"><a href="#链码管理" class="headerlink" title="链码管理"></a>链码管理</h4><p><code>peer chaincode -h</code>可以列出链码的几种操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">install     Package the specified chaincode into a deployment spec and save it on the peer&#39;s path.</span><br><span class="line">instantiate Deploy the specified chaincode to the network.</span><br><span class="line">invoke      Invoke the specified chaincode.</span><br><span class="line">list        Get the instantiated chaincodes on a channel or installed chaincodes on a peer.</span><br><span class="line">package     Package the specified chaincode into a deployment spec.</span><br><span class="line">query       Query using the specified chaincode.</span><br><span class="line">signpackage Sign the specified chaincode package</span><br><span class="line">upgrade     Upgrade chaincode.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>安装：把chaincode打包成部署规格，并且保存到peer的某个路径。</p>
+</li>
+<li><p>实例化：部署chaincode到网络。</p>
+</li>
+<li><p>调用：调用chaincode。</p>
+</li>
+<li><p>list：列出某个通道上已经实例化的chaincode或已安装到peer上的chaincode。</p>
+</li>
+<li><p>打包：把chaincode打包成部署规格。</p>
+</li>
+<li><p>查询：使用chaincode查询，即查询该查询该chaincode上的信息。</p>
+</li>
+<li><p>signpackage：对打包的chaincode签名。</p>
+</li>
+<li><p>升级：升级已实例化的chaincode。</p>
+</li>
+</ul>
+<p>可以看到安装chaincode实际已经包含了打包的过程。</p>
+<h4 id="打包链码"><a href="#打包链码" class="headerlink" title="打包链码"></a>打包链码</h4><p>链码包由三个部分组成：</p>
+<ol>
+<li><strong>由ChaincodeDeploymentSpec（CDS）格式定义的链码</strong>。CDS根据代码及其它属性（如名称与版本）定义链码包；</li>
+<li><strong>一个可选的实例化策略，能够被用作背书的策略进行描述</strong>；</li>
+<li>拥有链码的实体的一组签名。</li>
+</ol>
+<p>其中，链码的签名主要目的如下：</p>
+<ol>
+<li>建立链码的所有权；</li>
+<li>允许验证链码包中的内容；</li>
+<li>允许检测链码包是否被篡改。</li>
+</ol>
+<p>通道上的链码的实例化交易的创建者能够被链码的实例化策略验证。</p>
+<p>链码打包的方法由两种，一种是打包被多个所有者所拥有的链码，需要初始化创建一个被签名的链码包（SignedCDS），然后将其按顺序的传递给其它所有者进行签名；一种是打包单个所有者持有的链码。</p>
+<p>创建一个被签名的链码包的命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer chaincode package -n sacc -p chaincodedev&#x2F;chaincode&#x2F;sacc -v 0 -s -S -i &quot;AND(&#39;OrgA.admin&#39;)&quot; ccpack.out</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>-s</code>选项创建一个能被多个所有者签名的链码包，而不是简单的创建一个原始的CDS。一旦-s被指定，如果其它所有者想要签名CDS，则-S选项必须被指定。否则，将会创建一个SignedCDS，除CDS外仅仅包括实例化策略。</li>
+<li><code>-S</code>选项使用被在core.yaml文件中定义的localMspid属性的值标识的MSP对链码包进行签名。</li>
+<li><code>-S</code>选项是可选的。如果创建了一个没有签名的链码包，不能被其它所有者使用signpackage命令进行签名。</li>
+<li><code>-i</code>选项是可选的，允许为链码指定实例化策略。实例化策略与背书策略有相同的格式，指定哪些身份能够实例化链码。本例中仅OrgA的admin能够实例化链码。如果没有实例化策略被指定，将会使用默认的策略，仅允许拥有Peer的MSP的管理员身份实例化链码。</li>
+</ul>
+<h4 id="签名链码"><a href="#签名链码" class="headerlink" title="签名链码"></a>签名链码</h4><p>在创建阶段就被签名的链码包能够交给其它所有者进行检查与签名，支持带外对链码进行签名。<br> ChaincodeDeploymentSpec可以选择由所有者集合进行签名，从而创建一个SignedChaincodeDeploymentSpec(SignedCDS)。SignedCDS包括3个部分：</p>
+<ol>
+<li><p>CDS包括源代码，链码的名称与版本号；</p>
+</li>
+<li><p>链码的实例化策略，表示为背书策略；</p>
+</li>
+<li><p>链码所有者的列表，由背书策略定义。</p>
+</li>
+</ol>
+<p><strong>当在某些通道上实例化链码时，背书策略是在带外确定的</strong>，用于提供合适的MSP主体。如果没指定实例化策略，则默认的策略就是通道的任何MSP管理员。</p>
+<p>每一个链码的所有者通过将SignedCDS与链码所有者的身份（例如证书）组合并签署组合结果来背书ChaincodeDeploymentSpec。</p>
+<p>一个链码的所有者能够对自己所创建的签名过的链码包进行签名，需要使用如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer chaincode signpackage ccpack.out signedccpack.out</span><br></pre></td></tr></table></figure>
+
+<p>ccpack.out、signedccpack.out分别是输入与输出包。signedccpack.out包括一个对链码包附加的签名（通过local msp进行的签名）。</p>
+<h4 id="安装链码"><a href="#安装链码" class="headerlink" title="安装链码"></a>安装链码</h4><p>将链码的源代码打包成ChaincodeDeploymentSpec（CDS）的规定的格式，然后<strong>安装到通道中的背书节点上</strong>。</p>
+<p>当安装的链码包只包含一个ChaincodeDeploymentSpec时，将使用默认初始化策略并包括一个空的所有者列表。<br>链码应该仅仅被安装在链码所有者成员的背书节点上，用于实现链码对于网络中其它成员在逻辑上是隔离的。</p>
+<p>安装链码会发送一个<strong>SignedProposal到生命周期系统链码(LSCC)</strong> ，也就是说会发送调用系统链码的交易。</p>
+<p>使用CLI安装sacc链码的命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer chaincode install -n sacc -v 1.0 -p sacc</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>-n选项指定链码实例名称</li>
+<li>-v选项指定链码的版本</li>
+<li>-p选项指定链码所在路径，必须在GOPATH路径下</li>
+</ul>
+<p>CLI内部创建<strong>sacc</strong>的SignedChaincodeDeploymentSpec，然后将其发送给本地Peer节点，Peer节点会<strong>调用</strong>LSCC上的安装方法。<strong>为了在Peer节点上安装链码，SignedProposal的签名必须来自于Peer节点的本地MSP管理员之一</strong>。</p>
+<p><strong>未安装 chaincode 的节点不能执行 chaincode，但仍可以验证交易并提交到账本中。所以背书节点必须按照链码，记账节点并非必须安装链码。</strong></p>
+<h4 id="实例化链码"><a href="#实例化链码" class="headerlink" title="实例化链码"></a>实例化链码</h4><p><strong>链码和通道是低耦合的：实例化调用生命周期系统链码(LSCC)用于创建及初始化通道上的链码。链码能够被绑定到任意数量的通道，以及在每个通道上单独的操作。无论链码安装及实例化到多少个通道上，每个通道的状态都是隔离的。</strong></p>
+<p>实例化的创建者必须满足包含在SignedCDS内链码的<strong>实例化策略</strong>，而且还必须是通道的写入器（作为通道创建的一部分被配置）。可以防止部署链码的流氓实体或者欺骗者在未被绑定的通道上执行链码。</p>
+<p><strong>默认的实例化策略是任意的通道MSP的管理员，因此链码实例化交易的创建者必须是通道管理员之一</strong>。当交易提案到达背书节点后，背书节点会根据实例化策略验证创建者的签名。在提交实例化交易到账本前，在交易验证时再一次完成该操作。</p>
+<p><strong>实例化交易同样设置了通道上的链码的背书策略</strong> 。背书策略描述了交易被通道上成员接受的认证要求。<br>使用CLI去实例化sacc的链码并初始化状态为user1与0，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer chaincode instantiate -n sacc -v 1.0 -c &#39;&#123;&quot;Args&quot;:[&quot;user1&quot;,&quot;0&quot;]&#125;&#39; -P &quot;OR (&#39;Org1.member&#39;,&#39;Org2.member&#39;)&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>-n选项指定链码实例名称</strong></li>
+<li>-v选项指定链码的版本</li>
+<li>-c 选项指定链码的调用参数</li>
+<li>-P选项指定链码的背书策略</li>
+</ul>
+<p>链码的背书策略表示，org1.member或者org2.member必须对调用使用sacc(这名字起的让我以为是某种SCC)的交易进行签名，以保障交易是有效的。在成功实例化后，通道的链码进入激活状态，可以处理任意的交易提案。交易到达背书节点时，会同时被处理。</p>
+<p>实例化选项：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">root@5af5a3fb3bb7:&#x2F;var&#x2F;hyperledger&#x2F;production# peer chaincode instantiate -h</span><br><span class="line">Deploy the specified chaincode to the network.</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  peer chaincode instantiate [flags]</span><br><span class="line"></span><br><span class="line">Flags:</span><br><span class="line">  -C, --channelID string               The channel on which this command should be executed</span><br><span class="line">      --collections-config string      The fully qualified path to the collection JSON file including the file name</span><br><span class="line">      --connectionProfile string       Connection profile that provides the necessary connection information for the network. Note: currently only supported for providing peer connection information</span><br><span class="line">  -c, --ctor string                    Constructor message for the chaincode in JSON format (default &quot;&#123;&#125;&quot;)</span><br><span class="line">  -E, --escc string                    The name of the endorsement system chaincode to be used for this chaincode</span><br><span class="line">  -h, --help                           help for instantiate</span><br><span class="line">  -l, --lang string                    Language the chaincode is written in (default &quot;golang&quot;)</span><br><span class="line">  -n, --name string                    Name of the chaincode</span><br><span class="line">      --peerAddresses stringArray      The addresses of the peers to connect to</span><br><span class="line">  -P, --policy string                  The endorsement policy associated to this chaincode</span><br><span class="line">      --tlsRootCertFiles stringArray   If TLS is enabled, the paths to the TLS root cert files of the peers to connect to. The order and number of certs specified should match the --peerAddresses flag</span><br><span class="line">  -v, --version string                 Version of the chaincode specified in install&#x2F;instantiate&#x2F;upgrade commands</span><br><span class="line">  -V, --vscc string                    The name of the verification system chaincode to be used for this chaincode</span><br><span class="line"></span><br><span class="line">Global Flags:</span><br><span class="line">      --cafile string                       Path to file containing PEM-encoded trusted certificate(s) for the ordering endpoint</span><br><span class="line">      --certfile string                     Path to file containing PEM-encoded X509 public key to use for mutual TLS communication with the orderer endpoint</span><br><span class="line">      --clientauth                          Use mutual TLS when communicating with the orderer endpoint</span><br><span class="line">      --connTimeout duration                Timeout for client to connect (default 3s)</span><br><span class="line">      --keyfile string                      Path to file containing PEM-encoded private key to use for mutual TLS communication with the orderer endpoint</span><br><span class="line">  -o, --orderer string                      Ordering service endpoint</span><br><span class="line">      --ordererTLSHostnameOverride string   The hostname override to use when validating the TLS connection to the orderer.</span><br><span class="line">      --tls                                 Use TLS when communicating with the orderer endpoint</span><br><span class="line">      --transient string                    Transient map of arguments in JSON encoding</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="调用链码"><a href="#调用链码" class="headerlink" title="调用链码"></a>调用链码</h4><p>调用链码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer chaincode invoke -o orderer.example.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C mychannel -n sacc -c &#39;&#123;&quot;Args&quot;:[&quot;invoke&quot;,&quot;user1&quot;,&quot;user2&quot;,&quot;10&quot;]&#125;&#39;</span><br></pre></td></tr></table></figure>
+
+<p>查询链码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer chaincode query -C mychannel -n sacc -c &#39;&#123;&quot;Args&quot;:[&quot;query&quot;,&quot;user1&quot;]&#125;&#39;</span><br></pre></td></tr></table></figure>
+
+<p><strong>调用链码的前提是链码已经实例化。</strong></p>
+<p>链码实例化之后存在了运行了一个容器，这个容器一直在运行，所以调用1个链码，实际是peer容器和链码容器交互的过程。</p>
+<p>链码与Peer节点的交互过程如下：</p>
+<ol>
+<li>链码通过gRPC与Peer节点交互，当Peer节点收到客户端的交易提案请求后，会发送一个链码消息对象（包含交易提案信息、调用者信息）给对应的链码。</li>
+<li>链码调用Invoke方法，通过发送获取数据（GetState）和写入数据（PutState）消息，向Peer节点获取账本状态信息和发送预提交状态。</li>
+<li>链码发送模拟执行结果给Peer节点，Peer节点对交易提案和模拟执行结果进行背书签名。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-invoke-chaincode.png"></p>
+<p><img src="http://img.lessisbetter.site/2019-07-chaincode_swimlane.png"></p>
+<h4 id="升级链码"><a href="#升级链码" class="headerlink" title="升级链码"></a>升级链码</h4><p>链码的升级通过改变其版本号（作为SignedCDS的一部分）。SignedCDS另外的部分，如所有者及实例化策略都是可选的。然而，<strong>链码的名称必须是一致的，否则会被当做另外一个新的链码</strong>。<br>在升级前，必须将新版本的链码安装到有需求的背书节点上。升级也是一种交易，会把新版本的链码绑定到通道中。<strong>升级只能在一个时间点对一个通道产生影响，其它通道仍然运行旧版本的链码</strong>。<br>由于可能存在多个版本的链码同时存在，<strong>升级过程不会自动删除老版本链码，用户必须手动操作删除过程</strong>。<br>升级与实例化transaction有一点不同的是：通过现有的chaincode实例化策略检查升级transaction，而不是用新的策略检查。这是为了确保只有当前实例化策略中指定的成员能够升级chaincode。<br>在升级期间，链码的Init函数也会被调用，执行有关升级的数据或者使用数据重新进行初始化，在升级链码的期间避免对状态进行重置。<br>安装新版本的链码<br><code>peer chaincode install -n sacc -v 1 -p path/to/my/chaincode/v1</code><br>upgrade升级链码<br><code>peer chaincode upgrade -n sacc -v 1 -c &#39;&#123;&quot;Args&quot;:[&quot;d&quot;, &quot;e&quot;, &quot;f&quot;]&#125;&#39; -C mychannel</code></p>
+<h4 id="都是交易"><a href="#都是交易" class="headerlink" title="都是交易"></a>都是交易</h4><p>安装、实例化、调用、升级链码，都是创建一笔交易，通过交易实现。</p>
+<h4 id="链码开发"><a href="#链码开发" class="headerlink" title="链码开发"></a>链码开发</h4><p><code>github.com/hyperledger/fabric/core/chaincode/shim</code>包是开发Go语言链码的API。shim 包提供了链码与账本交互的中间层。链码通过 shim.ChaincodeStub 提供的方法来读取和修改账本的状态。</p>
+<p>链码启动必须通过调用 shim 包中的 Start 函数，而 Start 函数被调用时需要传递一个类型为 Chaincode 的参数，这个参数 Chaincode 是一个接口类型，该接口中有两个重要的函数 Init 与 Invoke 。</p>
+<p>Chaincode 接口定义如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Chaincode <span class="keyword">interface</span>&#123;</span><br><span class="line">    Init(stub ChaincodeStubInterface) peer.Response</span><br><span class="line">    Invoke(stub ChaincodeStubInterface) peer.Response</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Init 与 Invoke 方法</strong></p>
+<p>编写链码，关键是实现 Init 与 Invoke 两个方法，必须由所有链码实现。Fabric 通过调用指定的函数来运行事务。</p>
+<ul>
+<li><strong>Init：</strong>在链码实例化或升级时被调用, 完成初始化数据的工作。</li>
+<li><strong>invoke：</strong>更新或查询提案事务中的分类帐本数据状态时，Invoke 方法被调用， 因此响应调用或查询的业务实现逻辑都需要在此方法中编写实现。</li>
+</ul>
+<p>示例：<a target="_blank" rel="noopener" href="https://blog.51cto.com/9291927/2318364">https://blog.51cto.com/9291927/2318364</a></p>
+<h3 id="通道"><a href="#通道" class="headerlink" title="通道"></a>通道</h3><p><strong>通道由排序服务管理</strong>，排序服务节点还负责对通道中的交易进行排序。。</p>
+<p>目前通道分为<strong>系统通道（System Channel）和应用通道</strong>（Application Channel）。排序服务通过系统通道来管理应用通道，用户的交易信息通过应用通道传递。</p>
+<p><strong>每个组织可以有多个节点加入同一个通道</strong>，组织内的节点中可以指定一个锚节点或多个锚节点（增强系统可靠性，避免单点故障）。另外，同一组织的节点会选举或指定主导节点（leading peer），主导节点负责接收从排序服务发来的区块，然后转发给本组织的其它节点。主导节点可以通过特定的算法选出，可以保证在节点数量不断变动的情况下仍能维持整个网络的稳定性。</p>
+<p>在Fabric网络中，<strong>可能同时存在多条彼此隔离的通道，每条通道包含一条私有的区块链和一个私有账本，通道中可以实例化一个或多个链码，以操作区块链上的数据</strong>。</p>
+<p><strong>通道是共识服务提供的一种通讯机制</strong>，基于发布-订阅关系，将Peer节点和排序节点根据某个Topic连接在一起，形成一个具有保密性的通讯链路（虚拟），实现业务隔离的要求。</p>
+<p><strong>排序服务提供了供Peer节点订阅的主题</strong>（如发布-订阅消息队列），每个主题是一个通道。Peer节点可以订阅多个通道，并且只能访问自己所订阅通道上的交易，因此一个Peer节点可以通过接入多个通道参与到多条链中。</p>
+<p><strong>排序服务支持多通道，提供了通向客户端和Peer节点的共享通信通道</strong>，提供了包含交易的消息广播服务（broadcast和deliver）。客户端可以通过通道向连接到通道的所有节点广播（broadcast）消息，向连接到通道的所有节点投递(deliver)消息。多通道使得Peer节点可以基于应用访问控制策略来订阅任意数量的通道，应用程序根据业务逻辑决定将交易发送到1个或多个通道。</p>
+<p>文档：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/channels.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/channels.html</a></p>
+<h4 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h4><p>在创建通道的时候，需要定义通道的成员和组织、锚节点（anchor peer）和排序服务节点，一条与通道对应的区块链会同时生成，用于记录账本的交易，通道的初始配置信息记录在区块链的创世区块中，可以通过增加一个新的配置区块来更改通道的配置信息。</p>
+<p>创建通道的时候定义了成员，只有通过成员MSP验证的实体，才能够加入到通道并访问通道的数据。在通道中一般包含有若干成员（组织），若两个网络实体的×××书能够追溯到同一个根CA，则认为这两个实体属于同一组织。</p>
+<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><p>通道的配置信息都被打包到一个区块中，并存放在通道的共享账本中，成为通道的配置区块，配置区块除了配置信息外不包含其它交易信息。通道可以使用配置区块来更新配置，因此在账本中每新添加一个配置区块，通道就按照最新配置区块的定义来修改配置。通道账本的首个区块一定是配置区块，也称为<strong>创世区块</strong>（Genesis Block）。</p>
+<h3 id="交易"><a href="#交易" class="headerlink" title="交易"></a>交易</h3><p>交易的过程，实际是共识的3步：背书、排序和校验。</p>
+<h4 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h4><p>Fabric区块链的交易分两种，<strong>部署交易和调用交易</strong>。</p>
+<p><strong>部署交易把链码部署到Peer节点上并准备好被调用，当一个部署交易成功执行时，链码就被部署到各个背书节点上。（部署指实例化）</strong></p>
+<p>调用交易是客户端应用程序通过Fabric提供的API调用先前已部署好的某个链码的某个函数执行交易，并相应地读取和写入KV数据库，返回是否成功或者失败。</p>
+<h4 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h4><p>详读这篇文档：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/txflow.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/txflow.html</a></p>
+<p>背书节点校验客户端的签名，然后执行智能合约代码模拟交易。交易处理完成后，对交易信息签名，返回给客户端。客户端收到签名后的交易信息后，发给排序服务节点排序。排序服务节点将交易信息排序打包成区块后，广播发给确认节点，写入区块链中。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-tx-flow.png"></p>
+<h5 id="客户端提案"><a href="#客户端提案" class="headerlink" title="客户端提案"></a>客户端提案</h5><p>客户端应用程序利用SDK（Node.js，Java，Python）构造交易提案（Proposal），提案有2种：</p>
+<ol>
+<li>实例化chaincode。</li>
+<li>调用chaincode。</li>
+</ol>
+<p>客户端把交易提案（<strong>Proposal</strong>）根据背书策略发送给一个或多个背书节点，<strong>交易提案中包含本次交易要调用的合约标识、合约方法和参数信息以及客户端签名</strong>等。<br>SDK将交易提案打包为可识别的格式（如gRPC上的protobuf），并使用用户的加密凭证为该交易提案生成唯一的签名。</p>
+<p>背书策略定义需要哪些节点背书交易才有效，例如需要5个成员的背书节点中至少3个同意；或者某个特殊身份的成员支持等。客户端只有在收集足够多的背书节点的交易提案签名，交易才能被视为有效。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-txflow-step1.png"></p>
+<h5 id="背书节点为提案背书"><a href="#背书节点为提案背书" class="headerlink" title="背书节点为提案背书"></a>背书节点为提案背书</h5><p>背书节点（endorser）收到交易提案后，<strong>验证签名</strong>并确定提交者是否有权执行操作。背书节点将交易提案的参数作为输入，在当前状态KV数据库上执行交易，生成响应返回给客户端，响应包<strong>含执行返回值、读写集的交易结果（此时不会更新账本），交易结果集、背书节点的签名和背书结果（YES/NO）作为提案的结果</strong>，客户端SDK解析信息判断是否应用于后续的交易。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-txflow-step2.png"></p>
+<p>在所有合法性校验通过后，背书节点按照交易提案调用链码模拟执行交易。链码执行时，读取的数据（键值对）是背书节点中本地的状态数据库，链码读取过的数据回被归总到读集（Read Set）；链码对状态数据库的写操作并不会对账本做改变，所有的写操作将归总到一个写入集（Write Set）中记录下来。读集和写集将在确认节点中用于确定交易是否最终写入账本。</p>
+<p>资料：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#endorsement">https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#endorsement</a></p>
+<h5 id="客户端收集提案背书"><a href="#客户端收集提案背书" class="headerlink" title="客户端收集提案背书"></a>客户端收集提案背书</h5><p>客户端验证背书节点签名，并比较各节点返回的提案结果，判断提案结果是否一致以及是否参照指定的背书策略执行。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-txflow-step3.png"></p>
+<p>当背书结果都通过验证，并且满足背书策略时，客户端生成一笔交易发送给排序节点。<strong>交易包含交易签名、proposal、读写集、背书结果和通道ID。</strong></p>
+<p><img src="http://img.lessisbetter.site/2019-07-txflow-step4.png"></p>
+<h5 id="orderer排序交易"><a href="#orderer排序交易" class="headerlink" title="orderer排序交易"></a>orderer排序交易</h5><p>排序服务节点对接收到的交易进行共识排序，然后按照区块生成策略，将一批交易打包到一起，生成新的区块，调用deliver API投递消息，发送给确认节点。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-txflow-step5.png"></p>
+<p><strong>区块的广播有两种触发条件</strong>，一种是当通道的交易数量达到某个预设的阈值，另一种是在交易数量没有超过阈值但距离上次广播的时间超过某个特定阈值，也可触发广播数据块。两种方式相结合，使得经过排序的交易及时生成区块并广播给通道的Leader节点（记账节点），Leader节点验证后，再发送给同channel同组织的其他记账节点。</p>
+<h5 id="peer验证区块"><a href="#peer验证区块" class="headerlink" title="peer验证区块"></a>peer验证区块</h5><p>peer需要对区块内的所有交易进行验证，验证交易是否按背书策略执行以及根据读写集把交易打上有效或者无效的标签。最后把区块追加到本地的区块链，修改世界状态。</p>
+<p>记账节点收到排序服务节点发来的区块后，逐笔检查区块中的交易：</p>
+<ol>
+<li>先检查交易的合法性以及该交易是否曾经出现过。</li>
+<li>然后调用校验系统链码（VSCC，Validation System Chaincode）检验交易的签名背书是否合法，</li>
+<li>以及背书的数量是否满足背书策略的要求。</li>
+<li>记账节点对交易进行<strong>多版本并发控制（MVCC）</strong>检查，即校验交易的读集（Read Set）是否和当前账本中的版本一致（即没有变化）。如果没有改变，说明交易写集（Write Set）中对数据的修改有效，把该交易标注为有效，交易的写集更新到状态数据库中。如果当前账本的数据和读集版本不一致，则该交易被标注为无效，不更新状态数据库。</li>
+</ol>
+<p>交易流程中，采用<strong>MVCC的乐观锁模型，提高了系统的并发能力。但MVCC也带来了一些局限性。例如，在同一个区块中若有两个交易先后对某个数据项做更新，顺序在后的交易将失败，因为后序交易的读集版本和当前数据项版本已经不一致。</strong></p>
+<p><img src="http://img.lessisbetter.site/2019-07-blocks-3.png"></p>
+<h5 id="区块写入账本"><a href="#区块写入账本" class="headerlink" title="区块写入账本"></a>区块写入账本</h5><p>每个peer都把区块追加到对应channel的账本上，每个有效交易的write set会被提交到状态数据库。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-txflow-step6.png"></p>
+<h5 id="客户端获取交易结果"><a href="#客户端获取交易结果" class="headerlink" title="客户端获取交易结果"></a>客户端获取交易结果</h5><p>客户端可以通过事件订阅交易的结果：是否添加到数据库，是否有效。</p>
+<h4 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h4><p><img src="http://img.lessisbetter.site/2019-07-fabric-storage.png"></p>
+<h3 id="账本"><a href="#账本" class="headerlink" title="账本"></a>账本</h3><p><strong>账本由区块链和状态数据库两部分组成</strong>。</p>
+<ol>
+<li>区块链是一组不可更改的有序的区块（数据块），记录着全部交易的日志。</li>
+<li>状态数据库记录了账本中所有键值对的当前值（世界状态），相当于对当前账本的交易日志做了索引。链码执行交易的时候需要读取账本的当前状态，从状态数据库可以迅速获取键值的最新状态。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-storage.png"></p>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-storage-flow.png"></p>
+<h4 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h4><p>Fabric区块链网络中，每个通道都有其账本，每个Peer节点都保存着其所加入通道的账本，Peer节点的账本包含如下数据：</p>
+<ol>
+<li>账本编号，用于快速查询存在哪些账本</li>
+<li>账本数据，用于区块数据存储</li>
+<li>区块索引，用于快速查询区块／交易</li>
+<li>状态数据，用于最新的<strong>世界状态</strong>数据</li>
+<li>历史数据，用于跟踪键的历史</li>
+</ol>
+<p>Fabric的Peer节点账本中有四种数据库，idStore（ledgerID数据库）、blkstorage（block文件存储）、statedb（状态数据库）、historydb（历史数据库）。</p>
+<p><strong>账本数据库</strong>基于文件系统，将区块存储在文件块中，然后在区块索引LevelDB中存储区块交易对应的文件块及其偏移，即将区块索引LevelDB作为账本数据库的索引。目前<strong>支持的区块索引有：区块编号、区块哈希、交易ID、区块交易编号</strong>。</p>
+<p><strong>状态数据库</strong>存储的是所有曾经在交易中出现的键值对的最新值（世界状态）。调用链码执行交易可以改变状态数据，为了高效的执行链码调用，所有数据的最新值都被存放在状态数据库中；状态数据库是有序交易日志的快照，任何时候都可以根据交易日志重新生成状态数据库；状态数据库会在Peer节点启动的时候自动恢复或重构，未完备前，本Peer节点不会接受新的交易；状态数据库可以使用LevelDB或者CouchDB，CouchDB能够存储任意的二进制数据，支持富文本查询。链接：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#world-state">https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#world-state</a> 。</p>
+<p><strong>历史状态数据库</strong>用于查询某个key的历史修改记录，历史状态数据库并不存储key具体的值，而只记录在某个区块的某个交易里，某key变动了一次。后续需要查询的时候，根据变动历史去查询实际变动的值。</p>
+<p><strong>ledgerID数据库</strong>存储chainID，用于快速查询节点存在哪些账本。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-storage-file.png"></p>
+<p>ledgersData是Peer节点账本的根目录，Peer节点的账本存储在Peer节点容器的<code>/var/hyperledger/production/ledgersData</code>目录下，通过命令行可以进入Peer节点容器进行查看，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it peer0.org1.example.com bash</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">root@5af5a3fb3bb7:&#x2F;var&#x2F;hyperledger&#x2F;production# ls -R chaincodes</span><br><span class="line">chaincodes:</span><br><span class="line">root@5af5a3fb3bb7:&#x2F;var&#x2F;hyperledger&#x2F;production# ls -R transientStore&#x2F;</span><br><span class="line">transientStore&#x2F;:</span><br><span class="line">000001.log  CURRENT  LOCK  LOG  MANIFEST-000000</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">root@5af5a3fb3bb7:&#x2F;var&#x2F;hyperledger&#x2F;production# ls -R ledgersData&#x2F;</span><br><span class="line">ledgersData&#x2F;:</span><br><span class="line">bookkeeper  chains  configHistory  historyLeveldb  ledgerProvider  pvtdataStore  stateLeveldb</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;bookkeeper:</span><br><span class="line">000001.log  CURRENT  LOCK  LOG  MANIFEST-000000</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;chains:</span><br><span class="line">chains  index</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;chains&#x2F;chains:</span><br><span class="line">mychannel</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;chains&#x2F;chains&#x2F;mychannel:</span><br><span class="line">blockfile_000000</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;chains&#x2F;index:</span><br><span class="line">000001.log  CURRENT  LOCK  LOG  MANIFEST-000000</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;configHistory:</span><br><span class="line">000001.log  CURRENT  LOCK  LOG  MANIFEST-000000</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;historyLeveldb:</span><br><span class="line">000001.log  CURRENT  LOCK  LOG  MANIFEST-000000</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;ledgerProvider:</span><br><span class="line">000001.log  CURRENT  LOCK  LOG  MANIFEST-000000</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;pvtdataStore:</span><br><span class="line">000001.log  CURRENT  LOCK  LOG  MANIFEST-000000</span><br><span class="line"></span><br><span class="line">ledgersData&#x2F;stateLeveldb:</span><br><span class="line">000001.log  CURRENT  LOCK  LOG  MANIFEST-000000</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>chains/chains目录下的mychannel目录channel的名称，Fabric支持多通道的机制，而通道之间的账本是隔离的，每个通道都有自己的账本空间。</li>
+<li>chains/index目录包含levelDB数据库文件，存储区块索引数据库，使用leveldb实现。</li>
+<li>historyLeveldb目录存储智能合约中写入的key的历史记录的索引地址，使用leveldb实现。</li>
+<li>ledgerProvider目录存储当前节点所包含channel的信息（已经创建的channel id 和正在创建中的channel id），使用leveldb实现。</li>
+<li>stateLeveldb目录存储智能合约写入的数据，可选择使用leveldb或couchDB，即状态数据库。</li>
+</ul>
+<h4 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h4><p>区块索引用于快速定位区块。<strong>索引键可以是区块高度、区块哈希、交易哈希。索引值为区块文件编号+文件内偏移量+区块数据长度。</strong></p>
+<p>Hyperledger Fabric提供了多种区块索引的方式，以便能快速找到区块。索引的内容是文件位置指针（File Location Pointer）。文件位置指针由三个部分组成：所在文件的编号（fileSuffixNum）、文件内的偏移量（offset）、区块占用的字节数（bytesLength）。</p>
+<h4 id="链"><a href="#链" class="headerlink" title="链"></a>链</h4><p>整个网络有一条系统链，保存有网络的配置信息，比如MSP、各种策略、各种配置项，系统链在排序服务中（即，peer上没有？），保存在ordering节点的系统channel中，任何改变整个网络配置的，都会产生一个新的配置块添加到系统链上去。</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#system-chain">https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#system-chain</a></p>
+<h3 id="共识-排序服务"><a href="#共识-排序服务" class="headerlink" title="共识/排序服务"></a>共识/排序服务</h3><p>文档：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/orderer/ordering_service.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/orderer/ordering_service.html</a></p>
+<h4 id="kafka"><a href="#kafka" class="headerlink" title="kafka"></a>kafka</h4><p>共识集群由多个排序服务节点（OSN）和一个Kafka集群组成。排序节点之间不直接通信，仅仅与Kafka集群通信。</p>
+<p>在排序节点的实现里，通道(Channel)在Kafka中是以主题topic的形式隔离。</p>
+<p><strong>每个排序节点内部，针对每个通道都会建立与Kafka集群对应topic的生产者及消费者</strong>。生产者将排序节点收到的交易发送到Kafka集群进行排序，在生产的同时，消费者也同步消费排序后的交易。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-kafka.png"></p>
+<h4 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h4><p>fabric的raft基于etcd的raft，raft是CFT，是leader-follower模型。</p>
+<p>需要注意的一点是，所有channel共用排序集群，但每个channel都有各自的Raft实例，所以每个channel可以选举自己的leader。</p>
+<p>虽然所有的 Raft 节点都必须包含在系统通道中，但他们并不需要都包含在应用通道中。通道创建者(和通道管理员)拥有选择可用排序节点子集的能力并且可以根据需要增加或移除排序节点(只要每次只增加会移除一个节点)。</p>
+<blockquote>
+<p>where a leader node is elected (per channel) and its decisions are replicated by the followers.</p>
+</blockquote>
+<p>链接：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#raft">https://hyperledger-fabric.readthedocs.io/en/release-1.4/glossary.html#raft</a></p>
+<h3 id="通信"><a href="#通信" class="headerlink" title="通信"></a>通信</h3><h4 id="Gossip"><a href="#Gossip" class="headerlink" title="Gossip"></a>Gossip</h4><p>gossip是数据扩散协议，有3个功能：</p>
+<ol>
+<li>管理节点发现和channel的成员关系</li>
+<li>同channel上的所有peer扩散账本数据</li>
+<li>同channel上的所有peer间同步账本状态</li>
+</ol>
+<p>更多信息：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/gossip.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/gossip.html</a></p>
+<p><strong>Gossip 协议最终的目的是将数据分发到网络中的每一个节点</strong>，Gossip数据分发协议实现了两种数据传输方式。</p>
+<h5 id="推送数据"><a href="#推送数据" class="headerlink" title="推送数据"></a>推送数据</h5><ol>
+<li>网络中的某个节点<strong>随机选择N个节点</strong>作为数据接收对象，N配置在配置文件中</li>
+<li>该节点向其选中的N个节点传输相应的信息</li>
+<li>接收到信息的节点处理它接收到的数据</li>
+<li>接收到数据的节点再从第一步开始重复执行</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-gossip-push.png"></p>
+<h5 id="拉去数据"><a href="#拉去数据" class="headerlink" title="拉去数据"></a>拉去数据</h5><ol>
+<li>某个节点<strong>周期性</strong>地选择随机N个节点询问有没有最新的信息</li>
+<li>收到请求的节点回复请求节点其最近未收到的信息</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-gossip-pull.png"></p>
+<h4 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h4><p>节点之间使用数据同步保证账本数据和状态数据的即使更新，数据同步主要有2类：</p>
+<ol>
+<li>主动广播，比如广播新打包的区块，排序节点把区块发送给主节点，它基于Gossip的推送数据</li>
+<li>主动请求，比如新加入的节点，向已存在的其他组织锚节点请求数据，锚节点给他响应，它基于Gossip的拉去数据</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-deliver-data.png"></p>
+<p><img src="http://img.lessisbetter.site/2019-07-fabric-request-data.png"></p>
+<h3 id="应用开发"><a href="#应用开发" class="headerlink" title="应用开发"></a>应用开发</h3><p>文档：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/developing_applications.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/developing_applications.html</a></p>
+<h3 id="Fabric网络"><a href="#Fabric网络" class="headerlink" title="Fabric网络"></a>Fabric网络</h3><p>文档：<a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/network/network.html">https://hyperledger-fabric.readthedocs.io/en/release-1.4/network/network.html</a></p>
+<p>文档里介绍了以上各种概念在网络中的位置。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/Fabric/" rel="tag"># Fabric</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/13/fast-mirrors/" rel="prev" title="让镜像飞，加速你的开发">
+                  <i class="fa fa-chevron-left"></i> 让镜像飞，加速你的开发
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/25/fabric-first-network/" rel="next" title="详解Fabric网络搭建">
+                  详解Fabric网络搭建 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '73b17a26f20db4ba460444a50452df9d',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

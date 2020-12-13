@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="云原生、Go语言、区块链">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Go语言充电站">
+<meta property="og:url" content="http://lessisbetter.site/page/9/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="云原生、Go语言、区块链">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="云原生 k8s kubernetes 区块链 Go语言 后端 技术 人生 编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/page/9/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/20/golang-channel-all-usage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/01/20/golang-channel-all-usage/" class="post-title-link" itemprop="url">总结了才知道，原来channel有这么多用法！</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-20 19:44:28" itemprop="dateCreated datePublished" datetime="2019-01-20T19:44:28+08:00">2019-01-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>这篇文章总结了channel的11种常用操作，以一个更高的视角看待channel，会给大家带来对channel更全面的认识。</p>
+<p>在介绍11种操作前，先简要介绍下channel的使用场景、基本操作和注意事项。</p>
+<h2 id="channel的使用场景"><a href="#channel的使用场景" class="headerlink" title="channel的使用场景"></a>channel的使用场景</h2><p>把channel用在<strong>数据流动的地方</strong>：</p>
+<ol>
+<li>消息传递、消息过滤</li>
+<li>信号广播</li>
+<li>事件订阅与广播</li>
+<li>请求、响应转发</li>
+<li>任务分发</li>
+<li>结果汇总</li>
+<li>并发控制</li>
+<li>同步与异步</li>
+<li>…</li>
+</ol>
+<h2 id="channel的基本操作和注意事项"><a href="#channel的基本操作和注意事项" class="headerlink" title="channel的基本操作和注意事项"></a>channel的基本操作和注意事项</h2><p>channel存在<code>3种状态</code>：</p>
+<ol>
+<li>nil，未初始化的状态，只进行了声明，或者手动赋值为<code>nil</code></li>
+<li>active，正常的channel，可读或者可写</li>
+<li>closed，已关闭，<strong>千万不要误认为关闭channel后，channel的值是nil</strong></li>
+</ol>
+<p>channel可进行<code>3种操作</code>：</p>
+<ol>
+<li>读</li>
+<li>写</li>
+<li>关闭</li>
+</ol>
+<p>把这3种操作和3种channel状态可以组合出<code>9种情况</code>：</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>nil的channel</th>
+<th>正常channel</th>
+<th>已关闭channel</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&lt;- ch</td>
+<td>阻塞</td>
+<td>成功或阻塞</td>
+<td>读到零值</td>
+</tr>
+<tr>
+<td>ch &lt;-</td>
+<td>阻塞</td>
+<td>成功或阻塞</td>
+<td>panic</td>
+</tr>
+<tr>
+<td>close(ch)</td>
+<td>panic</td>
+<td>成功</td>
+<td>panic</td>
+</tr>
+</tbody></table>
+<p>对于nil通道的情况，也并非完全遵循上表，<strong>有1个特殊场景</strong>：当<code>nil</code>的通道在<code>select</code>的某个<code>case</code>中时，这个case会阻塞，但不会造成死锁。</p>
+<p><em>参考代码请看：<a target="_blank" rel="noopener" href="https://dave.cheney.net/2014/03/19/channel-axioms">https://dave.cheney.net/2014/03/19/channel-axioms</a></em></p>
+<p>下面介绍使用channel的10种常用操作。</p>
+<h2 id="1-使用for-range读channel"><a href="#1-使用for-range读channel" class="headerlink" title="1. 使用for range读channel"></a>1. 使用for range读channel</h2><h3 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h3><p>当需要不断从channel读取数据时。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>使用<code>for-range</code>读取channel，这样既安全又便利，当channel关闭时，for循环会自动退出，无需主动监测channel是否关闭，可以防止读取已经关闭的channel，造成读到数据为通道所存储的数据类型的零值。</p>
+<h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> x := <span class="keyword">range</span> ch&#123;</span><br><span class="line">    fmt.Println(x)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-使用v-ok-lt-ch-select操作判断channel是否关闭"><a href="#2-使用v-ok-lt-ch-select操作判断channel是否关闭" class="headerlink" title="2. 使用v,ok := &lt;-ch + select操作判断channel是否关闭"></a>2. 使用<code>v,ok := &lt;-ch</code> + <code>select</code>操作判断channel是否关闭</h2><h3 id="场景-1"><a href="#场景-1" class="headerlink" title="场景"></a>场景</h3><p><code>v,ok := &lt;-ch</code> + <code>select</code>操作判断channel是否关闭</p>
+<h3 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h3><p>ok的结果和含义：<br>    - <code>true</code>：读到通道数据，不确定是否关闭，可能channel还有保存的数据，但channel已关闭。<br>    - <code>false</code>：通道关闭，无数据读到。</p>
+<p>从关闭的channel读值读到是channel所传递数据类型的零值，这个零值有可能是发送者发送的，也可能是channel关闭了。</p>
+<p><code>_, ok := &lt;-ch</code>与select配合使用的，当ok为false时，代表了channel已经close。下面解释原因，<code> _,ok := &lt;-ch</code>对应的函数是<code>func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool)</code>，入参block含义是当前goroutine是否可阻塞，当block为false代表的是select操作，不可阻塞当前goroutine的在channel操作，否则是普通操作（即<code>_, ok</code>不在select中）。返回值selected代表当前操作是否成功，主要为select服务，返回<strong>received代表是否从channel读到有效值</strong>。它有3种返回值情况：</p>
+<ol>
+<li>block为false，即执行select时，如果channel为空，返回(false,false)，代表select操作失败，没接收到值。</li>
+<li>否则，如果channel已经关闭，并且没有数据，ep即接收数据的变量设置为零值，返回(true,false)，代表select操作成功，但channel已关闭，没读到有效值。</li>
+<li>否则，其他读到有效数据的情况，返回(true,ture)。</li>
+</ol>
+<p>我们考虑<code>_, ok := &lt;-ch</code>和<code>select</code>结合使用的情况。</p>
+<p>情况1：当chanrecv返回(false,false)时，本质是select操作失败了，所以相关的case会阻塞，不会执行，比如下面的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> v, ok := &lt;-ch:</span><br><span class="line">		fmt.Printf(<span class="string">&quot;v: %v, ok: %v\n&quot;</span>, v, ok)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		fmt.Println(<span class="string">&quot;nothing&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果：</span></span><br><span class="line"><span class="comment">// nothing</span></span><br></pre></td></tr></table></figure>
+
+<p>情况2：下面的结果会是零值和false：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 增加关闭</span></span><br><span class="line">	<span class="built_in">close</span>(ch)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> v, ok := &lt;-ch:</span><br><span class="line">		fmt.Printf(<span class="string">&quot;v: %v, ok: %v\n&quot;</span>, v, ok)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// v: 0, ok: false</span></span><br></pre></td></tr></table></figure>
+
+<p>情况3的<code>received</code>为true，即<code>_, ok</code>中的<code>ok</code>为true，不做讨论了，只讨论<code>ok</code>为false的情况。</p>
+<p>最后<code>ok</code>为false的时候，只有情况2，此时channel必然已经关闭，我们便可以在<code>select</code>中用<code>ok</code>判断channel是否已经关闭。</p>
+<h3 id="用法-1"><a href="#用法-1" class="headerlink" title="用法"></a>用法</h3><p>下面例子展示了，向channel写数据然后关闭，依然可以从已关闭channel读到有效数据，但channel关闭且没有数据时，读不到有效数据，ok为false，可以确定当前channel已关闭。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// demo_select6.go</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 发送1个数据关闭channel</span></span><br><span class="line">	ch &lt;- <span class="number">1</span></span><br><span class="line">	<span class="built_in">close</span>(ch)</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">&quot;close channel\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 不停读数据直到channel没有有效数据</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> v, ok := &lt;-ch:</span><br><span class="line">			<span class="built_in">print</span>(<span class="string">&quot;v: &quot;</span>, v, <span class="string">&quot;, ok:&quot;</span>, ok, <span class="string">&quot;\n&quot;</span>)</span><br><span class="line">			<span class="keyword">if</span> !ok &#123;</span><br><span class="line">				<span class="built_in">print</span>(<span class="string">&quot;channel is close\n&quot;</span>)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;	</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			<span class="built_in">print</span>(<span class="string">&quot;nothing\n&quot;</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果</span></span><br><span class="line"><span class="comment">// close channel</span></span><br><span class="line"><span class="comment">// v: 1, ok:true</span></span><br><span class="line"><span class="comment">// v: 0, ok:false</span></span><br><span class="line"><span class="comment">// channel is close</span></span><br></pre></td></tr></table></figure>
+
+<p>更多见<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/tree/master/channel/ok">golang_step_by_step/channel/ok</a>仓库中ok和select的示例，或者阅读channel源码。</p>
+<h2 id="3-使用select处理多个channel"><a href="#3-使用select处理多个channel" class="headerlink" title="3. 使用select处理多个channel"></a>3. 使用select处理多个channel</h2><h3 id="场景-2"><a href="#场景-2" class="headerlink" title="场景"></a>场景</h3><p>需要对多个通道进行同时处理，但只处理最先发生的channel时</p>
+<h3 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h3><p><code>select</code>可以同时监控多个通道的情况，只处理未阻塞的case。<strong>当通道为nil时，对应的case永远为阻塞，无论读写。特殊关注：普通情况下，对nil的通道写操作是要panic的</strong>。</p>
+<h3 id="用法-2"><a href="#用法-2" class="headerlink" title="用法"></a>用法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 分配job时，如果收到关闭的通知则退出，不分配job</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *Handler)</span> <span class="title">handle</span><span class="params">(job *Job)</span></span> &#123;</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> h.jobCh&lt;-job:</span><br><span class="line">        <span class="keyword">return</span> </span><br><span class="line">    <span class="keyword">case</span> &lt;-h.stopCh:</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-使用channel的声明控制读写权限"><a href="#4-使用channel的声明控制读写权限" class="headerlink" title="4. 使用channel的声明控制读写权限"></a>4. 使用channel的声明控制读写权限</h2><h3 id="场景-3"><a href="#场景-3" class="headerlink" title="场景"></a>场景</h3><p>协程对某个通道只读或只写时</p>
+<p>目的：</p>
+<ol>
+<li>使代码更易读、更易维护，</li>
+<li>防止只读协程对通道进行写数据，但通道已关闭，造成panic。</li>
+</ol>
+<h3 id="用法-3"><a href="#用法-3" class="headerlink" title="用法"></a>用法</h3><ul>
+<li>如果协程对某个channel只有写操作，则这个channel声明为只写。</li>
+<li>如果协程对某个channel只有读操作，则这个channe声明为只读。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只有generator进行对outCh进行写操作，返回声明</span></span><br><span class="line"><span class="comment">// &lt;-chan int，可以防止其他协程乱用此通道，造成隐藏bug</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">generator</span><span class="params">(<span class="keyword">int</span> n)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    outCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span> i:=<span class="number">0</span>;i&lt;n;i++&#123;</span><br><span class="line">            outCh&lt;-i</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> outCh</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// consumer只读inCh的数据，声明为&lt;-chan int</span></span><br><span class="line"><span class="comment">// 可以防止它向inCh写数据</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consumer</span><span class="params">(inCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> x := <span class="keyword">range</span> inCh &#123;</span><br><span class="line">        fmt.Println(x)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-使用缓冲channel增强并发"><a href="#5-使用缓冲channel增强并发" class="headerlink" title="5. 使用缓冲channel增强并发"></a>5. 使用缓冲channel增强并发</h2><h3 id="场景-4"><a href="#场景-4" class="headerlink" title="场景"></a>场景</h3><p>异步</p>
+<h3 id="原理-3"><a href="#原理-3" class="headerlink" title="原理"></a>原理</h3><p>有缓冲通道可供多个协程同时处理，在一定程度可提高并发性。</p>
+<h3 id="用法-4"><a href="#用法-4" class="headerlink" title="用法"></a>用法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无缓冲</span></span><br><span class="line">ch1 := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">ch2 := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line"><span class="comment">// 有缓冲</span></span><br><span class="line">ch3 := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用5个`do`协程同时处理输入数据</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">    inCh := generator(<span class="number">100</span>)</span><br><span class="line">    outCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">        <span class="keyword">go</span> do(inCh, outCh)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> r := <span class="keyword">range</span> outCh &#123;</span><br><span class="line">        fmt.Println(r)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">do</span><span class="params">(inCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>, outCh <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> v := <span class="keyword">range</span> inCh &#123;</span><br><span class="line">        outCh &lt;- v * v</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="6-为操作加上超时"><a href="#6-为操作加上超时" class="headerlink" title="6. 为操作加上超时"></a>6. 为操作加上超时</h2><h3 id="场景-5"><a href="#场景-5" class="headerlink" title="场景"></a>场景</h3><p>需要超时控制的操作</p>
+<h3 id="原理-4"><a href="#原理-4" class="headerlink" title="原理"></a>原理</h3><p>使用<code>select</code>和<code>time.After</code>，看操作和定时器哪个先返回，处理先完成的，就达到了超时控制的效果</p>
+<h3 id="用法-5"><a href="#用法-5" class="headerlink" title="用法"></a>用法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doWithTimeOut</span><span class="params">(timeout time.Duration)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> ret := &lt;-do():</span><br><span class="line">		<span class="keyword">return</span> ret, <span class="literal">nil</span></span><br><span class="line">	<span class="keyword">case</span> &lt;-time.After(timeout):</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>, errors.New(<span class="string">&quot;timeout&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">do</span><span class="params">()</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	outCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="comment">// do work</span></span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">return</span> outCh</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-使用time实现channel无阻塞读写"><a href="#7-使用time实现channel无阻塞读写" class="headerlink" title="7. 使用time实现channel无阻塞读写"></a>7. 使用time实现channel无阻塞读写</h2><h3 id="场景-6"><a href="#场景-6" class="headerlink" title="场景"></a>场景</h3><p>并不希望在channel的读写上浪费时间</p>
+<h3 id="原理-5"><a href="#原理-5" class="headerlink" title="原理"></a>原理</h3><p>是为操作加上超时的扩展，这里的操作是channel的读或写</p>
+<h3 id="用法-6"><a href="#用法-6" class="headerlink" title="用法"></a>用法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">unBlockRead</span><span class="params">(ch <span class="keyword">chan</span> <span class="keyword">int</span>)</span> <span class="params">(x <span class="keyword">int</span>, err error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> x = &lt;-ch:</span><br><span class="line">		<span class="keyword">return</span> x, <span class="literal">nil</span></span><br><span class="line">	<span class="keyword">case</span> &lt;-time.After(time.Microsecond):</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>, errors.New(<span class="string">&quot;read time out&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">unBlockWrite</span><span class="params">(ch <span class="keyword">chan</span> <span class="keyword">int</span>, x <span class="keyword">int</span>)</span> <span class="params">(err error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> ch &lt;- x:</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	<span class="keyword">case</span> &lt;-time.After(time.Microsecond):</span><br><span class="line">		<span class="keyword">return</span> errors.New(<span class="string">&quot;read time out&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><em>注：time.After等待可以替换为default，则是channel阻塞时，立即返回的效果</em></p>
+<h2 id="8-使用close-ch-关闭所有下游协程"><a href="#8-使用close-ch-关闭所有下游协程" class="headerlink" title="8. 使用close(ch)关闭所有下游协程"></a>8. 使用<code>close(ch)</code>关闭所有下游协程</h2><h3 id="场景-7"><a href="#场景-7" class="headerlink" title="场景"></a>场景</h3><p>退出时，显示通知所有协程退出</p>
+<h3 id="原理-6"><a href="#原理-6" class="headerlink" title="原理"></a>原理</h3><p>所有读<code>ch</code>的协程都会收到<code>close(ch)</code>的信号</p>
+<h3 id="用法-7"><a href="#用法-7" class="headerlink" title="用法"></a>用法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *Handler)</span> <span class="title">Stop</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="built_in">close</span>(h.stopCh)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 可以使用WaitGroup等待所有协程退出</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 收到停止后，不再处理请求</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *Handler)</span> <span class="title">loop</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> req := &lt;-h.reqCh:</span><br><span class="line">            <span class="keyword">go</span> handle(req)</span><br><span class="line">        <span class="keyword">case</span> &lt;-h.stopCh:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="9-使用chan-struct-作为信号channel"><a href="#9-使用chan-struct-作为信号channel" class="headerlink" title="9. 使用chan struct{}作为信号channel"></a>9. 使用<code>chan struct&#123;&#125;</code>作为信号channel</h2><h3 id="场景-8"><a href="#场景-8" class="headerlink" title="场景"></a>场景</h3><p>使用channel传递信号，而不是传递数据时</p>
+<h3 id="原理-7"><a href="#原理-7" class="headerlink" title="原理"></a>原理</h3><p>没数据需要传递时，传递空struct</p>
+<h3 id="用法-8"><a href="#用法-8" class="headerlink" title="用法"></a>用法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 上例中的Handler.stopCh就是一个例子，stopCh并不需要传递任何数据</span></span><br><span class="line"><span class="comment">// 只是要给所有协程发送退出的信号</span></span><br><span class="line"><span class="keyword">type</span> Handler <span class="keyword">struct</span> &#123;</span><br><span class="line">    stopCh <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    reqCh <span class="keyword">chan</span> *Request</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="10-使用channel传递结构体的指针而非结构体"><a href="#10-使用channel传递结构体的指针而非结构体" class="headerlink" title="10. 使用channel传递结构体的指针而非结构体"></a>10. 使用channel传递结构体的指针而非结构体</h2><h3 id="场景-9"><a href="#场景-9" class="headerlink" title="场景"></a>场景</h3><p>使用channel传递结构体数据时</p>
+<h3 id="原理-8"><a href="#原理-8" class="headerlink" title="原理"></a>原理</h3><p><strong>channel本质上传递的是数据的拷贝，拷贝的数据越小传输效率越高，传递结构体指针，比传递结构体更高效</strong></p>
+<h3 id="用法-9"><a href="#用法-9" class="headerlink" title="用法"></a>用法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">reqCh <span class="keyword">chan</span> *Request</span><br><span class="line"></span><br><span class="line"><span class="comment">// 好过</span></span><br><span class="line">reqCh <span class="keyword">chan</span> Request</span><br></pre></td></tr></table></figure>
+
+<h2 id="11-使用channel传递channel"><a href="#11-使用channel传递channel" class="headerlink" title="11. 使用channel传递channel"></a>11. 使用channel传递channel</h2><h3 id="场景-10"><a href="#场景-10" class="headerlink" title="场景"></a>场景</h3><p>使用场景有点多，通常是用来获取结果。</p>
+<h3 id="原理-9"><a href="#原理-9" class="headerlink" title="原理"></a>原理</h3><p>channel可以用来传递变量，channel自身也是变量，可以传递自己。</p>
+<h3 id="用法-10"><a href="#用法-10" class="headerlink" title="用法"></a>用法</h3><p>下面示例展示了有序展示请求的结果，另一个示例可以见<a href="http://lessisbetter.site/2019/06/09/golang-first-class-function/#%E7%89%88%E6%9C%AC3">另外文章的版本3</a>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;math/rand&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	reqs := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 存放结果的channel的channel</span></span><br><span class="line">	outs := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">chan</span> <span class="keyword">int</span>, <span class="built_in">len</span>(reqs))</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="built_in">len</span>(reqs))</span><br><span class="line">	<span class="keyword">for</span> _, x := <span class="keyword">range</span> reqs &#123;</span><br><span class="line">		o := handle(&amp;wg, x)</span><br><span class="line">		outs &lt;- o</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		wg.Wait()</span><br><span class="line">		<span class="built_in">close</span>(outs)</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 读取结果，结果有序</span></span><br><span class="line">	<span class="keyword">for</span> o := <span class="keyword">range</span> outs &#123;</span><br><span class="line">		fmt.Println(&lt;-o)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// handle 处理请求，耗时随机模拟</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handle</span><span class="params">(wg *sync.WaitGroup, a <span class="keyword">int</span>)</span> <span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		time.Sleep(time.Duration(rand.Intn(<span class="number">3</span>)) * time.Second)</span><br><span class="line">		out &lt;- a</span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h2><p>本文介绍的channel特性，大多在过去的文章中已详细介绍，可按需求阅读。</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg">Golang并发模型：轻松入门select</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZfBcxvqiyks_s7cAD-zGCw">Golang并发模型：select进阶</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/fINhzg3eNi9YFi5qZ_JzGA">Golang并发模型：轻松入门协程池</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/JcED2qgJEj8LaBckVZBhDA">Golang并发模型：再也不愁选channel还是选锁</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/20/golang-channel-all-usage/">http://lessisbetter.site/2019/01/20/golang-channel-all-usage/</a></li>
+</ol>
+</blockquote>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/14/golang-channel-and-mutex/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/01/14/golang-channel-and-mutex/" class="post-title-link" itemprop="url">Golang并发：再也不愁选channel还是选锁</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-14 21:43:41" itemprop="dateCreated datePublished" datetime="2019-01-14T21:43:41+08:00">2019-01-14</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>周末又到了，为大家准备了一份实用干货：如何使用channel和Mutex解决并发问题，利用周末的好时光，配上音乐，思考一下吧🤔。</p>
+<p>来，问自己个问题：<strong>面对并发问题，是用channel解决，还是用Mutex解决</strong>？</p>
+<p>如果自己心里还没有清晰的答案，那就读下这篇文章，你会了解到：</p>
+<ul>
+<li>使用channel解决并发问题的核心思路和示例</li>
+<li>channel擅长解决什么样的并发问题，Mutex擅长解决什么样的并发问题</li>
+<li>一个并发问题该怎么入手解解决</li>
+<li>一个重要的plus思维</li>
+</ul>
+<h3 id="前戏"><a href="#前戏" class="headerlink" title="前戏"></a>前戏</h3><p>前面很多篇的文章都在围绕<code>channel</code>介绍，而只有前一篇<code>sync</code>的文章介绍到了<code>Mutex</code>，不是我偏心，而是channel在Golang是first class级别的，设计在语言特性中的，而<code>Mutex</code>只是一个包中的。这就注定了一个是主角，一个是配角。</p>
+<p>并且Golang还有一个并发座右铭，在《Effective Go》的channel介绍中写到：</p>
+<blockquote>
+<p>Share memory by communicating, don’t communicate by sharing memory.<br>通过通信共享内存，而不是通过共享内存而通信。</p>
+</blockquote>
+<p><strong>Golang以如此明显的方式告诉我们：面对并发问题，你首先想到的应该是channel，因为channel是线程安全的并且不会有数据冲突，比锁好用多了</strong>。</p>
+<p>既生瑜，何生亮。既然有<code>channel</code>了，为啥还提供<code>sync.Mutex</code>呢？</p>
+<p>主角不是万能的，他也需要配角。在Golang里，channel也不是万能的，这是由channel的特性和局限造成的。</p>
+<p>下面就给大家介绍channel的特点、核心方法和缺点。</p>
+<h3 id="channel解决并发问题的思路和示例"><a href="#channel解决并发问题的思路和示例" class="headerlink" title="channel解决并发问题的思路和示例"></a>channel解决并发问题的思路和示例</h3><p><strong>channel的核心是数据流动，关注到并发问题中的数据流动，把流动的数据放到channel中，就能使用channel解决这个并发问题</strong>。这个思路是从Go语言的核心开发者的演讲中学来的，然而视频我已经找不到了，不然直接共享给大家，他提到了Golang并发的核心实践的4个点：</p>
+<blockquote>
+<p><code>DataFlow -&gt; Drawing -&gt; Pipieline -&gt; Exiting</code></p>
+</blockquote>
+<p>DataFlow指数据流动，Drawing指把数据流动画出来，Pipeline指的是流水线，Exit指协程的退出。<strong>DataFlow + Drawing</strong>就是我提到到channel解决并发问题的思路，Pipeline和Exit是具体的实践模式，Pipeline和Exit我都写过文章，有需要自取：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/68FGjm7PFN5VbVF0zL-PlQ">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ">Golang并发模型：并发协程的优雅退出</a></li>
+</ul>
+<p>下面我使用例子具体解释<strong>DataFlow + Drawing</strong>。借用《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UpYbmFTowjCPU83W3DxP6Q">Golang并发的次优选择：sync包</a>》中银行的例子，介绍如何使用channel解决例子中银行的并发问题：银行支持多个用户的同时操作。顺便看下同一个并发问题，使用channel和Mutex解决是什么差别。</p>
+<p>一起分析下多个用户同时操作银行的数据流动：</p>
+<ol>
+<li>每个人都可以向银行发起请求，请求可以是存、取、查3种操作，并且包含操作时必要的数据，包含的数据只和自身相关。</li>
+<li>银行处理请求后给用户发送响应，包含的数据只和操作用户相关。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-01-12-bank-user.png"></p>
+<p>你一定发现了上面的数据流动：</p>
+<ol>
+<li>请求数据：个人请求数据流向银行。</li>
+<li>响应数据：银行处理结果数据流向用户。</li>
+</ol>
+<p>channel是数据流动的通道/管道，为流动的数据建立通道，这里需要建立2类channel：</p>
+<ol>
+<li>reqCh：传送请求的channel，把请求从个人发送给银行。</li>
+<li>retCh：传送响应的channel，把响应从银行发给个人。</li>
+</ol>
+<p>我们把channel添加到上图中，得到下面的图：</p>
+<p><img src="http://img.lessisbetter.site/2019-01-12-bank_channel.png"></p>
+<p>以上就是从数据流动的角度，发现如何使用channel解决并发问题。思路有了，再思考下代码层面需要怎么做：</p>
+<ol>
+<li>银行：<ol>
+<li>定义银行，只保存1个map即可</li>
+<li>银行操作：接收和解析请求，并把请求分发给存、取、查函数</li>
+<li>实现存、取、查函数：处理请求，并把结果写入到用户提供的响应通道</li>
+</ol>
+</li>
+<li>定义请求和响应</li>
+<li>用户：创建请求和接收响应的通道，发送请求后等待响应，提取响应结果</li>
+<li>mian函数：创建银行和用户间的请求通道，创建银行、用户等协程，并等待操作完成</li>
+</ol>
+<p>以上，我们这个并发问题的逻辑实现和各块工作就清晰了，写起来也方便、简单。代码实现有200多行，<strong>公众号不方便查看，可以点阅读原文，一键直达</strong>。</p>
+<p>代码不能贴了，运行结果还是可以的，为了方便理解结果，介绍下示例代码做了什么。main函数创建了银行、小明、小刚3个并发协程：</p>
+<ol>
+<li>银行：从<code>reqCh</code>接收请求，依次处理每个请求，直到通道关闭，把请求交给处理函数，处理函数把结果写入到请求中的<code>retCh</code>。</li>
+<li>用户小明：创建了存100、取20、查余额的3个请求，每个请求得到响应后，再把下一个请求写入到<code>reqCh</code>。</li>
+<li>用户小刚：流程和小明相同，但存100取200，造成取钱操作失败，他查询下自己又多少钱，得到100。</li>
+</ol>
+<p>main函数最后使用WaitGroup等待小明、小刚结束后退出。</p>
+<p>下面是运行结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ go run channel_map.go</span><br><span class="line">xiaogang deposite 100 success</span><br><span class="line">xiaoming deposite 100 success</span><br><span class="line">xiaogang withdraw 200 failed</span><br><span class="line">xiaoming withdraw 20 success</span><br><span class="line">xiaogang has 100</span><br><span class="line">xiaoming has 80</span><br><span class="line">Bank exit</span><br></pre></td></tr></table></figure>
+
+<p>这一遭搞完，发现啥没有？用Mutex直接加锁、解锁完事了，但channel搞出来一坨，<strong>是不是用channel解决这个问题不太适合</strong>？是的。对于当前这个问题，和Mutex的方案相比，channel的方案显的有点“重”，<strong>不够简洁、高效、易用</strong>。</p>
+<p><strong>但这个例子展示了3点：</strong></p>
+<ol>
+<li><strong>使用channel解决并发问题的核心在于关注数据的流动</strong></li>
+<li><strong>channel不一定是某个并发问题最好的解决方案</strong></li>
+<li><strong>map在并发中，可以不用锁进行保护，而是使用channel</strong></li>
+</ol>
+<p>现在，回到了开篇的问题：同一个并发问题，你是用channel解决，还是用mutex解决？下面，一起看看怎么选择。</p>
+<h3 id="channel和mutex的选择"><a href="#channel和mutex的选择" class="headerlink" title="channel和mutex的选择"></a>channel和mutex的选择</h3><p>面对一个并发问题的时候，应当选择合适的并发方式：channel还是mutex。<strong>选择的依据是他们的能力/特性：channel的能力是让数据流动起来，擅长的是数据流动的场景</strong>，《Channel or Mutex》中给了3个数据流动的场景：</p>
+<ol>
+<li>传递数据的所有权，即把某个数据发送给其他协程</li>
+<li>分发任务，每个任务都是一个数据</li>
+<li>交流异步结果，结果是一个数据</li>
+</ol>
+<p><strong>mutex的能力是数据不动，某段时间只给一个协程访问数据的权限擅长数据位置固定的场景</strong>，《Channel or Mutex》中给了2个数据不动场景：</p>
+<ol>
+<li>缓存</li>
+<li>状态，我们银行例子中的<code>map</code>就是一种状态</li>
+</ol>
+<p><strong>提供解决并发问题的一个思路</strong>：</p>
+<ol>
+<li>先找到数据的流动，并且还要画出来，数据流动的路径换成channel，channel的两端设计成协程</li>
+<li>基于画出来的图设计简要的channel方案，代码需要做什么</li>
+<li>这个方案是不是有点复杂，是不是用Mutex更好一点？设计一个简要的Mutex方案，对比&amp;选择易做的、高效的</li>
+</ol>
+<h3 id="channel-mutex思维"><a href="#channel-mutex思维" class="headerlink" title="channel + mutex思维"></a>channel + mutex思维</h3><p>面对并发问题，除了<strong>channel or mutex</strong>，你还有另外一个选择：<strong>channel plus mutex</strong>。</p>
+<p>一个大并发问题，可以分解成很多小的并发问题，每个小的并发都可以单独选型：channel or mutex。但对于整个大的问题，通常不是channel or mutex，而是channel plus mutex。</p>
+<p><em>如果你是认为是channel and mutex也行，但我更喜欢plus，体现相互配合</em>。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>读到这里，感觉这篇文章头重脚轻，channel的讲了很多，而channel和mutex的选择却讲的很少。在channel和mutex的选择，实际并没有一个固定答案，也没有固定的方法，但提供了一个简单的思路：设计出channel和Mutex的简单方案，然后<strong>选择最适合当前业务、问题的</strong>那个。</p>
+<p><strong>思考比结论更重要，希望你有所收获</strong>：</p>
+<ol>
+<li>关注数据的流动，就可以使用channel解决并发问题。</li>
+<li>不流动的数据，如果存在并发访问，尝试使用sync.Mutex保护数据。</li>
+<li>channel不一定某个并发问题的最优解。</li>
+<li>不要害怕、拒绝使用mutex，如果mutex是问题的最优解，那就大胆使用。</li>
+<li>对于大问题，channel plus mutex也许才是更好的方案。</li>
+</ol>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li>《<a target="_blank" rel="noopener" href="https://golang.org/doc/effective_go.html#sharing">Effective Go</a>》，<a target="_blank" rel="noopener" href="https://golang.org/doc/effective_go.html#sharing">https://golang.org/doc/effective_go.html#sharing</a></li>
+<li>《<a target="_blank" rel="noopener" href="https://github.com/golang/go/wiki/Mutex">Mutex Or Channel</a>》，<a target="_blank" rel="noopener" href="https://github.com/golang/go/wiki/MutexOrChannel">https://github.com/golang/go/wiki/MutexOrChannel</a></li>
+</ol>
+<h3 id="文章推荐"><a href="#文章推荐" class="headerlink" title="文章推荐"></a>文章推荐</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/68FGjm7PFN5VbVF0zL-PlQ">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UpYbmFTowjCPU83W3DxP6Q">Golang并发的次优选择：sync包</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/14/golang-channel-and-mutex/">http://lessisbetter.site/2019/01/14/golang-channel-and-mutex/</a></li>
+</ol>
+</blockquote>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
+
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+
+
+<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/04/golang-pkg-sync/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/01/04/golang-pkg-sync/" class="post-title-link" itemprop="url">Golang并发的次优选择：sync包</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-04 21:31:48" itemprop="dateCreated datePublished" datetime="2019-01-04T21:31:48+08:00">2019-01-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。</p>
+<p><a target="_blank" rel="noopener" href="https://golang.org/pkg/sync/">sync包</a>提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步/并发操作最好选用通道和通信。</p>
+<p>sync包提供了：</p>
+<ol>
+<li>Mutex：互斥锁</li>
+<li>RWMutex：读写锁</li>
+<li>WaitGroup：等待组</li>
+<li>Once：单次执行</li>
+<li>Cond：信号量</li>
+<li>Pool：临时对象池</li>
+<li>Map：自带锁的map</li>
+</ol>
+<p>这篇文章是sync包的入门文章，所以只介绍常用的结构和方法：<code>Mutex</code>、<code>RWMutex</code>、<code>WaitGroup</code>、<code>Once</code>，而<code>Cond</code>、<code>Pool</code>和<code>Map</code>留给大家自行探索，或有需求再介绍。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/04/golang-pkg-sync/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/20/golang-simple-goroutine-pool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/12/20/golang-simple-goroutine-pool/" class="post-title-link" itemprop="url">Golang并发模型：轻松入门协程池</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-20 12:54:28" itemprop="dateCreated datePublished" datetime="2018-12-20T12:54:28+08:00">2018-12-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>goroutine是非常轻量的，不会暂用太多资源，基本上有多少任务，我们可以开多少goroutine去处理。但有时候，我们还是想控制一下。</p>
+<p>比如，我们有A、B两类工作，不想把太多资源花费在B类务上，而是花在A类任务上。对于A，我们可以来1个开一个goroutine去处理，对于B，我们可以使用一个协程池，协程池里有5个线程去处理B类任务，这样B消耗的资源就不会太多。</p>
+<p>控制使用资源并不是协程池目的，<strong>使用协程池是为了更好并发、程序鲁棒性、容错性等</strong>。废话少说，快速入门协程池才是这篇文章的目的。</p>
+<p><strong>协程池指的是预先分配固定数量的goroutine处理相同的任务</strong>，和线程池是类似的，不同点是协程池中处理任务的是协程，线程池中处理任务的是线程。</p>
+<h3 id="最简单的协程池模型"><a href="#最简单的协程池模型" class="headerlink" title="最简单的协程池模型"></a>最简单的协程池模型</h3><p><img src="http://img.lessisbetter.site/2018-12-simple-goroutine-pool.png" alt="简单协程池模型"></p>
+<p>上面这个图展示了最简单的协程池的样子。先<strong>把协程池作为一个整体看，它使用2个通道，左边的<code>jobCh</code>是任务通道，任务会从这个通道中流进来，右边的<code>retCh</code>是结果通道，协程池处理任务后得到的结果会写入这个通道</strong>。至于协程池中，有多少协程处理任务，这是外部不关心的。</p>
+<p>看一下协程池内部，图中画了5个goroutine，实际goroutine的数量是依具体情况而定的。<strong>协程池内每个协程都从<code>jobCh</code>读任务、处理任务，然后将结果写入到<code>retCh</code>。</strong></p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>模型看懂了，看个小例子吧。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">workerPool</span><span class="params">(n <span class="keyword">int</span>, jobCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>, retCh <span class="keyword">chan</span>&lt;- <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; n; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> worker(i, jobCh, retCh)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">worker</span><span class="params">(id <span class="keyword">int</span>, jobCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>, retCh <span class="keyword">chan</span>&lt;- <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	cnt := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> job := <span class="keyword">range</span> jobCh &#123;</span><br><span class="line">		cnt++</span><br><span class="line">		ret := fmt.Sprintf(<span class="string">&quot;worker %d processed job: %d, it&#x27;s the %dth processed by me.&quot;</span>, id, job, cnt)</span><br><span class="line">		retCh &lt;- ret</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>workerPool()</code>会创建1个简单的协程池，协程的数量可以通入参数<code>n</code>执行，并且还指定了<code>jobCh</code>和<code>retCh</code>两个参数。</p>
+<p><code>worker()</code>是协程池中的协程，入参分布是它的ID、job通道和结果通道。使用<code>for-range</code>从<code>jobCh</code>读取任务，直到<code>jobCh</code>关闭，然后一个最简单的任务：生成1个字符串，证明自己处理了某个任务，并把字符串作为结果写入<code>retCh</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	jobCh := genJob(<span class="number">10000</span>)</span><br><span class="line">	retCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>, <span class="number">10000</span>)</span><br><span class="line">	workerPool(<span class="number">5</span>, jobCh, retCh)</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	<span class="built_in">close</span>(retCh)</span><br><span class="line">	<span class="keyword">for</span> ret := <span class="keyword">range</span> retCh &#123;</span><br><span class="line">		fmt.Println(ret)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">genJob</span><span class="params">(n <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	jobCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">200</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; n; i++ &#123;</span><br><span class="line">			jobCh &lt;- i</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">close</span>(jobCh)</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> jobCh</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>main()</code>启动<code>genJob</code>获取存放任务的通道<code>jobCh</code>，然后创建<code>retCh</code>，它的缓存空间是200，并使用<code>workerPool</code>启动一个有5个协程的协程池。1s之后，关闭<code>retCh</code>，然后开始从<code>retCh</code>中读取协程池处理结果，并打印。</p>
+<p><code>genJob</code>启动一个协程，并生产n个任务，写入到<code>jobCh</code>。</p>
+<p>示例运行结果如下，一共产生了10个任务，显示大部分工作都被<code>worker 2</code>这个协程抢走了，如果我们设置的任务成千上万，协程池长时间处理任务，每个协程处理的工作数量就会均衡很多。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜ go run simple_goroutine_pool.go</span><br><span class="line">worker 2 processed job: 4</span><br><span class="line">worker 2 processed job: 5</span><br><span class="line">worker 2 processed job: 6</span><br><span class="line">worker 2 processed job: 7</span><br><span class="line">worker 2 processed job: 8</span><br><span class="line">worker 2 processed job: 9</span><br><span class="line">worker 0 processed job: 1</span><br><span class="line">worker 3 processed job: 2</span><br><span class="line">worker 4 processed job: 3</span><br><span class="line">worker 1 processed job: 0</span><br></pre></td></tr></table></figure>
+<h3 id="回顾"><a href="#回顾" class="headerlink" title="回顾"></a>回顾</h3><p>最简单的协程池模型就这么简单，再回头看下协程池及周边由哪些组成：</p>
+<ol>
+<li><strong>协程池内的一定数量的协程。</strong></li>
+<li><strong>任务队列</strong>，即<code>jobCh</code>，存在协程池不能立即处理任务的情况，所以需要队列把任务先暂存。</li>
+<li><strong>结果队列</strong>，即<code>retCh</code>，同上，协程池处理任务的结果，也存在不能被下游立刻提取的情况，要暂时保存。</li>
+</ol>
+<p><strong>协程池最简要（核心）的逻辑是所有协程从任务读取任务，处理后把结果存放到结果队列。</strong></p>
+<h3 id="示例源码"><a href="#示例源码" class="headerlink" title="示例源码"></a>示例源码</h3><p>本文所有示例源码，及历史文章、代码都存储在Github：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/tree/master/goroutine_pool">https://github.com/Shitaibin/golang_step_by_step/tree/master/goroutine_pool</a></p>
+<h3 id="Go并发系列文章"><a href="#Go并发系列文章" class="headerlink" title="Go并发系列文章"></a>Go并发系列文章</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/68FGjm7PFN5VbVF0zL-PlQ">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg">Golang并发模型：轻松入门select</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZfBcxvqiyks_s7cAD-zGCw">Golang并发模型：select进阶</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/fINhzg3eNi9YFi5qZ_JzGA">Golang并发模型：轻松入门协程池</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/12/11/gongzhonghao-articles/">http://lessisbetter.site/2018/12/11/gongzhonghao-articles/</a></li>
+</ol>
+</blockquote>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
+
+<img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
+
+
+
+
+<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/17/golang-selete-advance/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/12/17/golang-selete-advance/" class="post-title-link" itemprop="url">Golang并发模型：select进阶</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-17 20:22:09" itemprop="dateCreated datePublished" datetime="2018-12-17T20:22:09+08:00">2018-12-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。</p>
+<p>前一篇文章<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg">《Golang并发模型：轻松入门select》</a>介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。</p>
+<ol>
+<li><code>nil</code>的通道永远阻塞</li>
+<li>如何跳出<code>for-select</code></li>
+<li><code>select&#123;&#125;</code>阻塞</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/12/17/golang-selete-advance/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/13/golang-slect/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/12/13/golang-slect/" class="post-title-link" itemprop="url">Golang并发模型：轻松入门select</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-13 19:04:38" itemprop="dateCreated datePublished" datetime="2018-12-13T19:04:38+08:00">2018-12-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>之前的文章都提到过，<strong>Golang的并发模型都来自生活，select也不例外</strong>。举个例子：我们都知道一句话，“吃饭睡觉打豆豆”，这一句话里包含了3件事：</p>
+<ol>
+<li>妈妈喊你吃饭，你去吃饭。</li>
+<li>时间到了，要睡觉。</li>
+<li>没事做，打豆豆。</li>
+</ol>
+<p>在Golang里，select就是干这个事的：到吃饭了去吃饭，该睡觉了就睡觉，没事干就打豆豆。</p>
+<p>结束发散，我们看下select的功能，以及它能做啥。</p>
+<h3 id="select功能"><a href="#select功能" class="headerlink" title="select功能"></a>select功能</h3><p><strong>在多个通道上进行读或写操作，让函数可以处理多个事情，但1次只处理1个。以下特性也都必须熟记于心：</strong></p>
+<ol>
+<li>每次执行select，都会只执行其中1个case或者执行default语句。</li>
+<li>当没有case或者default可以执行时，select则阻塞，等待直到有1个case可以执行。</li>
+<li>当有多个case可以执行时，则随机选择1个case执行。</li>
+<li><code>case</code>后面跟的必须是读或者写通道的操作，否则编译出错。</li>
+</ol>
+<p>select长下面这个样子，由<code>select</code>和<code>case</code>组成，<code>default</code>不是必须的，如果没其他事可做，可以省略<code>default</code>。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	readCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">1</span>)</span><br><span class="line">	writeCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	y := <span class="number">1</span></span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> x := &lt;-readCh:</span><br><span class="line">		fmt.Printf(<span class="string">&quot;Read %d\n&quot;</span>, x)</span><br><span class="line">	<span class="keyword">case</span> writeCh &lt;- y:</span><br><span class="line">		fmt.Printf(<span class="string">&quot;Write %d\n&quot;</span>, y)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		fmt.Println(<span class="string">&quot;Do what you want&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们创建了<code>readCh</code>和<code>writeCh</code>2个通道：</p>
+<ol>
+<li><code>readCh</code>中没有数据，所以<code>case x := &lt;-readCh</code>读不到数据，所以这个case不能执行。</li>
+<li><code>writeCh</code>是带缓冲区的通道，它里面是空的，可以写入1个数据，所以<code>case writeCh &lt;- y</code>可以执行。</li>
+<li>有<code>case</code>可以执行，所以<code>default</code>不会执行。</li>
+</ol>
+<p>这个测试的结果是</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go run example.go</span><br><span class="line">Write 1</span><br></pre></td></tr></table></figure>
+
+<h3 id="用打豆豆实践select"><a href="#用打豆豆实践select" class="headerlink" title="用打豆豆实践select"></a>用打豆豆实践select</h3><p>来，我们看看select怎么实现打豆豆：<code>eat()</code>函数会启动1个协程，该协程先睡几秒，事件不定，然后喊你吃饭，<code>main()</code>函数中的<code>sleep</code>是个定时器，每3秒喊你吃1次饭，<code>select</code>则处理3种情况：</p>
+<ol>
+<li>从<code>eatCh</code>中读到数据，代表有人喊我吃饭，我要吃饭了。</li>
+<li>从<code>sleep.C</code>中读到数据，代表闹钟时间到了，我要睡觉。</li>
+<li><code>default</code>是，没人喊我吃饭，也不到时间睡觉，我就打豆豆。</li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">	<span class="string">&quot;math/rand&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">eat</span><span class="params">()</span> <span class="title">chan</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span> <span class="params">()</span></span>&#123;</span><br><span class="line">		rand.Seed(time.Now().UnixNano())</span><br><span class="line">		time.Sleep(time.Duration(rand.Intn(<span class="number">5</span>)) * time.Second)</span><br><span class="line">		out &lt;- <span class="string">&quot;Mom call you eating&quot;</span></span><br><span class="line">		<span class="built_in">close</span>(out)</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	eatCh := eat()</span><br><span class="line">	sleep := time.NewTimer(time.Second * <span class="number">3</span>)</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> s := &lt;-eatCh:</span><br><span class="line">		fmt.Println(s)</span><br><span class="line">	<span class="keyword">case</span> &lt;- sleep.C:</span><br><span class="line">		fmt.Println(<span class="string">&quot;Time to sleep&quot;</span>)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		fmt.Println(<span class="string">&quot;Beat DouDou&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于前2个case都要等待一会，所以都不能执行，所以执行<code>default</code>，运行结果一直是打豆豆：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go run x.go</span><br><span class="line">Beat DouDou</span><br></pre></td></tr></table></figure>
+<p>现在我们不打豆豆了，你把<code>default</code>和下面的打印注释掉，多运行几次，有时候会吃饭，有时候会睡觉，比如这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ go run x.go</span><br><span class="line">Mom call you eating</span><br><span class="line">$ go run x.go</span><br><span class="line">Time to sleep</span><br><span class="line">$ go run x.go</span><br><span class="line">Time to sleep</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>select很简单但功能很强大，它让golang的并发功能变的更强大。这篇文章写的啰嗦了点，重点是为下一篇文章做铺垫，下一篇我们将介绍下select的高级用法。</strong></p>
+<p><strong>select的应用场景很多，让我总结一下，放在下一篇文章中吧。</strong></p>
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><p>可在Github查看：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/tree/master/golang_select">https://github.com/Shitaibin/golang_step_by_step/tree/master/golang_select</a></p>
+<h3 id="并发系列文章推荐"><a href="#并发系列文章推荐" class="headerlink" title="并发系列文章推荐"></a>并发系列文章推荐</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg3MTA0NDQ1OQ==&mid=2247483671&idx=1&sn=1706ffa6deee44a367c34ef84448f55f&scene=21#wechat_redirect">Golang并发模型：轻松入门流水线模型</a></li>
+<li> <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg3MTA0NDQ1OQ==&mid=2247483680&idx=1&sn=de463ebbd088c0acf6c2f0b5f179f38d&scene=21#wechat_redirect">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a href="http://lessisbetter.site/2018/12/13/golang-slect/">Golang并发模型：轻松入门select</a></li>
+</ul>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg">https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg</a></li>
+</ol>
+</blockquote>
+<p><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" alt="一起学Golang-分享有料的Go语言技术"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/11/gongzhonghao-articles/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/12/11/gongzhonghao-articles/" class="post-title-link" itemprop="url">公众号文章列表</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-11 19:50:56" itemprop="dateCreated datePublished" datetime="2018-12-11T19:50:56+08:00">2018-12-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>公众号：一起学Golang，分享有料的Go语言技术。以下是公众号历史文章，希望对你有用：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/68FGjm7PFN5VbVF0zL-PlQ">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg">Golang并发模型：轻松入门select</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZfBcxvqiyks_s7cAD-zGCw">Golang并发模型：select进阶</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/fINhzg3eNi9YFi5qZ_JzGA">Golang并发模型：轻松入门协程池</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/UpYbmFTowjCPU83W3DxP6Q">Golang并发的次优选择：sync包</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/JcED2qgJEj8LaBckVZBhDA">Golang并发：再也不愁选channel还是选锁</a></li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/12/11/gongzhonghao-articles/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/12/11/ethereum-design-of-txpool/" class="post-title-link" itemprop="url">以太坊源码分析：交易缓冲池txpool</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-11 10:51:00" itemprop="dateCreated datePublished" datetime="2018-12-11T10:51:00+08:00">2018-12-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：</p>
+<ol>
+<li>txpool的在交易中的位置和作用。</li>
+<li>txpool的功能，核心组成部分queued和pending。</li>
+<li>txpool如何实现它的功能。</li>
+<li>txpool源码的重要关注点。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/12/11/ethereum-design-of-txpool/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/12/02/golang-exit-goroutine-in-3-ways/" class="post-title-link" itemprop="url">Golang并发模型：并发协程的优雅退出</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-02 11:26:04" itemprop="dateCreated datePublished" datetime="2018-12-02T11:26:04+08:00">2018-12-02</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>goroutine作为Golang并发的核心，我们不仅要关注它们的创建和管理，当然还要关注如何合理的退出这些协程，不（合理）退出不然可能会造成阻塞、panic、程序行为异常、数据结果不正确等问题。这篇文章介绍，如何合理的退出goroutine，减少软件bug。</p>
+<p>goroutine在退出方面，不像线程和进程，不能通过某种手段<strong>强制</strong>关闭它们，只能等待goroutine主动退出。但也无需为退出、关闭goroutine而烦恼，下面就介绍3种优雅退出goroutine的方法，只要采用这种最佳实践去设计，基本上就可以确保goroutine退出上不会有问题，尽情享用。</p>
+<h3 id="1：使用for-range退出"><a href="#1：使用for-range退出" class="headerlink" title="1：使用for-range退出"></a>1：使用for-range退出</h3><p><code>for-range</code>是使用频率很高的结构，常用它来遍历数据，**<code>range</code>能够感知channel的关闭，当channel被发送数据的协程关闭时，range就会结束**，接着退出for循环。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/12/02/golang-exit-goroutine-in-3-ways/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/11/28/golang-pipeline-fan-model/" class="post-title-link" itemprop="url">Golang并发模型：轻松入门流水线FAN模式</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-28 21:17:30" itemprop="dateCreated datePublished" datetime="2018-11-28T21:17:30+08:00">2018-11-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>前一篇文章<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw">《Golang并发模型：轻松入门流水线模型》</a>，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。</p>
+<h3 id="FAN-IN和FAN-OUT模式"><a href="#FAN-IN和FAN-OUT模式" class="headerlink" title="FAN-IN和FAN-OUT模式"></a>FAN-IN和FAN-OUT模式</h3><p>Golang的并发模式灵感来自现实世界，这些模式是通用的，毫无例外，FAN模式也是对当前世界的模仿。<strong>以汽车组装为例，汽车生产线上有个阶段是给小汽车装4个轮子，可以把这个阶段任务交给4个人同时去做，这4个人把轮子都装完后，再把汽车移动到生产线下一个阶段。这个过程中，就有任务的分发，和任务结果的收集。其中任务分发是FAN-OUT，任务收集是FAN-IN。</strong></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/11/28/golang-pipeline-fan-model/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+</body>
+</html>

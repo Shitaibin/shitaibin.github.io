@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="云原生、Go语言、区块链">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Go语言充电站">
+<meta property="og:url" content="http://lessisbetter.site/page/8/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="云原生、Go语言、区块链">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="云原生 k8s kubernetes 区块链 Go语言 后端 技术 人生 编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/page/8/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/03/03/golang-channel-design-and-source/" class="post-title-link" itemprop="url">深入理解channel：设计+源码</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-03 15:32:15" itemprop="dateCreated datePublished" datetime="2019-03-03T15:32:15+08:00">2019-03-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>channel是大家在Go中用的最频繁的特性，也是Go最自豪的特性之一，你有没有思考过：</p>
+<ul>
+<li>Why：为什么要设计channel？</li>
+<li>What：channel是什么样的？</li>
+<li>How：channel是如何实现的？</li>
+</ul>
+<p>这篇文章，就来回答这3个问题。</p>
+<h3 id="channel解决什么问题？"><a href="#channel解决什么问题？" class="headerlink" title="channel解决什么问题？"></a>channel解决什么问题？</h3><p>在Golang诞生之前，各编程语言都使用多线程进行编程，但多线程复杂、混乱、难以管理，对开发者并不是多么友好。</p>
+<p>Golang是Google为了解决高并发搜索而设计的，它们想使用简单的方式，高效解决并发问题，最后做成了，然后又把Golang开源了出来，以及到处推广，所以Golang自从诞生之初，就风风火火。</p>
+<p>从Golang文档中，我们可以知道，为啥Golang设计了channel，以及channel解决了什么问题？</p>
+<p><a target="_blank" rel="noopener" href="https://golang.org/doc/#go_concurrency_patterns">Go Concurrency Patterns:</a></p>
+<blockquote>
+<p>Concurrency is the key to designing high performance network services. Go’s concurrency primitives (goroutines and channels) provide a simple and efficient means of expressing concurrent execution. In this talk we see how tricky concurrency problems can be solved gracefully with simple Go code.</p>
+</blockquote>
+<p>Golang使用<code>goroutine</code>和<code>channel</code>简单、高效的解决并发问题，<strong>channel解决的是goroutine之间的通信</strong>。</p>
+<h3 id="channel是怎么设计的？"><a href="#channel是怎么设计的？" class="headerlink" title="channel是怎么设计的？"></a>channel是怎么设计的？</h3><p>我们以为channel是一个通道：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-pipeline.jpeg"></p>
+<p>实际上，channel的内在是这样的：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-channel_design.png"></p>
+<p>channel设计涉及的数据结构很简单，这就是<strong>channel的本质</strong>：</p>
+<ul>
+<li>基于数组的循环队列，有缓冲的channel用它暂存数据</li>
+<li>基于链表的单向队列，用于保存阻塞在此channel上的goroutine</li>
+<li>锁，用于实现goroutine对channel并发安全，保证某一时刻只有1个goroutine操作channel，</li>
+</ul>
+<p>我本来想自己码一篇channel的设计文章，但已经有大牛：Kavya深入分析了Channel的设计，我也相信自己写的肯定不如他好，所以我把<strong>Kavya在Gopher Con上的PPT推荐给你，如果你希望成为Go大牛，你一定要读一下，现在请收藏好</strong>。</p>
+<p>Kavya在Gopher Con上的演讲主题是：理解channel，他并不是教你如何使用channel，而是<strong>把channel的设计和goroutine的调度结合起来，从内在方式向你介绍</strong>。这份PPT足足有80页，包含了大量的动画，非常容易理解，你会了解到：</p>
+<ul>
+<li>channel的创建</li>
+<li>各种场景的发送和接收</li>
+<li>goroutine的调度</li>
+<li>goroutine的阻塞和唤醒</li>
+<li>channel和goroutine在select操作下</li>
+</ul>
+<p>Kavya的PPT应该包含了channel的80%的设计思想，但也有一些缺失，需要你阅读源码：</p>
+<ul>
+<li>channel关闭时，gorontine的处理</li>
+<li>创建channel时，不同的创建方法</li>
+<li>读channel时的非阻塞操作</li>
+<li>…</li>
+</ul>
+<p>PPT在此：<a target="_blank" rel="noopener" href="https://speakerdeck.com/kavya719/understanding-channels">Understanding Channels</a>，如果你有心，还可以在这个网站看到Kavya关于goroutine调度的PPT，福利哦😝。(访问不了请翻墙，或阅读原文从博客文章最下面看Github备份)</p>
+<p>微信二维码跳转：<br><img src="http://img.lessisbetter.site/2019-03-channel_design_qrcode.png"></p>
+<h3 id="channel是怎么实现的？"><a href="#channel是怎么实现的？" class="headerlink" title="channel是怎么实现的？"></a>channel是怎么实现的？</h3><p><a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/chan.go">chan.go</a>是channel的主要实现文件，只有700行，十分佩服Go团队，<strong>实现的如此精简，却发挥如此大的作用</strong>！！！</p>
+<p>看完Kavya的PPT，你已经可以直接看channel的源码了，如果有任何问题，思考一下你也可以想通，如果有任何问题可博客文章留言或公众号私信进行讨论。</p>
+<p>另外，推荐一篇在Medium（国外高质量文章社区）上获得500+赞的源码分析文章，非常详细。</p>
+<p>文章链接：<a target="_blank" rel="noopener" href="https://codeburst.io/diving-deep-into-the-golang-channels-549fd4ed21a8">Diving deep into the golang channels</a></p>
+<p>微信二维码跳转：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-channel_source_qrcode.png"></p>
+<h3 id="我学到了什么？"><a href="#我学到了什么？" class="headerlink" title="我学到了什么？"></a>我学到了什么？</h3><p>阅读channel源码我学到了一些东西，分享给大家。</p>
+<p>channel的4个特性的实现：</p>
+<ul>
+<li>channel的goroutine安全，是通过mutex实现的。</li>
+<li>channel的FIFO，是通过循环队列实现的。</li>
+<li>channel的通信：在goroutine间传递数据，是通过仅共享hchan+数据拷贝实现的。</li>
+<li>channel的阻塞是通过goroutine自己挂起，唤醒goroutine是通过对方goroutine唤醒实现的。</li>
+</ul>
+<p>channel的其他实现：</p>
+<ul>
+<li>发送goroutine是可以访问接收goroutine的内存空间的，接收goroutine也是可以直接访问发送goroutine的内存空间的，看<code>sendDirect</code>、<code>recvDirect</code>函数。</li>
+<li>无缓冲的channel始终都是直接访问对方goroutine内存的方式，把手伸到别人的内存，把数据放到接收变量的内存，或者从发送goroutine的内存拷贝到自己内存。省掉了对方再加锁获取数据的过程。</li>
+<li>有缓冲的channel在缓冲区空时，接收数据的goroutine无法读数据，会把自己阻塞放到接收链表，当发送goroutine到来时，发送goroutine直接使用<code>sendDirect</code>把数据放到第一个阻塞的接收goroutine，然后把它唤醒。<code>recvDirect</code>在有缓冲区通道的情况，反过来。</li>
+<li>接收goroutine读不到数据和发送goroutine无法写入数据时，是把自己挂起的（创建一个节点，插入到双向链表的尾部），这就是channel的阻塞操作。阻塞的接收goroutine是由发送goroutine唤醒的，阻塞的发送goroutine是由接收goroutine唤醒的，看<code>gopark</code>、<code>goready</code>函数在<code>chan.go</code>中的调用。</li>
+<li>接收goroutine当channel关闭时，读channel会得到0值，并不是channel保存了0值，而是它发现channel关闭了，把接收数据的变量的值设置为0值。</li>
+<li>channel的操作/调用，是通过reflect实现的，可以看reflect包的<code>makechan</code>, <code>chansend</code>, <code>chanrecv</code>函数。</li>
+<li>channel关闭时，所有在channel上读数据的g都会收到通知。其实并非关闭channel的g给每个接收的g发送信号，而是关闭channel的g，把channel关闭后，会唤醒每一个读取channel的g，它们发现channel关闭了，把待读的数据设置为零值并返回，所以这并非一次性的事件通知，。看到这种本质，你应当理解下面这种奇淫巧计：这种“通知”效果并不一定需要接收数据的g先启动，先把channel关闭了，然后启动读取channel的g依然是可行的，代码无需任何改变，任何逻辑也都无需改变，它会发现channel关闭了，然后走原来的逻辑。</li>
+</ul>
+<p>如果阅读<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/chan_test.go">chan_test.go</a>还会学到一些骚操作，比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> &lt;-stopCh &#123;</span><br><span class="line">    <span class="comment">// do stop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而不是写成：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> stop := &lt;-stopCh; stop &#123;</span><br><span class="line">    <span class="comment">// do stop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这就是关于channel的设计和实现的分享，希望你通过Kavya的PPT和代码阅读能深入了解channel。</p>
+<h3 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h3><ul>
+<li>chan.go：<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/chan.go">https://github.com/golang/go/blob/master/src/runtime/chan.go</a></li>
+<li>chan_test.go：<a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/runtime/chan_test.go">https://github.com/golang/go/blob/master/src/runtime/chan_test.go</a></li>
+<li>Understanding channels在Github的备份: <a target="_blank" rel="noopener" href="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/files/GopherCon_v10.0.pdf">https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/files/GopherCon_v10.0.pdf</a></li>
+</ul>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a target="_blank" rel="noopener" href="http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/">http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/01/linux-location-of-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/03/01/linux-location-of-process/" class="post-title-link" itemprop="url">查看Linux运行程序的文件路径</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-01 19:15:29" itemprop="dateCreated datePublished" datetime="2019-03-01T19:15:29+08:00">2019-03-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>通过ps及top命令查看进程信息时，看不到进程的绝对路径，可以使用：<code>sudo ls -l /proc/PID</code>查看。</p>
+<p>Linux在启动一个进程时，系统会在/proc下创建一个以PID命名的文件夹，在该文件夹下会有该进程的信息，其中包括一个名为exe的文件即记录了绝对路径。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-proc_path.png"></p>
+<h2 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题"></a>解决的问题</h2><p>发现服务器上并没有运行耗CPU的服务，但top查看时，总存在占用CPU 60%的进程，kill一段时间后，又会出现新进程，名字变化而已，并且名字类似系统服务的名字，怀疑是恶意程序（挖矿木马）。</p>
+<p>找到创建该进程的父进程，杀死父进程后，再杀死此恶意程序，最后从磁盘删除。</p>
+<p>在top中，按f选择要显示的列，通过向下箭头找到PPID，按空格选中，按q退出，看到恶意进程的父进程。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-top_f.png"></p>
+<p>或使用<code>ps -ef | grep 进程号/程序名</code>，第3列为父进程。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-ps_ef.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/02/27/good-resource-poket/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/02/27/good-resource-poket/" class="post-title-link" itemprop="url">好文收藏夹</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-02-27 09:43:24" itemprop="dateCreated datePublished" datetime="2019-02-27T09:43:24+08:00">2019-02-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>这是一个收藏夹，收藏每一篇都仔细阅读过的好文章。</p>
+<h2 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h2><h3 id="Go"><a href="#Go" class="headerlink" title="Go"></a>Go</h3><ol>
+<li><a target="_blank" rel="noopener" href="http://xargin.com/go-timer/">曹大：Go 系列文章5 : 定时器</a>，相当深刻，学完还讨论了一下</li>
+</ol>
+<h2 id="分布式"><a href="#分布式" class="headerlink" title="分布式"></a>分布式</h2><h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000019360335#articleHeader0">当我们在谈论高并发的时候究竟在谈什么?</a></li>
+</ol>
+<h3 id="分布式一致性"><a href="#分布式一致性" class="headerlink" title="分布式一致性"></a>分布式一致性</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://danielw.cn/network-failure-models">分布式系统中的网络模型和故障模型</a></li>
+<li><a target="_blank" rel="noopener" href="https://danielw.cn/history-of-distributed-systems-1">分布式系统一致性的发展历史 (一)</a></li>
+<li><a target="_blank" rel="noopener" href="https://danielw.cn/history-of-distributed-systems-2">分布式系统一致性的发展历史 (二)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.codedump.info/post/20180922-etcd-raft/">etcd Raft库解析</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/51063866">etcd raft 设计与实现《一》</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/51065416">etcd raft 设计与实现《二》</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.betacat.io/post/raft-implementation-in-etcd/">Raft在etcd中的实现</a></li>
+</ol>
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><h3 id="P2P"><a href="#P2P" class="headerlink" title="P2P"></a>P2P</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://colobu.com/2018/03/26/distributed-hash-table/">DHT 分布式哈希表</a></li>
+</ol>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><h3 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h3><ul>
+<li>Commit规范：<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html">Commit message 和 Change log 编写指南</a></li>
+<li>commit检查工具：<a target="_blank" rel="noopener" href="https://github.com/conventional-changelog/commitlint">commitlint</a></li>
+<li>commit生成relase：<a target="_blank" rel="noopener" href="https://github.com/conventional-changelog/conventional-changelog">conventional-changelog</a></li>
+</ul>
+<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://colobu.com/2015/10/31/How-to-Clear-RAM-Memory-Cache-Buffer-and-Swap-Space-on-Linux/">在 Linux 上如何清除内存的 Cache、Buffer 和交换空间</a></li>
+</ul>
+<h2 id="云原生"><a href="#云原生" class="headerlink" title="云原生"></a>云原生</h2><h3 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/87602649">kubelet之cri演变史</a>，介绍了docker的演变，同时也就能清楚为何现在containerd和docker(engine)能平起平坐了，k8s这是要把docker(engine)直接踢出去了。</li>
+</ul>
+<h3 id="Kubernetes"><a href="#Kubernetes" class="headerlink" title="Kubernetes"></a>Kubernetes</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/5J0Ojq95d3Yj1u36e3WQfQ">Kubernetes 调度详解</a>，讲清楚了宏观上的调度过程。</li>
+</ul>
+<h3 id="K8s-Operator"><a href="#K8s-Operator" class="headerlink" title="K8s Operator"></a>K8s Operator</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Ly6X3bSmbHvfJWEqGyLEdg">深入理解Kubernetes Operator</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.google.com/blog/products/containers-kubernetes/best-practices-for-building-kubernetes-operators-and-stateful-apps">Google云编写OPerator的最佳实践</a></li>
+<li><a target="_blank" rel="noopener" href="https://coreos.com/blog/introducing-operators.html">Coreos提出Operator</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/02/24/go-law-of-reflect/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/02/24/go-law-of-reflect/" class="post-title-link" itemprop="url">Go高级实践：反射3定律</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-02-24 18:28:52" itemprop="dateCreated datePublished" datetime="2019-02-24T18:28:52+08:00">2019-02-24</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>各位学习Go语言的朋友，周末好，这次跟大家聊一聊Go语言的一个高级话题：反射。</p>
+<p>这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。</p>
+<p><strong>这篇文章主要介绍反射和接口的关系，解释内在的关系和原理</strong>。</p>
+<p>反射来自元编程，指通过类型检查变量本身数据结构的方式，只有部分编程语言支持反射。</p>
+<h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><p>反射构建在类型系统之上，Go是静态类型语言，每一个变量都有<strong>静态类型</strong>，在编译时就确定下来了。</p>
+<p>比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MyInt <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i <span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> j MyInt</span><br></pre></td></tr></table></figure>
+
+<p>i和j的<strong>底层类型</strong>都是<code>int</code>，但i的静态类型是<code>int</code>，j的静态类型是<code>MyInt</code>，这两个是不同类型，是不能直接赋值的，需要类型强制转换。</p>
+<p>接口类型比较特殊，接口类型的变量被多种对象类型赋值，看起来像动态语言的特性，但变量类型始终是接口类型，Go是静态的。举例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> r io.Reader</span><br><span class="line">r = os.Stdin</span><br><span class="line">r = bufio.NewReader(r)</span><br><span class="line">r = <span class="built_in">new</span>(bytes.Buffer)</span><br><span class="line"><span class="comment">// and so on</span></span><br></pre></td></tr></table></figure>
+
+<p>虽然r被3种类型的变量赋值，但r的类型始终是<code>io.Reader</code>。</p>
+<blockquote>
+<p>最特别：空接口<code>interface&#123;&#125;</code>的变量可以被任何类型的值赋值，但类型一直都是<code>interface&#123;&#125;</code>。</p>
+</blockquote>
+<h2 id="接口的表示"><a href="#接口的表示" class="headerlink" title="接口的表示"></a>接口的表示</h2><p>Russ Cox（Go语言创始人）在他的<a target="_blank" rel="noopener" href="https://research.swtch.com/2009/12/go-data-structures-interfaces.html">博客详细介绍了Go语言接口</a>，结论是：</p>
+<p>接口类型的变量存储的是<strong>一对数据</strong>：</p>
+<ol>
+<li>变量实际的值</li>
+<li>变量的静态类型</li>
+</ol>
+<p>例子：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> r io.Reader</span><br><span class="line">tty, err := os.OpenFile(<span class="string">&quot;/dev/tty&quot;</span>, os.O_RDWR, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">&#125;</span><br><span class="line">r = tty</span><br></pre></td></tr></table></figure>
+
+<p>r是接口类型变量，保存了<strong>值tty和tty的类型</strong><code>*os.File</code>，所以才能使用<strong>类型断言</strong>判断r保存的值的静态类型：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> w io.Writer</span><br><span class="line">w = r.(io.Writer)</span><br></pre></td></tr></table></figure>
+
+<p>虽然r中包含了tty和它的类型，包含了tty的所有函数，但r是接口类型，决定了r只能调用接口<code>io.Reader</code>中包含的函数。</p>
+<p>记住：<strong>接口变量保存的不是接口类型的值，还是英语说起来更方便：Interfaces do not hold interface values.</strong></p>
+<h2 id="反射的3条定律"><a href="#反射的3条定律" class="headerlink" title="反射的3条定律"></a>反射的3条定律</h2><h3 id="定律1：从接口值到反射对象"><a href="#定律1：从接口值到反射对象" class="headerlink" title="定律1：从接口值到反射对象"></a>定律1：从接口值到反射对象</h3><p>反射是一种检测存储在接口变量中值和类型的机制。通过<code>reflect</code>包的一些函数，可以把接口转换为反射定义的对象。</p>
+<p>掌握<code>reflect</code>包的以下函数：</p>
+<ol>
+<li><code>reflect.ValueOf(&#123;&#125;interface) reflect.Value</code>：获取某个变量的值，但值是通过<code>reflect.Value</code>对象描述的。</li>
+<li><code>reflect.TypeOf(&#123;&#125;interface) reflect.Type</code>：获取某个变量的静态类型，但值是通过<code>reflect.Type</code>对象描述的，是可以直接使用<code>Println</code>打印的。</li>
+<li><code>reflect.Value.Kind() Kind</code>：获取变量值的底层类型（类别），注意不是类型，是Int、Float，还是Struct，还是Slice，<a target="_blank" rel="noopener" href="https://golang.org/src/reflect/type.go?s=8302:8316#L217">具体见此</a>。</li>
+<li><code>reflect.Value.Type() reflect.Type</code>：获取变量值的类型，效果等同于<code>reflect.TypeOf</code>。</li>
+</ol>
+<p>再解释下Kind和Type的区别，比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MyInt <span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> x MyInt = <span class="number">7</span></span><br><span class="line">v := reflect.ValueOf(x)</span><br></pre></td></tr></table></figure>
+
+<p>v.Kind()得到的是Int，而Type得到是<code>MyInt</code>。</p>
+<h3 id="定律2：从反射对象到接口值"><a href="#定律2：从反射对象到接口值" class="headerlink" title="定律2：从反射对象到接口值"></a>定律2：从反射对象到接口值</h3><p>定律2是定律1的逆向过程，上面我们学了：<code>普通变量 -&gt; 接口变量 -&gt; 反射对象</code>的过程，这是从<code>反射对象 -&gt; 接口变量</code>的过程，使用的是<code>Value</code>的<code>Interface</code>函数，是把实际的值赋值给空接口变量，它的声明如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">Interface</span><span class="params">()</span> <span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>回忆一下：接口变量存储了实际的值和值的类型，<code>Println</code>可以根据接口变量实际存储的类型自动识别其值并打印。</p>
+<p>注意事项：如果Value是结构体的非导出字段，调用该函数会导致panic。</p>
+<h3 id="定律3：当反射对象所存的值是可设置时，反射对象才可修改"><a href="#定律3：当反射对象所存的值是可设置时，反射对象才可修改" class="headerlink" title="定律3：当反射对象所存的值是可设置时，反射对象才可修改"></a>定律3：当反射对象所存的值是可设置时，反射对象才可修改</h3><p>从定律1入手理解，定律3就不再那么难懂。</p>
+<p>Settability is a property of a reflection Value, and not all reflection Values have it.</p>
+<p>可设置指的是，可以通过Value设置原始变量的值。</p>
+<p>通过函数的例子思考一下可设置：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">(x <span class="keyword">int</span>)</span></span></span><br></pre></td></tr></table></figure>
+<p>在调用f的时候，传入了参数x，从函数内部修改x的值，外部的变量的值并不会发生改变，因为这种是传值，是拷贝的传递方式。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">(p *<span class="keyword">int</span>)</span></span></span><br></pre></td></tr></table></figure>
+<p>函数f的入参是指针类型，在函数内部的修改变量的值，函数外部变量的值也会跟着变化。</p>
+<p>使用反射也是这个原理，如果创建Value时传递的是变量，则Value是不可设置的。如果创建Value时传递的是变量地址，则Value是可设置的。</p>
+<p>可以使用<code>Value.CanSet()</code>检测是否可以通过此Value修改原始变量的值。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">x := <span class="number">10</span></span><br><span class="line">v1 := reflect.ValueOf(x)</span><br><span class="line">fmt.Println(<span class="string">&quot;setable:&quot;</span>, v1.CanSet())</span><br><span class="line">p := reflect.ValueOf(&amp;x)</span><br><span class="line">fmt.Println(<span class="string">&quot;setable:&quot;</span>, p.CanSet())</span><br><span class="line">v2 := p.Elem()</span><br><span class="line">fmt.Println(<span class="string">&quot;setable:&quot;</span>, v2.CanSet())</span><br></pre></td></tr></table></figure>
+
+<p>如何通过Value设置原始对象值呢？</p>
+<p><code>Value.SetXXX()</code>系列函数可设置Value中原始对象的值。</p>
+<p>系列函数有：</p>
+<ul>
+<li>Value.SetInt()</li>
+<li>Value.SetUint()</li>
+<li>Value.SetBool()</li>
+<li>Value.SetBytes()</li>
+<li>Value.SetFloat()</li>
+<li>Value.SetString()</li>
+<li>…</li>
+</ul>
+<p><strong>设置函数这么多，到底该选用哪个Set函数？</strong><br>根据<code>Value.Kind()</code>的结果去获得变量的底层类型，然后选用该类别的Set函数。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.golang.org/laws-of-reflection">https://blog.golang.org/laws-of-reflection</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/02/24/go-law-of-reflect/">http://lessisbetter.site/2019/02/24/go-law-of-reflect/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/02/16/book-recommend-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/02/16/book-recommend-1/" class="post-title-link" itemprop="url">书籍推荐1</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-02-16 21:29:33" itemprop="dateCreated datePublished" datetime="2019-02-16T21:29:33+08:00">2019-02-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Hi，各位老朋友、新朋友，好久不见，按照之前的规划，本次专题是书籍推荐，主要包含3类：</p>
+<ol>
+<li>Go语言技术书籍和资料</li>
+<li>开发人员综合技能书籍</li>
+<li>团队协作书籍</li>
+</ol>
+<h3 id="Go语言技术书籍和资料"><a href="#Go语言技术书籍和资料" class="headerlink" title="Go语言技术书籍和资料"></a>Go语言技术书籍和资料</h3><p><strong>1.《Effective Go》</strong><br>每一个Golang开发人员都应当把Effective Go多读几篇，它能帮助你理解Go、掌握Go，培养Go思维，用Go的思维去解决问题，而不是利用你已有的编程（C/C++/Java/Python）思维去写Go代码，防止写出蹩脚、笨拙的Go代码。</p>
+<p><img src="http://img.lessisbetter.site/2019-02-Effective-go.png"></p>
+<p>你可以从这篇文章中理解：</p>
+<ul>
+<li>代码格式化</li>
+<li>注释</li>
+<li>命名</li>
+<li>Go语法</li>
+</ul>
+<p>链接：<a target="_blank" rel="noopener" href="https://golang.org/doc/effective_go.html">https://golang.org/doc/effective_go.html</a></p>
+<p><strong>2.《Go语言圣经》</strong><br><img src="http://img.lessisbetter.site/2019-02-go-book.png"></p>
+<p>这是一本很好的Go语言书籍，有中文版并且开源，可以网上阅读或下载PDF。如果你的英文不是特别好，这本书可以帮助你快速入门Go语言。</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://legacy.gitbook.com/book/yar999/gopl-zh/details">https://legacy.gitbook.com/book/yar999/gopl-zh/details</a></p>
+<p><strong>3. Google</strong></p>
+<p>Google即不是书籍也不是资料，但是在查找Golang资料中最有用的工具，并且能找到很好、很有用的Go英文资料。搜索的正确姿势是：“golang topic”，优先看Golang官方（<code>*.golang.org</code>）的资料。比如我要学习reflect相关的知识，我会先看Golang博客的文章：</p>
+<p><img src="http://img.lessisbetter.site/2019-02-google-go.png"></p>
+<h3 id="综合技能"><a href="#综合技能" class="headerlink" title="综合技能"></a>综合技能</h3><p><strong>1.《软技能 代码之外的生存指南》</strong><br><img src="http://img.lessisbetter.site/2019-02-soft-skill.png"></p>
+<p><strong>技术之外必读的一本书</strong>，在理财文章推荐提到的，我们作为一个人，需要注重的是全面的发展，不能只关注技术能力的建设。《软技能》从职业篇、自我营销篇、学习篇、生产力篇、理财篇、健身篇、精神篇等7个方面，介绍软件行业从业人员所需的代码之外的技能，以及如何培养。</p>
+<p><strong>2.《高效能人士的7个习惯》</strong><br><img src="http://img.lessisbetter.site/2019-02-7-habits.png"></p>
+<p>如果你想在职业发展走的顺利，你必须注重工作效率。这本书的帮助其实不仅仅是工作，而是个人的方方面面都可以得到效率的提升。</p>
+<h3 id="团队协作书籍"><a href="#团队协作书籍" class="headerlink" title="团队协作书籍"></a>团队协作书籍</h3><p>除了个人开发者除外，我们大多数技术人都在团队之中，团队合作和生产效率是至关重要的话题。</p>
+<p>很多公司的研发流程都采用敏捷，尤其是科技巨头，如果你们已经采用了敏捷，或者即将采用敏捷，我建议好好读下下面这2本书。对于团队，带来的不仅仅是团队效率的提升，还有更高的软件质量、更高的生产力等等，对于个人，你的综合能力能不断提升，在团队中出类拔萃。</p>
+<p><strong>《学习敏捷 构建高效团队》</strong><br><img src="http://img.lessisbetter.site/2019-02-learn-agile.png"></p>
+<p>非常好的敏捷入门书籍，带你理解敏捷思维和实践，以及介绍多种敏捷方法，比如Scrum、XP（极限编程）、看板、精益，这些思维，绝对能帮助你成为更出色的工程师，为你如何搭建一支高效的研发团队提供一些思路。</p>
+<p><strong>《敏捷革命》</strong><br><img src="http://img.lessisbetter.site/2019-02-agile-revolution.png"></p>
+<p>Scrum是使用最多的敏捷方法，这本书由Scrum敏捷之父编写，这个老头人生经历很牛，西点军校 -&gt; 越战飞行员 -&gt; 学术界 -&gt; 工业界，他从他的经历介绍了Scrum是如何建立起来的， 这本书能帮你更好的理解和运用Scrum。</p>
+<p>本次书籍推荐到此结束，感谢阅读。</p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/02/16/book-recommend-1">http://lessisbetter.site/2019/02/16/book-recommend-1</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/02/01/ethereum-useful-command-and-flag/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/02/01/ethereum-useful-command-and-flag/" class="post-title-link" itemprop="url">以太坊有用的命令和标记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-02-01 14:57:55" itemprop="dateCreated datePublished" datetime="2019-02-01T14:57:55+08:00">2019-02-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><code>--debug</code>：日志显示文件和行数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">geth --debug --datadir node0 [其他参数]</span><br><span class="line"></span><br><span class="line">INFO [02-01|14:59:47|miner&#x2F;worker.go:539]              Commit new mining work                   number&#x3D;1 txs&#x3D;0 elapsed&#x3D;628.966µs</span><br></pre></td></tr></table></figure>
+
+<p><code>--pprof</code>：节点开启http服务用来显示prof信息，网址和端口可以通过<code>--pprofaddr, --pprofport</code>指定，默认是<code>127.0.0.1:6060</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">geth --pprof --datadir node0 [其他参数]</span><br></pre></td></tr></table></figure>
+<p>打开网址：<code>http://127.0.0.1:6060/debug/pprof/</code></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/27/choose-your-career/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/01/27/choose-your-career/" class="post-title-link" itemprop="url">未来你是CTO，还是架构师</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-27 14:57:12" itemprop="dateCreated datePublished" datetime="2019-01-27T14:57:12+08:00">2019-01-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>春节就要到了，每到年末就非常适合总结、反思，思考过去一年的成长（就），过去一年的收获，过去一年的改变，所以接下来两三周的时间，我想给大家分享一些技术以外的思考。</p>
+<p>这次先跟大家分享关于未来的思考，<strong>职业目标和规划决定了你以后的职业高度、职业角色</strong>，你本来想成架构师、技术VP、CTO，结果就是没有了结果。</p>
+<p>后面可能分享理财和读书等方面的思考，因为技术人，首先是一个人，那必然就有生活，生活就需要money，你不理财，最后只能一穷二白，辛辛苦苦一年的劳动，可能所剩无几，甚至负数了，几年后别人过着舒服的生活了，而你还在苦逼的挤公交、地铁。</p>
+<p>读书是获取知识最廉价的方式，知识改变命运不是闹着玩的，读大学没用这些言论是扯淡的，你看那些CEO、CTO，或者你身边的非常牛的人，哪个不读书？如果你不喜欢读书，大概是心里没有目标，没有找到自己喜欢的书。</p>
+<p>预告到此打住，如果希望读到理财和读书的文章的话，在春节期间，记得关注文章推送，不妨<strong>给一起学Golang加星标</strong>。</p>
+<h2 id="技术人有哪些角色-岗位？"><a href="#技术人有哪些角色-岗位？" class="headerlink" title="技术人有哪些角色/岗位？"></a>技术人有哪些角色/岗位？</h2><p>技术人常说自己是靠手艺、靠技术吃饭的，最初只是开发/测试/运维工程师，后面一路打怪升级，经历高级、资深工程师到达首席架构师、技术总监、技术VP、CTO，这些顶级的技术角色，哪些才是你的未来？</p>
+<p>如果你热爱技术，愿意靠技术生活，或者立志使用技术改变世界，你可能就会走到上面列出的技术岗位，<strong>你是否想过你的未来在哪？</strong></p>
+<p>如果你想到了，你是否了解这些不同岗位的区别，以及需要的能力？</p>
+<h2 id="架构师"><a href="#架构师" class="headerlink" title="架构师"></a>架构师</h2><p>架构师是一个公司的核心技术人员，是公司技术团队中的<strong>技术佼佼者</strong>，对架构师主要要求是技术能力。</p>
+<p>如果你喜欢深入研究技术，架构师就是你很好的目标。</p>
+<h2 id="首席架构师"><a href="#首席架构师" class="headerlink" title="首席架构师"></a>首席架构师</h2><p>首席架构师应当是<strong>公司技术最牛的人</strong>，但同时是公司所有架构师的管理人，需要有<strong>一定的人员管理能力</strong>，所以首席架构师的主要能力栈是：</p>
+<ol>
+<li>技术能力</li>
+<li>人员管理能力</li>
+</ol>
+<p>如果你深入研究技术，能用技术解决公司遇到的业务难题，还具备一些人员管理能力，不妨在成为架构师后，将目标再提升1个level，成为公司首席架构师。</p>
+<h2 id="技术总监"><a href="#技术总监" class="headerlink" title="技术总监"></a>技术总监</h2><p>技术总监这个岗位，一般在大、中公司才有，它是<strong>技术和管理能力比较均衡的1个岗位</strong>，技术上不如某些架构师、首席架构师，但管理能力要比架构师高，它的主要能力栈和架构师相同：</p>
+<ol>
+<li>技术能力</li>
+<li>人员管理能力 </li>
+</ol>
+<p>如果在技术圈摸爬滚打了一段时间，发现自己擅长沟通、上下级管理、员工心理、决策能力强，也许你的目标可以设定为技术经理或技术总监。</p>
+<h2 id="技术VP"><a href="#技术VP" class="headerlink" title="技术VP"></a>技术VP</h2><p>技术VP（副总裁）更是公司规模比较大时才有的技术岗位，技术VP是<strong>CTO的副手</strong>，公司只有1个CTO，但通常有多个技术VP，负责公司不同业务的技术，技术VP管着多个技术总监。技术VP也是技术出身，但比技术总监高一个level，除了技术能力和人员管理能力外，还要求技术VP有很强的体系搭建能力，体系搭建是一个很复杂的能力，总结来讲就是要管事的能力，比如要管理研发质量、进度、节奏、人员等等。</p>
+<p>技术总监的主要能力栈：</p>
+<ol>
+<li>技术能力</li>
+<li>人员管理能力 </li>
+<li>体系搭建能力</li>
+</ol>
+<p>如果你发现自己技术够牛，也能带人，还能管事，技术VP绝对会是一个非常好的目标，但是你估计头都大了，怎么要管这么多🙂。</p>
+<h2 id="CTO"><a href="#CTO" class="headerlink" title="CTO"></a>CTO</h2><p>只要带O的都很了不起，想想CEO、COO、CFO等等，<strong>CTO是一个公司的直接技术负责人</strong>，出了问题CEO可是要拿CTO是问的，而不是那群技术VP，CTO要和各种O沟通，要让整个技术团队，用技术把产品做出来，跟上业务的脚步。</p>
+<p>CTO是个多面手，他的主要能力栈：</p>
+<ol>
+<li>很强的技术能力，尤其在创业早起，必须撸起袖子带所有人一起干，但是CTO的技术不能是最牛的，公司稳定后，他需要分配更多的精力负责技术团队的各项事务，如果CTO技术是最牛的，他必然是整个技术团队的瓶颈。</li>
+<li>很强的体系建设能力，虽然hold的事情没有技术VP细，但各种都抓。</li>
+<li>很强的人员管理能力，然每一个技术人员，尤其是技术管理人员发挥十倍、百倍的能力，建设强大的团队。</li>
+<li>很强的文化建设能力，公司大了，公司的技术文化，决定了员工在没有管理时的状态，是游手好闲，还是聚焦工作。</li>
+<li>很强的领导力，易观CTO郭炜给领导力一个通俗易懂的解释，把事办成的能力，就是从0到1的能力，公司需要的是完整可用的产品，最后只做到了0.99都不是完整的产品。</li>
+</ol>
+<p>如果你立志要成为一个CTO，那你要充分利用时间，跟时间赛跑，不断的学习/迭代各种能力。</p>
+<p>关于领导力，我根据郭炜的描述，做了一个导图，把一个大的、复杂的能力拆解，感觉目标就清晰了。</p>
+<p><img src="http://img.lessisbetter.site/2019-01-leadership.png"><br><em>根据领导力300讲文章《技术领导力就是“成事”的能力》制作</em></p>
+<p>也许我上面的文章不一定准确，甚至有些地方不一定对，但这不重要，重要的是你如果还没有职业目标和职业规划，反思一下你是否喜欢技术，是否希望在技术上长期发展？如果答案是肯定的，你应当<strong>为自己负责</strong>，设定一个目标和一个实现目标的计划。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p><strong>如何找到自己的兴趣和能力</strong></p>
+<p>兴趣、能力和我们的职业目标有什么关系？关系大了去了。你不喜欢coding，就写不出高质量的代码，你不喜欢钻研技术，就成不了架构师，你不喜欢业务，就无法成为技术管理者，你不喜欢“事多”就成不了技术VP、CTO。</p>
+<p><strong>基于自己的兴趣和能力，设定最适合自己的目标，这样才能让目标实现</strong>。</p>
+<p>But很多人都有一个特（问）点（题），不了解自己。你问他“你喜欢做什么？”，通常哑口无言，啥也说出来。那我教你，如何发现自己的兴趣或者能力。</p>
+<p>把下面这几个问题问自己，每个思考5分钟，如果第一个没有答案，就看下一个：</p>
+<ol>
+<li>我擅长做什么？</li>
+<li>我得到表扬的工作是什么？</li>
+<li>我最经常做的是什么？</li>
+<li>在你过去1年的工作中，我做的最好的3件事是什么？</li>
+</ol>
+<p>如果第4个还没有答案，我建议你给自己一段时间，了解自己，从今天开始写<strong>成功日记</strong>，每天写一个，记录自己今天做的好的事情，不论工作还是生活。</p>
+<p>每月回顾过去的成功日记，其中写的最多的就是你的<strong>特长</strong>，也许你一两个月就发现自己擅长的事情，也许要半年，也许要1年，但终究你能发现自己的能力，那时你会更加自信。</p>
+<p><strong>文章不精，希望你有所收获。</strong></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>其实，我对自己的了解还不够深入，这是我必须坦诚的。但我们对自己的了解程度，和对世界的认知，这种“内在”的认知，会通过我们日常的行为<strong>映射</strong>出来，体现在我们的待人接物，同样也会决定着我们人生的高度、工作的高度。</p>
+<p>想让自己的思想和视野站上一个更高的高度，我购买了极客时间《技术领导力300讲》这个课程，听、读了很多CEO、CTO等的观点后，想输出下，这篇文章的主要内容是我读郭炜的《你的能力模型决定你的职位》这篇文章“贩卖”出来的，不如原文好，为了避免广告嫌疑，我不在此放分享链接了。<strong>真心想读</strong>的朋友，可以后台私信，我发给你。极客时间分享的文章最多能被10个人阅读，所以只发给前10个留言的朋友。</p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/27/choose-your-career/">http://lessisbetter.site/2019/01/27/choose-your-career/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/27/blockchain-bussiness/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/01/27/blockchain-bussiness/" class="post-title-link" itemprop="url">区块链与商业结合：场景+案例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-27 09:30:58" itemprop="dateCreated datePublished" datetime="2019-01-27T09:30:58+08:00">2019-01-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>我专注区块链技术，让技术为业务服务，在业务应用知识方面还不是行家里手，所以这里只做<strong>文字的搬运工</strong>，具体讲解就得和我们云象合作业务的VNT Chain了，它们把复杂的商业原理，用一篇文章做了通俗易懂的解释，解释了行业痛点，以及如何使用区块链解决痛点，在某些应用场景上，云象已经走在了行业前列，所以文章中也包含云象的案例。</p>
+<p>陆续会有很多期，请阅读自己感兴趣的文章：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/yJfthwFgiolSVKAkC9uSCA">区块链+数字版权</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/J2rpRiaEsl2c0kLWSu4e3Q">区块链+跨境支付</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Yhht-PBLxvl9rRu5RiXuqg">区块链+供应链金融</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/TGjDimw9BK7f-KfuDZvJqg">区块链+信用证</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/BjnNpnzYgd_Kv6nvaElrfg">区块链+福费廷</a>，福费廷业务历史久远，银行在国际贸易买卖双方的中间，诸多的不透明因素增加银行的风险，国内多家银行使用区块链重塑了福费廷业务，只有当买卖双方都参与进来，才能更好的塑造基于区块链的福费廷业务</li>
+</ol>
+<p>云象在区块链上的解决方案有：</p>
+<ul>
+<li>数字存证</li>
+<li>贸易金融</li>
+<li>股权交易</li>
+<li>发审监管</li>
+<li>供应链金融</li>
+<li>资产证券化</li>
+</ul>
+<p>更多内容，请查看<a target="_blank" rel="noopener" href="https://www.yunphant.com/solution/securitization">云象区块链网站</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/26/bussiness-abs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/01/26/bussiness-abs/" class="post-title-link" itemprop="url">区块链与资产证券化</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-26 21:26:11" itemprop="dateCreated datePublished" datetime="2019-01-26T21:26:11+08:00">2019-01-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>区块链诞生之初就和金融有着某种“天然”的联系，今天就聊一下区块链的一个应用场景：区块链在资产证券化中的利用。</p>
+<h1 id="什么是资产证券化？"><a href="#什么是资产证券化？" class="headerlink" title="什么是资产证券化？"></a>什么是资产证券化？</h1><blockquote>
+<p>资产证券化是指以基础资产未来所产生的现金流为偿付支持，通过结构化设计进行信用增级，在此基础上发行资产支持证券（Asset-backed Securities, ABS）的过程。</p>
+</blockquote>
+<p>不了解金融的朋友可能对资产证券化不熟悉，甚至根本没听说过。我就用我的粗浅理解为技术朋友介绍下，先看证券，大家多少对股票、债券多少有些了解，它们都属于证券，是证券中的某一个类别。那什么又是资产呢？通俗的来讲能拿来做抵押的就是资产。用大白话讲资产证券化就是：<strong>贷款人把能产生未来现金流的资产转变为证券换取贷款的融资方式</strong>。</p>
+<h1 id="ABS和普通人的关系"><a href="#ABS和普通人的关系" class="headerlink" title="ABS和普通人的关系"></a>ABS和普通人的关系</h1><p>18年这么火的P2P你参与了么？这里也有资产证券化，如果你在P2P平台投了钱，你则是投资人，你在P2P平台借了钱，则是债券人。</p>
+<p>还有就是，你租商场的商铺、车位了么？商场把商铺、车位这些作为基础资产，这些资产通过出租等能有稳定的未来收益，然后卖给你，从你手里拿钱，继续去运营，每年给分红，到期买回之类的，虽然没有进行证券化，但总体的原理是一致的，<strong>你清楚里面的流程么？你想想你的身边有没有人买了商铺，最后商场跑路了？</strong>。</p>
+<h1 id="资产证券化的流程"><a href="#资产证券化的流程" class="headerlink" title="资产证券化的流程"></a>资产证券化的流程</h1><p>我把资产证券化的流程进行了抽象和简化，实际比这复杂的多，整个过程有：</p>
+<ul>
+<li>债权人，拥有基础资产，期望获得资金</li>
+<li>受托人，不一定是银行，比如P2P公司</li>
+<li>投资者，任何手里有闲钱进行投资的人</li>
+<li>基础资产，能够产生未来现金流的资产</li>
+</ul>
+<p>一图胜前言，看下图：</p>
+<p><img src="http://img.lessisbetter.site/2019-01-abs.png"></p>
+<p>债权人把基础资产拿出来，向受托人（机构）证明资产是可以产生未来现金流的，受托人也要辨认这个基础资产到底好不好，然后用你好的基础资产发行证券（债券），把证券卖给投资人，说这个资产很好，贷款企业可以按时产生现金流，非常稳定，吹了不少，然后你感觉不错就投资了，资金进了受托人口袋，然后，受托人把钱再带给债权人，从中赚取利息。</p>
+<h1 id="资产证券化的问题"><a href="#资产证券化的问题" class="headerlink" title="资产证券化的问题"></a>资产证券化的问题</h1><p>如果投过P2P，相信大家一定不会忘记2018年P2P的炸雷，这其中暗藏着许多风险，根本就不是普通投资者能看到的：</p>
+<ol>
+<li>贷款企业信用是否良好？怎么证明？基础资产是否真实？能否产生稳定的现金流？</li>
+<li>担保企业信用等级如何，如果贷款企业不能还款，担保企业能不能还款？</li>
+<li>受托机构信用等级好不好？资产的评级是否准确、合理？这其中有没有猫腻？</li>
+<li>……</li>
+</ol>
+<p>问题再归类：</p>
+<ol>
+<li>信用问题</li>
+<li>透明问题</li>
+<li>真实性问题</li>
+<li>……</li>
+</ol>
+<p><strong>不易监管，问题积累，增加风险，导致暴雷，所以政府说了，我们要稳金融，稳金融就得控制风险</strong>。</p>
+<h1 id="资产证券化牵手区块链"><a href="#资产证券化牵手区块链" class="headerlink" title="资产证券化牵手区块链"></a>资产证券化牵手区块链</h1><p>作为一个技术人，我们虽然无力直接参与稳金融，但是，我们可以从技术角度思考下，是不是又解决、优化的办法呢？</p>
+<p><strong>区块链有去中心化、去信任、不可篡改、可靠的特性，可以解决当前ABS的一些问题</strong>，比如：</p>
+<ol>
+<li>使用区块链放篡改和溯源的能力，解决信任问题、基础资产虚假有效的问题</li>
+<li>使用使用区块链可以连接参与ABS的多方主体，提高信息共享，提升业务效率</li>
+<li>区块链的透明对于国家监管也特别有利</li>
+<li>资金流动的地方就有清算，各ABS参与方很容易通过区块链进行清算</li>
+</ol>
+<h1 id="云象区块链资产证券化解决方案"><a href="#云象区块链资产证券化解决方案" class="headerlink" title="云象区块链资产证券化解决方案"></a>云象区块链资产证券化解决方案</h1><p>云象区块链作为区块链行业的领先者，依托多年的区块链技术积累，推出了<strong>云象区块链ABS解决方案，目标是通过价值互联网盘活基础资产</strong>，基于区块链技术建立标准的数据流转体系、协同方式和披露办法，提高资产端与资金端对接效率，帮助投资者穿透基础资产和回款状态，对盘活基础资产具有十分重要的意义。</p>
+<p><a target="_blank" rel="noopener" href="https://www.yunphant.com/solution/securitization">想了解云象区块链ABS解决方案？戳这里！</a></p>
+<blockquote>
+<p>技术人讲业务，难免有不准确的地方，如果不对请重喷！</p>
+</blockquote>
+<h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/9P3hcbQHdWOnyVgr9VpzMw">如何用“区块链+稳定币”技术来提升资产证券化市场运作效率</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/01/23/why-pbft-using-3f-plus-1/" class="post-title-link" itemprop="url">为什么PBFT的节点数量是3f+1?</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-23 17:15:06" itemprop="dateCreated datePublished" datetime="2019-01-23T17:15:06+08:00">2019-01-23</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>问题：为什么PBFT的节点数量是3f+1?</p>
+<p>pbft的论文提到这样<strong>2</strong>段话，可以很好的解决这个问题：</p>
+<p><img src="http://img.lessisbetter.site/2019-02-pbft-paper1.png"><br><em>page3</em></p>
+<p><strong>在存在f个faulty节点的情况下，<code>3f+1</code>是保证系统安全性和活跃性的最小的总节点数量</strong>。当存在f个节点不响应的情况下，需要<code>n-f</code>个正常节点达成共识需要保障<code>n-f &gt; f</code>。另外一种情况：f个响应的节点是错误的（响应错误数据），f个节点没有响应，但他们不是faulty的，所以要保证<code>好的响应的节点 - 好的未响应的节点 - 坏的响应的节点 &gt; 坏的节点</code>，即需要<code>n - f -f &gt; f</code>，<code>n &gt; 3f</code>。但n只能是整数，所以<code>n &gt;= 3f + 1</code>。</p>
+<p><img src="http://img.lessisbetter.site/2019-02-pbft-paper2.png"><br><em>page3</em></p>
+<p>副本节点的数量设为<code>R</code>，为了<strong>简便</strong>使<code>R = 3f + 1</code>。尽管存在副本节点数量多于<code>3f+1</code>的情况，比如<code>3f+2, 3f+3</code>，<strong>但多出来的节点没有带来任何改善，反而降低了系统的性能，因为需要更多的通信量</strong>。</p>
+<p>为什么这样说呢？</p>
+<p><code>3f+2, 3f+3</code>的实际能容错的节点数量与<code>3f+1</code>是相同的，即只能容忍<code>f</code>个faulty的节点。</p>
+<p>根据论文，当<code>n = 3f+1</code>时，</p>
+<ul>
+<li>在Prepare进入Commit阶段，需要<code>2f</code>个Prepare消息，即需要<code>n - 1 - f</code>条Prepare消息。</li>
+<li>在Commit阶段完成，需要<code>2f+1</code>条Commit消息，即需要<code>n - f</code>条Commit消息。</li>
+</ul>
+<p>请思考，当<code>n = 3f+2</code>时，</p>
+<ul>
+<li>在Prepare进入Commit阶段，需要<code>n - 1 - f</code>个Prepare消息，即<code>2f+1</code>需要条Prepare消息。</li>
+<li>在Commit阶段完成，需要<code>n - 1 - f</code>条Commit消息，即需要<code>2f+1</code>条Commit消息。</li>
+</ul>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/">http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="代码Review的时候，遇到过一些log滥用的情况，今天聊一聊滥用（过渡使用）日志。  好的log能够帮助开发人员快速定位bug，而差的log各有各的不同。  你滥用日志了吗？是什么导致了滥用log？是不是存在这些误解： 1. 害怕出了问题，现有的log无法定位，要多加一些log，恨不得每段都有一个log，log数简直越多越好，看日志有一种，每一步都非常清晰的错觉。 2. 不知道log多了，定位效">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你滥用log了吗">
+<meta property="og:url" content="http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="代码Review的时候，遇到过一些log滥用的情况，今天聊一聊滥用（过渡使用）日志。  好的log能够帮助开发人员快速定位bug，而差的log各有各的不同。  你滥用日志了吗？是什么导致了滥用log？是不是存在这些误解： 1. 害怕出了问题，现有的log无法定位，要多加一些log，恨不得每段都有一个log，log数简直越多越好，看日志有一种，每一步都非常清晰的错觉。 2. 不知道log多了，定位效">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-debug-demo.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-test.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-ret.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-log.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-call.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-debug.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="article:published_time" content="2019-07-12T10:17:24.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.768Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="log">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-07-debug-demo.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>你滥用log了吗 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%A0%E6%BB%A5%E7%94%A8%E6%97%A5%E5%BF%97%E4%BA%86%E5%90%97%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">你滥用日志了吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          你滥用log了吗
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-12 18:17:24" itemprop="dateCreated datePublished" datetime="2019-07-12T18:17:24+08:00">2019-07-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>代码Review的时候，遇到过一些log滥用的情况，今天聊一聊滥用（过渡使用）日志。</p>
+<blockquote>
+<p>好的log能够帮助开发人员快速定位bug，而差的log各有各的不同。</p>
+</blockquote>
+<h2 id="你滥用日志了吗？"><a href="#你滥用日志了吗？" class="headerlink" title="你滥用日志了吗？"></a>你滥用日志了吗？</h2><p>是什么导致了滥用log？是不是存在这些误解：</p>
+<p><strong>1. 害怕出了问题，现有的log无法定位</strong>，要多加一些log，恨不得每段都有一个log，log数简直越多越好，看日志有一种，每一步都非常清晰的错觉。</p>
+<p><strong>2. 不知道log多了，定位效率更低</strong>，试问你有没有经历过几分钟刷出了G级别日志文件？在这种日志文件里定位bug，简直是大海捞针，这让log的价值非常低。</p>
+<p><strong>3. 不知道log多了会影响性能</strong>，log自身涉及格式化和文件读写，虽然现在各log库都已经比较高效了，但是，这也扛不住“海量”的log啊，积少成多，势必影响程序性能。</p>
+<p><strong>4. 对log级别错误的认知</strong>：日志级别设置为Info，Debug、Trace级别的日志不会打印，Debug、Trace级别日志多没关系。虽然日志不会输出，并不代表相关代码没执行啊。</p>
+<p>第4点重点解释一下：</p>
+<p><img src="http://img.lessisbetter.site/2019-07-debug-demo.png" alt="debug-demo"></p>
+<p>这是一个打印Debug级别的日志，它还有1项日志信息，是来自<code>func()</code>的结果，请问：</p>
+<ol>
+<li>日志级别设置为Info，log.Debug会执行吗？<code>func()</code>还会执行吗？</li>
+<li>如果这行日志频繁被执行，是不是浪费了CPU做无用功？</li>
+</ol>
+<p>如果你认为不会执行，看下面的Demo，log使用zap。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-log-test.png" alt="log-test"></p>
+<p>结果：</p>
+<p><img src="http://img.lessisbetter.site/2019-07-log-ret.png" alt="log-ret"></p>
+<p>事实证明无论限制的日志级别是什么，<code>log.***</code>一定会被调用，它入参中的函数也一定会被调用，只不过是日记级别不满足打印时，不会打印而已。被调函数的结果只被这条<code>log.***</code>使用，结果这个日志根本不打印，这就浪费了CPU。</p>
+<p>日志级别都设置为Info了，Debug级别的日志为何还会打印？</p>
+<p>如果你有这个问题，你可能没有理解2个地方。</p>
+<p>日志级别设置为Info，不代表<code>log.Debug</code>函数不执行。<code>log.Debug</code>函数一定会执行，看下图，<code>log.Info，Error</code>等接口会调用相同的真实实现函数<code>log.log</code>，<code>log.log</code>的入参包含了<code>log.Info</code>等接口的入参，以及当前的<code>log_level</code>，比如以下2种是等价的：</p>
+<p><img src="http://img.lessisbetter.site/2019-07-log-log.png" alt="log-log"></p>
+<p>所以，无论设置的是什么日志级别控制，<code>log.Debug</code>一定会被执行，至于当前日志是否会打印，会在<code>log.log</code>里决定。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-log-call.png" alt="image-20190712072742045"></p>
+<p>日志为Warn级别，Debug日志不会打印，<code>func()</code>会不会执行？</p>
+<p>日志打印本质是函数调用，会先计算入参，再调用函数。比如：</p>
+<p><img src="http://img.lessisbetter.site/2019-07-log-debug.png" alt="log-debug"></p>
+<p>所以<code>func()</code>一定会被调用。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>针对滥用日志的情况给几点建议：</p>
+<ol>
+<li>1条日志描述清when、where、what，提供有效信息，这就对定位很有帮助了。</li>
+<li>只在“可能”出问题的地方打印日志，一些能根据上下文日志推断的地方，就无需再增加日志。</li>
+<li>日志打印不要调用函数。</li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/">http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/log/" rel="tag"># log</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/10/fabric-makefile/" rel="prev" title="通过Fabric 1.4 的Makefile，轻松掌握Fabric构建">
+                  <i class="fa fa-chevron-left"></i> 通过Fabric 1.4 的Makefile，轻松掌握Fabric构建
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/13/better-brew/" rel="next" title="让Homebrew飞">
+                  让Homebrew飞 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '7e71c398b61f78c4cc276b3dbf3af16c',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

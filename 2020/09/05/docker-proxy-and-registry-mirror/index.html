@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="对于Docker官方镜像仓库Registry，没有仓库镜像加速，寸步难行。 对于国外非Docker官方镜像仓库，并且还被墙的仓库Registry，没有网络代理，寸步难行。 镜像仓库加速器Registry Mirrors，是国内对官方Registry的”镜像(mirror)”，当拉取image时，Docker Daemon先去 Registry Mirrors 拉去镜像，如果没找到镜像，Regist">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker网络代理和仓库镜像加速">
+<meta property="og:url" content="http://lessisbetter.site/2020/09/05/docker-proxy-and-registry-mirror/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="对于Docker官方镜像仓库Registry，没有仓库镜像加速，寸步难行。 对于国外非Docker官方镜像仓库，并且还被墙的仓库Registry，没有网络代理，寸步难行。 镜像仓库加速器Registry Mirrors，是国内对官方Registry的”镜像(mirror)”，当拉取image时，Docker Daemon先去 Registry Mirrors 拉去镜像，如果没找到镜像，Regist">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-09-05T06:48:04.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.809Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2020/09/05/docker-proxy-and-registry-mirror/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Docker网络代理和仓库镜像加速 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93%E5%8A%A0%E9%80%9F%E5%99%A8-%E6%8E%A8%E8%8D%90"><span class="nav-number">1.</span> <span class="nav-text">镜像仓库加速器(推荐)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BADocker-Daemon%E8%AE%BE%E7%BD%AE%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86-%E4%B8%8D%E6%8E%A8%E8%8D%90"><span class="nav-number">2.</span> <span class="nav-text">为Docker Daemon设置网络代理(不推荐)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EDocker%E4%BB%A3%E7%90%86%E7%9A%84%E5%8F%A6%E5%A4%96%E4%B8%80%E4%BB%B6%E4%BA%8B%EF%BC%9A%E5%AE%B9%E5%99%A8%E5%86%85%E7%9A%84%E4%BB%A3%E7%90%86-%E5%87%A0%E4%B9%8E%E4%B8%8D%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">关于Docker代理的另外一件事：容器内的代理(几乎不用)</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/09/05/docker-proxy-and-registry-mirror/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker网络代理和仓库镜像加速
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-05 14:48:04" itemprop="dateCreated datePublished" datetime="2020-09-05T14:48:04+08:00">2020-09-05</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>对于Docker官方镜像仓库<code>Registry</code>，没有仓库镜像加速，寸步难行。</p>
+<p>对于国外非Docker官方镜像仓库，并且还被墙的仓库<code>Registry</code>，没有网络代理，寸步难行。</p>
+<p>镜像仓库加速器<code>Registry Mirrors</code>，是国内对官方<code>Registry</code>的”镜像(mirror)”，当拉取image时，Docker Daemon先去 <code>Registry Mirrors</code> 拉去镜像，如果没找到镜像，<code>Registry Mirrors</code>找官方<code>Registry</code>拉去镜像，然后再返回给本地。</p>
+<p>网络代理是给Docker设置http和https代理，最原始的方式，适合有代理的情况。主要用于服务器上有<strong>稳定可访问</strong>的代理或者当前主机上有稳定代理的情况。对于代理和docker不在同一台机器上时，稳定可访问就成了一个问题，比如代理在笔记本上，IP随时都可能变化，服务器连接笔记本做代理，就算法上稳定可访问，而docker也在笔记本上运行，通过环回地址就能稳定访问。</p>
+<p>**不推荐给Docker设置代理，而应当优先使用<code>Registry Mirrors</code>**。代理也是有副作用的，你需要保证非本机能稳定连接到代理，并且能够转发数据，不然端口拒绝访问、TLS握手失败等问题，需要花费更多的时间。</p>
+<p>可访问的Registry有：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://quay.io/">quay.io</a> : 只是访问慢一些而已，可以拉下镜像来</li>
+</ul>
+<h2 id="镜像仓库加速器-推荐"><a href="#镜像仓库加速器-推荐" class="headerlink" title="镜像仓库加速器(推荐)"></a>镜像仓库加速器(推荐)</h2><p>如果指定拉某个镜像仓库的镜像，镜像加速器是用不上的。如果该仓库可以访问，非本机有代理的情况，无需配置网络代理。</p>
+<p>看如何配置<a target="_blank" rel="noopener" href="https://yeasy.gitbooks.io/docker_practice/install/mirror.html">Docker镜像加速器</a>。</p>
+<p>推荐使用阿里云、七牛、DaoCloud的镜像仓库加速器。</p>
+<p><code>/etc/docker/daemon.json</code> 配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;insecure-registries&quot;:[&quot;192.168.9.8:80&quot;],</span><br><span class="line">    &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后冲抵daemon：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl daemon-reload</span><br><span class="line">$ sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="为Docker-Daemon设置网络代理-不推荐"><a href="#为Docker-Daemon设置网络代理-不推荐" class="headerlink" title="为Docker Daemon设置网络代理(不推荐)"></a>为Docker Daemon设置网络代理(不推荐)</h2><p>我Mac上的http、https、socks5代理，http和https监听的是7890端口，sock5监听的是7891端口。</p>
+<p>拉镜像时，可以看到docker连接了7890端口走http代理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;private&#x2F;tmp]$ lsof -i:7890</span><br><span class="line">COMMAND     PID      USER   FD   TYPE             DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">....</span><br><span class="line">com.docke 73371 shitaibin   50u  IPv4 0xa8184ba4240fbe99      0t0  TCP localhost:58847-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   53u  IPv4 0xa8184ba4035deb09      0t0  TCP localhost:58857-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   58u  IPv4 0xa8184ba42d889861      0t0  TCP localhost:58893-&gt;localhost:7890 (ESTABLISHED)</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://docs.docker.com/network/proxy/">官方设置代理教程</a>，2选1:</p>
+<ol>
+<li>给Docker客户端设置代理，拉去镜像、创建新容器时，客户端会把变量发送给Daemon。支持17.07及以上版本，这是官方推荐方式。</li>
+<li>给Daemon设置代理，通过环境变量的方式。支持17.06及以下版本，不推荐。</li>
+</ol>
+<p>给Daemon设置的代理的另外方法：</p>
+<p>创建Daemon的代理配置文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;docker.service.d</span><br><span class="line">sudo touch &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;docker.service.d&#x2F;http-proxy.conf</span><br></pre></td></tr></table></figure>
+
+<p>内容为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">Environment&#x3D;&quot;HTTP_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;NO_PROXY&#x3D;localhost,127.0.0.1,10.96.0.0&#x2F;16, 10.244.0.0&#x2F;16&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后重启Daemon：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br><span class="line"></span><br><span class="line">systemctl show --property&#x3D;Environment docker</span><br></pre></td></tr></table></figure>
+
+<h2 id="关于Docker代理的另外一件事：容器内的代理-几乎不用"><a href="#关于Docker代理的另外一件事：容器内的代理-几乎不用" class="headerlink" title="关于Docker代理的另外一件事：容器内的代理(几乎不用)"></a>关于Docker代理的另外一件事：容器内的代理(几乎不用)</h2><p>默认情况<code>~/.docker/config.json</code>是docker客户端的配置文件，其中可以配置Http和Https代理，这些环境变量会通过<code>--build-arg</code>的方式，在执行<code>docker build</code>时传递到镜像中。</p>
+<p><strong>容器内的服务通常不需要代理，所以这个无需设置</strong>。</p>
+<p>看个测试demo，config.json内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"> <span class="attr">&quot;proxies&quot;</span>:</span><br><span class="line"> &#123;</span><br><span class="line">   <span class="attr">&quot;default&quot;</span>:</span><br><span class="line">   &#123;</span><br><span class="line">     <span class="attr">&quot;httpProxy&quot;</span>: <span class="string">&quot;http://127.0.0.1:3001&quot;</span>,</span><br><span class="line">     <span class="attr">&quot;httpsProxy&quot;</span>: <span class="string">&quot;http://127.0.0.1:3001&quot;</span>,</span><br><span class="line">     <span class="attr">&quot;noProxy&quot;</span>: <span class="string">&quot;*.test.example.com,.example2.com&quot;</span></span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Dockerfile如下：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> busybox</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> env</span></span><br></pre></td></tr></table></figure>
+
+<p>构建过程如下，可以看到设置了http等环境变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ docker build .</span><br><span class="line">Sending build context to Docker daemon  2.048kB</span><br><span class="line">Step 1&#x2F;2 : FROM busybox</span><br><span class="line"> ---&gt; f0b02e9d092d</span><br><span class="line">Step 2&#x2F;2 : RUN env</span><br><span class="line"> ---&gt; Running in 2a8fe4fad631</span><br><span class="line">HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">no_proxy&#x3D;*.test.example.com,.example2.com</span><br><span class="line">HOSTNAME&#x3D;2a8fe4fad631</span><br><span class="line">SHLVL&#x3D;1</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">NO_PROXY&#x3D;*.test.example.com,.example2.com</span><br><span class="line">https_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">http_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">PWD&#x3D;&#x2F;</span><br><span class="line">HTTP_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">Removing intermediate container 2a8fe4fad631</span><br><span class="line"> ---&gt; 89c86d136d8d</span><br><span class="line">Successfully built 89c86d136d8d</span><br></pre></td></tr></table></figure>
+
+<p>启动容器后http环境变量依然生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;test]$ docker run -it --rm 89c86d136d8d sh</span><br><span class="line">&#x2F; # env</span><br><span class="line">HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">no_proxy&#x3D;*.test.example.com,.example2.com</span><br><span class="line">HOSTNAME&#x3D;e9c131f55062</span><br><span class="line">SHLVL&#x3D;1</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">NO_PROXY&#x3D;*.test.example.com,.example2.com</span><br><span class="line">https_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">http_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">TERM&#x3D;xterm</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">PWD&#x3D;&#x2F;</span><br><span class="line">HTTP_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/09/01/cgroup-3-cpu-md/" rel="prev" title="Docker容器基础3：Cgroup - cpu, cpuacct, cpuset子系统">
+                  <i class="fa fa-chevron-left"></i> Docker容器基础3：Cgroup - cpu, cpuacct, cpuset子系统
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/09/06/deloy-k8s-on-ubuntu16/" rel="next" title="Ubuntu 16.04上部署单机Kubernetes">
+                  Ubuntu 16.04上部署单机Kubernetes <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '7cbdda8ec91510bd0e80a6639a162ad1',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

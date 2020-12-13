@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="如果你已经阅读了前2篇文章：《调度起源》和《宏观看调度器》，你对G、P、M肯定已经不再陌生，我们这篇文章就介绍Go调度器的基本原理，本文总结了12个主要的场景，覆盖了以下内容：  G的创建和分配。 P的本地队列和全局队列的负载均衡。 M如何寻找G。 M如何从G1切换到G2。 work stealing，M如何去偷G。 为何需要自旋线程。 G进行系统调用，如何保证P的其他G’可以被执行，而不是饿死。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go调度器系列（3）图解调度原理">
+<meta property="og:url" content="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="如果你已经阅读了前2篇文章：《调度起源》和《宏观看调度器》，你对G、P、M肯定已经不再陌生，我们这篇文章就介绍Go调度器的基本原理，本文总结了12个主要的场景，覆盖了以下内容：  G的创建和分配。 P的本地队列和全局队列的负载均衡。 M如何寻找G。 M如何从G1切换到G2。 work stealing，M如何去偷G。 为何需要自旋线程。 G进行系统调用，如何保证P的其他G’可以被执行，而不是饿死。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-image-20190331190809649-4030489.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-image-20190331190826838-4030506.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-image-20190331160718646-4019638.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-image-20190331160728024-4019648.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-image-20190331161138353-4019898.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-image-20190331162734830-4020854.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-image-20190331162717486-4020837.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-09-go-scheduler-p8.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-image-20190331170113457-4022873.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-image-20190331182939318-4028179.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-arch.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-flow.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="article:published_time" content="2019-04-04T05:02:19.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.791Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-04-image-20190331190809649-4030489.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go调度器系列（3）图解调度原理 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#12%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">12场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E8%9E%8D%E5%90%88"><span class="nav-number">2.</span> <span class="nav-text">场景融合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E9%9B%86%E9%A2%84%E5%91%8A"><span class="nav-number">3.</span> <span class="nav-text">下集预告</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB"><span class="nav-number">4.</span> <span class="nav-text">推荐阅读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go调度器系列（3）图解调度原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-04-04 13:02:19" itemprop="dateCreated datePublished" datetime="2019-04-04T13:02:19+08:00">2019-04-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如果你已经阅读了前2篇文章：<a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">《调度起源》</a>和<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">《宏观看调度器》</a>，你对G、P、M肯定已经不再陌生，我们这篇文章就介绍Go调度器的基本原理，本文总结了12个主要的场景，覆盖了以下内容：</p>
+<ol>
+<li>G的创建和分配。</li>
+<li>P的本地队列和全局队列的负载均衡。</li>
+<li>M如何寻找G。</li>
+<li>M如何从G1切换到G2。</li>
+<li>work stealing，M如何去偷G。</li>
+<li>为何需要自旋线程。</li>
+<li>G进行系统调用，如何保证P的其他G’可以被执行，而不是饿死。</li>
+<li>Go调度器的抢占。</li>
+</ol>
+<h3 id="12场景"><a href="#12场景" class="headerlink" title="12场景"></a>12场景</h3><blockquote>
+<p>提示：图在前，场景描述在后。</p>
+</blockquote>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331190809649-4030489.png"></p>
+<blockquote>
+<p>上图中三角形、正方形、圆形分别代表了M、P、G，正方形连接的绿色长方形代表了P的本地队列。</p>
+</blockquote>
+<p><strong>场景1</strong>：p1拥有g1，m1获取p1后开始运行g1，g1使用<code>go func()</code>创建了g2，为了局部性g2优先加入到p1的本地队列。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331190826838-4030506.png"></p>
+<p><strong>场景2</strong>：<strong>g1运行完成后(函数：<code>goexit</code>)，m上运行的goroutine切换为g0，g0负责调度时协程的切换（函数：<code>schedule</code>）</strong>。从p1的本地队列取g2，从g0切换到g2，并开始运行g2(函数：<code>execute</code>)。实现了<strong>线程m1的复用</strong>。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331160718646-4019638.png"></p>
+<p><strong>场景3</strong>：假设每个p的本地队列只能存4个g。g2要创建了6个g，前4个g（g3, g4, g5, g6）已经加入p1的本地队列，p1本地队列满了。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331160728024-4019648.png"></p>
+<blockquote>
+<p>蓝色长方形代表全局队列。</p>
+</blockquote>
+<p><strong>场景4</strong>：g2在创建g7的时候，发现p1的本地队列已满，需要执行<strong>负载均衡</strong>，把p1中本地队列中前一半的g，还有新创建的g<strong>转移</strong>到全局队列（实现中并不一定是新的g，如果g是g2之后就执行的，会被保存在本地队列，利用某个老的g替换新g加入全局队列），这些g被转移到全局队列时，会被打乱顺序。所以g3,g4,g7被转移到全局队列。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331161138353-4019898.png"></p>
+<p><strong>场景5</strong>：g2创建g8时，p1的本地队列未满，所以g8会被加入到p1的本地队列。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331162734830-4020854.png"></p>
+<p><strong>场景6</strong>：<strong>在创建g时，运行的g会尝试唤醒其他空闲的p和m执行</strong>。假定g2唤醒了m2，m2绑定了p2，并运行g0，但p2本地队列没有g，m2此时为自旋线程（没有G但为运行状态的线程，不断寻找g，后续场景会有介绍）。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331162717486-4020837.png"></p>
+<p><strong>场景7</strong>：m2尝试从全局队列(GQ)取一批g放到p2的本地队列（函数：<code>findrunnable</code>）。m2从全局队列取的g数量符合下面的公式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">n &#x3D; min(len(GQ)&#x2F;GOMAXPROCS + 1, len(GQ&#x2F;2))</span><br></pre></td></tr></table></figure>
+
+<p>公式的含义是，至少从全局队列取1个g，但每次不要从全局队列移动太多的g到p本地队列，给其他p留点。这是<strong>从全局队列到P本地队列的负载均衡</strong>。</p>
+<p>假定我们场景中一共有4个P，所以m2只从能从全局队列取1个g（即g3）移动p2本地队列，然后完成从g0到g3的切换，运行g3。</p>
+<p><img src="http://img.lessisbetter.site/2020-09-go-scheduler-p8.png"></p>
+<p><strong>场景8</strong>：假设g2一直在m1上运行，经过2轮后，m2已经把g7、g4也挪到了p2的本地队列并完成运行，全局队列和p2的本地队列都空了，如上图左边。</p>
+<p><strong>全局队列已经没有g，那m就要执行work stealing：从其他有g的p哪里偷取一半g过来，放到自己的P本地队列</strong>。p2从p1的本地队列尾部取一半的g，本例中一半则只有1个g8，放到p2的本地队列，情况如上图右边。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331170113457-4022873.png"></p>
+<p><strong>场景9</strong>：p1本地队列g5、g6已经被其他m偷走并运行完成，当前m1和m2分别在运行g2和g8，m3和m4没有goroutine可以运行，m3和m4处于<strong>自旋状态</strong>，它们不断寻找goroutine。为什么要让m3和m4自旋，自旋本质是在运行，线程在运行却没有执行g，就变成了浪费CPU？销毁线程不是更好吗？可以节约CPU资源。创建和销毁CPU都是浪费时间的，我们<strong>希望当有新goroutine创建时，立刻能有m运行它</strong>，如果销毁再新建就增加了时延，降低了效率。当然也考虑了过多的自旋线程是浪费CPU，所以系统中最多有GOMAXPROCS个自旋的线程，多余的没事做线程会让他们休眠（见函数：<code>notesleep()</code>）。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-image-20190331182939318-4028179.png"></p>
+<p><strong>场景10</strong>：假定当前除了m3和m4为自旋线程，还有m5和m6为自旋线程，g8创建了g9，g8进行了<strong>阻塞的系统调用</strong>，m2和p2立即解绑，p2会执行以下判断：如果p2本地队列有g、全局队列有g或有空闲的m，p2都会立马唤醒1个m和它绑定，否则p2则会加入到空闲P列表，等待m来获取可用的p。本场景中，p2本地队列有g，可以和其他自旋线程m5绑定。</p>
+<p><strong>场景11</strong>：（无图场景）g8创建了g9，假如g8进行了<strong>非阻塞系统调用</strong>（CGO会是这种方式，见<code>cgocall()</code>），m2和p2会解绑，但m2会记住p，然后g8和m2进入系统调用状态。当g8和m2退出系统调用时，会尝试获取p2，如果无法获取，则获取空闲的p，如果依然没有，g8会被记为可运行状态，并加入到全局队列。</p>
+<p><strong>场景12</strong>：（无图场景）Go调度在go1.12实现了抢占，应该更精确的称为<strong>请求式抢占</strong>，那是因为go调度器的抢占和OS的线程抢占比起来很柔和，不暴力，不会说线程时间片到了，或者更高优先级的任务到了，执行抢占调度。<strong>go的抢占调度柔和到只给goroutine发送1个抢占请求，至于goroutine何时停下来，那就管不到了</strong>。抢占请求需要满足2个条件中的1个：1）G进行系统调用超过20us，2）G运行超过10ms。调度器在启动的时候会启动一个单独的线程sysmon，它负责所有的监控工作，其中1项就是抢占，发现满足抢占条件的G时，就发出抢占请求。</p>
+<h3 id="场景融合"><a href="#场景融合" class="headerlink" title="场景融合"></a>场景融合</h3><p>如果把上面所有的场景都融合起来，就能构成下面这幅图了，它从整体的角度描述了Go调度器各部分的关系。图的上半部分是G的创建、负债均衡和work stealing，下半部分是M不停寻找和执行G的迭代过程。</p>
+<p>如果你看这幅图还有些似懂非懂，建议赶紧开始看<a href="github.com/qyuhen/book">雨痕大神的Golang源码剖析</a>，章节：并发调度。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-arch.png"></p>
+<p>总结，Go调度器和OS调度器相比，是相当的轻量与简单了，但它已经足以撑起goroutine的调度工作了，并且让Go具有了原生（强大）并发的能力，这是伟大的。如果你记住的不多，你一定要记住这一点：<strong>Go调度本质是把大量的goroutine分配到少量线程上去执行，并利用多核并行，实现更强大的并发。</strong></p>
+<h3 id="下集预告"><a href="#下集预告" class="headerlink" title="下集预告"></a>下集预告</h3><p>下篇会是源码层面的内容了，关于源码分析的书籍、文章可以先看起来了，先剧透一篇图，希望阅读下篇文章赶紧关注本公众号。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-flow.png"></p>
+<h3 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h3><p><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">Go调度器系列（1）起源</a><br><a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">Go调度器系列（2）宏观看调度器</a></p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>在学习调度器的时候，看了很多文章，这里列一些重要的：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://morsmachine.dk/go-scheduler">The Go scheduler</a></li>
+<li><a target="_blank" rel="noopener" href="https://rakyll.org/scheduler/">Go’s work-stealing scheduler</a>，<a target="_blank" rel="noopener" href="https://lingchao.xin/post/gos-work-stealing-scheduler.html">中文翻译版</a></li>
+<li><a target="_blank" rel="noopener" href="https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/">Go夜读：golang 中 goroutine 的调度</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html">Scheduling In Go : Part I、II、III </a>，<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/cb6881a2661d">中文翻译版</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/qyuhen/book">雨痕大神的golang源码剖析</a></li>
+<li><a target="_blank" rel="noopener" href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/">也谈goroutine调度器</a></li>
+<li><a target="_blank" rel="noopener" href="https://speakerdeck.com/kavya719/the-scheduler-saga">kavya的调度PPT</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/golang/proposal/blob/master/design/24543-non-cooperative-preemption.md">抢占的设计提案，Proposal: Non-cooperative goroutine preemption</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/03/26/golang-scheduler-2-macro-view/" rel="prev" title="Go调度器系列（2）宏观看调度器">
+                  <i class="fa fa-chevron-left"></i> Go调度器系列（2）宏观看调度器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/04/14/golang-scheduler-4-explore-source-code/" rel="next" title="Go调度器系列（4）源码阅读与探索">
+                  Go调度器系列（4）源码阅读与探索 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'c5a93fa0e8cfecab1adefdffff80c1d0',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

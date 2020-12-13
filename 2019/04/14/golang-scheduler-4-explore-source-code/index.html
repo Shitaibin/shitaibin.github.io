@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="各位朋友，这次想跟大家分享一下Go调度器源码阅读相关的知识和经验，网络上已经有很多剖析源码的好文章，所以这篇文章不是又一篇源码剖析文章，注重的不是源码分析分享，而是带给大家一些学习经验，希望大家能更好的阅读和掌握Go调度器的实现。 本文主要分2个部分：  解决如何阅读源码的问题。阅读源码本质是把脑海里已经有的调度设计，看看到底是不是这么实现的，是怎么实现的。 带给你一个探索Go调度器实现的办法。源">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go调度器系列（4）源码阅读与探索">
+<meta property="og:url" content="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="各位朋友，这次想跟大家分享一下Go调度器源码阅读相关的知识和经验，网络上已经有很多剖析源码的好文章，所以这篇文章不是又一篇源码剖析文章，注重的不是源码分析分享，而是带给大家一些学习经验，希望大家能更好的阅读和掌握Go调度器的实现。 本文主要分2个部分：  解决如何阅读源码的问题。阅读源码本质是把脑海里已经有的调度设计，看看到底是不是这么实现的，是怎么实现的。 带给你一个探索Go调度器实现的办法。源">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-04-shcedule-flow.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="article:published_time" content="2019-04-14T07:38:59.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.792Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-04-shcedule-flow.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go调度器系列（4）源码阅读与探索 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BB%E6%BA%90%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">如何阅读源码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E5%89%8D%E6%8F%90"><span class="nav-number">1.1.</span> <span class="nav-text">阅读前提</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%A7%80%E6%BA%90%E7%A0%81%E8%B5%84%E6%96%99%E6%8E%A8%E8%8D%90"><span class="nav-number">1.2.</span> <span class="nav-text">优秀源码资料推荐</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%8E%A2%E7%B4%A2%E8%B0%83%E5%BA%A6%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">如何探索调度器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E5%92%8C%E7%BC%96%E8%AF%91Go"><span class="nav-number">2.1.</span> <span class="nav-text">下载和编译Go</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81schedule-%E7%94%B1g0%E6%89%A7%E8%A1%8C"><span class="nav-number">2.2.</span> <span class="nav-text">验证schedule()由g0执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">2.3.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go调度器系列（4）源码阅读与探索
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-04-14 15:38:59" itemprop="dateCreated datePublished" datetime="2019-04-14T15:38:59+08:00">2019-04-14</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>各位朋友，这次想跟大家分享一下Go调度器源码阅读相关的知识和经验，网络上已经有很多剖析源码的好文章，所以这篇文章<strong>不是又一篇源码剖析文章，注重的不是源码分析分享，而是带给大家一些学习经验，希望大家能更好的阅读和掌握Go调度器的实现</strong>。</p>
+<p>本文主要分2个部分：</p>
+<ol>
+<li><strong>解决如何阅读源码的问题</strong>。阅读源码本质是把脑海里已经有的调度设计，看看到底是不是这么实现的，是怎么实现的。</li>
+<li><strong>带给你一个探索Go调度器实现的办法</strong>。源码都到手了，你可以修改、<strong>窥探</strong>，通过这种方式解决阅读源码过程中的疑问，验证一些想法。比如：负责调度的是g0，怎么才能<code>schedule()</code>在执行时，当前是g0呢？</li>
+</ol>
+<h2 id="如何阅读源码"><a href="#如何阅读源码" class="headerlink" title="如何阅读源码"></a>如何阅读源码</h2><h3 id="阅读前提"><a href="#阅读前提" class="headerlink" title="阅读前提"></a>阅读前提</h3><p>阅读Go源码前，最好已经掌握Go调度器的设计和原理，如果你还无法回答以下问题：</p>
+<ol>
+<li>为什么需要Go调度器？</li>
+<li>Go调度器与系统调度器有什么区别和关系/联系？</li>
+<li>G、P、M是什么，三者的关系是什么？</li>
+<li>P有默认几个？</li>
+<li>M同时能绑定几个P？</li>
+<li>M怎么获得G？</li>
+<li>M没有G怎么办？</li>
+<li>为什么需要全局G队列？</li>
+<li>Go调度器中的负载均衡的2种方式是什么？</li>
+<li>work stealing是什么？什么原理？</li>
+<li>系统调用对G、P、M有什么影响？</li>
+<li>Go调度器抢占是什么样的？一定能抢占成功吗？</li>
+</ol>
+<p>建议阅读Go调度器系列文章，以及文章中的参考资料：</p>
+<ol>
+<li><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">Go调度器系列（1）起源</a></li>
+<li><a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">Go调度器系列（2）宏观看调度器</a></li>
+<li><a href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">Go调度器系列（3）图解调度原理</a></li>
+</ol>
+<h3 id="优秀源码资料推荐"><a href="#优秀源码资料推荐" class="headerlink" title="优秀源码资料推荐"></a>优秀源码资料推荐</h3><p>既然你已经能回答以上问题，说明你对Go调度器的设计已经有了一定的掌握，关于Go调度器源码的优秀资料已经有很多，我这里推荐2个：</p>
+<ol>
+<li><strong>雨痕的Go源码剖析</strong>六章并发调度，不止是源码，是以源码为基础进行了详细的Go调度器介绍：<a target="_blank" rel="noopener" href="https://github.com/qyuhen/book">https://github.com/qyuhen/book</a></li>
+<li><strong>Go夜读</strong>第12期，golang中goroutine的调度，M、P、G各自的一生状态，以及转换关系：<a target="_blank" rel="noopener" href="https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/">https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/</a></li>
+</ol>
+<p>Go调度器的源码还涉及GC等，阅读源码时，可以暂时先跳过，主抓调度的逻辑。</p>
+<p>另外，Go调度器涉及汇编，也许你不懂汇编，不用担心，雨痕的文章对汇编部分有进行解释。</p>
+<p>最后，送大家一幅流程图，画出了主要的调度流程，大家也可边阅读边画，增加理解，<strong>高清版可到博客下载（原图原文跳转）</strong>。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-shcedule-flow.png"></p>
+<h2 id="如何探索调度器"><a href="#如何探索调度器" class="headerlink" title="如何探索调度器"></a>如何探索调度器</h2><p>这部分教你探索Go调度器的源码，验证想法，主要思想就是，下载Go的源码，添加调试打印，编译修改的源文件，生成修改的go，然后使用修改go运行测试代码，观察结果。</p>
+<h3 id="下载和编译Go"><a href="#下载和编译Go" class="headerlink" title="下载和编译Go"></a>下载和编译Go</h3><ol>
+<li><p>Github下载，并且换到go1.11.2分支，本文所有代码修改都基于go1.11.2版本。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ GODIR=<span class="variable">$GOPATH</span>/src/github.com/golang/go</span><br><span class="line">$ mkdir -p <span class="variable">$GODIR</span></span><br><span class="line">$ <span class="built_in">cd</span> <span class="variable">$GODIR</span>/..</span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/golang/go.git</span><br><span class="line">$ <span class="built_in">cd</span> go</span><br><span class="line">$ git fetch origin go1.11.2</span><br><span class="line">$ git checkout origin/go1.11.2</span><br><span class="line">$ git checkout -b go1.11.2</span><br><span class="line">$ git checkout go1.11.2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>初次编译，会跑测试，耗时长一点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> <span class="variable">$GODIR</span>/src</span><br><span class="line">$ ./all.bash</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以后每次修改go源码后可以这样，4分钟左右可以编译完成</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span>  <span class="variable">$GODIR</span>/src</span><br><span class="line">$ time ./make.bash</span><br><span class="line">Building Go cmd/dist using /usr/<span class="built_in">local</span>/go.</span><br><span class="line">Building Go toolchain1 using /usr/<span class="built_in">local</span>/go.</span><br><span class="line">Building Go bootstrap cmd/go (go_bootstrap) using Go toolchain1.</span><br><span class="line">Building Go toolchain2 using go_bootstrap and Go toolchain1.</span><br><span class="line">Building Go toolchain3 using go_bootstrap and Go toolchain2.</span><br><span class="line">Building packages and commands <span class="keyword">for</span> linux/amd64.</span><br><span class="line">---</span><br><span class="line">Installed Go <span class="keyword">for</span> linux/amd64 <span class="keyword">in</span> /home/xxx/go/src/github.com/golang/go</span><br><span class="line">Installed commands <span class="keyword">in</span> /home/xxx/go/src/github.com/golang/go/bin</span><br><span class="line"></span><br><span class="line">real	1m11.675s</span><br><span class="line">user	4m4.464s</span><br><span class="line">sys	0m18.312s</span><br></pre></td></tr></table></figure>
+<p>编译好的go和gofmt在<code>$GODIR/bin</code>目录。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ll <span class="variable">$GODIR</span>/bin</span><br><span class="line">total 16044</span><br><span class="line">-rwxrwxr-x 1 vnt vnt 13049123 Apr 14 10:53 go</span><br><span class="line">-rwxrwxr-x 1 vnt vnt  3377614 Apr 14 10:53 gofmt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为了防止我们修改的go和过去安装的go冲突，创建igo软连接，指向修改的go。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p ~/testgo/bin</span><br><span class="line">$ <span class="built_in">cd</span> ~/testgo/bin</span><br><span class="line">$ ln -sf <span class="variable">$GODIR</span>/bin/go igo</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，把<code>~/testgo/bin</code>加入到<code>PATH</code>，就能使用<code>igo</code>来编译代码了，运行下igo，应当获得go1.11.2的版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ igo version</span><br><span class="line">go version go1.11.2 linux/amd64</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>当前，已经掌握编译和使用修改的go的办法，接下来就以1个简单的例子，教大家如何验证想法。</p>
+<h3 id="验证schedule-由g0执行"><a href="#验证schedule-由g0执行" class="headerlink" title="验证schedule()由g0执行"></a>验证schedule()由g0执行</h3><p>阅读源码的文章，你已经知道了g0是负责调度的，并且g0是全局变量，可在runtime包的任何地方直接使用，看到<code>schedule()</code>代码如下（所在文件：<code>$GODIR/src/runtime/proc.go</code>）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// One round of scheduler: find a runnable goroutine and execute it.</span></span><br><span class="line"><span class="comment">// Never returns.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">schedule</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获取当前g，调度时这个g应当是g0</span></span><br><span class="line">	_g_ := getg()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _g_.m.locks != <span class="number">0</span> &#123;</span><br><span class="line">		throw(<span class="string">&quot;schedule: holding locks&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// m已经被某个g锁定，先停止当前m，等待g可运行时，再执行g，并且还得到了g所在的p</span></span><br><span class="line">	<span class="keyword">if</span> _g_.m.lockedg != <span class="number">0</span> &#123;</span><br><span class="line">		stoplockedm()</span><br><span class="line">		execute(_g_.m.lockedg.ptr(), <span class="literal">false</span>) <span class="comment">// Never returns.</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 省略...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>问题</strong>：既然g0是负责调度的，为何<code>schedule()</code>每次还都执行<code>_g_ := getg()</code>，直接使用g0不行吗？<code>schedule()</code>真的是g0执行的吗？</p>
+<p>在<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">《Go调度器系列（2）宏观看调度器》</a>这篇文章中我曾介绍了trace的用法，阅读代码时发现<strong>使用<code>debug.schedtrace</code>和<code>print()</code>函数可以用作打印调试信息</strong>，那我们是不是可以使用这种方法打印我们想获取的信息呢？当然可以。</p>
+<p>另外，注意<code>print()</code>并不是<code>fmt.Print()</code>，也不是C语言的<code>printf</code>，所以不是格式化输出，它是汇编实现的，我们不深入去了解它的实现了，现在要掌握它的用法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The print built-in function formats its arguments in an</span></span><br><span class="line"><span class="comment">// implementation-specific way and writes the result to standard error.</span></span><br><span class="line"><span class="comment">// Print is useful for bootstrapping and debugging; it is not guaranteed</span></span><br><span class="line"><span class="comment">// to stay in the language.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">print</span><span class="params">(args ...Type)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>从上面可以看到，它接受可变长参数，我们使用的时候只需要传进去即可，但要手动控制格式。</p>
+<p>我们修改<code>schedule()</code>函数，使用<code>debug.schedtrace &gt; 0</code>控制打印，加入3行代码，把goid给打印出来，如果始终打印goid为0，则代表调度确实是由g0执行的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> debug.schedtrace &gt; <span class="number">0</span> &#123;</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">&quot;schedule(): goid = &quot;</span>, _g_.goid, <span class="string">&quot;\n&quot;</span>) <span class="comment">// 会是0吗？是的</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>schedule()</code>如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// One round of scheduler: find a runnable goroutine and execute it.</span></span><br><span class="line"><span class="comment">// Never returns.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">schedule</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获取当前g，调度时这个g应当是g0</span></span><br><span class="line">	_g_ := getg()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> debug.schedtrace &gt; <span class="number">0</span> &#123;</span><br><span class="line">		<span class="built_in">print</span>(<span class="string">&quot;schedule(): goid = &quot;</span>, _g_.goid, <span class="string">&quot;\n&quot;</span>) <span class="comment">// 会是0吗？是的</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _g_.m.locks != <span class="number">0</span> &#123;</span><br><span class="line">		throw(<span class="string">&quot;schedule: holding locks&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译igo：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd  $GODIR&#x2F;src</span><br><span class="line">$ .&#x2F;make.bash</span><br></pre></td></tr></table></figure>
+
+<p>编写一个简单的demo（不能更简单）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下，你会发现所有的<code>schedule()</code>函数调用都打印<code>goid = 0</code>，足以证明Go调度器的调度由g0完成（如果你认为还是缺乏说服力，可以写复杂一些的demo）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ GODEBUG=schedtrace=1000 igo run demo1.go</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">SCHED 0ms: gomaxprocs=8 idleprocs=6 threads=4 spinningthreads=1 idlethreads=0 runqueue=0 [0 0 0 0 0 0 0 0]</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">// 省略几百行</span><br></pre></td></tr></table></figure>
+
+<p><strong>启发比结论更重要，希望各位朋友在学习Go调度器的时候，能多一些自己的探索和研究，而不仅仅停留在看看别人文章之上</strong>。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://golang.org/doc/install/source">Installing Go from source</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/">http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/04/04/golang-scheduler-3-principle-with-graph/" rel="prev" title="Go调度器系列（3）图解调度原理">
+                  <i class="fa fa-chevron-left"></i> Go调度器系列（3）图解调度原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/04/26/ethereum-keys-transform/" rel="next" title="以太坊密钥转换">
+                  以太坊密钥转换 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '895697b9c8d43e36072783fa1a99f770',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

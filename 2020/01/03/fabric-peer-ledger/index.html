@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="区块链最核心的是可信数据，所有的功能与设计根源都是数据。本次从数据存储的角度，看一看Peer。 账本区块链的数据存储在账本中，账本包含：  区块存储 区块文件 区块索引数据库   世界状态数据库 历史数据库 私有数据数据库  关于账本以上各数据库的工具，官方文档中对区块存储和世界状态数据库介绍的比较详细了，但我们介绍下它没有提到的。 区块文件和区块索引数据库区块是保存在文件中的，为了快速查找区块、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fabric 1.4源码解读 9：从账本角度看Peer">
+<meta property="og:url" content="http://lessisbetter.site/2020/01/03/fabric-peer-ledger/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="区块链最核心的是可信数据，所有的功能与设计根源都是数据。本次从数据存储的角度，看一看Peer。 账本区块链的数据存储在账本中，账本包含：  区块存储 区块文件 区块索引数据库   世界状态数据库 历史数据库 私有数据数据库  关于账本以上各数据库的工具，官方文档中对区块存储和世界状态数据库介绍的比较详细了，但我们介绍下它没有提到的。 区块文件和区块索引数据库区块是保存在文件中的，为了快速查找区块、">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-01-blockfile-index.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-01-peer-ledger-storage.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-01-03-usage-of-peer-ledger.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-01-mvcc-read-write.png">
+<meta property="article:published_time" content="2020-01-03T12:58:03.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.780Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="Fabric">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2020-01-blockfile-index.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2020/01/03/fabric-peer-ledger/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Fabric 1.4源码解读 9：从账本角度看Peer | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A6%E6%9C%AC"><span class="nav-number">1.</span> <span class="nav-text">账本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%9D%97%E6%96%87%E4%BB%B6%E5%92%8C%E5%8C%BA%E5%9D%97%E7%B4%A2%E5%BC%95%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.1.</span> <span class="nav-text">区块文件和区块索引数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%86%E5%8F%B2%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.2.</span> <span class="nav-text">历史数据库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">各数据库实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E6%95%B0%E6%8D%AE%E7%9C%8BPeer%E5%8A%9F%E8%83%BD"><span class="nav-number">3.</span> <span class="nav-text">从数据看Peer功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A6%E6%9C%AC-1"><span class="nav-number">3.1.</span> <span class="nav-text">账本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E6%95%B0%E6%8D%AE"><span class="nav-number">3.2.</span> <span class="nav-text">同步数据</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Deliver%E5%90%8C%E6%AD%A5%E5%8C%BA%E5%9D%97"><span class="nav-number">3.2.1.</span> <span class="nav-text">使用Deliver同步区块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Peer%E8%AF%B7%E6%B1%82%E5%8C%BA%E5%9D%97"><span class="nav-number">3.2.2.</span> <span class="nav-text">Peer请求区块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Peer%E5%A4%84%E7%90%86%E6%94%B6%E5%88%B0%E7%9A%84%E5%8C%BA%E5%9D%97"><span class="nav-number">3.2.3.</span> <span class="nav-text">Peer处理收到的区块</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E5%8C%BA%E5%9D%97"><span class="nav-number">3.2.3.1.</span> <span class="nav-text">验证区块</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8C%BA%E5%9D%97%E5%86%99%E5%85%A5%E8%B4%A6%E6%9C%AC"><span class="nav-number">3.2.3.2.</span> <span class="nav-text">区块写入账本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%99%E5%8C%BA%E5%9D%97%E5%AE%8C%E6%88%90%E5%90%8E"><span class="nav-number">3.2.3.3.</span> <span class="nav-text">写区块完成后</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E4%B9%A6"><span class="nav-number">3.3.</span> <span class="nav-text">背书</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MVCC"><span class="nav-number">3.3.1.</span> <span class="nav-text">MVCC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Fabric%E5%AF%B9MVCC%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">3.3.2.</span> <span class="nav-text">Fabric对MVCC的使用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/01/03/fabric-peer-ledger/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Fabric 1.4源码解读 9：从账本角度看Peer
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-03 20:58:03" itemprop="dateCreated datePublished" datetime="2020-01-03T20:58:03+08:00">2020-01-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>区块链最核心的是<strong>可信数据</strong>，所有的功能与设计根源都是数据。本次从数据存储的角度，看一看Peer。</p>
+<h2 id="账本"><a href="#账本" class="headerlink" title="账本"></a>账本</h2><p>区块链的数据存储在账本中，账本包含：</p>
+<ul>
+<li>区块存储<ul>
+<li>区块文件</li>
+<li>区块索引数据库</li>
+</ul>
+</li>
+<li>世界状态数据库</li>
+<li>历史数据库</li>
+<li>私有数据数据库</li>
+</ul>
+<p>关于账本以上各数据库的工具，<a target="_blank" rel="noopener" href="https://hyperledger-fabric-cn.readthedocs.io/zh/latest/ledger/ledger.html">官方文档</a>中对区块存储和世界状态数据库介绍的比较详细了，但我们介绍下它没有提到的。</p>
+<h3 id="区块文件和区块索引数据库"><a href="#区块文件和区块索引数据库" class="headerlink" title="区块文件和区块索引数据库"></a>区块文件和区块索引数据库</h3><p>区块是保存在文件中的，<strong>为了快速查找区块、交易</strong>，Fabric建立了索引，指明某通道某区块高度的第x个交易，是存在哪个文件，偏移量是多少。当然，索引还包含了区块高度、区块hash等，方便根据高度、hash查询区块。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-blockfile-index.png"></p>
+<p>上图展示了一个区块文件存储区块的情况，每个区块包含：</p>
+<ul>
+<li>区块长度</li>
+<li>区块头</li>
+<li>每条交易长度、交易数据</li>
+</ul>
+<p>每个区块的开始位置、交易的开始位置，在写区块的时候记录下来，然后写到索引数据库（Index DB）。</p>
+<p><strong>整个Fabric网络只有1个区块索引数据库，也就是多通道共用一个</strong>。</p>
+<h3 id="历史数据库"><a href="#历史数据库" class="headerlink" title="历史数据库"></a>历史数据库</h3><p><strong>用来记录交易中每个状态数据的历史信息，直白点可以理解为链码中某个key的历史数值</strong>。它的key实际是<code>&#123;通道id+链码id, key, 区块高度, 交易在区块中的序号&#125;</code>组成的<strong>复合key</strong>，值为空，并且只包含有效的交易。</p>
+<p>有这样一个问题：值为空，到底怎么查询到历史状态呢？</p>
+<p>答：通过历史数据库合成复合key，但复合key中没有交易在区块中的序号，创建一个迭代器，迭代器可以获取包含key的复合key，然后从复合key中提取到交易在区块的序号，然后去区块文件中提取交易，再提取到写集的Value，就可以合成某个key的所有历史值。</p>
+<p>因此<strong>查询历史状态，需要结合历史数据库和区块文件</strong>。</p>
+<h2 id="各数据库实现"><a href="#各数据库实现" class="headerlink" title="各数据库实现"></a>各数据库实现</h2><p><strong>区块文件使用文件直接存储区块，没有使用数据库的原因</strong>是：区块是一种自然的追加操作，写入后不再修改，即不会覆盖历史区块，使用文件系统直接存储区块，可以达到区块最快落盘的目的，因为向文件写区块是顺序写，而写数据库是随机写，磁盘（包含HD、SSD）的顺序写性能要高于随机写。</p>
+<p>世界状态数据库可以使用leveldb或者CouchDB，CouchDB支持富查询功能，当链码数据按JSON建模时，CouchDB可以提供更好的数据查询，更多CouchDB的信息见文档<a target="_blank" rel="noopener" href="https://stone-fabric.readthedocs.io/zh/latest/couchdb_tutorial.html">使用 CouchDB</a>。</p>
+<p>其他数据库都使用leveldb作为底层存储。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-peer-ledger-storage.png"></p>
+<p><strong>提醒</strong>：Fabric支持多通道，逻辑上每个通道拥有一个账本。实现上区块文件是按通道名隔离开了，使用leveldb的各数据库，被各通道共用。</p>
+<h2 id="从数据看Peer功能"><a href="#从数据看Peer功能" class="headerlink" title="从数据看Peer功能"></a>从数据看Peer功能</h2><p>和账本相关的概念还有<strong>区块、交易和状态</strong>，从账本的角度看，账本向上支撑了2类功能：</p>
+<ol>
+<li>数据同步：广播与同步区块</li>
+<li>交易背书：模拟执行交易</li>
+</ol>
+<p>在下图中，数据同步和交易背书分别使用蓝色和橙色的线圈出，底部剩下的2层为账本。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-03-usage-of-peer-ledger.png"></p>
+<h3 id="账本-1"><a href="#账本-1" class="headerlink" title="账本"></a>账本</h3><p><code>core/ledger</code>实现了Peer的账本功能，包含了账本中的各项数据库，它依赖<code>common/ledger</code>实现区块文件存储，区块文件存储包含3类：</p>
+<ul>
+<li><code>File</code>：把区块保存在文件中，生产环境使用，orderer和peer皆可使用</li>
+<li><code>Json</code>：把文件保证JSON格式的文件中，使用在非生产环境，仅供orderer使用</li>
+<li><code>Ram</code> ：把区块保存在内存中，使用在非生产环境，仅供orderer使用</li>
+</ul>
+<p><code>core/ledger</code>中的：</p>
+<ul>
+<li><code>PeerLedger</code>接口，代表<strong>Peer账本</strong>，主要用来向账本写区块和私有数据，查询区块、交易和私有数据</li>
+<li><code>Txsimulator</code>接口，代表<strong>交易模拟器</strong>，用来模拟执行1条交易</li>
+<li><code>QueryExecutor</code>接口用来查询<strong>最新的</strong>数据</li>
+<li><code>HistoryQueryExecutor</code>接口用来查询<strong>历史</strong>状态</li>
+</ul>
+<h3 id="同步数据"><a href="#同步数据" class="headerlink" title="同步数据"></a>同步数据</h3><p>同步数据有2种方式：</p>
+<ul>
+<li>Deliver服务，Peer使用事件从Orderer获取区块</li>
+<li>Peer向其他节点请求获取某个区间的区块</li>
+</ul>
+<p>虽然Peer获取区块的方式有2种，但收到区块，处理区块的方式只有1种，所以下面分3小节介绍。</p>
+<h4 id="使用Deliver同步区块"><a href="#使用Deliver同步区块" class="headerlink" title="使用Deliver同步区块"></a>使用Deliver同步区块</h4><p>Deliver用来以事件的方式获取区块，场景有2点：</p>
+<ul>
+<li>Peer从Oderer获取区块</li>
+<li>客户端/SDK从Peer获取区块</li>
+</ul>
+<p>在<a href="http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/">Fabric 1.4源码解读 8：Orderer和Peer的交互</a>中已经介绍了Peer从Orderer获取区块，这里再做一点补充。</p>
+<p>Deliver服务是Orderer和Peer都使用的功能，但Orderer并没有<code>core/ledger</code>，所以从设计和实现上，<code>common/deliver</code>是从<code>common/ledger</code>中直接读区块，而不是<code>core/ledger</code>读区块。</p>
+<h4 id="Peer请求区块"><a href="#Peer请求区块" class="headerlink" title="Peer请求区块"></a>Peer请求区块</h4><p>每个Peer可以通过Gossip得知同通道的、所连接的Peer信息，其中一项就是对方Peer账本的高度。账本高度低的Peer可以向高度高的Peer发送<strong>StateRequest</strong>，请求获取某个连续区间的区块。</p>
+<p>Peer上负责StateRequest的是<code>gossip/state</code>模块，它负责：</p>
+<ul>
+<li>创建StateRequest请求</li>
+<li>处理StateRequest请求，生成StateRequest响应</li>
+<li>处理StateRequest响应</li>
+</ul>
+<p>创建请求：假设Peer1比Peer2少50个区块，并且配置了Peer每次最多取10个区块，Peer1会创建5个StateRequest请求，顺序的向Peer2进行请求，Peer1收到前一个请求的响应后，才发出下一个请求。</p>
+<p>处理请求：实际是从账本读取所请求区块的过程，这个过程主要是读取区块文件，如果区块涉及私密数据，也涉及读取私密数据库，这部分功能主要由<code>gossip/privdata</code>完成，<code>gossip/state</code>把读到的区块和私密数据生成请求响应。</p>
+<h4 id="Peer处理收到的区块"><a href="#Peer处理收到的区块" class="headerlink" title="Peer处理收到的区块"></a>Peer处理收到的区块</h4><p>Peer从Orderer和其他Peer哪获取的区块，最终都会进入到<code>gossip/state</code>，区块会被放入到一个区块缓冲区：<strong>PayloadsBuffer</strong>，默认大小为存储200个区块。</p>
+<p>每个通道账本都有一个goroutine，从各自的PayloadsBuffer拿下一个高度的区块，交给<code>gossip/privdata</code>进行区块的验证和写入。</p>
+<h5 id="验证区块"><a href="#验证区块" class="headerlink" title="验证区块"></a>验证区块</h5><p>这部分功能由<code>core/handler/validation</code>完成。在Fabric 1.4中，StateImpl会调用QueryExecutor查询状态，但实际StateImpl没有被调用。</p>
+<p>验证区块主要是并发验证区块中的交易：</p>
+<ul>
+<li>验证交易中的字段</li>
+<li>验证是否满足背书策略</li>
+<li>验证交易是否调用最新版本的链码</li>
+<li>验证交易是否重复</li>
+</ul>
+<p>交易验证的结果，即交易是否有效，并不会保存在交易中，这样区块中记录所有交易的DataHash就变化了。区块中所有交易的有效性存储在区块的元数据中，区块元数据中有一个有效性数组，依次存放了每个交易的有效性，使用数组的下标，与交易在数组中的顺序，一一对应。</p>
+<p>交易验证后，会修改区块的元数据，把无效的交易设置为响应的无效序号。</p>
+<p>如果缺失区块的私有数据，<code>gossip/privdata</code>会创建获取私有数据的请求，并获取私有数据，当区块和私有数据都准备齐全后，开始<strong>commit</strong>区块和私有数据。</p>
+<h5 id="区块写入账本"><a href="#区块写入账本" class="headerlink" title="区块写入账本"></a>区块写入账本</h5><p>包含2大块：</p>
+<ul>
+<li>交易MVCC验证<ul>
+<li>Fabric要求世界状态数据库支持MVCC，即多版本并发控制，以便交易能够并发执行（背书），在真正修改状态的时候，才判断读写的数据是否冲突，冲突的交易会被标记为无效。关于MVCC我们在下文的背书部分再详细介绍。</li>
+</ul>
+</li>
+<li>把区块写入数据库，以及修改各数据库：<ul>
+<li>把区块写入到区块文件</li>
+<li>把区块、交易的索引写入到索引数据库</li>
+<li>把<strong>有效交易</strong>的写集更新到世界状态</li>
+<li>提交历史数据库</li>
+<li>提交私密数据库</li>
+</ul>
+</li>
+</ul>
+<h5 id="写区块完成后"><a href="#写区块完成后" class="headerlink" title="写区块完成后"></a>写区块完成后</h5><p>写区块完成后，还需要做一些<strong>修剪</strong>操作：私密数据是有有效期的，比如存活100个区块时间，假如在1000高度写入了某私有数据，第1100写入账本后，私密数据就要从私密数据库被抹除。</p>
+<h3 id="背书"><a href="#背书" class="headerlink" title="背书"></a>背书</h3><p>Peer除了记账的另外一个角色就是背书，背书很重要的一个环节就是模拟执行交易。</p>
+<h4 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h4><p>Fabric为了提供更高的系统性能，支持并发的执行交易，交易在执行过程中会读写世界状态数据库，也就存在并发访问数据库的场景，为了安全的访问数据库数据，就需要对数据库的并发进行限制。</p>
+<p>Draveness在<a target="_blank" rel="noopener" href="https://draveness.me/database-concurrency-control">浅谈数据库并发控制 - 锁和 MVCC</a>种介绍了并发控制3种手段：悲观锁、乐观锁和MVCC。</p>
+<p>Fabric选择了MVCC，它要求世界状态数据库支持MVCC，本质上讲任何支持MVCC的数据库，都可以用来实现状态数据库。</p>
+<p>MVCC是多版本并发控制的缩写，它是一种思想，而不是一种具体的算法，所以不同的数据库实现的MVCC不同。</p>
+<p>在MVCC的数据存储中，数据有版本的概念，写一个数据的值，实际上是创建了一个新的版本来保存数据。</p>
+<p>MVCC可以实现并发读写的能力，当读数据时，先确定待读数据的版本，然后从该版本读取数据，写数据时，创建新的版本保存数据。读数据必然是已经存在的版本，而写数据是新的版本，因此读写可以并行。</p>
+<p><img src="http://img.lessisbetter.site/2020-01-mvcc-read-write.png"></p>
+<h4 id="Fabric对MVCC的使用"><a href="#Fabric对MVCC的使用" class="headerlink" title="Fabric对MVCC的使用"></a>Fabric对MVCC的使用</h4><p>背书节点在模拟执行交易的过程中，会生成读写集，<strong>读集和写集分别是所有待写key读出来时的版本和待写入的新值</strong>。</p>
+<p>交易并发执行到写入区块的过程中存在2种<strong>读写冲突</strong>的情况：</p>
+<ol>
+<li>同一个区块中的前后两笔交易，后面的交易读集包含某个key，但key在前面交易的写集：也就说后面交易读的是老版本的数据，是一种脏读的情况</li>
+<li>区块中交易的读集的某个key，某之前区块的交易写集修改：背书跟写区块是并发执行的，背书时产生的写集，直到写区块才会更新到世界状态数据库，这里存在一段时间，即key已经有了新版本的数据，只是还没有提交到数据库。如果这期间有新的交易模拟执行，就会读到老版本数据，也是一种脏读的情况</li>
+</ol>
+<p>有效交易的写集会被应用到世界状态数据库，被修改数据都会有一个新的版本，这个版本是逻辑版本，成为Hight，由<code>&#123;区块高度,交易在区块内的顺序&#125;</code>组成。</p>
+<blockquote>
+<p>注：验证函数为 <code>validateTx</code>，读写集冲突错误为 <code>TxValidationCode_MVCC_READ_CONFLICT</code> ，另一个读写冲突错误为 <code>TxValidationCode_PHANTOM_READ_CONFLICT</code>， 因为执行过程中有RangeQuery，查询某个区间的Key，也需要验证这些Key是否冲突，底层本质还是读写集的验证。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从账本的视角，介绍了Peer的账本，以及和账本打交道的功能。</p>
+<p>真正企业级的区块链、大用户规模的区块链，必然能够支撑大量的并发交易，这对账本以及底层存储，都会提出更高的性能要求、磁盘利用率要求，所以理解和掌握账本和存储机制是非常有必要的。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://draveness.me/database-concurrency-control">浅谈数据库并发控制 - 锁和 MVCC</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Multiversion_concurrency_control">WIKI: MVCC</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/Fabric/" rel="tag"># Fabric</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/01/02/wal-introduction/" rel="prev" title="WAL(预写式日志)简介">
+                  <i class="fa fa-chevron-left"></i> WAL(预写式日志)简介
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03/01/causal-relationship-and-personal-ability/" rel="next" title="从因果关系谈个人能力建设和面试">
+                  从因果关系谈个人能力建设和面试 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '775a4119dd5eb028f362b429df02b77e',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

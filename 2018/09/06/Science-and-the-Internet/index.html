@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="前言科学上网，为祖国建设添砖加瓦。  教你浏览器科学上网，获取学习资料。 教你终端科学上网，获取学习资料。  软件列表 Shadowsocks:sock5代理 proxychains-ng:为终端命令设置SOCKS5代理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="让终端科学上网">
+<meta property="og:url" content="http://lessisbetter.site/2018/09/06/Science-and-the-Internet/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="前言科学上网，为祖国建设添砖加瓦。  教你浏览器科学上网，获取学习资料。 教你终端科学上网，获取学习资料。  软件列表 Shadowsocks:sock5代理 proxychains-ng:为终端命令设置SOCKS5代理">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-ss-ng.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-08-ssr-user-pac.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss_http.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss-http-set.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss-socks5.png">
+<meta property="article:published_time" content="2018-09-06T12:35:40.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.764Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Mac">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-01-ss-ng.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2018/09/06/Science-and-the-Internet/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>让终端科学上网 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%88%97%E8%A1%A8"><span class="nav-number">2.</span> <span class="nav-text">软件列表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#shadowsocks"><span class="nav-number">3.</span> <span class="nav-text">shadowsocks</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BF%87%E6%BB%A4%E8%A7%84%E5%88%99"><span class="nav-number">3.1.</span> <span class="nav-text">自定义过滤规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%90%AFHTTP%E4%BB%A3%E7%90%86"><span class="nav-number">3.2.</span> <span class="nav-text">开启HTTP代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%90%AFSOCKS5%E4%BB%A3%E7%90%86"><span class="nav-number">3.3.</span> <span class="nav-text">开启SOCKS5代理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%88%E7%AB%AF%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91"><span class="nav-number">4.</span> <span class="nav-text">终端科学上网</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8proxychains%E5%81%9Asocks5%E4%BB%A3%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">用proxychains做socks5代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">4.2.</span> <span class="nav-text">设置环境变量</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/09/06/Science-and-the-Internet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          让终端科学上网
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-09-06 20:35:40" itemprop="dateCreated datePublished" datetime="2018-09-06T20:35:40+08:00">2018-09-06</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>科学上网，为祖国建设添砖加瓦。</p>
+<ul>
+<li>教你浏览器科学上网，获取学习资料。</li>
+<li>教你终端科学上网，获取学习资料。</li>
+</ul>
+<h1 id="软件列表"><a href="#软件列表" class="headerlink" title="软件列表"></a>软件列表</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/shadowsocks/shadowsocks-iOS/wiki/Shadowsocks-for-OSX-%E5%B8%AE%E5%8A%A9">Shadowsocks</a>:sock5代理</li>
+<li>proxychains-ng:为终端命令设置SOCKS5代理</li>
+</ul>
+<a id="more"></a>
+
+<h1 id="shadowsocks"><a href="#shadowsocks" class="headerlink" title="shadowsocks"></a>shadowsocks</h1><p><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/VeniZ/ShadowsocksX-NG-R8-Bakup/master/ShadowsocksX-NG-R8.dmg">ShadowsocksX-NG-R8</a>是Mac版本，可单独使用，不需要配置Chrome代理插件，使用用的PAC白名单上网模式，可以减少很多配置，并且体验更好。</p>
+<p>最厉害的是，可以把一切TCP转为SOCKS5，也就是说http和https也都可以转换的，只配置一个socks5代理就行了。</p>
+<p>设置步骤：</p>
+<ol>
+<li>添加服务器信息。</li>
+<li>设置全局模式</li>
+<li>更新PAC列表</li>
+<li>访问Google搜索</li>
+<li>设置为PAC模式</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-01-ss-ng.png"></p>
+<p>经过以上配置，浏览器可以直接科学上网了，如果让终端和其他服务器上网，可设置Shadowsocks的http代理和socks5代理。</p>
+<h2 id="自定义过滤规则"><a href="#自定义过滤规则" class="headerlink" title="自定义过滤规则"></a>自定义过滤规则</h2><p>从网上更新来的PAC，有些网址并没有走代理，这样访问速度依然很慢，比如我经常访问Fabric的网站，每个网页都也2s以上才能刷新出来，刷新完成就要更久了。</p>
+<p>SSR提供了用户自定义PAC的方法，只要把自定义规则黏贴在里面就可以了：</p>
+<p><img src="http://img.lessisbetter.site/2019-08-ssr-user-pac.png"></p>
+<p>自定义PAC编写规则，下面的<code>.hyperledger.org</code>，所有<code>hyperledger.org</code>网站的连接都会走<code>remote proxy</code>，注意前面的<code>.</code>不要少了，这个正则规则可以匹配<code>*.hyperledger.org</code>以及<code>hyperledger.org</code>本身。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.hyperledger.org remoteproxy</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="开启HTTP代理"><a href="#开启HTTP代理" class="headerlink" title="开启HTTP代理"></a>开启HTTP代理</h2><p>点击状态栏shadowsocks图标，【HTTP代理设置…】是配置Http代理。【高级设置…】是socks5代理设置。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-ss_http.png"></p>
+<p><strong>http代理支持http和https2个协议的代理</strong>，IP设置为0.0.0.0就可以为其他机器做http和https代理，如果只有本机用，可以使用默认的127。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-ss-http-set.png"></p>
+<h2 id="开启SOCKS5代理"><a href="#开启SOCKS5代理" class="headerlink" title="开启SOCKS5代理"></a>开启SOCKS5代理</h2><p>socks5的ip设置同http代理。</p>
+<p><img src="http://img.lessisbetter.site/2019-07-ss-socks5.png"></p>
+<h1 id="终端科学上网"><a href="#终端科学上网" class="headerlink" title="终端科学上网"></a>终端科学上网</h1><h2 id="用proxychains做socks5代理"><a href="#用proxychains做socks5代理" class="headerlink" title="用proxychains做socks5代理"></a>用proxychains做socks5代理</h2><p>作为研发，天天和国外资源打交道，必需让终端也能科学上网，不然下载个、更新软件，或者下载源码就吐血了。</p>
+<p>用下来最稳定省心的办法是proxychains-ng，优点突出：</p>
+<ul>
+<li>必要特性：稳定可行</li>
+<li>加分特性：代理只局限于使用的软件，不会污染整个系统的代理</li>
+</ul>
+<p>安装proxychains-ng</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install proxychains-ng</span><br></pre></td></tr></table></figure>
+
+<p>运行会列出配置文件位置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 wget www.google.com</span><br><span class="line">[proxychains] config file found: &#x2F;usr&#x2F;local&#x2F;etc&#x2F;proxychains.conf</span><br><span class="line">[proxychains] preloading &#x2F;usr&#x2F;local&#x2F;Cellar&#x2F;proxychains-ng&#x2F;4.13&#x2F;lib&#x2F;libproxychains4.dylib</span><br></pre></td></tr></table></figure>
+
+<p>打开配置文件：<code>/usr/local/etc/proxychains.conf</code>。</p>
+<ul>
+<li>dynamic_chain，取消这行注释</li>
+<li>strict_chain， 注释</li>
+<li>最后一行添加<code>socks5 127.0.0.1 1086</code></li>
+</ul>
+<p><strong>验证科学上网的唯一标准：能用wget下载google主页</strong>，什么<code>curl ip.cn</code>这种不一定准，虽然显示你的是国外IP了，说明这次<code>curl</code>走了代理，但不代表你能使用wget下载，能更新源码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  t proxychains4 wget www.google.com</span><br><span class="line">[proxychains] config file found: &#x2F;usr&#x2F;local&#x2F;etc&#x2F;proxychains.conf</span><br><span class="line">[proxychains] preloading &#x2F;usr&#x2F;local&#x2F;Cellar&#x2F;proxychains-ng&#x2F;4.13&#x2F;lib&#x2F;libproxychains4.dylib</span><br><span class="line">[proxychains] DLL init: proxychains-ng 4.13</span><br><span class="line">--2018-09-06 20:24:26--  http:&#x2F;&#x2F;www.google.com&#x2F;</span><br><span class="line">正在解析主机 www.google.com (www.google.com)... 224.0.0.1</span><br><span class="line">正在连接 www.google.com (www.google.com)|224.0.0.1|:80... [proxychains] Strict chain  ...  127.0.0.1:1080  ...  www.google.com:80  ...  OK</span><br><span class="line">已连接。</span><br><span class="line">已发出 HTTP 请求，正在等待回应... 200 OK</span><br><span class="line">长度：未指定 [text&#x2F;html]</span><br><span class="line">正在保存至: “index.html.10”</span><br><span class="line"></span><br><span class="line">index.html.10                    [ &lt;&#x3D;&gt;                                           ]  11.11K  --.-KB&#x2F;s  用时 0s</span><br><span class="line"></span><br><span class="line">2018-09-06 20:24:27 (59.9 MB&#x2F;s) - “index.html.10” 已保存 [11375]</span><br></pre></td></tr></table></figure>
+
+<p>为了方便使用proxychains可以设置命令昵称，比如我的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alias py4&#x3D;&quot;proxychains4&quot;</span><br><span class="line">alias wget&#x3D;&quot;py4 wget&quot;</span><br></pre></td></tr></table></figure>
+
+<p>使用这种方式还遇到过某些https就是连接超时的情况，比如<code>google.golang.org</code>，可以这么解决：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 zsh</span><br></pre></td></tr></table></figure>
+
+<p>这样会新启动一个zsh会话，当前会话的所有连接都转换为socks5代理。</p>
+<h2 id="设置环境变量"><a href="#设置环境变量" class="headerlink" title="设置环境变量"></a>设置环境变量</h2><p>如果不想安装proxychain，另外一种简便的方式是，设置全局的http和https代理，建议不要加到<code>.bash_profile</code>等，不然始终都走代理了，建议在使用的时候，设置代理即可，可以把羡慕代码直接黏贴到终端，但先换成自己的SS http代理服务的IP和端口。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> http_proxy=<span class="string">&quot;http://192.168.102.143:1087&quot;</span></span><br><span class="line"><span class="built_in">export</span> https_proxy=<span class="string">&quot;http://192.168.102.143:1087&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用<code>export http_proxy=127.0.0.1:1087</code>，大多数情况也没毛病，但由此在Docker里更新系统时，IP和端口识别不正确的情况，建议使用带协议头的方式，还有就是使用主机实际的IP，不要使用127或者localhost，因为在docker里的命令走代理的时候，可能会连接到docker本身的端口，导致连接被拒绝。</p>
+<p>另外，<code>https_proxy=&quot;http://192.168.102.143:1087</code>，这让https_proxy实际走的是http代理，如果不这样设置，访问goolge某些网站的时候，可能会遇到超时、握手失败的情况。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mac/" rel="tag"># Mac</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/09/04/explore-golang-timer/" rel="prev" title="探索Golang定时器的陷阱">
+                  <i class="fa fa-chevron-left"></i> 探索Golang定时器的陷阱
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/09/07/rename-rm-in-MacOS/" rel="next" title="重命名rm命令，防止误删">
+                  重命名rm命令，防止误删 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '4d49bc6afb9b1f045d15063be4a83ab2',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

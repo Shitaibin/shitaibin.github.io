@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="测试环境Ubuntu 18.04，内核版本4.15，机器拥有4核。 123456789[~]$ cat &#x2F;proc&#x2F;versionLinux version 4.15.0-112-generic (buildd@lcy01-amd64-027) (gcc version 7.5.0 (Ubuntu 7.5.0-3ubuntu1~18.04)) #113-Ubuntu SMP T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker容器基础3：Cgroup - cpu, cpuacct, cpuset子系统">
+<meta property="og:url" content="http://lessisbetter.site/2020/09/01/cgroup-3-cpu-md/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="测试环境Ubuntu 18.04，内核版本4.15，机器拥有4核。 123456789[~]$ cat &#x2F;proc&#x2F;versionLinux version 4.15.0-112-generic (buildd@lcy01-amd64-027) (gcc version 7.5.0 (Ubuntu 7.5.0-3ubuntu1~18.04)) #113-Ubuntu SMP T">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpux.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpu-share.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpu-cfs.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpuacct.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpuset.png">
+<meta property="article:published_time" content="2020-09-01T15:00:24.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.766Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Cgroup">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2020-09-cgroup-cpux.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2020/09/01/cgroup-3-cpu-md/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Docker容器基础3：Cgroup - cpu, cpuacct, cpuset子系统 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="nav-number">1.</span> <span class="nav-text">测试环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU%E7%9B%B8%E5%85%B3%E5%AD%90%E7%B3%BB%E7%BB%9F%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">CPU相关子系统简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cpu"><span class="nav-number">2.1.</span> <span class="nav-text">cpu</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cpuacct"><span class="nav-number">2.2.</span> <span class="nav-text">cpuacct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cpuset"><span class="nav-number">2.3.</span> <span class="nav-text">cpuset</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8Docker%E6%BC%94%E7%A4%BACgroup-CPU%E9%99%90%E5%88%B6"><span class="nav-number">3.</span> <span class="nav-text">利用Docker演示Cgroup CPU限制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cpu-1"><span class="nav-number">3.1.</span> <span class="nav-text">cpu</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8D%E9%99%90%E5%88%B6cpu%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">3.1.1.</span> <span class="nav-text">不限制cpu的情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%99%90%E5%88%B6cpu%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">3.1.2.</span> <span class="nav-text">限制cpu的情况</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cpuacct-1"><span class="nav-number">3.2.</span> <span class="nav-text">cpuacct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cpuset-1"><span class="nav-number">3.3.</span> <span class="nav-text">cpuset</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8Go%E6%BC%94%E7%A4%BACgroup-CPU%E9%99%90%E5%88%B6"><span class="nav-number">4.</span> <span class="nav-text">利用Go演示Cgroup CPU限制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E9%99%90%E5%88%B6CPU"><span class="nav-number">4.1.</span> <span class="nav-text">不限制CPU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8cpu%E9%99%90%E5%88%B6CPU%E4%BD%BF%E7%94%A8%E7%8E%87"><span class="nav-number">4.2.</span> <span class="nav-text">使用cpu限制CPU使用率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8cpuset%E9%99%90%E5%88%B6CPU%E5%8D%A0%E7%94%A8%E7%9A%84%E6%A0%B8"><span class="nav-number">4.3.</span> <span class="nav-text">使用cpuset限制CPU占用的核</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E8%B5%84%E6%96%99"><span class="nav-number">5.</span> <span class="nav-text">推荐资料</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/09/01/cgroup-3-cpu-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker容器基础3：Cgroup - cpu, cpuacct, cpuset子系统
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-01 23:00:24" itemprop="dateCreated datePublished" datetime="2020-09-01T23:00:24+08:00">2020-09-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h2><p>Ubuntu 18.04，内核版本4.15，机器拥有4核。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[~]$ cat &#x2F;proc&#x2F;version</span><br><span class="line">Linux version 4.15.0-112-generic (buildd@lcy01-amd64-027) (gcc version 7.5.0 (Ubuntu 7.5.0-3ubuntu1~18.04)) #113-Ubuntu SMP Thu Jul 9 23:41:39 UTC 2020</span><br><span class="line">[~]$</span><br><span class="line">[~]$ cat &#x2F;etc&#x2F;os-release</span><br><span class="line">NAME&#x3D;&quot;Ubuntu&quot;</span><br><span class="line">VERSION&#x3D;&quot;18.04.3 LTS (Bionic Beaver)&quot;</span><br><span class="line">...</span><br><span class="line">[~]$ cat &#x2F;proc&#x2F;cpuinfo | grep &quot;processor&quot; | wc -l</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+
+<h2 id="CPU相关子系统简介"><a href="#CPU相关子系统简介" class="headerlink" title="CPU相关子系统简介"></a>CPU相关子系统简介</h2><p>有关CPU的cgroup subsystem有3个：</p>
+<ul>
+<li>cpu : 用来<strong>限制</strong>cgroup的CPU使用率</li>
+<li>cpuacct : 用来<strong>统计</strong>cgroup的CPU的使用率</li>
+<li>cpuset : 用来绑定cgroup到指定CPU的哪个核上和NUMA节点</li>
+</ul>
+<p>每个子系统都有多个配置项和指标文件，主要介绍下图常用的配置项：</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpux.png" alt="cpu、cpuacct、cpuset的指标"></p>
+<h3 id="cpu"><a href="#cpu" class="headerlink" title="cpu"></a>cpu</h3><p>cpu子系统用来限制cgroup如何使用CPU的时间，也就是调度，它提供了3种调度办法，并且这3种调度办法都可以在启动容器时进行配置，分别是：</p>
+<ul>
+<li>share ：相对权重的CPU调度</li>
+<li>cfs ：完全公平调度</li>
+<li>rt ：实时调度</li>
+</ul>
+<p>share调度的配置项和原理如下：</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpu-share.png" alt="cpu share调度"></p>
+<p>cfs 是Completely Fair Scheduler的缩写，代表完全公平调度，它利用 <code>cpu.cfs_quota_us</code> 和 <code>cpu.cfs_period_us</code> 实现公平调度，这两个文件内容组合使用可以限制进程在长度为 <code>cfs_period_us</code> 的时间内，只能被分配到总量为 <code>cfs_quota_us</code> 的 CPU 时间。CFS的指标如下：</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpu-cfs.png" alt="cpu cfs调度"></p>
+<p><strong>注意</strong>： </p>
+<ol>
+<li><code>cfs_period_us</code> 取值范围1000~1000000：1ms ~ 1s，<code>cfs_quota_us</code>的最小值为1000，当设置的值不在取值范围时，会报 <code>write xxx: invalid argument</code> 的错误。</li>
+<li>只有这2个参数都有意义时，才能把任务写入到 tasks 文件。</li>
+</ol>
+<p>rt 是RealTime的缩写，它是实时调度，它与cfs调度的区别是cfs不会保证进程的CPU使用率一定要达到设置的比率，而rt会严格保证，让进程的占用率达到这个比率，适合实时性较强的任务，它包含 <code>cpu.rt_period_us</code> 和 <code>cpu.rt_runtime_us</code> 2个配置项。</p>
+<h3 id="cpuacct"><a href="#cpuacct" class="headerlink" title="cpuacct"></a>cpuacct</h3><p>cpuacct包含非常多的统计指标，常用的有以下4个文件：</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpuacct.png" alt="cpuacct常用指标文件"></p>
+<h3 id="cpuset"><a href="#cpuset" class="headerlink" title="cpuset"></a>cpuset</h3><p>为啥需要cpuset？</p>
+<p>比如：</p>
+<ol>
+<li>多核可以提高并发、并行，但是核太多了，会影响进程执行的局部性，降低效率。</li>
+<li>一个服务器上部署多种应用，不同的应用不同的核。</li>
+</ol>
+<p>cpuset也包含居多的配置项，主要是分为cpu和mem 2类，mem与NUMA有关，其常用的配置项如下图:</p>
+<p><img src="http://img.lessisbetter.site/2020-09-cgroup-cpuset.png" alt="cpuset常用配置项"></p>
+<h2 id="利用Docker演示Cgroup-CPU限制"><a href="#利用Docker演示Cgroup-CPU限制" class="headerlink" title="利用Docker演示Cgroup CPU限制"></a>利用Docker演示Cgroup CPU限制</h2><h3 id="cpu-1"><a href="#cpu-1" class="headerlink" title="cpu"></a>cpu</h3><h4 id="不限制cpu的情况"><a href="#不限制cpu的情况" class="headerlink" title="不限制cpu的情况"></a>不限制cpu的情况</h4><p>stress为基于ubuntu:16.04安装stress做出来的镜像，利用stress来测试cpu限制。</p>
+<p>Dockerfile如下：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">From</span> ubuntu:<span class="number">16.04</span></span><br><span class="line"><span class="comment"># Using Aliyun mirror</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mv /etc/apt/sources.list /root/sources.list.bak</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> sed -e s/security.ubuntu/mirrors.aliyun/ -e s/archive.ubuntu/mirrors.aliyun/ -e s/archive.canonical/mirrors.aliyun/ -e s/esm.ubuntu/mirrors.aliyun/ /root/sources.list.bak &gt; /etc/apt/sources.list</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get install -y stress</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /root</span></span><br></pre></td></tr></table></figure>
+
+<p>启动容器不做任何cpu限制，利用 <code>stress -c 2</code> 开启另外2个stress线程，共3个：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu]$ docker run --rm -it stress:16.04</span><br><span class="line">root@5fad38726740:&#x2F;# stress -c 2</span><br><span class="line">stress: info: [12] dispatching hogs: 2 cpu, 0 io, 1 vm, 0 hdd</span><br></pre></td></tr></table></figure>
+
+<p>在<code>cgroup/cpu,cpuacct</code>下，找到该容器对应的目录，查看 <code>cfs_period_us</code> 和 <code>cfs_quota_us</code> 的默认值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;docker-5fad38726740b90b93c06972fe4a9f11391a38aaeb3e922f10c3269fa32e1873.scope]$ cat cpu.cfs_period_us</span><br><span class="line">100000</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;docker-5fad38726740b90b93c06972fe4a9f11391a38aaeb3e922f10c3269fa32e1873.scope]$ cat cpu.cfs_quota_us</span><br><span class="line">-1</span><br></pre></td></tr></table></figure>
+
+<p>查看主机CPU利用率，为3个stress进程，每1个都100%，它们属于同一个cgroup：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">5616 root      20   0  109872 102336     36 R 100.0  1.3   0:07.46 stress</span><br><span class="line">5617 root      20   0    7468     88      0 R 100.0  0.0   0:07.45 stress</span><br><span class="line">5615 root      20   0    7468     88      0 R 100.0  0.0   0:07.45 stress</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="限制cpu的情况"><a href="#限制cpu的情况" class="headerlink" title="限制cpu的情况"></a>限制cpu的情况</h4><p><code>--cpu-quota</code>设置5000，开stress分配到另外2个核。</p>
+<p>[/sys/fs/cgroup/cpu]$ docker run –rm -it –cpu-quota=5000 stress:16.04<br>root@7e79005d7ca1:/#<br>root@7e79005d7ca1:/# stress  -c 2<br>stress: info: [13] dispatching hogs: 2 cpu, 0 io, 1 vm, 0 hdd</p>
+<p>查看 <code>cfs_period_us</code> 和 <code>cfs_quota_us</code> 的设置，<code>5000/100000 = 5%</code> ， 即限制该容器的CPU使用率不得超过5%。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;docker-7e79005d7ca1b338d870d3dc79af3f1cd38ace195ebd685a09575f6acee36a07.scope]$ cat cpu.cfs_quota_us</span><br><span class="line">5000</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;docker-7e79005d7ca1b338d870d3dc79af3f1cd38ace195ebd685a09575f6acee36a07.scope]$ cat cpu.cfs_period_us</span><br><span class="line">100000</span><br></pre></td></tr></table></figure>
+
+<p>利用top可以看到3个进程总cpu使用率5.1%。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">5411 root      20   0    7468     92      0 R   1.7  0.0   0:00.53 stress</span><br><span class="line">5412 root      20   0  109872 102500     36 R   1.7  1.3   0:00.30 stress</span><br><span class="line">5413 root      20   0    7468     92      0 R   1.7  0.0   0:00.35 stress</span><br></pre></td></tr></table></figure>
+
+<h3 id="cpuacct-1"><a href="#cpuacct-1" class="headerlink" title="cpuacct"></a>cpuacct</h3><p>查看<code>cpuacct.stat, cpuacct.usage, cpuacct.usage_percpu</code>，一定要同时输出这几个文件，不然可能有时间差，利用python可以计算每个核上的时间之和为<code>usage</code>，即该容器占用的cpu总时间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct]$ cat cpuacct.*</span><br><span class="line">user 20244450 &#x2F;&#x2F; cpuacct.stat</span><br><span class="line">system 52361  &#x2F;&#x2F; cpuacct.stat</span><br><span class="line">204310768947624  &#x2F;&#x2F; cpuacct.usage</span><br><span class="line">61143521333219 32616883199042 73804985004267 36745379411096 &#x2F;&#x2F; cpuacct.usage_percpu</span><br><span class="line"></span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu,cpuacct]$ python</span><br><span class="line">Python 2.7.5 (default, Apr 11 2018, 07:36:10)</span><br><span class="line">[GCC 4.8.5 20150623 (Red Hat 4.8.5-28)] on linux2</span><br><span class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span><br><span class="line">&gt;&gt;&gt; sum &#x3D; 61143521333219+32616883199042+73804985004267+36745379411096</span><br><span class="line">&gt;&gt;&gt; dist &#x3D; sum - 204310768947624</span><br><span class="line">&gt;&gt;&gt; dist</span><br><span class="line">0</span><br><span class="line">&gt;&gt;&gt; sum</span><br><span class="line">204310768947624</span><br><span class="line">&gt;&gt;&gt; sum2 &#x3D; 20244450+52361</span><br><span class="line">&gt;&gt;&gt; sum2</span><br><span class="line">20296811</span><br></pre></td></tr></table></figure>
+
+<h3 id="cpuset-1"><a href="#cpuset-1" class="headerlink" title="cpuset"></a>cpuset</h3><p>启动容器，然后使用stress占用1个核：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu]$ docker run --rm -it stress:16.04</span><br><span class="line">root@a907df624697:~#</span><br><span class="line">root@a907df624697:~# stress -c 1</span><br><span class="line">stress: info: [12] dispatching hogs: 1 cpu, 0 io, 0 vm, 0 hdd</span><br></pre></td></tr></table></figure>
+
+<p>top显示占用100%CPU。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">6633 root      20   0    7480     92      0 R 100.0  0.0   0:12.13 stress</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>cpuset 能看到可使用的核为： 0~3。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset&#x2F;docker&#x2F;a907df624697a19631929c1e9e971d2893afddbf6befb0dd44be3cf0024a3e0d]$ cat cpuset.cpus</span><br><span class="line">0-3</span><br></pre></td></tr></table></figure>
+
+<p>使用cpuacct查看CPU情况使用统计，可以看到用了4个核上的使用时间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu&#x2F;docker&#x2F;a907df624697a19631929c1e9e971d2893afddbf6befb0dd44be3cf0024a3e0d]$ cat cpuacct.usage cpuacct.usage_all</span><br><span class="line">153015464879</span><br><span class="line">cpu user system</span><br><span class="line">0 45900415963 0</span><br><span class="line">1 4675002 0</span><br><span class="line">2 63537634967 0</span><br><span class="line">3 43572738947 0</span><br></pre></td></tr></table></figure>
+
+<p>现在创建一个新容器，限制只能用1，3这2个核：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu]$ docker run --rm -it --cpuset-cpus 1,3 stress:16.04</span><br><span class="line">root@0ce61a38e7c9:~# stress -c 1</span><br><span class="line">stress: info: [10] dispatching hogs: 1 cpu, 0 io, 0 vm, 0 hdd</span><br></pre></td></tr></table></figure>
+
+<p>查看可以使用的核：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ cat cpuset.cpus</span><br><span class="line">1,3</span><br></pre></td></tr></table></figure>
+
+<p><code>cpuacct.usage_all</code> 显示只有1、3两个核的数据在使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ cat cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 0 0</span><br><span class="line">1 37322884717 0</span><br><span class="line">2 0 0</span><br><span class="line">3 21332956940 0</span><br></pre></td></tr></table></figure>
+
+<p>现在切换到root账号，把 <code>sched_load_balance</code> 标记设置为0，不进行核间的负载均衡，然后利用 <code>cpuacct.usage_all</code> 查看每个核上的时间，隔几秒前后查询2次，可以发现3号核的cpu使用时间停留在<code>21332956940</code>，而核1的cpu使用时间从<code>185084024837</code> 增加到 <code>221479683602</code>， 说明设置之后stress线程一致在核1上运行，不再进行负载均衡。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ echo 0 &gt; cpuset.sched_load_balance</span><br><span class="line"></span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ cat cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 0 0</span><br><span class="line">1 185084024837 0</span><br><span class="line">2 0 0</span><br><span class="line">3 21332956940 0</span><br><span class="line"></span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu&#x2F;docker&#x2F;0ce61a38e7c9621334871ab40d5b7d287d89a1e994148833ddf3ca4941a39c89]$ cat cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 0 0</span><br><span class="line">1 221479683602 0</span><br><span class="line">2 0 0</span><br><span class="line">3 21332956940 0</span><br></pre></td></tr></table></figure>
+<h2 id="利用Go演示Cgroup-CPU限制"><a href="#利用Go演示Cgroup-CPU限制" class="headerlink" title="利用Go演示Cgroup CPU限制"></a>利用Go演示Cgroup CPU限制</h2><p>测试程序：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/notes/blob/master/docker/codes/02.2.cgroup_cpu.go">02.2.cgroup_cpu.go</a> 。</p>
+<p>该程序接受1个入参，代表测试类型：</p>
+<ul>
+<li>空或<code>nolimit</code>: 无限制</li>
+<li><code>cpu</code> : 执行cpu限制，利用cfs把cpu使用率控制在5%</li>
+<li><code>cpuset</code> : 限制只使用核1和核3</li>
+</ul>
+<p>测试程序的执行动作如下：</p>
+<ol>
+<li>程序首先在cpu和cpuset中创建2个cgroup，</li>
+<li>按传入的参数设置限制或不设置限制</li>
+<li>利用<code>/proc/self/exe</code>启动进程</li>
+<li>把进程加入到2个cgroup的tasks，即加入cgroup</li>
+<li>进程会创建3个goroutine不断的去消耗cpu，它们会占用3个线程</li>
+</ol>
+<p>当CPU使用率不限制时，3个线程会分配到3个核上执行，所以进程的CPU使用率应当达到300%。</p>
+<p>利用测试程序分3组实验，然后利用 <code>top</code>、<code>cpuacct.usage_all</code>、<code>cpuset.cpu</code> 3个角度查看CPU限制和使用情况。</p>
+<h3 id="不限制CPU"><a href="#不限制CPU" class="headerlink" title="不限制CPU"></a>不限制CPU</h3><ol>
+<li>启动测试程序，进程id为4805，进入Namespace后进程id变为1，可以看到启动了3个worker协程。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;home&#x2F;ubuntu&#x2F;workspace&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.2.cgroup_cpu.go</span><br><span class="line">---------- 1 ------------</span><br><span class="line">Test type: No limit</span><br><span class="line">cmdPid: 4805</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">worker 2 start</span><br><span class="line">worker 0 start</span><br><span class="line">worker 1 start</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>top查看进程的CPU占用率为300%，符合预期。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">4805 root      20   0    3376   1004    836 R 300.0  0.0   4:41.09 exe</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>利用cpuacct查看每个核上的使用时间：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuacct]$ cat test_cpu_limit&#x2F;cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 8046597390 0</span><br><span class="line">1 34269979109 0</span><br><span class="line">2 26597651949 0</span><br><span class="line">3 33886705168 0</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>利用cpuset.cpus查看使用的cpu核：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset]$ cat test_cpuset_limit&#x2F;cpuset.cpus</span><br><span class="line">0-3</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="使用cpu限制CPU使用率"><a href="#使用cpu限制CPU使用率" class="headerlink" title="使用cpu限制CPU使用率"></a>使用cpu限制CPU使用率</h3><ol>
+<li>启动测试程序：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;home&#x2F;ubuntu&#x2F;workspace&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.2.cgroup_cpu.go cpu</span><br><span class="line">---------- 1 ------------</span><br><span class="line">Test type: Cpu limit</span><br><span class="line">cmdPid: 4937</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">worker 2 start</span><br><span class="line">worker 1 start</span><br><span class="line">worker 0 start</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>top查看进程的CPU占用率为5.0%，符合预期。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">4937 root      20   0    3376   1004    836 R   5.3  0.0   0:08.40 exe</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>利用cpuacct查看每个核上的使用时间，由于没有限制使用的cpu核，所以每个核上都还有运行时间</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuacct]$ cat test_cpu_limit&#x2F;cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 2036903414 0</span><br><span class="line">1 44170 0</span><br><span class="line">2 4428266075 0</span><br><span class="line">3 4356927661 0</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>利用cpuset.cpus查看使用的cpu核</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset]$ cat test_cpuset_limit&#x2F;cpuset.cpus</span><br><span class="line">0-3</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用cpuset限制CPU占用的核"><a href="#使用cpuset限制CPU占用的核" class="headerlink" title="使用cpuset限制CPU占用的核"></a>使用cpuset限制CPU占用的核</h3><ol>
+<li>启动测试程序，这次与前面的不同，看到只起来了2个worker协程在运行，因为机器上的Go版本是go1.10，还不支持抢占，当协程为for循环时，2个协程都持续运行，不让出cpu，只有2个核时，第3个协程无法运行。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;home&#x2F;ubuntu&#x2F;workspace&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.2.cgroup_cpu.go cpuset</span><br><span class="line">---------- 1 ------------</span><br><span class="line">Test type: Cpuset limit</span><br><span class="line">cmdPid: 5063</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">worker 2 start</span><br><span class="line">worker 0 start</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>top查看进程的CPU占用率为200%，符合只使用2个核的预期。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">5063 root      20   0    3376   1004    836 R 199.7  0.0   4:21.49 exe</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>利用cpuacct查看每个核上的使用时间，只有核1和3上有时间统计，说明只使用了核1和3</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuacct]$ cat test_cpu_limit&#x2F;cpuacct.usage_all</span><br><span class="line">cpu user system</span><br><span class="line">0 0 0</span><br><span class="line">1 24172994458 0</span><br><span class="line">2 0 0</span><br><span class="line">3 24213057511 0</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>利用cpuset.cpus查看使用的cpu核</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset]$ cat test_cpuset_limit&#x2F;cpuset.cpus</span><br><span class="line">1,3</span><br></pre></td></tr></table></figure>
+
+<h2 id="推荐资料"><a href="#推荐资料" class="headerlink" title="推荐资料"></a>推荐资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups/">Linux Kernel关于cgroup cpu、cpuset的文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://union-click.jd.com/jdc?e=&p=AyIGZRtSFwsWB1EcXhUyFQ5WEloVCxMBURxrUV1KWQorAlBHU0VeBUVNR0ZbSkdETlcNVQtHRVNSUVNLXANBRA1XB14DS10cQQVYD21XHgBcGFIUAhsGUx9cJQEbBTJbEmFdcHkRSANGBhBDCnkmEVQeC2UaaxUDEwVWEl8RBhM3ZRtcJUN8B1QaUxMCFAFlGmsVBhoOUx9fFwESB1IfaxICGzeDtdnBl4nT2YZrJTIRN2UrWyUBIkU7HQxBABEGBhILHVdGAgcaXB0DQARWHQ4QVhFVVhkLEVciBVQaXxw=">阿里同学的书《自己动手写Docker》</a></li>
+<li><a target="_blank" rel="noopener" href="https://my.oschina.net/xiaominmin/blog/3068364">解决写 cpu.cfs_quota_us <code>invalid argument</code>问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/xftony/article/details/80536562">解决写 cpuset.tasks <code>No space</code> 问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/raymondshiquan/articles/2727037.html">cgroup使用踩坑</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
+              <a href="/tags/Cgroup/" rel="tag"># Cgroup</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/08/30/cgroup-2-memory/" rel="prev" title="Docker容器基础2：Cgroup - memory子系统">
+                  <i class="fa fa-chevron-left"></i> Docker容器基础2：Cgroup - memory子系统
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/09/05/docker-proxy-and-registry-mirror/" rel="next" title="Docker网络代理和仓库镜像加速">
+                  Docker网络代理和仓库镜像加速 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '11e3f9c6875580516e9f2dfed6c40e95',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="前言Event是应用和Fabric网络交互的一种方式，应用可以通过SDK向Peer订阅某种类型的事件，当Peer发现事件发生时，可以把Event发送给应用，应用获取到通知信息。 Event功能介绍Event从来源上可以分为2类：  链码容器发出的Event Peer上账本变更发出的Event   图源自Tutorial Chaincode Event Listener on Hyperledger">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fabric 1.4源码解读 3：事件(Event)原理解读">
+<meta property="og:url" content="http://lessisbetter.site/2019/09/20/fabric-event-source/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="前言Event是应用和Fabric网络交互的一种方式，应用可以通过SDK向Peer订阅某种类型的事件，当Peer发现事件发生时，可以把Event发送给应用，应用获取到通知信息。 Event功能介绍Event从来源上可以分为2类：  链码容器发出的Event Peer上账本变更发出的Event   图源自Tutorial Chaincode Event Listener on Hyperledger">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-sdk-event.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-fabric-events.png">
+<meta property="article:published_time" content="2019-09-20T11:46:41.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.777Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="Fabric">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-sdk-event.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/09/20/fabric-event-source/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Fabric 1.4源码解读 3：事件(Event)原理解读 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Event%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">Event功能介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#event-pb-go%E6%BA%90%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">event.pb.go源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Peer-event%E6%BA%90%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">Peer event源码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0Deliver%E6%9C%8D%E5%8A%A1"><span class="nav-number">5.1.</span> <span class="nav-text">添加Deliver服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6%E8%AE%A2%E9%98%85"><span class="nav-number">5.2.</span> <span class="nav-text">接收事件订阅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6%E6%B6%88%E6%81%AF"><span class="nav-number">5.3.</span> <span class="nav-text">发送事件消息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-SDK%E6%BA%90%E7%A0%81"><span class="nav-number">6.</span> <span class="nav-text">Go SDK源码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dispatcher"><span class="nav-number">6.1.</span> <span class="nav-text">Dispatcher</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E4%BA%8B%E4%BB%B6"><span class="nav-number">6.2.</span> <span class="nav-text">注册事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E6%94%B6Peer%E4%BA%8B%E4%BB%B6"><span class="nav-number">6.3.</span> <span class="nav-text">接收Peer事件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/20/fabric-event-source/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Fabric 1.4源码解读 3：事件(Event)原理解读
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-20 19:46:41" itemprop="dateCreated datePublished" datetime="2019-09-20T19:46:41+08:00">2019-09-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Event是应用和Fabric网络交互的一种方式，应用可以通过<strong>SDK</strong>向<strong>Peer</strong>订阅某种类型的事件，当Peer发现事件发生时，可以把Event发送给应用，应用获取到通知信息。</p>
+<h2 id="Event功能介绍"><a href="#Event功能介绍" class="headerlink" title="Event功能介绍"></a>Event功能介绍</h2><p>Event从来源上可以分为2类：</p>
+<ol>
+<li>链码容器发出的Event</li>
+<li>Peer上账本变更发出的Event</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-09-sdk-event.png" alt="fabric event"></p>
+<p><em>图源自<a target="_blank" rel="noopener" href="https://medium.com/coinmonks/tutorial-chaincode-event-listener-on-hyperledger-fabric-java-sdk-557304f1fe28">Tutorial Chaincode Event Listener on Hyperledger Fabric Java SDK</a></em></p>
+<p>翻阅Node SDK和Go SDK的文档，发现SDK提供了4类事件：</p>
+<ol>
+<li>BlockEvent，可以用来监控被添加到账本上的区块。客户端需要Admin权限，这样才能读取完整的区块，每产生一个区块，它都会接收到通知。区块中有交易，交易中有chaincode event，所以可以通过BlockEvent获取其他事件。</li>
+<li>FilteredBlockEvent，可以用来监控简要的区块信息，当不只关心区块包含了哪些交易，交易是否成功时，它非常实用，还可以降低网络负载。它包含区块的部分信息，所以被称为filtered，信息有channel ID，区块号，交易的validation code。</li>
+<li>TransactionStatusEvent，可以用来监控某个交易在当前组织的peer何时完成。可以得到交易的validation code和交易所在区块。</li>
+<li>ChaincodeEvent，用来监听Chaincode发出的事件，不同的链码可以自定义自己的事件，所以这个更具有个性化。包含了交易id、区块号、链码id、事件名称，事件内容。如果想要查看事件内容，客户端所使用的账号，必须是Admin权限。</li>
+</ol>
+<p>另外，订阅事件时可以指定开启和结束的区块号范围，如果开始的区块号已经产生，即区块已经写入账本，可以重放事件，更多信息可以看下面的文档。</p>
+<p>关于Event的2篇重要文档，深深感觉Node SDK的文档，比Go SDK的文档丰富。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://fabric-sdk-node.github.io/tutorial-channel-events.html">Hyperledger Fabric SDK for node.js Tutorial: How to use the channel-based event service</a></li>
+<li><a target="_blank" rel="noopener" href="https://hyperledger-fabric-cn.readthedocs.io/zh/latest/peer_event_services.html">Peer channel-based event services — hyperledger-fabricdocs master 文档</a></li>
+</ul>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>上一节的介绍能够知道有哪些Event，各有什么作用，这一节介绍SDK和Peer是如何进行事件交互的。</p>
+<p>SDK和Peer之间是通过gRPC通信的，gRPC的<a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric/blob/release-1.4/protos/peer/events.proto">protos的定义文件</a>4种message：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FilteredBlock，给FilteredBlockEvent使用</span><br><span class="line">FilteredTransaction，结合下一个，给FilteredTransactionEvent使用</span><br><span class="line">FilteredTransactionActions</span><br><span class="line">FilteredChaincodeAction，给ChaincodeEvent使用</span><br></pre></td></tr></table></figure>
+
+<p>和1个Response，其中使用了oneof。</p>
+<ul>
+<li>status，指http status，成功的时候无需使用，错误的时候可以使用指明错误。</li>
+<li>block，给BlockEvent使用</li>
+<li>FilteredBlock，给另外3种事件使用</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; DeliverResponse</span><br><span class="line">message DeliverResponse &#123;</span><br><span class="line">    oneof Type &#123;</span><br><span class="line">        common.Status status &#x3D; 1;</span><br><span class="line">        common.Block block &#x3D; 2;</span><br><span class="line">        FilteredBlock filtered_block &#x3D; 3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以及2个gRPC通信接口:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">service Deliver &#123;</span><br><span class="line">    &#x2F;&#x2F; deliver first requires an Envelope of type ab.DELIVER_SEEK_INFO with</span><br><span class="line">    &#x2F;&#x2F; Payload data as a marshaled orderer.SeekInfo message,</span><br><span class="line">    &#x2F;&#x2F; then a stream of block replies is received</span><br><span class="line">    rpc Deliver (stream common.Envelope) returns (stream DeliverResponse) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; deliver first requires an Envelope of type ab.DELIVER_SEEK_INFO with</span><br><span class="line">    &#x2F;&#x2F; Payload data as a marshaled orderer.SeekInfo message,</span><br><span class="line">    &#x2F;&#x2F; then a stream of **filtered** block replies is received</span><br><span class="line">    rpc DeliverFiltered (stream common.Envelope) returns (stream DeliverResponse) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>咦，4个Event，怎么只有2个接口？</p>
+<p>配合下图，我们做一番讲解。</p>
+<p><img src="http://img.lessisbetter.site/2019-11-fabric-events.png" alt="fabric sdk go event"></p>
+<p>对于Peer而言，只有2中类型的订阅：</p>
+<ol>
+<li>BlockEvent，即完整的区块</li>
+<li>FilteredBlockEvent，即不完整的区块，可以根据FilteredBlockEvent中的信息，生成FilteredTransactionEvent信息和ChainCodeEvent信息</li>
+</ol>
+<p>图中深蓝色和绿色的线分别代表BlockEvent和FilteredBlockEvent相关的数据流，BlockEvent使用的是Deliver函数，FilteredBlockEvent使用的是DeliverFiltered函数。</p>
+<p>每一个事件订阅，都是一个gRPC连接，Peer会不断的从账本读区块，然后根据区块生成事件，发送给客户端。</p>
+<p>Go SDK中实现了一个Dispatcher，就是提供这么一个中转的功能，对上层应用提供4中类型的事件，把4种事件注册请求转换为2种，调用DeliverClient把事件订阅请求发送给Peer，又把Peer发来的2种事件，转换为应用订阅的事件响应。</p>
+<p>Peer启动时，启动gRPC服务后，会注册好DeliverServer接收事件订阅，然后调用deliverBlocks进入循环，在新区块产生后，会生成订阅的BlockEvent或FilteredBlockEvent，利用ResponseSender把事件发送给SDK。</p>
+<h2 id="event-pb-go源码"><a href="#event-pb-go源码" class="headerlink" title="event.pb.go源码"></a>event.pb.go源码</h2><p>这就是根据<code>events.proto</code>生成的Go文件，负责创建gRPC通信的客户端和服务端，以及两边的消息发送。</p>
+<p>主要关注下2个接口：</p>
+<p><code>deliverClient</code>实现了<code>DeliverClient</code>，已经在该源文件实现。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DeliverClient is the client API for Deliver service.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.</span></span><br><span class="line"><span class="keyword">type</span> DeliverClient <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// deliver first requires an Envelope of type ab.DELIVER_SEEK_INFO with</span></span><br><span class="line">	<span class="comment">// Payload data as a marshaled orderer.SeekInfo message,</span></span><br><span class="line">	<span class="comment">// then a stream of block replies is received</span></span><br><span class="line">	Deliver(ctx context.Context, opts ...grpc.CallOption) (Deliver_DeliverClient, error)</span><br><span class="line">	<span class="comment">// deliver first requires an Envelope of type ab.DELIVER_SEEK_INFO with</span></span><br><span class="line">	<span class="comment">// Payload data as a marshaled orderer.SeekInfo message,</span></span><br><span class="line">	<span class="comment">// then a stream of **filtered** block replies is received</span></span><br><span class="line">	DeliverFiltered(ctx context.Context, opts ...grpc.CallOption) (Deliver_DeliverFilteredClient, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>DeliverServer</code>是服务端的接口，需要Peer实现。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DeliverServer is the server API for Deliver service.</span></span><br><span class="line"><span class="keyword">type</span> DeliverServer <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// deliver first requires an Envelope of type ab.DELIVER_SEEK_INFO with</span></span><br><span class="line">	<span class="comment">// Payload data as a marshaled orderer.SeekInfo message,</span></span><br><span class="line">	<span class="comment">// then a stream of block replies is received</span></span><br><span class="line">	Deliver(Deliver_DeliverServer) error</span><br><span class="line">	<span class="comment">// deliver first requires an Envelope of type ab.DELIVER_SEEK_INFO with</span></span><br><span class="line">	<span class="comment">// Payload data as a marshaled orderer.SeekInfo message,</span></span><br><span class="line">	<span class="comment">// then a stream of **filtered** block replies is received</span></span><br><span class="line">	DeliverFiltered(Deliver_DeliverFilteredServer) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Peer-event源码"><a href="#Peer-event源码" class="headerlink" title="Peer event源码"></a>Peer event源码</h2><p>Peer干了这么几件事：</p>
+<ol>
+<li>注册gRPC服务，即注册接受客户端发来的事件订阅的函数</li>
+<li>gRPC收到消息，订阅相应事件注册处理函数</li>
+<li>处理函数持续向客户端发送区块事件，直到结束</li>
+</ol>
+<h3 id="添加Deliver服务"><a href="#添加Deliver服务" class="headerlink" title="添加Deliver服务"></a>添加Deliver服务</h3><p><code>serve</code>是Peer启动后的运行的主函数，它会创建gRPC server，以及创建DeliverEvent server，并把它绑定到gRPC server上。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// peer/node/start.go</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">serve</span><span class="params">(args []<span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 创建peer的gRPC server</span></span><br><span class="line">    peerServer, err := peer.NewPeerServer(listenAddr, serverConfig)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        logger.Fatalf(<span class="string">&quot;Failed to create peer server (%s)&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 创建和启动基于gRPC的event deliver server</span></span><br><span class="line">    abServer := peer.NewDeliverEventsServer(mutualTLS, policyCheckerProvider, &amp;peer.DeliverChainManager&#123;&#125;, metricsProvider)</span><br><span class="line">    pb.RegisterDeliverServer(peerServer.Server(), abServer)</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建DeliverEventsServer，实际是创建好处理事件订阅的handler。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// core/peer/deliverevents.go</span></span><br><span class="line"><span class="comment">// NewDeliverEventsServer creates a peer.Deliver server to deliver block and</span></span><br><span class="line"><span class="comment">// filtered block events</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewDeliverEventsServer</span><span class="params">(mutualTLS <span class="keyword">bool</span>, policyCheckerProvider PolicyCheckerProvider, chainManager deliver.ChainManager, metricsProvider metrics.Provider)</span> <span class="title">peer</span>.<span class="title">DeliverServer</span></span> &#123;</span><br><span class="line">	timeWindow := viper.GetDuration(<span class="string">&quot;peer.authentication.timewindow&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> timeWindow == <span class="number">0</span> &#123;</span><br><span class="line">		defaultTimeWindow := <span class="number">15</span> * time.Minute</span><br><span class="line">		logger.Warningf(<span class="string">&quot;`peer.authentication.timewindow` not set; defaulting to %s&quot;</span>, defaultTimeWindow)</span><br><span class="line">		timeWindow = defaultTimeWindow</span><br><span class="line">	&#125;</span><br><span class="line">	metrics := deliver.NewMetrics(metricsProvider)</span><br><span class="line">	<span class="keyword">return</span> &amp;server&#123;</span><br><span class="line">		<span class="comment">// 创建handler</span></span><br><span class="line">		dh:                    deliver.NewHandler(chainManager, timeWindow, mutualTLS, metrics),</span><br><span class="line">		policyCheckerProvider: policyCheckerProvider,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// NewHandler creates an implementation of the Handler interface.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewHandler</span><span class="params">(cm ChainManager, timeWindow time.Duration, mutualTLS <span class="keyword">bool</span>, metrics *Metrics)</span> *<span class="title">Handler</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Handler&#123;</span><br><span class="line">		ChainManager:     cm,</span><br><span class="line">		TimeWindow:       timeWindow,</span><br><span class="line">		BindingInspector: InspectorFunc(comm.NewBindingInspector(mutualTLS, ExtractChannelHeaderCertHash)),</span><br><span class="line">		Metrics:          metrics,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>server</code>实现了<code>DeliverServer</code>接口，当gRPC接收到事件注册时，就可以调用Deliver或者FilteredDeliver被调用时，就调用server的<code>DeliverFiltered</code>或者<code>Deliver</code>函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; server holds the dependencies necessary to create a deliver server</span><br><span class="line">type server struct &#123;</span><br><span class="line">	dh                    *deliver.Handler</span><br><span class="line">	policyCheckerProvider PolicyCheckerProvider</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="接收事件订阅"><a href="#接收事件订阅" class="headerlink" title="接收事件订阅"></a>接收事件订阅</h3><p>BlockEvent的注册和事件处理主要流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">server.Deliver -&gt; Handler.Handle -&gt;</span><br><span class="line">deliverBlocks -&gt; SendBlockResponse -&gt; blockResponseSender.SendBlockResponse -&gt; gRPC生成的server Send函数</span><br></pre></td></tr></table></figure>
+
+<p>FilteredBlockEvent的注册和事件处理主要流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">server.DeliverFiltered -&gt; Handler.Handle -&gt;</span><br><span class="line">deliverBlocks -&gt; SendBlockResponse -&gt; filteredBlockResponseSender.SendBlockResponseg -&gt; RPC生成的server Send函数</span><br></pre></td></tr></table></figure>
+
+<p>它们2个流程是类似的，下面就以BlockEvent的流程介绍。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Deliver sends a stream of blocks to a client after commitment</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *server)</span> <span class="title">Deliver</span><span class="params">(srv peer.Deliver_DeliverServer)</span> <span class="params">(err error)</span></span> &#123;</span><br><span class="line">	logger.Debugf(<span class="string">&quot;Starting new Deliver handler&quot;</span>)</span><br><span class="line">	<span class="keyword">defer</span> dumpStacktraceOnPanic()</span><br><span class="line">	<span class="comment">// getting policy checker based on resources.Event_Block resource name</span></span><br><span class="line">	deliverServer := &amp;deliver.Server&#123;</span><br><span class="line">		PolicyChecker: s.policyCheckerProvider(resources.Event_Block),</span><br><span class="line">		Receiver:      srv,</span><br><span class="line">		<span class="comment">// 创建了sender</span></span><br><span class="line">		ResponseSender: &amp;blockResponseSender&#123;</span><br><span class="line">			Deliver_DeliverServer: srv,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> s.dh.Handle(srv.Context(), deliverServer)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Handle receives incoming deliver requests.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *Handler)</span> <span class="title">Handle</span><span class="params">(ctx context.Context, srv *Server)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	addr := util.ExtractRemoteAddress(ctx)</span><br><span class="line">	logger.Debugf(<span class="string">&quot;Starting new deliver loop for %s&quot;</span>, addr)</span><br><span class="line">	h.Metrics.StreamsOpened.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">defer</span> h.Metrics.StreamsClosed.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		logger.Debugf(<span class="string">&quot;Attempting to read seek info message from %s&quot;</span>, addr)</span><br><span class="line">		envelope, err := srv.Recv()</span><br><span class="line">		<span class="keyword">if</span> err == io.EOF &#123;</span><br><span class="line">			logger.Debugf(<span class="string">&quot;Received EOF from %s, hangup&quot;</span>, addr)</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			logger.Warningf(<span class="string">&quot;Error reading from %s: %s&quot;</span>, addr, err)</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 主体</span></span><br><span class="line">		status, err := h.deliverBlocks(ctx, srv, envelope)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		err = srv.SendStatusResponse(status)</span><br><span class="line">		<span class="keyword">if</span> status != cb.Status_SUCCESS &#123;</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			logger.Warningf(<span class="string">&quot;Error sending to %s: %s&quot;</span>, addr, err)</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		logger.Debugf(<span class="string">&quot;Waiting for new SeekInfo from %s&quot;</span>, addr)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>deliverBlocks</code>的主要作用就是不停的获取区块，然后调用sender发送事件，其中还包含了事件订阅信息的获取，错误处理等。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *Handler)</span> <span class="title">deliverBlocks</span><span class="params">(ctx context.Context, srv *Server, envelope *cb.Envelope)</span> <span class="params">(status cb.Status, err error)</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">		...</span><br><span class="line">		<span class="keyword">var</span> block *cb.Block</span><br><span class="line">		<span class="keyword">var</span> status cb.Status</span><br><span class="line"></span><br><span class="line">		iterCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			<span class="comment">// 获取下一个区块，当账本Append Block时，就可以拿到要写入到账本的区块</span></span><br><span class="line">			block, status = cursor.Next()</span><br><span class="line">			<span class="built_in">close</span>(iterCh)</span><br><span class="line">		&#125;()</span><br><span class="line">		...</span><br><span class="line">		<span class="comment">// 发送区块</span></span><br><span class="line">		<span class="keyword">if</span> err := srv.SendBlockResponse(block); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			logger.Warningf(<span class="string">&quot;[channel: %s] Error sending to %s: %s&quot;</span>, chdr.ChannelId, addr, err)</span><br><span class="line">			<span class="keyword">return</span> cb.Status_INTERNAL_SERVER_ERROR, err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		h.Metrics.BlocksSent.With(labels...).Add(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 停止判断</span></span><br><span class="line">		<span class="keyword">if</span> stopNum == block.Header.Number &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Iterator</code>接口用来获取区块.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Iterator is useful for a chain Reader to stream blocks as they are created</span></span><br><span class="line"><span class="keyword">type</span> Iterator <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// Next blocks until there is a new block available, or returns an error if</span></span><br><span class="line">	<span class="comment">// the next block is no longer retrievable</span></span><br><span class="line">	Next() (*cb.Block, cb.Status)</span><br><span class="line">	<span class="comment">// Close releases resources acquired by the Iterator</span></span><br><span class="line">	Close()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Fabric有3种类型的账本：ram、json和file，它们都实现了这个接口，这里主要是为了辅助解释事件机制，我们看一个最简单的：ram的实现。</p>
+<p><code>Next()</code>拿到的区块是从<code>simpleList.SetNext()</code>存进去的。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Next blocks until there is a new block available, or returns an error if the</span></span><br><span class="line"><span class="comment">// next block is no longer retrievable</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cu *cursor)</span> <span class="title">Next</span><span class="params">()</span> <span class="params">(*cb.Block, cb.Status)</span></span> &#123;</span><br><span class="line">	<span class="comment">// This only loops once, as signal reading indicates non-nil next</span></span><br><span class="line">	<span class="comment">// 实际只执行1次</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="comment">// 拿到区块</span></span><br><span class="line">		next := cu.list.getNext()</span><br><span class="line">		<span class="keyword">if</span> next != <span class="literal">nil</span> &#123;</span><br><span class="line">			cu.list = next</span><br><span class="line">			<span class="keyword">return</span> cu.list.block, cb.Status_SUCCESS</span><br><span class="line">		&#125;</span><br><span class="line">		&lt;-cu.list.signal</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *simpleList)</span> <span class="title">getNext</span><span class="params">()</span> *<span class="title">simpleList</span></span> &#123;</span><br><span class="line">	s.lock.RLock()</span><br><span class="line">	<span class="keyword">defer</span> s.lock.RUnlock()</span><br><span class="line">	<span class="keyword">return</span> s.next</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *simpleList)</span> <span class="title">setNext</span><span class="params">(n *simpleList)</span></span> &#123;</span><br><span class="line">	s.lock.Lock()</span><br><span class="line">	<span class="keyword">defer</span> s.lock.Unlock()</span><br><span class="line">	s.next = n</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Append()</code>是账本对外提供的接口，当要把区块追加到账本时，会调用此函数，该函数会调用<code>setNext()</code>设置待追加的区块。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Append appends a new block to the ledger</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rl *ramLedger)</span> <span class="title">Append</span><span class="params">(block *cb.Block)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	rl.lock.Lock()</span><br><span class="line">	<span class="keyword">defer</span> rl.lock.Unlock()</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	rl.appendBlock(block)</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rl *ramLedger)</span> <span class="title">appendBlock</span><span class="params">(block *cb.Block)</span></span> &#123;</span><br><span class="line">	next := &amp;simpleList&#123;</span><br><span class="line">		signal: <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;),</span><br><span class="line">		block:  block,</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 设置最新的区块</span></span><br><span class="line">	rl.newest.setNext(next)</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="发送事件消息"><a href="#发送事件消息" class="headerlink" title="发送事件消息"></a>发送事件消息</h3><p><code>blockResponseSender.SendBlockResponse</code>是BlockEvent的事件发送函数，实际就是调用gRPC生成的函数。</p>
+<p><code>blockResponseSender</code>是在<code>server.Deliver</code>中创建的，它实际就是<code>peer.Deliver_DeliverServer</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// blockResponseSender structure used to send block responses</span></span><br><span class="line"><span class="keyword">type</span> blockResponseSender <span class="keyword">struct</span> &#123;</span><br><span class="line">	peer.Deliver_DeliverServer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SendBlockResponse generates deliver response with block message</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(brs *blockResponseSender)</span> <span class="title">SendBlockResponse</span><span class="params">(block *common.Block)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	response := &amp;peer.DeliverResponse&#123;</span><br><span class="line">		Type: &amp;peer.DeliverResponse_Block&#123;Block: block&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> brs.Send(response)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Go-SDK源码"><a href="#Go-SDK源码" class="headerlink" title="Go SDK源码"></a>Go SDK源码</h2><p>社区正在重构fabric-sdk-go，所以这里不着重介绍sdk的源码了，提醒几个重要的点，可能以后还有。</p>
+<p><code>Deliver</code>和<code>DeliverFiltered</code>被封装成了2个全局函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">var (</span><br><span class="line">	&#x2F;&#x2F; Deliver creates a Deliver stream</span><br><span class="line">	Deliver &#x3D; func(client pb.DeliverClient) (deliverStream, error) &#123;</span><br><span class="line">		return client.Deliver(context.Background())</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; DeliverFiltered creates a DeliverFiltered stream</span><br><span class="line">	DeliverFiltered &#x3D; func(client pb.DeliverClient) (deliverStream, error) &#123;</span><br><span class="line">		return client.DeliverFiltered(context.Background())</span><br><span class="line">	&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>它们会被调用，进一步封装成provider，provider会为dispatch服务：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// deliverProvider is the connection provider used for connecting to the Deliver service</span></span><br><span class="line"><span class="keyword">var</span> deliverProvider = <span class="function"><span class="keyword">func</span><span class="params">(context fabcontext.Client, chConfig fab.ChannelCfg, peer fab.Peer)</span> <span class="params">(api.Connection, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> peer == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">&quot;Peer is nil&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	eventEndpoint, ok := peer.(api.EventEndpoint)</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">&quot;peer is not an EventEndpoint&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> deliverconn.New(context, chConfig, deliverconn.Deliver, peer.URL(), eventEndpoint.Opts()...)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Dispatcher"><a href="#Dispatcher" class="headerlink" title="Dispatcher"></a>Dispatcher</h3><p><code>Dispatcher</code>会保存BlockEvent和FilteredBlockEvent的注册，以及用2个map<code>txRegistrations</code>和<code>ccRegistrations</code>保存交易和Chaincode Event的注册，<code>handlers</code>是各种注册事件的处理函数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Dispatcher is responsible for handling all events, including connection and registration events originating from the client,</span></span><br><span class="line"><span class="comment">// and events originating from the channel event service. All events are processed in a single Go routine</span></span><br><span class="line"><span class="comment">// in order to avoid any race conditions and to ensure that events are processed in the order in which they are received.</span></span><br><span class="line"><span class="comment">// This also avoids the need for synchronization.</span></span><br><span class="line"><span class="comment">// The lastBlockNum member MUST be first to ensure it stays 64-bit aligned on 32-bit machines.</span></span><br><span class="line"><span class="keyword">type</span> Dispatcher <span class="keyword">struct</span> &#123;</span><br><span class="line">	lastBlockNum <span class="keyword">uint64</span> <span class="comment">// Must be first, do not move</span></span><br><span class="line">	params</span><br><span class="line">	updateLastBlockInfoOnly    <span class="keyword">bool</span></span><br><span class="line">	state                      <span class="keyword">int32</span></span><br><span class="line">	eventch                    <span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">	blockRegistrations         []*BlockReg</span><br><span class="line">	filteredBlockRegistrations []*FilteredBlockReg</span><br><span class="line">	handlers                   <span class="keyword">map</span>[reflect.Type]Handler</span><br><span class="line">	txRegistrations            <span class="keyword">map</span>[<span class="keyword">string</span>]*TxStatusReg</span><br><span class="line">	ccRegistrations            <span class="keyword">map</span>[<span class="keyword">string</span>]*ChaincodeReg</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="注册事件"><a href="#注册事件" class="headerlink" title="注册事件"></a>注册事件</h3><p>这是Dispatcher的事件注册函数，在它眼里，不止有4个事件：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// RegisterHandler registers an event handler</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ed *Dispatcher)</span> <span class="title">RegisterHandler</span><span class="params">(t <span class="keyword">interface</span>&#123;&#125;, h Handler)</span></span> &#123;</span><br><span class="line">	htype := reflect.TypeOf(t)</span><br><span class="line">	<span class="keyword">if</span> _, ok := ed.handlers[htype]; !ok &#123;</span><br><span class="line">		logger.Debugf(<span class="string">&quot;Registering handler for %s on dispatcher %T&quot;</span>, htype, ed)</span><br><span class="line">		ed.handlers[htype] = h</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		logger.Debugf(<span class="string">&quot;Cannot register handler %s on dispatcher %T since it&#x27;s already registered&quot;</span>, htype, ed)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注册各注册事件的处理函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// RegisterHandlers registers all of the handlers by event type</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ed *Dispatcher)</span> <span class="title">RegisterHandlers</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ed.RegisterHandler(&amp;RegisterChaincodeEvent&#123;&#125;, ed.handleRegisterCCEvent)</span><br><span class="line">	ed.RegisterHandler(&amp;RegisterTxStatusEvent&#123;&#125;, ed.handleRegisterTxStatusEvent)</span><br><span class="line">	ed.RegisterHandler(&amp;RegisterBlockEvent&#123;&#125;, ed.handleRegisterBlockEvent)</span><br><span class="line">	ed.RegisterHandler(&amp;RegisterFilteredBlockEvent&#123;&#125;, ed.handleRegisterFilteredBlockEvent)</span><br><span class="line">	ed.RegisterHandler(&amp;UnregisterEvent&#123;&#125;, ed.handleUnregisterEvent)</span><br><span class="line">	ed.RegisterHandler(&amp;StopEvent&#123;&#125;, ed.HandleStopEvent)</span><br><span class="line">	ed.RegisterHandler(&amp;TransferEvent&#123;&#125;, ed.HandleTransferEvent)</span><br><span class="line">	ed.RegisterHandler(&amp;StopAndTransferEvent&#123;&#125;, ed.HandleStopAndTransferEvent)</span><br><span class="line">	ed.RegisterHandler(&amp;RegistrationInfoEvent&#123;&#125;, ed.handleRegistrationInfoEvent)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// The following events are used for testing only</span></span><br><span class="line">	ed.RegisterHandler(&amp;fab.BlockEvent&#123;&#125;, ed.handleBlockEvent)</span><br><span class="line">	ed.RegisterHandler(&amp;fab.FilteredBlockEvent&#123;&#125;, ed.handleFilteredBlockEvent)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="接收Peer事件"><a href="#接收Peer事件" class="headerlink" title="接收Peer事件"></a>接收Peer事件</h3><p><code>handleEvent</code>用来处理来自Peer的事件，不同的类型调用不同的handler。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ed *Dispatcher)</span> <span class="title">handleEvent</span><span class="params">(e esdispatcher.Event)</span></span> &#123;</span><br><span class="line">	delevent := e.(*connection.Event)</span><br><span class="line">	evt := delevent.Event.(*pb.DeliverResponse)</span><br><span class="line">	<span class="keyword">switch</span> response := evt.Type.(<span class="keyword">type</span>) &#123;</span><br><span class="line">	<span class="keyword">case</span> *pb.DeliverResponse_Status:</span><br><span class="line">		ed.handleDeliverResponseStatus(response)</span><br><span class="line">	<span class="keyword">case</span> *pb.DeliverResponse_Block:</span><br><span class="line">		ed.HandleBlock(response.Block, delevent.SourceURL)</span><br><span class="line">	<span class="keyword">case</span> *pb.DeliverResponse_FilteredBlock:</span><br><span class="line">		ed.HandleFilteredBlock(response.FilteredBlock, delevent.SourceURL)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		logger.Errorf(<span class="string">&quot;handler not found for deliver response type %T&quot;</span>, response)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><code>HandleBlock</code>把Event封装是BlockEvent退给应用。可以看到BlockEvent也会发布FilteredBlockEvent。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// HandleBlock handles a block event</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ed *Dispatcher)</span> <span class="title">HandleBlock</span><span class="params">(block *cb.Block, sourceURL <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	logger.Debugf(<span class="string">&quot;Handling block event - Block #%d&quot;</span>, block.Header.Number)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := ed.updateLastBlockNum(block.Header.Number); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		logger.Error(err.Error())</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> ed.updateLastBlockInfoOnly &#123;</span><br><span class="line">		ed.updateLastBlockInfoOnly = <span class="literal">false</span></span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	logger.Debug(<span class="string">&quot;Publishing block event...&quot;</span>)</span><br><span class="line">	ed.publishBlockEvents(block, sourceURL)</span><br><span class="line">	ed.publishFilteredBlockEvents(toFilteredBlock(block), sourceURL)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ed *Dispatcher)</span> <span class="title">publishBlockEvents</span><span class="params">(block *cb.Block, sourceURL <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> _, reg := <span class="keyword">range</span> ed.blockRegistrations &#123;</span><br><span class="line">		<span class="keyword">if</span> !reg.Filter(block) &#123;</span><br><span class="line">			logger.Debugf(<span class="string">&quot;Not sending block event for block #%d since it was filtered out.&quot;</span>, block.Header.Number)</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> ed.eventConsumerTimeout &lt; <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> reg.Eventch &lt;- NewBlockEvent(block, sourceURL):</span><br><span class="line">			<span class="keyword">default</span>:</span><br><span class="line">				logger.Warn(<span class="string">&quot;Unable to send to block event channel.&quot;</span>)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> ed.eventConsumerTimeout == <span class="number">0</span> &#123;</span><br><span class="line">			reg.Eventch &lt;- NewBlockEvent(block, sourceURL)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> reg.Eventch &lt;- NewBlockEvent(block, sourceURL):</span><br><span class="line">			<span class="keyword">case</span> &lt;-time.After(ed.eventConsumerTimeout):</span><br><span class="line">				logger.Warn(<span class="string">&quot;Timed out sending block event.&quot;</span>)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>FilteredBlockEvent能解析出TransactionEvent和ChaincodeEvent：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ed *Dispatcher)</span> <span class="title">publishFilteredBlockEvents</span><span class="params">(fblock *pb.FilteredBlock, sourceURL <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> fblock == <span class="literal">nil</span> &#123;</span><br><span class="line">		logger.Warn(<span class="string">&quot;Filtered block is nil. Event will not be published&quot;</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	logger.Debugf(<span class="string">&quot;Publishing filtered block event: %#v&quot;</span>, fblock)</span><br><span class="line"></span><br><span class="line">	checkFilteredBlockRegistrations(ed, fblock, sourceURL)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, tx := <span class="keyword">range</span> fblock.FilteredTransactions &#123;</span><br><span class="line">		<span class="comment">// 发布交易订阅</span></span><br><span class="line">		ed.publishTxStatusEvents(tx, fblock.Number, sourceURL)</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Only send a chaincode event if the transaction has committed</span></span><br><span class="line">		<span class="keyword">if</span> tx.TxValidationCode == pb.TxValidationCode_VALID &#123;</span><br><span class="line">			txActions := tx.GetTransactionActions()</span><br><span class="line">			<span class="keyword">if</span> txActions == <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> <span class="built_in">len</span>(txActions.ChaincodeActions) == <span class="number">0</span> &#123;</span><br><span class="line">				logger.Debugf(<span class="string">&quot;No chaincode action found for TxID[%s], block[%d], source URL[%s]&quot;</span>, tx.Txid, fblock.Number, sourceURL)</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">for</span> _, action := <span class="keyword">range</span> txActions.ChaincodeActions &#123;</span><br><span class="line">				<span class="keyword">if</span> action.ChaincodeEvent != <span class="literal">nil</span> &#123;</span><br><span class="line">					<span class="comment">// 发布chaincode event订阅</span></span><br><span class="line">					ed.publishCCEvents(action.ChaincodeEvent, fblock.Number, sourceURL)</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			logger.Debugf(<span class="string">&quot;Cannot publish CCEvents for block[%d] and source URL[%s] since Tx Validation Code[%d] is not valid&quot;</span>, fblock.Number, sourceURL, tx.TxValidationCode)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ed *Dispatcher)</span> <span class="title">publishTxStatusEvents</span><span class="params">(tx *pb.FilteredTransaction, blockNum <span class="keyword">uint64</span>, sourceURL <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	logger.Debugf(<span class="string">&quot;Publishing Tx Status event for TxID [%s]...&quot;</span>, tx.Txid)</span><br><span class="line">	<span class="keyword">if</span> reg, ok := ed.txRegistrations[tx.Txid]; ok &#123;</span><br><span class="line">		logger.Debugf(<span class="string">&quot;Sending Tx Status event for TxID [%s] to registrant...&quot;</span>, tx.Txid)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> ed.eventConsumerTimeout &lt; <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> reg.Eventch &lt;- NewTxStatusEvent(tx.Txid, tx.TxValidationCode, blockNum, sourceURL):</span><br><span class="line">			<span class="keyword">default</span>:</span><br><span class="line">				logger.Warn(<span class="string">&quot;Unable to send to Tx Status event channel.&quot;</span>)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> ed.eventConsumerTimeout == <span class="number">0</span> &#123;</span><br><span class="line">			reg.Eventch &lt;- NewTxStatusEvent(tx.Txid, tx.TxValidationCode, blockNum, sourceURL)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> reg.Eventch &lt;- NewTxStatusEvent(tx.Txid, tx.TxValidationCode, blockNum, sourceURL):</span><br><span class="line">			<span class="keyword">case</span> &lt;-time.After(ed.eventConsumerTimeout):</span><br><span class="line">				logger.Warn(<span class="string">&quot;Timed out sending Tx Status event.&quot;</span>)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ed *Dispatcher)</span> <span class="title">publishCCEvents</span><span class="params">(ccEvent *pb.ChaincodeEvent, blockNum <span class="keyword">uint64</span>, sourceURL <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> _, reg := <span class="keyword">range</span> ed.ccRegistrations &#123;</span><br><span class="line">		logger.Debugf(<span class="string">&quot;Matching CCEvent[%s,%s] against Reg[%s,%s] ...&quot;</span>, ccEvent.ChaincodeId, ccEvent.EventName, reg.ChaincodeID, reg.EventFilter)</span><br><span class="line">		<span class="keyword">if</span> reg.ChaincodeID == ccEvent.ChaincodeId &amp;&amp; reg.EventRegExp.MatchString(ccEvent.EventName) &#123;</span><br><span class="line">			logger.Debugf(<span class="string">&quot;... matched CCEvent[%s,%s] against Reg[%s,%s]&quot;</span>, ccEvent.ChaincodeId, ccEvent.EventName, reg.ChaincodeID, reg.EventFilter)</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> ed.eventConsumerTimeout &lt; <span class="number">0</span> &#123;</span><br><span class="line">				<span class="keyword">select</span> &#123;</span><br><span class="line">				<span class="keyword">case</span> reg.Eventch &lt;- NewChaincodeEvent(ccEvent.ChaincodeId, ccEvent.EventName, ccEvent.TxId, ccEvent.Payload, blockNum, sourceURL):</span><br><span class="line">				<span class="keyword">default</span>:</span><br><span class="line">					logger.Warn(<span class="string">&quot;Unable to send to CC event channel.&quot;</span>)</span><br><span class="line">				&#125;</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> ed.eventConsumerTimeout == <span class="number">0</span> &#123;</span><br><span class="line">				reg.Eventch &lt;- NewChaincodeEvent(ccEvent.ChaincodeId, ccEvent.EventName, ccEvent.TxId, ccEvent.Payload, blockNum, sourceURL)</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">select</span> &#123;</span><br><span class="line">				<span class="keyword">case</span> reg.Eventch &lt;- NewChaincodeEvent(ccEvent.ChaincodeId, ccEvent.EventName, ccEvent.TxId, ccEvent.Payload, blockNum, sourceURL):</span><br><span class="line">				<span class="keyword">case</span> &lt;-time.After(ed.eventConsumerTimeout):</span><br><span class="line">					logger.Warn(<span class="string">&quot;Timed out sending CC event.&quot;</span>)</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文介绍了：</p>
+<ol>
+<li>Peer支持的2类Even，</li>
+<li>Peer是如何支持事件订阅，和发送事件的，</li>
+<li>SDK支持的4类Event，这4类Event和Peer的2类Event的关系</li>
+<li>SDK和Peer之间的gRPC通信</li>
+</ol>
+<p>更多SDK事件的使用，请参考<a target="_blank" rel="noopener" href="https://godoc.org/github.com/hyperledger/fabric-sdk-go/pkg/client/event#New">文档</a>。</p>
+<p>Fabric事件介绍的[官方文档(<a target="_blank" rel="noopener" href="https://stone-fabric.readthedocs.io/zh/latest/peer_event_services.html)%E3%80%82">https://stone-fabric.readthedocs.io/zh/latest/peer_event_services.html)。</a></p>
+<p>Fabric在examples中还提供了一个<a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric/tree/release-1.4/examples/events/eventsclient">eventclient</a>样例，看这个样例更有助于理解Fabric event的原理，以及是如何交互的。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/Fabric/" rel="tag"># Fabric</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/09/11/fabric-deploy-scc/" rel="prev" title="Fabric 1.4源码解读 2：系统链码SCC是如何部署的">
+                  <i class="fa fa-chevron-left"></i> Fabric 1.4源码解读 2：系统链码SCC是如何部署的
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/10/20/go-gc-1-history-and-priciple/" rel="next" title="Go垃圾回收 1：历史和原理">
+                  Go垃圾回收 1：历史和原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'e8079e56bba8a1d6ad51815e381adca2',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

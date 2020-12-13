@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="帮你了解二手房购买路上的盲点。关于二手房的买卖的教程有很多，交易流程教程也很多，但都是总体的一个大概步骤，等走到那一步，才发现，我们仍然有很多疑问：什么时候打首付？什么时候缴税？什么时候办理产权证？房贷的审批和房贷流程是什么样？各种问题围绕着我们，我们问已经买房的朋友，但这件事，就像人的长相，虽然基本相同，有鼻子有眼睛，但大多数每个人的长相又是不同的。 希望这篇文章，能让你在正确的时间做正确的事。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二手房交易流程（附时间表）">
+<meta property="og:url" content="http://lessisbetter.site/2018/06/03/steps-of-house-trade/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="帮你了解二手房购买路上的盲点。关于二手房的买卖的教程有很多，交易流程教程也很多，但都是总体的一个大概步骤，等走到那一步，才发现，我们仍然有很多疑问：什么时候打首付？什么时候缴税？什么时候办理产权证？房贷的审批和房贷流程是什么样？各种问题围绕着我们，我们问已经买房的朋友，但这件事，就像人的长相，虽然基本相同，有鼻子有眼睛，但大多数每个人的长相又是不同的。 希望这篇文章，能让你在正确的时间做正确的事。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-03T01:14:37.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.854Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="房子">
+<meta property="article:tag" content="房贷">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2018/06/03/steps-of-house-trade/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>二手房交易流程（附时间表） | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/06/03/steps-of-house-trade/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          二手房交易流程（附时间表）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-06-03 09:14:37" itemprop="dateCreated datePublished" datetime="2018-06-03T09:14:37+08:00">2018-06-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 14:18:43" itemprop="dateModified" datetime="2020-12-13T14:18:43+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><strong>帮你了解二手房购买路上的盲点。</strong>关于二手房的买卖的教程有很多，交易流程教程也很多，但都是总体的一个大概步骤，<strong>等走到那一步，才发现，我们仍然有很多疑问</strong>：什么时候打首付？什么时候缴税？什么时候办理产权证？房贷的审批和房贷流程是什么样？各种问题围绕着我们，我们问已经买房的朋友，但这件事，就像人的长相，虽然基本相同，有鼻子有眼睛，但大多数每个人的长相又是不同的。</p>
+<p><strong>希望这篇文章，能让你在正确的时间做正确的事。</strong>我们将从签订意向合同开始，因为在这之前的就是挑房子、和房东交流各种事情，网上都有教程，问问已经买房的朋友也可以。</p>
+<a id="more"></a>
+
+<ol>
+<li>2018年05月03日：<strong>和房东签订意向合同，交定金，如果铁定要这个房子，定金要多交，以免房东反悔。</strong>商讨内容：所有你关心的都和房东商量好，并且写在合同附加条款上，这个不能等到签正式合同再商量，如果到时候谈不拢，万一遇到不好的房东，就是不退你定金，你跟他闹，浪费时间，并且房价还在上涨。地点：中介公司门店。</li>
+<li>2018年05月03日 ~ 2018年05月10日：<strong>找房贷银行，选择放款最快的银行和房贷方式（纯公、组合、商贷）。</strong>这一步我们没做，用中介推荐的银行办理的时候遇到了好几个问题。主要是对银行要求的各种材料、要求根本不知道，完完全全的盲点，所以一定要找银行问清楚。<strong>有这么几种方式：</strong>1）找关系，最省心最快。2）问中介要到他们合作银行的电话，有专门对他们中介公司办理房贷业务的专员，问清楚细节，总比跑的银行去问好。3）想办法问问其他中介公司、其他银行的房贷专员。对比好，记好需要的材料，告诉中介公司要用哪家银行，哪个支行。中介需要和那个指定的支行有监管账户，你才能用；如果他们没有，就让他们去开，要强硬，毕竟他们要赚钱的。<em>我们使用了中介公司推荐的支行的组合贷，因为中介说现在政策下，纯公最快，组合次之，商贷比较慢。我们信了，但银行的要求盲点太多，踩了很多坑。</em></li>
+<li>2018年05月10日：<strong>签订正式合同，杭州这边是办网签。</strong>商讨内容：把合同中的疑问都划出来，如果对自己不利，一定要让中介修改，合同一签，责任在你，和中介公司没半毛钱关系。地点：中介公司总部。<strong>签完合同不要立马打首付，银行的工作人员跟我说，应该是银行贷款审批通过之后，才打首付款。但中介会一直催你赶紧打，可能有2个目的：1）套住你，2）坐收每天的巨额利息，毕竟首付几十到几百万，活期利息都很诱人。打了首付，中介对你就爱答不理了。</strong></li>
+<li>2018年05月25日：<strong>银行办理按揭申请。</strong>踩了很多坑：<ol>
+<li>因为刚换工作，13号来办理的时候，公积金交易记录没有，不给办，等记录出来才能办理，所以25号又来办；</li>
+<li>收入证明和银行流水不符，按年薪开的，但新公司流水没这么多，所以重新开，但要问清楚银行专员，至少每个月要多少；</li>
+<li>收入证明上公司的盖章有一点点不全，重新办理。</li>
+</ol>
+</li>
+<li>2018年05月30日：<strong>收到公积金中心的短信通知：银行受理</strong>。内容：您的公积金贷款与20180530已由XX银行<strong>受理</strong>，银行完成审查后将提交公积金中心进行审批。<strong>表明：先银行审批商贷，通过后公积金审批公积金贷款。</strong></li>
+<li>2018年05月31日：<strong>收到银行电话补交材料</strong>。因为银行受理就材料齐全了，结果银行通知<strong>补交中介没提供的材料</strong>：1）房东配偶承诺出售房屋的承诺书，2）房屋产权XXX证，XXXX序号错误。银行第二天就要，连夜找中介和房东办理，6月1日一早补交材料，中介的坑，让中介去加急办理。</li>
+<li>2018年06月03日：<strong>收到公积金中心的短信通知：贷款通过</strong>。您申请的公积金贷款已于<strong>6月1日审批通过</strong>。公积金审批通过，证明银行商贷也审批通过了，工作日拨打银行电话确认一下。</li>
+<li>2018年06月06日：<strong>给中介打中介费和税费</strong>。</li>
+<li>2018年06月20日：<strong>过户</strong>。其实在打完中介费和税费就可以过户了，房管局给华邦只安排了周一和周三过户，所以要选好时间，我们由于各种事情，推迟到了20号。</li>
+<li>2018年06月27日：<strong>中介通知去总公司领取房产证</strong>。必须工作日去，并且还太远，就使用了快递的方式，需要签署一份声明文件，快递给总公司，总公司的工作人员，再把房产证寄给你。</li>
+<li>2018年06月29日：<strong>收到房产证</strong>。随快递邮寄过来的，还有合同的各种资料，并且中介公司把部分剩余费用退到指定银行卡。</li>
+<li>2018年07月06日：<strong>收到银行放款短信</strong>。需要去银行办理借款合同。</li>
+<li>2018年07月20日：<strong>物业交割</strong>。去物业办理了户主信息变更，电力局更改了户主信息，至此买房算是完成。房子继续留给原来的人继续住。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%88%BF%E5%AD%90/" rel="tag"># 房子</a>
+              <a href="/tags/%E6%88%BF%E8%B4%B7/" rel="tag"># 房贷</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/06/02/Goland/" rel="prev" title="VSCode && Goland">
+                  <i class="fa fa-chevron-left"></i> VSCode && Goland
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/06/22/ethereum-code-statedb/" rel="next" title="以太坊源码分析：statedb">
+                  以太坊源码分析：statedb <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'ca09e68047badcc3b9255264a0cd1ccb',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

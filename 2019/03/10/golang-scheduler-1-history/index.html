@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="如果把语言比喻为武侠小说中的武功，如果只是会用，也就是达到四五层，如果用的熟练也就六七层，如果能见招拆招也得八九层，如果你出神入化，立于不败之地十层。 如果你想真正掌握一门语言的，怎么也得八层以上，需要你深入了解这门语言方方面面的细节。 希望以后对Go语言的掌握能有八九层，怎么能不懂调度器！？ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上来就讲调度器是什么样的，它由哪些组成，它">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go调度器系列（1）起源">
+<meta property="og:url" content="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="如果把语言比喻为武侠小说中的武功，如果只是会用，也就是达到四五层，如果用的熟练也就六七层，如果能见招拆招也得八九层，如果你出神入化，立于不败之地十层。 如果你想真正掌握一门语言的，怎么也得八层以上，需要你深入了解这门语言方方面面的细节。 希望以后对Go语言的掌握能有八九层，怎么能不懂调度器！？ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上来就讲调度器是什么样的，它由哪些组成，它">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-Eniac.jpg">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-apple-II.jpeg">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-Macintosh.jpeg">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-macbook-steve.jpeg">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-old-scheduler.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-thoughts-of-scheduler.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-03-concurrency-parallelism.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
+<meta property="article:published_time" content="2019-03-10T09:25:57.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.790Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-03-Eniac.jpg">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Go调度器系列（1）起源 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9C%E5%8F%A4%E6%97%B6%E4%BB%A3"><span class="nav-number">1.</span> <span class="nav-text">远古时代</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E6%97%B6%E4%BB%A3"><span class="nav-number">2.</span> <span class="nav-text">进程时代</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%97%B6%E4%BB%A3"><span class="nav-number">3.</span> <span class="nav-text">线程时代</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#goroutine"><span class="nav-number">5.</span> <span class="nav-text">goroutine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go%E8%AF%AD%E8%A8%80%E7%9A%84%E8%80%81%E8%B0%83%E5%BA%A6%E5%99%A8"><span class="nav-number">6.</span> <span class="nav-text">Go语言的老调度器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go%E8%AF%AD%E8%A8%80%E7%9A%84%E6%96%B0%E8%B0%83%E5%BA%A6%E5%99%A8"><span class="nav-number">7.</span> <span class="nav-text">Go语言的新调度器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9D%9F%E8%AF%AD"><span class="nav-number">8.</span> <span class="nav-text">结束语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">9.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go调度器系列（1）起源
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-10 17:25:57" itemprop="dateCreated datePublished" datetime="2019-03-10T17:25:57+08:00">2019-03-10</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如果把语言比喻为武侠小说中的武功，如果只是会用，也就是达到四五层，如果用的熟练也就六七层，如果能见招拆招也得八九层，如果你出神入化，立于不败之地十层。</p>
+<p>如果你想真正掌握一门语言的，怎么也得八层以上，需要你深入了解这门语言方方面面的细节。</p>
+<p>希望以后对Go语言的掌握能有八九层，怎么能不懂调度器！？</p>
+<p>Google、百度、微信搜索了许多Go语言调度的文章，这些文章上来就讲调度器是什么样的，它由哪些组成，它的运作原理，搞的我只能从这些零散的文章中形成调度器的“概貌”，这是我想要的结果，但这还不够。</p>
+<p>学习不仅要知其然，还要知其所以然。</p>
+<p>学习之前，先学知识点的历史，再学知识，这样你就明白，为什么它是当下这个样子。</p>
+<p>所以，我打算写一个goroutine调度器的系列文章，从历史背景讲起，循序渐进，希望大家能对goroutine调度器有一个全面的认识。</p>
+<p>这篇文章介绍调度器相关的历史背景，请慢慢翻阅。</p>
+<h3 id="远古时代"><a href="#远古时代" class="headerlink" title="远古时代"></a>远古时代</h3><p><img src="http://img.lessisbetter.site/2019-03-Eniac.jpg"></p>
+<p>上面这个大家伙是ENIAC，它诞生在宾夕法尼亚大学，是世界第一台真正的通用计算机，和现代的计算机相比，它是相当的“笨重”，它的计算能力，跟现代人手普及的智能手机相比，简直是一个天上一个地下，ENIAC在地下，智能手机在天上。</p>
+<p>它上面没有操作系统，更别提进程、线程和协程了。</p>
+<h3 id="进程时代"><a href="#进程时代" class="headerlink" title="进程时代"></a>进程时代</h3><p><img src="http://img.lessisbetter.site/2019-03-apple-II.jpeg"></p>
+<p>后来，现代化的计算机有了操作系统，每个程序都是一个进程，但是操作系统在一段时间只能运行一个进程，直到这个进程运行完，才能运行下一个进程，这个时期可以成为<strong>单进程时代——串行时代</strong>。</p>
+<p>和ENIAC相比，单进程是有了几万倍的提度，但依然是太慢了，比如进程要读数据阻塞了，CPU就在哪浪费着，伟大的程序员们就想了，不能浪费啊，<strong>怎么才能充分的利用CPU呢？</strong></p>
+<p>后来操作系统就具有了<strong>最早的并发能力：多进程并发</strong>，当一个进程阻塞的时候，切换到另外等待执行的进程，这样就能尽量把CPU利用起来，CPU就不浪费了。</p>
+<h3 id="线程时代"><a href="#线程时代" class="headerlink" title="线程时代"></a>线程时代</h3><p><img src="http://img.lessisbetter.site/2019-03-Macintosh.jpeg"></p>
+<p>多进程真实个好东西，有了对进程的调度能力之后，伟大的程序员又发现，进程拥有太多资源，在创建、切换和销毁的时候，都会占用很长的时间，CPU虽然利用起来了，但CPU有很大的一部分都被用来进行进程调度了，<strong>怎么才能提高CPU的利用率呢？</strong></p>
+<p>大家希望能有一种轻量级的进程，调度不怎么花时间，这样CPU就有更多的时间用在执行任务上。</p>
+<p>后来，操作系统支持了线程，线程在进程里面，线程运行所需要资源比进程少多了，跟进程比起来，切换简直是“不算事”。</p>
+<p>一个进程可以有多个线程，CPU在执行调度的时候切换的是线程，如果下一个线程也是当前进程的，就只有线程切换，“很快”就能完成，如果下一个线程不是当前的进程，就需要切换进程，这就得费点时间了。</p>
+<p>这个时代，<strong>CPU的调度切换的是进程和线程</strong>。多线程看起来很美好，但实际多线程编程却像一坨屎，一是由于线程的设计本身有点复杂，而是由于需要考虑很多底层细节，比如锁和冲突检测。</p>
+<h3 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h3><p><img src="http://img.lessisbetter.site/2019-macbook-steve.jpeg"></p>
+<p>多进程、多线程已经提高了系统的并发能力，但是在当今互联网高并发场景下，为每个任务都创建一个线程是不现实的，因为会消耗大量的内存（每个线程的内存占用级别为MB），线程多了之后调度也会消耗大量的CPU。伟大的程序员们有开始想了，<strong>如何才能充分利用CPU、内存等资源的情况下，实现更高的并发</strong>？</p>
+<p>既然线程的资源占用、调度在高并发的情况下，依然是比较大的，是否有一种东西，更加轻量？</p>
+<p>你可能知道：线程分为内核态线程和用户态线程，用户态线程需要绑定内核态线程，CPU并不能感知用户态线程的存在，它只知道它在运行1个线程，这个线程实际是内核态线程。</p>
+<p><strong>用户态线程实际有个名字叫协程（co-routine）</strong>，为了容易区分，我们使用协程指用户态线程，使用线程指内核态线程。</p>
+<blockquote>
+<p>User-level threads, Application-level threads, Green threads都指一样的东西，就是不受OS感知的线程，如果你Google coroutine相关的资料，会看到它指的就是用户态线程，在<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Green_threads">Green threads的维基百科</a>里，看Green threads的实现列表，你会看到好很多coroutine实现，比如Java、Lua、Go、Erlang、Common Lisp、Haskell、Rust、PHP、Stackless Python，所以，我认为用户态线程就是协程。</p>
+</blockquote>
+<p>协程跟线程是有区别的，线程由CPU调度是抢占式的，<strong>协程由用户态调度是协作式的</strong>，一个协程让出CPU后，才执行下一个协程。</p>
+<p>协程和线程有3种映射关系：</p>
+<ul>
+<li>N:1，N个协程绑定1个线程，优点就是<strong>协程在用户态线程即完成切换，不会陷入到内核态，这种切换非常的轻量快速</strong>。但也有很大的缺点，1个进程的所有协程都绑定在1个线程上，一是某个程序用不了硬件的多核加速能力，二是一旦某协程阻塞，造成线程阻塞，本进程的其他协程都无法执行了，根本就没有并发的能力了。</li>
+<li>1:1，1个协程绑定1个线程，这种最容易实现。协程的调度都由CPU完成了，不存在N:1缺点，但有一个缺点是协程的创建、删除和切换的代价都由CPU完成，有点略显昂贵了。</li>
+<li>M:N，M个协程绑定N个线程，是N:1和1:1类型的结合，克服了以上2种模型的缺点，但实现起来最为复杂。</li>
+</ul>
+<p>协程是个好东西，不少语言支持了协程，比如：Lua、Erlang、Java（C++即将支持），就算语言不支持，也有库支持协程，比如C语言的<a target="_blank" rel="noopener" href="https://github.com/cloudwu/coroutine/">coroutine</a>（云风大牛作品）、Kotlin的kotlinx.coroutines、Python的gevent。</p>
+<h3 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h3><p><strong>Go语言的诞生就是为了支持高并发</strong>，有2个支持高并发的模型：CSP和Actor。<a target="_blank" rel="noopener" href="https://golang.org/doc/faq">鉴于Occam和Erlang都选用了CSP</a>(来自Go FAQ)，并且效果不错，Go也选了CSP，但与前两者不同的是，Go把channel作为头等公民。</p>
+<p>就像前面说的多线程编程太不友好了，<strong>Go为了提供更容易使用的并发方法，使用了goroutine和channel</strong>。goroutine来自协程的概念，让一组可复用的函数运行在一组线程之上，即使有协程阻塞，该线程的其他协程也可以被<code>runtime</code>调度，转移到其他可运行的线程上。最关键的是，程序员看不到这些底层的细节，这就降低了编程的难度，提供了更容易的并发。</p>
+<p>Go中，协程被称为goroutine（Rob Pike说goroutine不是协程，因为他们并不完全相同），它非常轻量，一个goroutine只占几KB，并且这几KB就足够goroutine运行完，这就能在有限的内存空间内支持大量goroutine，支持了更多的并发。虽然一个goroutine的栈只占几KB，但实际是可伸缩的，如果需要更多内容，<code>runtime</code>会自动为goroutine分配。</p>
+<h3 id="Go语言的老调度器"><a href="#Go语言的老调度器" class="headerlink" title="Go语言的老调度器"></a>Go语言的老调度器</h3><p>终于来到了Go语言的调度器环节。</p>
+<p><strong>调度器的任务是在用户态完成goroutine的调度，而调度器的实现好坏，对并发实际有很大的影响，并且Go的调度器就是M:N类型的，实现起来也是最复杂</strong>。</p>
+<p>现在的Go语言调度器是2012年重新设计的（<a target="_blank" rel="noopener" href="https://golang.org/s/go11sched">设计方案</a>），在这之前的调度器称为老调度器，老调度器的实现不太好，存在性能问题，所以用了4年左右就被替换掉了，老调度器大概是下面这个样子：</p>
+<p><img src="http://img.lessisbetter.site/2019-03-old-scheduler.png"></p>
+<p>最下面是操作系统，中间是runtime，runtime在Go中很重要，许多程序运行时的工作都由runtime完成，调度器就是runtime的一部分，虚线圈出来的为调度器，它有两个重要组成：</p>
+<ul>
+<li><strong>M，代表线程</strong>，它要运行goroutine。</li>
+<li>Global G Queue，是全局goroutine队列，所有的goroutine都保存在这个队列中，<strong>goroutine用G进行代表</strong>。</li>
+</ul>
+<p>M想要执行、放回G都必须访问全局G队列，并且M有多个，即多线程访问同一资源需要加锁进行保证互斥/同步，所以全局G队列是有互斥锁进行保护的。</p>
+<p>老调度器有4个缺点：</p>
+<ol>
+<li>创建、销毁、调度G都需要每个M获取锁，这就形成了<strong>激烈的锁竞争</strong>。</li>
+<li>M转移G会造成<strong>延迟和额外的系统负载</strong>。比如当G中包含创建新协程的时候，M创建了G’，为了继续执行G，需要把G’交给M’执行，也造成了<strong>很差的局部性</strong>，因为G’和G是相关的，最好放在M上执行，而不是其他M’。</li>
+<li>M中的mcache是用来存放小对象的，mcache和栈都和M关联造成了大量的内存开销和差的局部性。</li>
+<li>系统调用导致频繁的线程阻塞和取消阻塞操作增加了系统开销。</li>
+</ol>
+<h3 id="Go语言的新调度器"><a href="#Go语言的新调度器" class="headerlink" title="Go语言的新调度器"></a>Go语言的新调度器</h3><p>面对以上老调度的问题，Go设计了新的调度器，设计文稿：<a target="_blank" rel="noopener" href="https://golang.org/s/go11sched">https://golang.org/s/go11sched</a></p>
+<p>新调度器引入了：</p>
+<ul>
+<li><strong>P</strong>：<strong>Processor，它包含了运行goroutine的资源</strong>，如果线程想运行goroutine，必须先获取P，P中还包含了可运行的G队列。</li>
+<li>work stealing：当M绑定的P没有可运行的G时，它可以从其他运行的M’那里偷取G。</li>
+</ul>
+<p>现在，<strong>调度器中3个重要的缩写你都接触到了，所有文章都用这几个缩写，请牢记</strong>：</p>
+<ul>
+<li><strong>G</strong>: goroutine </li>
+<li><strong>M</strong>: 工作线程 </li>
+<li><strong>P</strong>: 处理器，它包含了运行Go代码的资源，M必须和一个P关联才能运行G。 </li>
+</ul>
+<p>这篇文章的目的不是介绍调度器的实现，而是调度器的一些理念，帮助你后面更好理解调度器的实现，所以我们回归到调度器设计思想上。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-thoughts-of-scheduler.png" alt="thoughts-of-scheduler"></p>
+<p>调度器的有<strong>两大思想</strong>：</p>
+<p><strong>复用线程</strong>：协程本身就是运行在一组线程之上，不需要频繁的创建、销毁线程，而是对线程的复用。在调度器中复用线程还有2个体现：1）work stealing，当本线程无可运行的G时，尝试从其他线程绑定的P偷取G，而不是销毁线程。2）hand off，当本线程因为G进行系统调用阻塞时，线程释放绑定的P，把P转移给其他空闲的线程执行。</p>
+<p><strong>利用并行</strong>：GOMAXPROCS设置P的数量，当GOMAXPROCS大于1时，就最多有GOMAXPROCS个线程处于运行状态，这些线程可能分布在多个CPU核上同时运行，使得并发利用并行。另外，GOMAXPROCS也限制了并发的程度，比如GOMAXPROCS = 核数/2，则最多利用了一半的CPU核进行并行。</p>
+<p>调度器的<strong>两小策略</strong>：</p>
+<p><strong>抢占</strong>：在coroutine中要等待一个协程主动让出CPU才执行下一个协程，在Go中，一个goroutine最多占用CPU 10ms，防止其他goroutine被饿死，这就是goroutine不同于coroutine的一个地方。</p>
+<p><strong>全局G队列</strong>：在新的调度器中依然有全局G队列，但功能已经被弱化了，当M执行work stealing从其他P偷不到G时，它可以从全局G队列获取G。</p>
+<p>上面提到并行了，关于并发和并行再说一下：Go创始人Rob Pike一直在强调go是并发，不是并行，因为Go做的是在一段时间内完成几十万、甚至几百万的工作，而不是同一时间同时在做大量的工作。<strong>并发可以利用并行提高效率，调度器是有并行设计的</strong>。</p>
+<p>并行依赖多核技术，每个核上在某个时间只能执行一个线程，当我们的CPU有8个核时，我们能同时执行8个线程，这就是并行。</p>
+<p><img src="http://img.lessisbetter.site/2019-03-concurrency-parallelism.png"></p>
+<h3 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h3><p>这篇文章的主要目的是为后面介绍Go语言调度器做铺垫，由远及近的方式简要介绍了多进程、多线程、协程、并发和并行有关的“史料”，希望你了解为什么Go采用了goroutine，又为何调度器如此重要。</p>
+<p>如果你等不急了，想了解Go调度器相关的原理，看下这些文章：</p>
+<ul>
+<li>设计方案：<a target="_blank" rel="noopener" href="https://golang.org/s/go11sched">https://golang.org/s/go11sched</a></li>
+<li>代码中关于调度器的描述：<a target="_blank" rel="noopener" href="https://golang.org/src/runtime/proc.go">https://golang.org/src/runtime/proc.go</a></li>
+<li>引用最多的调度器文章：<a target="_blank" rel="noopener" href="https://morsmachine.dk/go-scheduler">https://morsmachine.dk/go-scheduler</a></li>
+<li>kavya的PPT，目前看到的讲调度最好的PPT：<a target="_blank" rel="noopener" href="https://speakerdeck.com/kavya719/the-scheduler-saga">https://speakerdeck.com/kavya719/the-scheduler-saga</a></li>
+<li>work stealing论文：<a target="_blank" rel="noopener" href="http://supertech.csail.mit.edu/papers/steal.pdf">http://supertech.csail.mit.edu/papers/steal.pdf</a></li>
+<li>分析调度器的论文（就问你6不6，还有论文研究）：<a target="_blank" rel="noopener" href="http://www.cs.columbia.edu/~aho/cs6998/reports/12-12-11_DeshpandeSponslerWeiss_GO.pdf">http://www.cs.columbia.edu/~aho/cs6998/reports/12-12-11_DeshpandeSponslerWeiss_GO.pdf</a></li>
+</ul>
+<p><strong>声明</strong>：关于老调度器的资料已经完全搜不到，根据新版调度器设计方案的描述，想象着写了老调度器这一章，可能存在错误。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Computer#History">https://en.wikipedia.org/wiki/Computer#History</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Process_(computing)#History">https://en.wikipedia.org/wiki/Process_(computing)#History</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Thread_(computing)#History">https://en.wikipedia.org/wiki/Thread_(computing)#History</a></li>
+<li><a target="_blank" rel="noopener" href="https://golang.org/doc/faq#goroutines">https://golang.org/doc/faq#goroutines</a></li>
+<li><a target="_blank" rel="noopener" href="https://golang.org/s/go11sched">https://golang.org/s/go11sched</a></li>
+<li><a target="_blank" rel="noopener" href="https://golang.org/src/runtime/proc.go">https://golang.org/src/runtime/proc.go</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history">http://lessisbetter.site/2019/03/10/golang-scheduler-1-history</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/03/04/ssh-problems/" rel="prev" title="SSH问题记录">
+                  <i class="fa fa-chevron-left"></i> SSH问题记录
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/03/12/distribute-system-network-partition/" rel="next" title="分布式系统基础：网络分区">
+                  分布式系统基础：网络分区 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '754080c877434f583926b1ac4bfdf6e7',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

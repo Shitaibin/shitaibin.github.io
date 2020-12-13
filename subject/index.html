@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="Golang并发 Golang并发模型：轻松入门流水线模型 Golang并发模型：轻松入门流水线FAN模式 Golang并发模型：并发协程的优雅退出 Golang并发模型：轻松入门select Golang并发模型：select进阶 Golang并发模型：轻松入门协程池 Golang并发的次优选择：sync包  Go调度器 Go调度器系列（1）起源 Go调度器系列（2）宏观看调度器 Go调度器系列">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Go语言充电站">
+<meta property="og:url" content="http://lessisbetter.site/subject/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="Golang并发 Golang并发模型：轻松入门流水线模型 Golang并发模型：轻松入门流水线FAN模式 Golang并发模型：并发协程的优雅退出 Golang并发模型：轻松入门select Golang并发模型：select进阶 Golang并发模型：轻松入门协程池 Golang并发的次优选择：sync包  Go调度器 Go调度器系列（1）起源 Go调度器系列（2）宏观看调度器 Go调度器系列">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-01-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-12-13T06:18:43.861Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="云原生 k8s kubernetes 区块链 Go语言 后端 技术 人生 编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lessisbetter.site/subject/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title> | Go语言充电站
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Golang"><span class="nav-number">1.</span> <span class="nav-text">Golang</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91"><span class="nav-number">1.1.</span> <span class="nav-text">并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go%E8%B0%83%E5%BA%A6%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">Go调度器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">内存管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">1.4.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7"><span class="nav-number">1.5.</span> <span class="nav-text">工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A5%E5%A4%AA%E5%9D%8A"><span class="nav-number">2.</span> <span class="nav-text">以太坊</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B1%E8%AF%86"><span class="nav-number">2.1.</span> <span class="nav-text">共识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8"><span class="nav-number">2.2.</span> <span class="nav-text">存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5"><span class="nav-number">2.3.</span> <span class="nav-text">同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E6%98%93"><span class="nav-number">2.4.</span> <span class="nav-text">交易</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%86%E6%9E%B6"><span class="nav-number">2.5.</span> <span class="nav-text">框架</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fabric"><span class="nav-number">3.</span> <span class="nav-text">Fabric</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%8F%E8%A7%82"><span class="nav-number">3.1.</span> <span class="nav-text">宏观</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD"><span class="nav-number">3.2.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%BA%90%E7%A0%81"><span class="nav-number">3.3.</span> <span class="nav-text">架构与源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%A8%E8%BE%B9%E5%B7%A5%E5%85%B7"><span class="nav-number">3.4.</span> <span class="nav-text">周边工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">3.5.</span> <span class="nav-text">贡献</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">4.</span> <span class="nav-text">一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BFT"><span class="nav-number">4.1.</span> <span class="nav-text">BFT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Raft"><span class="nav-number">4.2.</span> <span class="nav-text">Raft</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux"><span class="nav-number">5.</span> <span class="nav-text">Linux</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E4%B8%8E%E9%95%9C%E5%83%8F"><span class="nav-number">5.1.</span> <span class="nav-text">代理与镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%A6%E7%B1%8D"><span class="nav-number">6.</span> <span class="nav-text">书籍</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="Golang"><a href="#Golang" class="headerlink" title="Golang"></a>Golang</h2><h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><ol>
+<li><a href="http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a href="http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a href="http://lessisbetter.site/2018/12/13/golang-slect/">Golang并发模型：轻松入门select</a></li>
+<li><a href="http://lessisbetter.site/2018/12/17/golang-selete-advance/">Golang并发模型：select进阶</a></li>
+<li><a href="http://lessisbetter.site/2018/12/20/golang-simple-goroutine-pool/">Golang并发模型：轻松入门协程池</a></li>
+<li><a href="http://lessisbetter.site/2019/01/04/golang-pkg-sync/">Golang并发的次优选择：sync包</a></li>
+</ol>
+<h3 id="Go调度器"><a href="#Go调度器" class="headerlink" title="Go调度器"></a>Go调度器</h3><ol>
+<li><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">Go调度器系列（1）起源</a></li>
+<li><a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">Go调度器系列（2）宏观看调度器</a></li>
+<li><a href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">Go调度器系列（3）图解调度原理</a></li>
+<li><a href="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/">Go调度器系列（4）源码阅读与探索</a></li>
+</ol>
+<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><ol>
+<li><a href="http://lessisbetter.site/2018/09/29/go-map-delete/">Go的map中删除子map，内存会自动释放吗？</a></li>
+<li><a href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/">实战Go内存泄露</a></li>
+<li><a href="http://lessisbetter.site/2019/07/06/go-memory-allocation/">Go内存分配那些事，就这么简单！</a></li>
+<li><a href="http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/">你滥用log了吗</a></li>
+<li><a href="https://lessisbetter.site/2019/10/20/go-gc-1-history-and-priciple/">Go垃圾回收 1：历史和原理</a></li>
+</ol>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ol>
+<li><a href="http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/">深入理解channel：设计+源码</a></li>
+<li><a href="http://lessisbetter.site/2018/09/04/explore-golang-timer/">探索Golang定时器的陷阱</a></li>
+<li><a href="http://lessisbetter.site/2018/10/24/go-handle-error/">如何优雅的处理Golang错误</a></li>
+<li><a href="http://lessisbetter.site/2019/02/24/go-law-of-reflect/">反射3定律</a></li>
+<li><a href="http://lessisbetter.site/2019/06/09/golang-first-class-function/">First class function in Go</a></li>
+</ol>
+<h3 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h3><ol>
+<li><a href="https://lessisbetter.site/2020/03/15/gops-introduction/">Go官方进程诊断工具gops详解</a></li>
+<li><a href="https://lessisbetter.site/2019/10/31/go-modules-notes/">Go Modules 方法、问题汇总贴</a></li>
+</ol>
+<h2 id="以太坊"><a href="#以太坊" class="headerlink" title="以太坊"></a>以太坊</h2><h3 id="共识"><a href="#共识" class="headerlink" title="共识"></a>共识</h3><ol>
+<li><a href="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-1/">以太坊源码分析：共识（1）</a></li>
+<li><a href="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-2/">以太坊源码分析：共识（2）</a></li>
+<li><a href="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-3/">以太坊源码分析：共识（3）</a></li>
+</ol>
+<h3 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h3><ol>
+<li><a href="http://lessisbetter.site/2018/06/22/ethereum-code-statedb/">以太坊源码分析：statedb</a></li>
+</ol>
+<h3 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h3><ol>
+<li><a href="http://lessisbetter.site/2018/08/30/ethereum-fetcher-module-and-block-propagate/">以太坊源码分析：fetcher模块和区块传播</a></li>
+</ol>
+<h3 id="交易"><a href="#交易" class="headerlink" title="交易"></a>交易</h3><ol>
+<li><a href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/">以太坊源码分析：交易缓冲池txpool</a></li>
+</ol>
+<h3 id="框架"><a href="#框架" class="headerlink" title="框架"></a>框架</h3><ol>
+<li><a href="http://lessisbetter.site/2018/10/18/ethereum-code-event-framework/">以太坊源码分析之事件框架</a></li>
+</ol>
+<h2 id="Fabric"><a href="#Fabric" class="headerlink" title="Fabric"></a>Fabric</h2><h3 id="宏观"><a href="#宏观" class="headerlink" title="宏观"></a>宏观</h3><ol>
+<li><a href="http://lessisbetter.site/2019/09/02/hyperledger-projects/">Hyperledger项目介绍</a></li>
+<li><a href="http://lessisbetter.site/2019/07/17/fabric-concepts-notes/">快速入门Fabric核心概念和框架</a></li>
+<li><a href="http://lessisbetter.site/2019/12/16/fabric-2-0/">Fabric 2.0 特性一览</a></li>
+</ol>
+<h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><ol>
+<li><a href="http://lessisbetter.site/2019/07/10/fabric-makefile/">通过Fabric 1.4 的Makefile，轻松掌握Fabric构建</a></li>
+<li><a href="http://lessisbetter.site/2019/07/25/fabric-first-network/">详解Fabric网络搭建</a></li>
+<li><a href="http://lessisbetter.site/2019/08/01/fabric-new-org/">Fabric组织动态加入</a></li>
+<li><a href="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/">Fabric 1.4不同peer使用不同语言链码的问题</a></li>
+</ol>
+<h3 id="架构与源码"><a href="#架构与源码" class="headerlink" title="架构与源码"></a>架构与源码</h3><ol>
+<li><a href="http://lessisbetter.site/2019/09/06/fabric-source-endorser-policy-flow/">Fabric 1.4源码解读 1：背书策略是怎么使用的</a></li>
+<li><a href="http://lessisbetter.site/2019/09/11/fabric-deploy-scc/">Fabric 1.4源码解读 2：系统链码SCC是如何部署的</a></li>
+<li><a href="http://lessisbetter.site/2019/09/20/fabric-event-source/">Fabric 1.4源码解读 3：事件(Event)原理解读</a></li>
+<li><a href="http://lessisbetter.site/2019/10/29/fabric-transaction-endorser-source/">Fabric 1.4源码解读 4：交易背书流程解读</a></li>
+<li><a href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/">Fabric 1.4源码解读 5：Fabric是如何验证签名的？</a></li>
+<li><a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">Fabric 1.4源码解读 6：Orderer核心数据结构</a></li>
+<li><a href="http://lessisbetter.site/2019/11/21/fabric-orderer-architecture/">Fabric 1.4源码解读 7：Orderer架构解读</a></li>
+<li><a href="http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/">Fabric 1.4源码解读 8：Orderer和Peer的交互</a></li>
+<li><a href="https://lessisbetter.site/2020/01/03/fabric-peer-ledger/">Fabric 1.4源码解读 9：从账本角度看Peer</a></li>
+<li><a href="https://lessisbetter.site/2020/04/12/fabric-bccsp/">Fabric 1.4源码解读 10：可扩展密码服务提供者BCCSP，以及可扩展国密</a></li>
+</ol>
+<h3 id="周边工具"><a href="#周边工具" class="headerlink" title="周边工具"></a>周边工具</h3><ol>
+<li><a href="http://lessisbetter.site/2019/08/01/fabric-parse-block/">利用工具解析Fabric区块与工具详解</a></li>
+<li><a href="http://lessisbetter.site/2019/10/31/fabric-sdk-go-configure-graph/">fabric-sdk-go 配置项分类</a></li>
+<li><a href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">使用fabric-sdk-go操作链码</a></li>
+<li><a href="http://lessisbetter.site/2019/11/13/using-fabric-sdk-go-register-event/">使用fabric-sdk-go订阅Fabric事件</a></li>
+</ol>
+<h3 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h3><ol>
+<li><a href="https://lessisbetter.site/2020/03/03/contribute-to-fabric/">向Fabric贡献代码</a></li>
+</ol>
+<h2 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h2><h3 id="BFT"><a href="#BFT" class="headerlink" title="BFT"></a>BFT</h3><ol>
+<li><a href="https://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/">为什么PBFT的节点数量是3f+1?</a></li>
+<li><a href="https://lessisbetter.site/2020/03/15/why-pbft-needs-3-phase-message/">为什么PBFT需要3个阶段消息？</a></li>
+<li><a href="https://lessisbetter.site/2020/03/22/why-pbft-needs-viewchange/">为什么PBFT需要View Changes</a></li>
+</ol>
+<h3 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h3><ol>
+<li><a href="https://lessisbetter.site/2019/08/13/raft-zh/">Raft中文翻译与笔记</a></li>
+<li><a href="https://lessisbetter.site/2019/08/19/etcd-raft-sources-arch/">Etcd Raft架构设计和源码剖析1：宏观架构</a></li>
+<li><a href="https://lessisbetter.site/2019/08/22/etcd-raft-source-data-flow/">Etcd Raft架构设计和源码剖析2：数据流</a></li>
+<li><a href="https://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/">Etcd Raft架构设计和源码剖析3：重要结构体定义</a></li>
+</ol>
+<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><ol>
+<li><a href="http://lessisbetter.site/2019/03/01/linux-location-of-process/">查看Linux运行程序的文件路径</a></li>
+</ol>
+<h3 id="代理与镜像"><a href="#代理与镜像" class="headerlink" title="代理与镜像"></a>代理与镜像</h3><ol>
+<li><a href="http://lessisbetter.site/2018/09/06/Science-and-the-Internet/">让终端科学上网</a></li>
+<li><a href="http://lessisbetter.site/2019/07/13/fast-mirrors/">让镜像飞，加速你的开发</a></li>
+<li><a href="http://lessisbetter.site/2019/07/13/better-brew/">让Homebrew飞</a></li>
+</ol>
+<h2 id="书籍"><a href="#书籍" class="headerlink" title="书籍"></a>书籍</h2><ol>
+<li><a href="http://lessisbetter.site/2019/02/16/book-recommend-1/">书籍推荐1</a></li>
+</ol>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : 'a35734fb8cb3ab624a2c3e16ce3624db',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

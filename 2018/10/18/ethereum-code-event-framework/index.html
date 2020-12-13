@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","images":"/images","scheme":"Pisces","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="过去在学Actor模型的时候，就认为异步消息是相当的重要，在华为的时候，也深扒了一下当时产品用的消息模型，简单实用，支撑起了很多模块和业务，但也有一个缺点是和其他的框架有耦合，最近看到以太坊的事件框架，同样简单简洁，理念很适合初步接触事件框架的同学，写文介绍一下。 以太坊的事件框架是一个单独的基础模块，存在于目录go-ethereum&#x2F;event中，它有2中独立的事件框架实现，老点的叫TypeMu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊源码分析：事件框架">
+<meta property="og:url" content="http://lessisbetter.site/2018/10/18/ethereum-code-event-framework/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="过去在学Actor模型的时候，就认为异步消息是相当的重要，在华为的时候，也深扒了一下当时产品用的消息模型，简单实用，支撑起了很多模块和业务，但也有一个缺点是和其他的框架有耦合，最近看到以太坊的事件框架，同样简单简洁，理念很适合初步接触事件框架的同学，写文介绍一下。 以太坊的事件框架是一个单独的基础模块，存在于目录go-ethereum&#x2F;event中，它有2中独立的事件框架实现，老点的叫TypeMu">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-12-event-framework.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-12-typemux.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2018-12-event-feed.png">
+<meta property="article:published_time" content="2018-10-18T12:16:01.000Z">
+<meta property="article:modified_time" content="2020-12-13T08:11:59.772Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="以太坊">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2018-12-event-framework.png">
+
+
+<link rel="canonical" href="http://lessisbetter.site/2018/10/18/ethereum-code-event-framework/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>以太坊源码分析：事件框架 | Go语言充电站</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Go语言充电站</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-主页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-专题"><a href="/subject/" rel="section"><i class="fa fa-calendar fa-fw"></i>专题</a></li>
+        <li class="menu-item menu-item-大牛博客"><a href="/blogs/" rel="section"><i class="fa fa-calendar fa-fw"></i>大牛博客</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container">
+  <div class="algolia-stats"><hr></div>
+  <div class="algolia-hits"></div>
+  <div class="algolia-pagination"></div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E6%A1%86%E6%9E%B6%E7%9A%84%E6%8A%BD%E8%B1%A1%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">事件框架的抽象结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%9A%84%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">以太坊的事件模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TypeMux%EF%BC%9A%E5%90%8C%E6%AD%A5%E4%BA%8B%E4%BB%B6%E6%A1%86%E6%9E%B6"><span class="nav-number">2.1.</span> <span class="nav-text">TypeMux：同步事件框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TypeMux%E6%BA%90%E7%A0%81%E9%80%9F%E9%80%92"><span class="nav-number">2.2.</span> <span class="nav-text">TypeMux源码速递</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Feed%EF%BC%9A%E6%B5%81%E5%BC%8F%E6%A1%86%E6%9E%B6"><span class="nav-number">2.3.</span> <span class="nav-text">Feed：流式框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Feed%E6%BA%90%E7%A0%81%E9%80%9F%E9%80%92"><span class="nav-number">2.4.</span> <span class="nav-text">Feed源码速递</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">云原生、Go语言、区块链</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://xargin.com/" title="Xargin曹大博客 → https:&#x2F;&#x2F;xargin.com&#x2F;" rel="noopener" target="_blank">Xargin曹大博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://qcrao.github.io/" title="码农桃花源博客 → https:&#x2F;&#x2F;qcrao.github.io&#x2F;" rel="noopener" target="_blank">码农桃花源博客</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://book.eddycjy.com/golang/" title="煎鱼博客 → https:&#x2F;&#x2F;book.eddycjy.com&#x2F;golang&#x2F;" rel="noopener" target="_blank">煎鱼博客</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/10/18/ethereum-code-event-framework/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          以太坊源码分析：事件框架
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-10-18 20:16:01" itemprop="dateCreated datePublished" datetime="2018-10-18T20:16:01+08:00">2018-10-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:11:59" itemprop="dateModified" datetime="2020-12-13T16:11:59+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>过去在学Actor模型的时候，就认为异步消息是相当的重要，在华为的时候，也深扒了一下当时产品用的消息模型，简单实用，支撑起了很多模块和业务，但也有一个缺点是和其他的框架有耦合，最近看到以太坊的事件框架，同样简单简洁，理念很适合初步接触事件框架的同学，写文介绍一下。</p>
+<p>以太坊的事件框架是一个单独的基础模块，存在于目录<code>go-ethereum/event</code>中，它有2中独立的事件框架实现，老点的叫<code>TypeMux</code>，已经基本弃用，新的叫<code>Feed</code>，当前正在广泛使用。</p>
+<p><code>TypeMux</code>和<code>Feed</code>还只是简单的事件框架，与Kafka、RocketMQ等消息系统相比，是非常的传统和简单，但是<code>TypeMux</code>和<code>Feed</code>的简单简洁，已经很好的支撑以太坊的上层模块，这是当下最好的选择。</p>
+<p><code>TypeMux</code>和<code>Feed</code>各有优劣，最优秀的共同特点是，他们只依赖于Golang原始的包，完全与以太坊的其他模块隔离开来，也就是说，你完全可以把这两个事件框架用在自己的项目中。</p>
+<p><code>TypeMux</code>的特点是，你把所有的订阅塞给它就好，事件来了它自会通知你，但有可能会阻塞，通知你不是那么及时，甚至过了一段挺长的时间。</p>
+<p><code>Feed</code>的特点是，它通常不存在阻塞的情况，会及时的把事件通知给你，但需要你为<strong>每类事件</strong>都建立一个Feed，然后不同的事件去不同的Feed上订阅和发送，这其实挺烦人的，如果你用错了Feed，会导致panic。</p>
+<p>接下来，介绍下这种简单事件框架的抽象模型，然后再回归到以太坊，介绍下<code>TypeMux</code>和<code>Feed</code>。</p>
+<a id="more"></a>
+
+
+
+<h2 id="事件框架的抽象结构"><a href="#事件框架的抽象结构" class="headerlink" title="事件框架的抽象结构"></a>事件框架的抽象结构</h2><p><img src="http://img.lessisbetter.site/2018-12-event-framework.png" alt="原始事件框架抽象结构"></p>
+<p>如上图，轻量级的事件框架会把所有的被订阅的事件收集起来，然后把每个订阅者组合成一个列表，当事件框架收到某个事件的时候，就把订阅该事件的所有订阅者找出来，然后把这个事件发给他们。</p>
+<p>它需要具有2个功能：</p>
+<ol>
+<li>让订阅者订阅、取消订阅某类事件。</li>
+<li>让发布者能够发布某个事件，并且把事件送到每个订阅者。</li>
+</ol>
+<p>如果做成完善的消息系统，就还得考虑这些特性：可用性、吞吐量、传输延迟、有序消息、消息存储、过滤、重发，这和事件框架相比就复杂上去了，我们专注的介绍下以太坊的事件模型怎么完成上述3个功能的。</p>
+<h2 id="以太坊的事件模型"><a href="#以太坊的事件模型" class="headerlink" title="以太坊的事件模型"></a>以太坊的事件模型</h2><p><code>TypeMux</code>是一个以太坊不太满意的事件框架，所以以太坊就搞了<code>Feed</code>出来，它解决了<code>TypeMux</code>效率低下，延迟交付的问题。接下来就先看下这个<code>TypeMux</code>。</p>
+<h3 id="TypeMux：同步事件框架"><a href="#TypeMux：同步事件框架" class="headerlink" title="TypeMux：同步事件框架"></a>TypeMux：同步事件框架</h3><p><strong>TypeMux是一个同步事件框架。</strong>它的实现和上面讲的事件框架的抽象结构是完全一样的，它维护了一个订阅表，表里维护了每个事件的订阅者列表。它的特点：</p>
+<ol>
+<li>采用<strong>多对多</strong>结构：多个事件对多个订阅者。</li>
+<li>采用推模式，把事件/消息推送给订阅者，就像信件一样，会被送到你的信箱，你在信箱里取信就行了。</li>
+<li>是一个同步事件框架。这也是它的缺点所在，举个例子就是：邮递员要给小红、小明送信，只有信箱里的信被小红取走后，邮递员才去给小明送信，如果小红旅游去了无法取信，邮递员就一直等在小红家，而小明一直收不到信，小明很无辜无辜啊！</li>
+</ol>
+<p>看下它2个功能的实现：</p>
+<ol>
+<li>订阅和取消订阅。订阅通过函数<code>TypeMux.Subscribe()</code>，入参为要订阅的事件类型，会返回<code>TypeMuxSubscription</code>给订阅者，订阅者可通过此控制订阅，通过<code>TypeMuxSubscription.Unsubscribe()</code> 可以取消订阅。</li>
+<li>发布事件和传递事件。<code>TypeMux.Post()</code>，入参为事件类型，根据订阅表找出该事件的订阅者列表，遍历列表，依次向每个订阅者传递事件，如果前一个没有传递完成进入阻塞，会导致后边的订阅者不能及时收到事件。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2018-12-typemux.png" alt="TypeMux抽象结构"></p>
+<h3 id="TypeMux源码速递"><a href="#TypeMux源码速递" class="headerlink" title="TypeMux源码速递"></a>TypeMux源码速递</h3><p><code>TypeMux</code>的精简组成：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A TypeMux dispatches events to registered receivers. Receivers can be</span></span><br><span class="line"><span class="comment">// registered to handle events of certain type. Any operation</span></span><br><span class="line"><span class="comment">// called after mux is stopped will return ErrMuxClosed.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The zero value is ready to use.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Deprecated: use Feed</span></span><br><span class="line"><span class="comment">// 本质：哈希列表，每个事件的订阅者都存到对于的列表里</span></span><br><span class="line"><span class="keyword">type</span> TypeMux <span class="keyword">struct</span> &#123;</span><br><span class="line">	mutex   sync.RWMutex <span class="comment">// 锁</span></span><br><span class="line">	subm    <span class="keyword">map</span>[reflect.Type][]*TypeMuxSubscription <span class="comment">// 订阅表：所有事件类型的所有订阅者</span></span><br><span class="line">	stopped <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>订阅：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Subscribe creates a subscription for events of the given types. The</span></span><br><span class="line"><span class="comment">// subscription&#x27;s channel is closed when it is unsubscribed</span></span><br><span class="line"><span class="comment">// or the mux is closed.</span></span><br><span class="line"><span class="comment">// 订阅者只传入订阅的事件类型，然后TypeMux会返回给它一个订阅对象</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mux *TypeMux)</span> <span class="title">Subscribe</span><span class="params">(types ...<span class="keyword">interface</span>&#123;&#125;)</span> *<span class="title">TypeMuxSubscription</span></span> &#123;</span><br><span class="line">	sub := newsub(mux)</span><br><span class="line">	mux.mutex.Lock()</span><br><span class="line">	<span class="keyword">defer</span> mux.mutex.Unlock()</span><br><span class="line">	<span class="keyword">if</span> mux.stopped &#123;</span><br><span class="line">		<span class="comment">// set the status to closed so that calling Unsubscribe after this</span></span><br><span class="line">		<span class="comment">// call will short circuit.</span></span><br><span class="line">		sub.closed = <span class="literal">true</span></span><br><span class="line">		<span class="built_in">close</span>(sub.postC)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> mux.subm == <span class="literal">nil</span> &#123;</span><br><span class="line">			mux.subm = <span class="built_in">make</span>(<span class="keyword">map</span>[reflect.Type][]*TypeMuxSubscription)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> _, t := <span class="keyword">range</span> types &#123;</span><br><span class="line">			rtyp := reflect.TypeOf(t)</span><br><span class="line">			<span class="comment">// 在同一次订阅中，不要重复订阅同一个类型的事件</span></span><br><span class="line">			oldsubs := mux.subm[rtyp]</span><br><span class="line">			<span class="keyword">if</span> find(oldsubs, sub) != <span class="number">-1</span> &#123;</span><br><span class="line">				<span class="built_in">panic</span>(fmt.Sprintf(<span class="string">&quot;event: duplicate type %s in Subscribe&quot;</span>, rtyp))</span><br><span class="line">			&#125;</span><br><span class="line">			subs := <span class="built_in">make</span>([]*TypeMuxSubscription, <span class="built_in">len</span>(oldsubs)+<span class="number">1</span>)</span><br><span class="line">			<span class="built_in">copy</span>(subs, oldsubs)</span><br><span class="line">			subs[<span class="built_in">len</span>(oldsubs)] = sub</span><br><span class="line">			mux.subm[rtyp] = subs</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sub</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>取消订阅:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func (s *TypeMuxSubscription) Unsubscribe() &#123;</span><br><span class="line">	s.mux.del(s)</span><br><span class="line">	s.closewait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>发布事件和传递事件：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Post sends an event to all receivers registered for the given type.</span></span><br><span class="line"><span class="comment">// It returns ErrMuxClosed if the mux has been stopped.</span></span><br><span class="line"><span class="comment">// 遍历map，找到所有订阅的人，向它们传递event，同一个event对象，非拷贝，运行在调用者goroutine</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mux *TypeMux)</span> <span class="title">Post</span><span class="params">(ev <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	event := &amp;TypeMuxEvent&#123;</span><br><span class="line">		Time: time.Now(),</span><br><span class="line">		Data: ev,</span><br><span class="line">	&#125;</span><br><span class="line">	rtyp := reflect.TypeOf(ev)</span><br><span class="line">	mux.mutex.RLock()</span><br><span class="line">	<span class="keyword">if</span> mux.stopped &#123;</span><br><span class="line">		mux.mutex.RUnlock()</span><br><span class="line">		<span class="keyword">return</span> ErrMuxClosed</span><br><span class="line">	&#125;</span><br><span class="line">	subs := mux.subm[rtyp]</span><br><span class="line">	mux.mutex.RUnlock()</span><br><span class="line">	<span class="keyword">for</span> _, sub := <span class="keyword">range</span> subs &#123;</span><br><span class="line">		sub.deliver(event)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *TypeMuxSubscription)</span> <span class="title">deliver</span><span class="params">(event *TypeMuxEvent)</span></span> &#123;</span><br><span class="line">	<span class="comment">// Short circuit delivery if stale event</span></span><br><span class="line">	<span class="comment">// 不发送过早（老）的消息</span></span><br><span class="line">	<span class="keyword">if</span> s.created.After(event.Time) &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// Otherwise deliver the event</span></span><br><span class="line">	s.postMu.RLock()</span><br><span class="line">	<span class="keyword">defer</span> s.postMu.RUnlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> s.postC &lt;- event:</span><br><span class="line">	<span class="keyword">case</span> &lt;-s.closing:</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>我上面指出了发送事件可能阻塞，阻塞在哪？关键就在下面这里：创建<code>TypeMuxSubscription</code>时，通道使用的是无缓存通道，读写是同步的，这里注定了<strong>TypeMux是一个同步事件框架，这是以太坊改用Feed的最大原因</strong>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newsub</span><span class="params">(mux *TypeMux)</span> *<span class="title">TypeMuxSubscription</span></span> &#123;</span><br><span class="line">	c := <span class="built_in">make</span>(<span class="keyword">chan</span> *TypeMuxEvent) <span class="comment">// 无缓冲通道，同步读写</span></span><br><span class="line">	<span class="keyword">return</span> &amp;TypeMuxSubscription&#123;</span><br><span class="line">		mux:     mux,</span><br><span class="line">		created: time.Now(),</span><br><span class="line">		readC:   c,</span><br><span class="line">		postC:   c,</span><br><span class="line">		closing: <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;),</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Feed：流式框架"><a href="#Feed：流式框架" class="headerlink" title="Feed：流式框架"></a>Feed：流式框架</h3><p><strong>Feed是一个流式事件框架。</strong>上文强调了TypeMux是一个同步框架，也正是因为此以太坊丢弃了它，难道<code>Feed</code>就是一个异步框架？<strong>不一定是的，这取决于订阅者是否采用有缓存的通道，采用有缓存的通道，则Feed就是异步的，采用无缓存的通道，Feed就是同步的，把同步还是异步的选择交给使用者</strong>。</p>
+<p>本节强调Feed的流式特点。事件本质是一个数据，连续不断的事件就组成了一个数据流，这些数据流不停的流向它的订阅者那里，并且不会阻塞在任何一个订阅者那里。</p>
+<p>举几个不是十分恰当的例子。</p>
+<ol>
+<li>公司要放中秋节，HR给所有同事都发了一封邮件，有些同事读了，有些同事没读，要到国庆节了HR又给所有同事发了一封邮件，这些邮件又进入到每个人的邮箱，不会因为任何一个人没有读邮件，导致剩下的同事收不到邮件。</li>
+<li>你在朋友圈给朋友旅行的照片点了个赞，每当你们共同朋友点赞或者评论的时候，你都会收到提醒，无论你看没看这些提醒，这些提醒都会不断的发过来。</li>
+<li>你微博关注了谢娜，谢娜发了个搞笑的视频，你刷微博的时候就收到了，但也有很多人根本没刷微博，你不会因为别人没有刷，你就收不到谢娜的动态。</li>
+</ol>
+<p>Feed和TypeMux相同的是，它们都是推模式，不同的是Feed是异步的，如果有些订阅者阻塞了，没关系，它会继续向后面的订阅者发送事件/消息。</p>
+<p>Feed是一个一对多的事件流框架。<strong>每个类型的事件都需要一个与之对应的Feed</strong>，订阅者通过这个Feed进行订阅事件，发布者通过这个Feed发布事件。</p>
+<p><img src="http://img.lessisbetter.site/2018-12-event-feed.png" alt="Feed抽象结构"></p>
+<p>看下Feed是如何实现2个功能的：</p>
+<ol>
+<li>订阅和取消订阅：<code>Feed.Subscribe()</code>，入参是一个通道，通常是有缓冲的，就算是无缓存也不会造成Feed阻塞，Feed会校验这个通道的类型和本Feed管理的事件类型是否一致，然后把通道保存下来，返回给订阅者一个<code>Subscription</code>，可以通过它取消订阅和读取通道错误。</li>
+<li>发布事件和传递事件。<code>Feed.Send()</code>入参是一个事件，加锁确保本类型事件只有一个发送协程正在进行，然后校验事件类型是否匹配，Feed会尝试给每个订阅者发送事件，如果订阅者阻塞，Feed就继续尝试给下一个订阅者发送，直到给每个订阅者发送事件，返回发送该事件的数量。</li>
+</ol>
+<h3 id="Feed源码速递"><a href="#Feed源码速递" class="headerlink" title="Feed源码速递"></a>Feed源码速递</h3><p>Feed定义：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Feed implements one-to-many subscriptions where the carrier of events is a channel.</span></span><br><span class="line"><span class="comment">// Values sent to a Feed are delivered to all subscribed channels simultaneously.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Feeds can only be used with a single type. The type is determined by the first Send or</span></span><br><span class="line"><span class="comment">// Subscribe operation. Subsequent calls to these methods panic if the type does not</span></span><br><span class="line"><span class="comment">// match.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The zero value is ready to use.</span></span><br><span class="line"><span class="comment">// 一对多的事件订阅管理：每个feed对象，当别人调用send的时候，会发送给所有订阅者</span></span><br><span class="line"><span class="comment">// 每种事件类型都有一个自己的feed，一个feed内订阅的是同一种类型的事件，得用某个事件的feed才能订阅该事件</span></span><br><span class="line"><span class="keyword">type</span> Feed <span class="keyword">struct</span> &#123;</span><br><span class="line">	once      sync.Once        <span class="comment">// ensures that init only runs once</span></span><br><span class="line">	sendLock  <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;    <span class="comment">// sendLock has a one-element buffer and is empty when held.It protects sendCases. 这个锁确保了只有一个协程在使用go routine</span></span><br><span class="line">	removeSub <span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125; <span class="comment">// interrupts Send</span></span><br><span class="line">	sendCases caseList         <span class="comment">// the active set of select cases used by Send，订阅的channel列表，这些channel是活跃的</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// The inbox holds newly subscribed channels until they are added to sendCases.</span></span><br><span class="line">	mu     sync.Mutex</span><br><span class="line">	inbox  caseList <span class="comment">// 不活跃的在这里</span></span><br><span class="line">	etype  reflect.Type</span><br><span class="line">	closed <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>订阅事件：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Subscribe adds a channel to the feed. Future sends will be delivered on the channel</span></span><br><span class="line"><span class="comment">// until the subscription is canceled. All channels added must have the same element type.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The channel should have ample buffer space to avoid blocking other subscribers.</span></span><br><span class="line"><span class="comment">// Slow subscribers are not dropped.</span></span><br><span class="line"><span class="comment">// 订阅者传入接收事件的通道，feed将通道保存为case，然后返回给订阅者订阅对象</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *Feed)</span> <span class="title">Subscribe</span><span class="params">(channel <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Subscription</span></span> &#123;</span><br><span class="line">	f.once.Do(f.init)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 通道和通道类型检查</span></span><br><span class="line">	chanval := reflect.ValueOf(channel)</span><br><span class="line">	chantyp := chanval.Type()</span><br><span class="line">	<span class="keyword">if</span> chantyp.Kind() != reflect.Chan || chantyp.ChanDir()&amp;reflect.SendDir == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(errBadChannel)</span><br><span class="line">	&#125;</span><br><span class="line">	sub := &amp;feedSub&#123;feed: f, channel: chanval, err: <span class="built_in">make</span>(<span class="keyword">chan</span> error, <span class="number">1</span>)&#125;</span><br><span class="line"></span><br><span class="line">	f.mu.Lock()</span><br><span class="line">	<span class="keyword">defer</span> f.mu.Unlock()</span><br><span class="line">	<span class="keyword">if</span> !f.typecheck(chantyp.Elem()) &#123;</span><br><span class="line">		<span class="built_in">panic</span>(feedTypeError&#123;op: <span class="string">&quot;Subscribe&quot;</span>, got: chantyp, want: reflect.ChanOf(reflect.SendDir, f.etype)&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 把通道保存到case</span></span><br><span class="line">	<span class="comment">// Add the select case to the inbox.</span></span><br><span class="line">	<span class="comment">// The next Send will add it to f.sendCases.</span></span><br><span class="line">	cas := reflect.SelectCase&#123;Dir: reflect.SelectSend, Chan: chanval&#125;</span><br><span class="line">	f.inbox = <span class="built_in">append</span>(f.inbox, cas)</span><br><span class="line">	<span class="keyword">return</span> sub</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>发送和传递事件：这个发送是比较绕一点的，要想真正掌握其中的运行，最好写个小程序练习下。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Send delivers to all subscribed channels simultaneously.</span></span><br><span class="line"><span class="comment">// It returns the number of subscribers that the value was sent to.</span></span><br><span class="line"><span class="comment">// 同时向所有的订阅者发送事件，返回订阅者的数量</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *Feed)</span> <span class="title">Send</span><span class="params">(value <span class="keyword">interface</span>&#123;&#125;)</span> <span class="params">(nsent <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	rvalue := reflect.ValueOf(value)</span><br><span class="line"></span><br><span class="line">	f.once.Do(f.init)</span><br><span class="line">	&lt;-f.sendLock <span class="comment">// 获取发送锁</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Add new cases from the inbox after taking the send lock.</span></span><br><span class="line">	<span class="comment">// 从inbox加入到sendCases，不能订阅的时候直接加入到sendCases，因为可能其他协程在调用发送</span></span><br><span class="line">	f.mu.Lock()</span><br><span class="line">	f.sendCases = <span class="built_in">append</span>(f.sendCases, f.inbox...)</span><br><span class="line">	f.inbox = <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 类型检查：如果该feed不是要发送的值的类型，释放锁，并且执行panic</span></span><br><span class="line">	<span class="keyword">if</span> !f.typecheck(rvalue.Type()) &#123;</span><br><span class="line">		f.sendLock &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">		<span class="built_in">panic</span>(feedTypeError&#123;op: <span class="string">&quot;Send&quot;</span>, got: rvalue.Type(), want: f.etype&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">	f.mu.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Set the sent value on all channels.</span></span><br><span class="line">	<span class="comment">// 把发送的值关联到每个case/channel，每一个事件都有一个feed，所以这里全是同一个事件的</span></span><br><span class="line">	<span class="keyword">for</span> i := firstSubSendCase; i &lt; <span class="built_in">len</span>(f.sendCases); i++ &#123;</span><br><span class="line">		f.sendCases[i].Send = rvalue</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Send until all channels except removeSub have been chosen. &#x27;cases&#x27; tracks a prefix</span></span><br><span class="line">	<span class="comment">// of sendCases. When a send succeeds, the corresponding case moves to the end of</span></span><br><span class="line">	<span class="comment">// &#x27;cases&#x27; and it shrinks by one element.</span></span><br><span class="line">	<span class="comment">// 所有case仍然保留在sendCases，只是用过的会移动到最后面</span></span><br><span class="line">	cases := f.sendCases</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="comment">// Fast path: try sending without blocking before adding to the select set.</span></span><br><span class="line">		<span class="comment">// This should usually succeed if subscribers are fast enough and have free</span></span><br><span class="line">		<span class="comment">// buffer space.</span></span><br><span class="line">		<span class="comment">// 使用非阻塞式发送，如果不能发送就及时返回</span></span><br><span class="line">		<span class="keyword">for</span> i := firstSubSendCase; i &lt; <span class="built_in">len</span>(cases); i++ &#123;</span><br><span class="line">			<span class="comment">// 如果发送成功，把这个case移动到末尾，所以i这个位置就是没处理过的，然后大小减1</span></span><br><span class="line">			<span class="keyword">if</span> cases[i].Chan.TrySend(rvalue) &#123;</span><br><span class="line">				nsent++</span><br><span class="line">				cases = cases.deactivate(i)</span><br><span class="line">				i--</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 如果这个地方成立，代表所有订阅者都不阻塞，都发送完了</span></span><br><span class="line">		<span class="keyword">if</span> <span class="built_in">len</span>(cases) == firstSubSendCase &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Select on all the receivers, waiting for them to unblock.</span></span><br><span class="line">		<span class="comment">// 返回一个可用的，直到不阻塞。</span></span><br><span class="line">		chosen, recv, _ := reflect.Select(cases)</span><br><span class="line">		<span class="keyword">if</span> chosen == <span class="number">0</span> <span class="comment">/* &lt;-f.removeSub */</span> &#123;</span><br><span class="line">			<span class="comment">// 这个接收方要删除了，删除并缩小sendCases</span></span><br><span class="line">			index := f.sendCases.find(recv.Interface())</span><br><span class="line">			f.sendCases = f.sendCases.<span class="built_in">delete</span>(index)</span><br><span class="line">			<span class="keyword">if</span> index &gt;= <span class="number">0</span> &amp;&amp; index &lt; <span class="built_in">len</span>(cases) &#123;</span><br><span class="line">				<span class="comment">// Shrink &#x27;cases&#x27; too because the removed case was still active.</span></span><br><span class="line">				cases = f.sendCases[:<span class="built_in">len</span>(cases)<span class="number">-1</span>]</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">// reflect已经确保数据已经发送，无需再尝试发送</span></span><br><span class="line">			cases = cases.deactivate(chosen)</span><br><span class="line">			nsent++</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 把sendCases中的send都标记为空</span></span><br><span class="line">	<span class="comment">// Forget about the sent value and hand off the send lock.</span></span><br><span class="line">	<span class="keyword">for</span> i := firstSubSendCase; i &lt; <span class="built_in">len</span>(f.sendCases); i++ &#123;</span><br><span class="line">		f.sendCases[i].Send = reflect.Value&#123;&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	f.sendLock &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">	<span class="keyword">return</span> nsent</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/10/18/ethereum-code-event-framework/">http://lessisbetter.site/2018/10/18/ethereum-code-event-framework/</a></li>
+</ol>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"># 以太坊</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/09/29/go-map-delete/" rel="prev" title="Go的map中删除子map，内存会自动释放吗？">
+                  <i class="fa fa-chevron-left"></i> Go的map中删除子map，内存会自动释放吗？
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/10/24/go-handle-error/" rel="next" title="如何优雅的处理Golang错误">
+                  如何优雅的处理Golang错误 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4.8.2/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4.8.7/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.7.0/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: 'c60d7cdad469c9afd60947dd84c0f4100874c655',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '60479a2e43d52f2f400687c57d24fbaa',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

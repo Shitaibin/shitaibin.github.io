@@ -359,7 +359,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:05:58" itemprop="dateModified" datetime="2020-12-13T16:05:58+08:00">2020-12-13</time>
+        <time title="修改时间：2020-12-13 16:19:46" itemprop="dateModified" datetime="2020-12-13T16:19:46+08:00">2020-12-13</time>
       </span>
 
   
@@ -385,7 +385,7 @@
 <li>把备份的<code>_config.yaml</code>配置文件中<strong>有用的选项</strong>放到新的配置文件中，不要覆盖进新版本的Hexo。</li>
 <li>建立<code>hexo_resource</code>分支，该分支用来存放hexo的配置和博文等文件。master分支留着给博客使用，存放的是博客的静态文件。</li>
 <li>配置Hexo的Next主题：<br>a. <code>cd themes &amp;&amp; git clone https://github.com/next-theme/hexo-theme-next</code>，可以看下<a target="_blank" rel="noopener" href="https://theme-next.org/">Next主题官网</a>最新的操作。<br>b. 下载<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/hexo-next-theme-for-stb">备份的Next主题配置文件</a>，有用的项目拷贝到新的配置文件。</li>
-<li> 安装插件：pdf插件：<code>npm install --save hexo-pdf</code> 。</li>
+<li>安装插件：<br> a. pdf插件：<code>npm install --save hexo-pdf</code> 。<br> b. git插件：<code>npm install hexo-deployer-git --save</code> 。</li>
 <li><code>hexo g &amp;&amp; hexo s</code>，本地预览效果。</li>
 <li>执行<code>hexo d</code>，生成的博客文件会上传到Github。</li>
 <li>在<code>hexo_resource</code>分支下工作即可，写完文章后，执行<code>sh deploy_and_backup_hexo_br.sh</code>，备份好分支，博客推送到远端。</li>

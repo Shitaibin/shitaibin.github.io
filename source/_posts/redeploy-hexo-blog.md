@@ -20,7 +20,9 @@ tags: ['Hexo']
 8. 配置Hexo的Next主题：
    a. `cd themes && git clone https://github.com/next-theme/hexo-theme-next`，可以看下[Next主题官网](https://theme-next.org/)最新的操作。
    b. 下载[备份的Next主题配置文件](https://github.com/Shitaibin/hexo-next-theme-for-stb)，有用的项目拷贝到新的配置文件。
-9.  安装插件：pdf插件：`npm install --save hexo-pdf` 。
+9.  安装插件：
+    a. pdf插件：`npm install --save hexo-pdf` 。
+    b. git插件：`npm install hexo-deployer-git --save` 。
 10. `hexo g && hexo s`，本地预览效果。
 11. 执行`hexo d`，生成的博客文件会上传到Github。
 12. 在`hexo_resource`分支下工作即可，写完文章后，执行`sh deploy_and_backup_hexo_br.sh`，备份好分支，博客推送到远端。

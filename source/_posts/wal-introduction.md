@@ -21,7 +21,7 @@ WAL的核心思想是**先写日志再写数据文件**，修改数据文件必�
 
 > 本文的日志指事务的操作日志，本文提到的日志都是指事务日志，不再特殊声明。
 
-![WAL](http://img.lessisbetter.site/2019-12-wal.png)
+![WAL](https://lessisbetter.site/images/2019-12-wal.png)
 
 我们看WAL怎么**解决宕机和恢复的问题**：
 

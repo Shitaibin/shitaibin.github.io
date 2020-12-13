@@ -31,7 +31,7 @@ Ethash实现了PoW，PoW的精妙在于通过一个随机数确定，矿工确�
 
 **公式的含义是，使用hash和nonce生成的哈希值必须落在合法的区间。**利用下图介绍一下，Rand()函数结果取值范围是[0, MaxValue]，但只有计算出的哈希值在[0, MaxValue / Difficulty]内，才是符合条件的哈希值，进而该Nonce才是符合条件的，否则只能再去寻找下一个Nonce。
 
-![随机值的判断](http://img.lessisbetter.site/2018-06-22-121846.jpg-own)
+![随机值的判断](https://lessisbetter.site/images/2018-06-22-121846.jpg-own)
 
 以太坊可以通过调整Difficulty来调节当前挖矿的难度，Difficulty越大，挖矿的难度越大。当Difficulty越大时， `MaxValue / Difficulty`越小，合法的哈希值范围越小，造成挖矿难度增加。
 
@@ -55,13 +55,13 @@ Ethash挖矿的主要思想是，开启多个线程去寻找符合条件的Nonce
 ## 挖矿入口Seal()
 
 `Seal`是引擎的挖矿入口函数，它是管理岗位，负责管理挖矿的线程。它发起多个线程执行`Ethash.mine`进行并行挖矿，当要更新或者停止的时候，重新启动或停止这些线程。 
-![Seal函数：发布挖矿任务](http://img.lessisbetter.site/2018-06-22-121843.jpg-own)
+![Seal函数：发布挖矿任务](https://lessisbetter.site/images/2018-06-22-121843.jpg-own)
 
 ## 挖矿函数mine()
 
 `mine`函数负责挖矿。`Seal`在启动每一个`mine`的时候，给它分配了一个`seed`，`mine`会把它作为`Nonce`的初始值，然后生成本高度使用的`dataset`，然后把`dataset, hash, nonce`传递给`hashimotoFull`函数，这个函数可以认为是原理介绍中的`Rand`随机函数，他会生成哈希值`Result`，当`Result <= Target`的时候，说明哈希值落在符合条件的区间了，**mine找到了符合条件的Nonce**，使用Digest和nonce组成新的区块后，发送给`Seal`，否则验证下一个Nonce是否是符合条件的。
 
-![Miner函数](http://img.lessisbetter.site/2018-06-22-121841.jpg-own)
+![Miner函数](https://lessisbetter.site/images/2018-06-22-121841.jpg-own)
 
 ## 挖矿需要的数据cache和dataset
 
@@ -71,20 +71,20 @@ dataset和cache中存放的都是伪随机数，每个epoch的区块使用相同
 
 使用cache生成dataset。使用cache的部分数据，进行哈希和异或运算，就能生成一组dataset的item，比如下图中的cache中黄色块，能生成dataset中的黄色块，最后把这些Item拼起来就生成了完整的Dataset，完成该功能的函数是`generateDataset`。
 
-![cache和Dataset](http://img.lessisbetter.site/2018-06-22-121842.jpg-own)
+![cache和Dataset](https://lessisbetter.site/images/2018-06-22-121842.jpg-own)
 
 `dataset.generate()`是dataset的生成函数，该函数只执行一次，先使用`generateCache()`生成cache，再将cache作为`generateDataset()`的入参生成dataset，其中需要重点关注的是`generateDatasetItem()`，该函数是根据部分cache，生成一组dataset item，验证PoW的nonce的时候，也需要使用该函数。
 
-![Dataset的生成](http://img.lessisbetter.site/2018-06-22-121840.jpg-own)
+![Dataset的生成](https://lessisbetter.site/images/2018-06-22-121840.jpg-own)
 
 ## Rand()的实现hashimotoFull()和hashimoto()
 
 `hashimotoFull`功能是使用dataset、hash和nonce生成Digest和Result。它创建一个获取dataset部分数据的lookup函数，该函数能够返回连续的64字节dataset中的数据，然后把lookup函数、hash和nonce传递给`hashimoto`。 
-![hashimotoFull](http://img.lessisbetter.site/2018-06-22-121839.jpg-own)
+![hashimotoFull](https://lessisbetter.site/images/2018-06-22-121839.jpg-own)
 
 `hashimoto`的功能是根据hash和nonce，以及lookup函数生成`Digest`和`Result`，lookup函数能够返回64字节的数据就行。它把hash和nonce合成种子，然后根据种子生成混合的数据mix，然后进入一个循环，使用mix和seed获得dataset的行号，使用lookup获取指定行的数据，然后把数据混合到mix中，混合的方式是使用**哈希和异或运算**，循环结束后再使用哈希和异或函数把mix压缩为64字节，把mix转为小端模式就得到了Digest，把seed和mix进行hash运算得到Result。
 
-![hashimoto](http://img.lessisbetter.site/2018-06-22-121838.jpg-own)
+![hashimoto](https://lessisbetter.site/images/2018-06-22-121838.jpg-own)
 
 # 如何验证
 
@@ -101,13 +101,13 @@ PoW的验证是证明出块人确实进行了大量的哈希计算。Ethash验�
 
 `Ethash.VerifySeal`实现PoW验证功能。首先先判断区块中的Difficulty是否匹配，然后生成（获取）当前区块高度的cache，把cache和nonce传递给`hashimotoLight`，该函数能根据`cache, hash, nonce`生成Digest和Result，然后校验Digest是否匹配以及Result是否符合条件。
 
-![VerifySeal](http://img.lessisbetter.site/2018-06-22-121844.jpg-own)
+![VerifySeal](https://lessisbetter.site/images/2018-06-22-121844.jpg-own)
 
 ## hashimotoLight函数
 
 `hashimotoLight`使用`cache, hash, nonce`生成`Digest`和`Result`。**生成Digest和Result只需要部分的dataset数据，而这些部分dataset数据时可以通过cache生成，因此也就不需要完整的dataset**。它把`generateDatasetItem`函数封装成了获取部分dataset数据的lookup函数，然后传递给`hashimoto`计算出Digest和Result。
 
-![hashimotoLight](http://img.lessisbetter.site/2018-06-22-121845.jpg-own)
+![hashimotoLight](https://lessisbetter.site/images/2018-06-22-121845.jpg-own)
 
 # FAQ
 

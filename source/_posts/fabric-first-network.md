@@ -1225,7 +1225,7 @@ CONTAINER ID        IMAGE                                                       
 
 下面是调用链码的流程图，可以看到链码执行时，是通过Shim从fabric账本读取数据的，然后把执行结果返回。如果交易被peer节点验证有效，调用交易的结果会写入当fabric账本，如果无效，不会改变fabric账本，所以你现在是否理解[不满足背书策略的调用交易](#不满足背书策略的调用交易)不会改变数据，而[有效的调用交易](#有效的调用交易)会改变数据。
 
-![](http://img.lessisbetter.site/2019-07-chaincode_swimlane.png)
+![](https://lessisbetter.site/images/2019-07-chaincode_swimlane.png)
 
 ## 启动自定义网络
 

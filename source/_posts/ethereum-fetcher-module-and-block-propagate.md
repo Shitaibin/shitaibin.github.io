@@ -21,16 +21,16 @@ tags: ['以太坊', '区块链']
 
 先看总体过程。产生区块后，`miner`模块会发布一个事件`NewMinedBlockEvent`，订阅事件的协程收到事件后，就会把新区块的消息，广播给它所有的peer，peer收到消息后，会交给自己的fetcher模块处理，fetcher进行基本的验证后，区块没问题，发现这个区块就是本地链需要的下一个区块，则交给`blockChain`进一步进行完整的验证，这个过程会执行区块所有的交易，无误后把区块加入到本地链，写入数据库，这个过程就是下面的流程图，图1。
 
-![图1：新区块传播总体流程图](http://img.lessisbetter.site/image-20180821115214521.png-own)
+![图1：新区块传播总体流程图](https://lessisbetter.site/images/image-20180821115214521.png-own)
 
 总体流程图，能看到有个分叉，是因为节点传播新区块是有策略的。它的传播策略为：
 
 1. 假如节点连接了`N`个Peer，它只向Peer列表的`sqrt(N)`个Peer广播**完整的区块**消息。
 2. 向所有的Peer广播**只包含区块Hash**的消息。
 
-策略图的效果如图2，红色节点将区块传播给黄色节点：![图2：产生区块后传播给相邻节点](http://img.lessisbetter.site/image-20180821114210114.png-own)
+策略图的效果如图2，红色节点将区块传播给黄色节点：![图2：产生区块后传播给相邻节点](https://lessisbetter.site/images/image-20180821114210114.png-own)
 
-收到区块Hash的节点，需要从发送给它消息的Peer那里获取对应的完整区块，获取区块后就会按照图1的流程，加入到fetcher队列，最终插入本地区块链后，**将区块的Hash值广播给和它相连，但还不知道这个区块的Peer**。非产生区块节点的策略图，如图3，黄色节点将区块Hash传播给青色节点：![图3：非产块节点传播新区块](http://img.lessisbetter.site/image-20180821114756055.png-own)
+收到区块Hash的节点，需要从发送给它消息的Peer那里获取对应的完整区块，获取区块后就会按照图1的流程，加入到fetcher队列，最终插入本地区块链后，**将区块的Hash值广播给和它相连，但还不知道这个区块的Peer**。非产生区块节点的策略图，如图3，黄色节点将区块Hash传播给青色节点：![图3：非产块节点传播新区块](https://lessisbetter.site/images/image-20180821114756055.png-own)
 
 至此，可以看出**以太坊采用以石击水的方式，像水纹一样，层层扩散新产生的区块**。
 
@@ -40,7 +40,7 @@ fetcher模块的功能，就是收集其他Peer通知它的区块信息：1）�
 
 如果是完整区块，就可以传递给eth插入区块，如果只有区块Hash，则需要从其他的Peer获取此完整的区块，然后再传递给eth插入区块。
 
-![fetcher功能抽象](http://img.lessisbetter.site/image-20180821175330370.png-own)
+![fetcher功能抽象](https://lessisbetter.site/images/image-20180821175330370.png-own)
 
 # 源码解读
 
@@ -55,7 +55,7 @@ fetcher模块的功能，就是收集其他Peer通知它的区块信息：1）�
 3. 事件处理函数把区块Hash添加到所有Peer的另外一个通知队列
 4. 每个Peer的广播处理函数，会遍历它的待广播区块队列和通知队列，把数据封装成消息，调用P2P接口发送出去
 
-![图4：产块节点的传播图](http://img.lessisbetter.site/image-20180821115537184.png-own)
+![图4：产块节点的传播图](https://lessisbetter.site/images/image-20180821115537184.png-own)
 
 再看下代码上的细节。
 
@@ -163,7 +163,7 @@ func (pm *ProtocolManager) BroadcastBlock(block *types.Block, propagate bool) {
 
 消息处理的起点是`ProtocolManager.handleMsg`，`NewBlockMsg`的处理流程是蓝色标记的区域，红色区域是单独的协程，是fetcher处理队列中区块的流程，如果从队列中取出的区块是当前链需要的，校验后，调用`blockchian.InsertChain()`把区块插入到区块链，最后写入数据库，这是黄色部分。最后，绿色部分是`NewBlockHashesMsg`的处理流程，代码流程上是比较复杂的，为了能通过图描述整体流程，我把它简化掉了。
 
-![图5：远端节点处理新区块](http://img.lessisbetter.site/image-20180821143403650.png-own)
+![图5：远端节点处理新区块](https://lessisbetter.site/images/image-20180821143403650.png-own)
 
 仔细看看这幅图，掌握整体的流程后，接下来看每个步骤的细节。
 
@@ -512,7 +512,7 @@ Fetcher最主要的功能就是获取完整的区块，然后在合适的实际�
 
 首先，看两个节点是如何交互，获取完整区块，使用时序图的方式看一下，见图6，流程很清晰不再文字介绍。
 
-![图6：节点获取完整区块的时序图](http://img.lessisbetter.site/image-20180822103401508.png-own)
+![图6：节点获取完整区块的时序图](https://lessisbetter.site/images/image-20180822103401508.png-own)
 
 
 
@@ -526,7 +526,7 @@ Fetcher最主要的功能就是获取完整的区块，然后在合适的实际�
 
 
 
-![图7：获取区块状态转移图](http://img.lessisbetter.site/image-20180822103701006.png-own)
+![图7：获取区块状态转移图](https://lessisbetter.site/images/image-20180822103701006.png-own)
 
 
 

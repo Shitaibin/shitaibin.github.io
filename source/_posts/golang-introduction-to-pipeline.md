@@ -22,7 +22,7 @@ Golang并发核心思路是关注数据流动。数据流动的过程交给chann
 
 流水线并不是什么新奇的概念，它能极大的提高生产效率，在当代社会流水线非常普遍，我们用的几乎任何产品（手机、电脑、汽车、水杯），都是从流水线上生产出来的。以汽车为例，整个汽车流水线要经过几百个组装点，而在某个组装点只组装固定的零部件，然后传递给下一个组装点，最终一台完整的汽车从流水线上生产出来。
 
-![car_pipeline.jpeg](http://img.lessisbetter.site/2018-12-car_pipeline.jpeg
+![car_pipeline.jpeg](https://lessisbetter.site/images/2018-12-car_pipeline.jpeg
 )
 
 Golang的并发模型灵感其实都来自我们生活，对软件而言，高的生产效率就是高的性能。
@@ -33,7 +33,7 @@ Golang的并发模型灵感其实都来自我们生活，对软件而言，高�
 
 流水线中，第一个阶段的协程是**生产者**，它们只生产数据。最后一个阶段的协程是**消费者**，它们只消费数据。下图中A是生成者，C是消费者，而B只是中间过程的处理者。
 
-![简单流水线.png](http://img.lessisbetter.site/2018-12-simple-pipeline.png
+![简单流水线.png](https://lessisbetter.site/images/2018-12-simple-pipeline.png
 )
 
 
@@ -130,7 +130,7 @@ func main() {
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://img.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
+<img src="https://lessisbetter.site/images/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>

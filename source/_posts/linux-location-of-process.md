@@ -9,7 +9,7 @@ tags: ['Linux']
 Linux在启动一个进程时，系统会在/proc下创建一个以PID命名的文件夹，在该文件夹下会有该进程的信息，其中包括一个名为exe的文件即记录了绝对路径。
 
 
-![](http://img.lessisbetter.site/2019-03-proc_path.png)
+![](https://lessisbetter.site/images/2019-03-proc_path.png)
 
 
 
@@ -22,9 +22,9 @@ Linux在启动一个进程时，系统会在/proc下创建一个以PID命名的�
 
 在top中，按f选择要显示的列，通过向下箭头找到PPID，按空格选中，按q退出，看到恶意进程的父进程。
 
-![](http://img.lessisbetter.site/2019-03-top_f.png)
+![](https://lessisbetter.site/images/2019-03-top_f.png)
 
 
 或使用`ps -ef | grep 进程号/程序名`，第3列为父进程。
 
-![](http://img.lessisbetter.site/2019-03-ps_ef.png)
+![](https://lessisbetter.site/images/2019-03-ps_ef.png)

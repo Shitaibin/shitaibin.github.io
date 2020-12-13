@@ -82,7 +82,7 @@ tcp6       0      0 :::8848                 :::*                    LISTEN      
 
 gops的原理是，代码中导入`gops/agent`，建立agent服务，gops命令连接`agent`读取进程信息。
 
-![gops](http://img.lessisbetter.site/2020-03-gops.png)
+![gops](https://lessisbetter.site/images/2020-03-gops.png)
 
 `agent`的实现原理可以查看`agent/handle`[函数](https://github.com/google/gops/blob/master/agent/agent.go#L182)。
 

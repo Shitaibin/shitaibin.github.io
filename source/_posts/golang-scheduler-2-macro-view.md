@@ -43,7 +43,7 @@ Go的调度器也是经过了多个版本的开发才是现在这个样子的，
 
 [Tony Bai](https://tonybai.com/)在[《也谈goroutine调度器》](https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/)中的这幅图，展示了goroutine调度器和系统调度器的关系，而不是把二者割裂开来，并且从宏观的角度展示了调度器的重要组成。
 
-![](http://img.lessisbetter.site/2019-03-goroutine-scheduler-model.png)
+![](https://lessisbetter.site/images/2019-03-goroutine-scheduler-model.png)
 
 
 
@@ -62,7 +62,7 @@ Go的调度器也是经过了多个版本的开发才是现在这个样子的，
 
 所有的Go程序运行都会经过一个完整的调度器生命周期：从创建到结束。
 
-![](http://img.lessisbetter.site/2019-03-scheduler-lifetime.png)
+![](https://lessisbetter.site/images/2019-03-scheduler-lifetime.png)
 
 即使下面这段简单的代码：
 
@@ -135,7 +135,7 @@ trace.out trace1.go
 
 效果：
 
-![trace1](http://img.lessisbetter.site/2019-03-go-tool-trace.png)
+![trace1](https://lessisbetter.site/images/2019-03-go-tool-trace.png)
 
 从上至下分别是goroutine（G）、堆、线程（M）、Proc（P）的信息，从左到右是时间线。用鼠标点击颜色块，最下面会列出详细的信息。
 
@@ -208,7 +208,7 @@ Hello scheduler
 
 结果：
 
-![](http://img.lessisbetter.site/2019-03-for-print-syscall.png)
+![](https://lessisbetter.site/images/2019-03-for-print-syscall.png)
 *截图可能更代码匹配不起来，最初代码是for死循环，后面为了减少打印加了限制循环5次*
 
 
@@ -252,4 +252,4 @@ Hello scheduler
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />

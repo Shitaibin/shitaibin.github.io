@@ -17,7 +17,7 @@ tags: ['区块链','一致性','共识算法', 'PBFT']
 - safety ：原意指不会出现错误情况，一致性中指操作是正确的，得到相同的结果。
 - liveness ：操作过程能在有限时间内完成。
 
-![一致性协议需要满足的特性](http://img.lessisbetter.site/2020-03-consistency-property.png)
+![一致性协议需要满足的特性](https://lessisbetter.site/images/2020-03-consistency-property.png)
 
 **safety通常称为一致性，liveness通常称为可用性**，没有liveness的一致性算法无法长期提供一致性服务，没有safety的一致性算法称不上一致性算法，所以，所有的一致性算法都在做二者之间的折中。
 
@@ -75,7 +75,7 @@ View Changes的战略是：当副本节点怀疑主节点无法让请求达成�
 
 这2部分分别占据了下图的左右两部分。实线代表流程线，虚线代表网络消息。蓝色代表正常操作流程（三阶段消息：Preprepare、Prepare、Commit），青色代表View Changes流程，蓝青相接就是正常流程和View Changes流程切换的地方。
 
-![](http://img.lessisbetter.site/2020-04-09-blueprint-view-changes.png)
+![](https://lessisbetter.site/images/2020-04-09-blueprint-view-changes.png)
 
 
 View Changes的开端流程是通用的，主节点和副本节点都遵守这一流程：`新视图：v=v+1`，代表一个新的View开始，指向它的每一个箭头，都是视图切换的一种原因。某个副本节点，新视图的开始，还伴随着广播`view-change`消息，告诉其他节点，本节点开启了一个新的视图。

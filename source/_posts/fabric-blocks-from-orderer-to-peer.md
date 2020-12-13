@@ -25,7 +25,7 @@ Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，�
 1. Orderer上有2个通道的账本，每个Peer分别有2个Deliver Server对应2个通道的账本，从账本读取区块，发送给Peer。
 1. 每个Peer有2个Deliver Client，也对应2个通道，接收Orderer发来的区块，加入到缓冲区Payloads Buffer，然后再从Payloads Buffer中提取区块，验证后写入对应的通道账本。
 
-![](http://img.lessisbetter.site/2019-12-spread-of-blocks-new.png)
+![](https://lessisbetter.site/images/2019-12-spread-of-blocks-new.png)
 
 后面，介绍区块同步某个通道区块的情况。
 
@@ -44,7 +44,7 @@ Deliver本质是一个事件订阅接口，Leading Peer启动后，会为每个�
 1. 写通道账本包含区块写入区块账本，修改世界状态数据库，历史索引等。
 
 
-![](http://img.lessisbetter.site/2019-12-orderer-to-peer.png)
+![](https://lessisbetter.site/images/2019-12-orderer-to-peer.png)
 
 
 ## 为何Peer从Orderer获取区块慢？

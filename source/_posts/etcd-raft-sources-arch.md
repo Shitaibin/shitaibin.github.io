@@ -12,7 +12,7 @@ tags: ['一致性', '共识', 'Raft']
 
 raftexample是一个分布式KV数据库，客户端可以向集群的节点发送写数据和读数据，以及修改集群配置的请求，它使用etcd raft保持各集群之间数据的一致性。
 
-![cluster](http://img.lessisbetter.site/2019-08-cluster.png)
+![cluster](https://lessisbetter.site/images/2019-08-cluster.png)
 
 
 
@@ -22,7 +22,7 @@ etcd raft实现了raft论文的核心，所有的IO（磁盘存储、网络通�
 
 它是一个状态机，有数据作为输入，经过当前状态和输入，得到确定性的输出，即每个节点上都是一样的。
 
-![etcd-raft](http://img.lessisbetter.site/2019-08-etcd-raft.png)
+![etcd-raft](https://lessisbetter.site/images/2019-08-etcd-raft.png)
 
 ## raft应用架构
 
@@ -35,7 +35,7 @@ raft集群会由多个节点组成，客户端的请求发送给raft leader，�
 
 共识层由etcd raft负责，应用层要负责业务逻辑，数据存储和网络通信不需要应用层实现，而是由不同的模块负责，应用层负责起**衔接**存储存储和网络通信即可。
 
-![app-arch](http://img.lessisbetter.site/2019-08-app-arch.png)
+![app-arch](https://lessisbetter.site/images/2019-08-app-arch.png)
 
 应用层有3个重要组成部分：http API、kv store和raftNode。
 
@@ -96,7 +96,7 @@ raft.node把输入推给raft.raft，raft.raft根据输入和**当前的状态数
 
 raft.raft应用层有一个storage，存放的是**当前的状态数据**，包含了保存在内存中的log entry，但这个storage并不是raft.raft的，是应用层的，raft.raft只从中读取数据，log entry的写入由应用层负责。
 
-![raft-arch](http://img.lessisbetter.site/2019-08-raft-arch.png)
+![raft-arch](https://lessisbetter.site/images/2019-08-raft-arch.png)
 
 
 

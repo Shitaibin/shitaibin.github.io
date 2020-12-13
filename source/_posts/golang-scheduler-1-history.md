@@ -24,7 +24,7 @@ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上
 
 ### 远古时代
 
-![](http://img.lessisbetter.site/2019-03-Eniac.jpg)
+![](https://lessisbetter.site/images/2019-03-Eniac.jpg)
 
 上面这个大家伙是ENIAC，它诞生在宾夕法尼亚大学，是世界第一台真正的通用计算机，和现代的计算机相比，它是相当的“笨重”，它的计算能力，跟现代人手普及的智能手机相比，简直是一个天上一个地下，ENIAC在地下，智能手机在天上。
 
@@ -32,7 +32,7 @@ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上
 
 ### 进程时代
 
-![](http://img.lessisbetter.site/2019-03-apple-II.jpeg)
+![](https://lessisbetter.site/images/2019-03-apple-II.jpeg)
 
 后来，现代化的计算机有了操作系统，每个程序都是一个进程，但是操作系统在一段时间只能运行一个进程，直到这个进程运行完，才能运行下一个进程，这个时期可以成为**单进程时代——串行时代**。
 
@@ -42,7 +42,7 @@ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上
 
 ### 线程时代
 
-![](http://img.lessisbetter.site/2019-03-Macintosh.jpeg)
+![](https://lessisbetter.site/images/2019-03-Macintosh.jpeg)
 
 多进程真实个好东西，有了对进程的调度能力之后，伟大的程序员又发现，进程拥有太多资源，在创建、切换和销毁的时候，都会占用很长的时间，CPU虽然利用起来了，但CPU有很大的一部分都被用来进行进程调度了，**怎么才能提高CPU的利用率呢？**
 
@@ -56,7 +56,7 @@ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上
 
 ### 协程
 
-![](http://img.lessisbetter.site/2019-macbook-steve.jpeg)
+![](https://lessisbetter.site/images/2019-macbook-steve.jpeg)
 
 多进程、多线程已经提高了系统的并发能力，但是在当今互联网高并发场景下，为每个任务都创建一个线程是不现实的，因为会消耗大量的内存（每个线程的内存占用级别为MB），线程多了之后调度也会消耗大量的CPU。伟大的程序员们有开始想了，**如何才能充分利用CPU、内存等资源的情况下，实现更高的并发**？
 
@@ -94,7 +94,7 @@ Go中，协程被称为goroutine（Rob Pike说goroutine不是协程，因为他�
 
 现在的Go语言调度器是2012年重新设计的（[设计方案](https://golang.org/s/go11sched)），在这之前的调度器称为老调度器，老调度器的实现不太好，存在性能问题，所以用了4年左右就被替换掉了，老调度器大概是下面这个样子：
 
-![](http://img.lessisbetter.site/2019-03-old-scheduler.png)
+![](https://lessisbetter.site/images/2019-03-old-scheduler.png)
 
 最下面是操作系统，中间是runtime，runtime在Go中很重要，许多程序运行时的工作都由runtime完成，调度器就是runtime的一部分，虚线圈出来的为调度器，它有两个重要组成：
 
@@ -135,7 +135,7 @@ M想要执行、放回G都必须访问全局G队列，并且M有多个，即多�
 
 
 
-![thoughts-of-scheduler](http://img.lessisbetter.site/2019-03-thoughts-of-scheduler.png)
+![thoughts-of-scheduler](https://lessisbetter.site/images/2019-03-thoughts-of-scheduler.png)
 
 
 
@@ -157,7 +157,7 @@ M想要执行、放回G都必须访问全局G队列，并且M有多个，即多�
 
 并行依赖多核技术，每个核上在某个时间只能执行一个线程，当我们的CPU有8个核时，我们能同时执行8个线程，这就是并行。
 
-![](http://img.lessisbetter.site/2019-03-concurrency-parallelism.png)
+![](https://lessisbetter.site/images/2019-03-concurrency-parallelism.png)
 
 
 
@@ -196,4 +196,4 @@ M想要执行、放回G都必须访问全局G队列，并且M有多个，即多�
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />

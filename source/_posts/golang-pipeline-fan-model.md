@@ -19,7 +19,7 @@ Golang的并发模式灵感来自现实世界，这些模式是通用的，毫�
 - **FAN-OUT模式：多个goroutine从同一个通道读取数据，直到该通道关闭。**OUT是一种张开的模式，所以又被称为扇出，可以用来分发任务。
 - **FAN-IN模式：1个goroutine从多个通道读取数据，直到这些通道关闭。**IN是一种收敛的模式，所以又被称为扇入，用来收集处理的结果。
 
-![fan-in和fan-out.png](http://img.lessisbetter.site/2018-12-fan-in-fan-out.png
+![fan-in和fan-out.png](https://lessisbetter.site/images/2018-12-fan-in-fan-out.png
 )
 
 
@@ -408,7 +408,7 @@ FAN模式很有意思，并且能提高Golang并发的性能，如果想以后�
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://img.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
+<img src="https://lessisbetter.site/images/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>

@@ -13,7 +13,7 @@ etcd raft定义了一些重要的结构体，来传递和表示raft使用到的�
 
 在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。
 
-![State machine](http://img.lessisbetter.site/2019-08-raft-%E5%9B%BE1.png)
+![State machine](https://lessisbetter.site/images/2019-08-raft-%E5%9B%BE1.png)
 
 Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并不是raft的一部分，而是用来存储数据的模块。
 
@@ -228,7 +228,7 @@ applied指当前节点被应用层应用到状态机的最后一个Entry Index�
 
 前面提到Storage接口可以获取第一个索引firstIdx，最后一个索引lastIdx，在生成snapshot之后签名的Entry就可以删除了，所以firstidx是storage中snapshot后的第一个Entry的Index，lastIndex是storage中保存的最后一个Entry的Index，这个Entry可能还没有在raft集群多数节点之间达成一致，所以在committed之后，这些Entry是等待commit的Entry，leader发现某个Entry Index已经在多数节点之间达成一致，就会把committed移动到该Entry Index。
 
-![raftLog](http://img.lessisbetter.site/2019-08-raftLog.png)
+![raftLog](https://lessisbetter.site/images/2019-08-raftLog.png)
 
 ## SoftState
 

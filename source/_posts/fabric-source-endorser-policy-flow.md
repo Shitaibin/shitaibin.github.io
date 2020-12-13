@@ -5,7 +5,7 @@ tags: ['Fabric', '区块链']
 ---
 
 
-![endorser policy](http://img.lessisbetter.site/2019-09-endorser-policy.png)
+![endorser policy](https://lessisbetter.site/images/2019-09-endorser-policy.png)
 
 背书策略是Fabric中的一个重要一环，想梳理一下背书策略的上链和使用流程。
 
@@ -522,7 +522,7 @@ func (lscc *LifeCycleSysCC) Invoke(stub shim.ChaincodeStubInterface) pb.Response
 
 最后，ESCC、VSCC也是进行了可插拔设计的。
 
-![endorser policy](http://img.lessisbetter.site/2019-09-endorser-policy.png)
+![endorser policy](https://lessisbetter.site/images/2019-09-endorser-policy.png)
 
 
 

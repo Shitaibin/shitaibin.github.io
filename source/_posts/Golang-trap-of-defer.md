@@ -158,13 +158,13 @@ defer及defer函数的执行顺序分2步：
 
 最后，看下误解读者文章的截图，看看你能不能发现那篇文章作者的思路问题。
 
-![截图1.png](http://img.lessisbetter.site/2018-12-misleading-defer-1.png
+![截图1.png](https://lessisbetter.site/images/2018-12-misleading-defer-1.png
 )
 
-![截图2.png](http://img.lessisbetter.site/2018-12-misleading-defer-2.png
+![截图2.png](https://lessisbetter.site/images/2018-12-misleading-defer-2.png
 )
 
-![截图3.png](http://img.lessisbetter.site/2018-12-misleading-defer-3.png
+![截图3.png](https://lessisbetter.site/images/2018-12-misleading-defer-3.png
 )
 
 

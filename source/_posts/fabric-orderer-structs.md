@@ -22,7 +22,7 @@ Orderer负责接收交易，把交易打包成区块，然后区块在所有Orde
 
 ### Registrar
 
-![Registrar](http://img.lessisbetter.site/2019-11-orderer-registrar.png)
+![Registrar](https://lessisbetter.site/images/2019-11-orderer-registrar.png)
 
 代码中，这样描述Registrar：
 
@@ -57,7 +57,7 @@ type Registrar struct {
 
 ### ChainSupport
 
-![chainsupport](http://img.lessisbetter.site/2019-11-orderer-chainsupport.png)
+![chainsupport](https://lessisbetter.site/images/2019-11-orderer-chainsupport.png)
 
 ChainSupport汇集了一条通道所需要的所有资源，所以说一个ChainSupport代表了一条链。
 
@@ -80,7 +80,7 @@ ChainSupport 是一堆接口的集合，这些接口构成一条链所有的操�
 
 ### Chain
 
-![Chain](http://img.lessisbetter.site/2019-11-orderer-chain.png)
+![Chain](https://lessisbetter.site/images/2019-11-orderer-chain.png)
 
 Chain是接口，它的实现并不一条链，而是一条链的共识实例，可以是Solo、Kafka和EtcdRaft，它运行在单独的协程，使用Channel和ChainSupport通信，它调用其它接口完成切块，以及让所有的Orderer节点对交易达成一致。
 
@@ -136,7 +136,7 @@ type Chain interface {
 
 ### Consenter
 
-![Consenter](http://img.lessisbetter.site/2019-11-orderer-consenter.png)
+![Consenter](https://lessisbetter.site/images/2019-11-orderer-consenter.png)
 
 
 ```go
@@ -149,7 +149,7 @@ Consenter也是接口，它只有1个功能用来创建`Chain`。每种共识插
 
 ### ConsenterSupport
 
-![ConsenterSupport](http://img.lessisbetter.site/2019-11-orderer-consentersupport.png)
+![ConsenterSupport](https://lessisbetter.site/images/2019-11-orderer-consentersupport.png)
 
 ConsenterSupport为**consenter实现**提供所需的资源，其实就是共识用来访问外部数据的接口。
 
@@ -216,5 +216,5 @@ type ConsenterSupport interface {
 - ChainSupport 代表了一条链，能够指向属于本条链的共识实例，该共识实例由对应共识类型的Consenter创建
 - 共识实例使用ConsenterSupport访问共识外部资源
 
-![](http://img.lessisbetter.site/2019-11-core-struct-of-orderer.png)
+![](https://lessisbetter.site/images/2019-11-core-struct-of-orderer.png)
 

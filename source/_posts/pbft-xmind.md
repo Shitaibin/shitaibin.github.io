@@ -10,9 +10,9 @@ tags: ['一致性', 'PBFT', '区块链']
 
 ## 1999年版本
 
-![](http://img.lessisbetter.site/PBFT.svg)
+![](https://lessisbetter.site/images/PBFT.svg)
 
 ## 2001年版本
 
-![](http://img.lessisbetter.site/PBFT-PR.svg)
+![](https://lessisbetter.site/images/PBFT-PR.svg)
 

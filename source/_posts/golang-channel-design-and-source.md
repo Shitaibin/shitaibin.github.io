@@ -31,11 +31,11 @@ Golang使用`goroutine`和`channel`简单、高效的解决并发问题，**chan
 
 我们以为channel是一个通道：
 
-![](http://img.lessisbetter.site/2019-03-pipeline.jpeg)
+![](https://lessisbetter.site/images/2019-03-pipeline.jpeg)
 
 实际上，channel的内在是这样的：
 
-![](http://img.lessisbetter.site/2019-03-channel_design.png)
+![](https://lessisbetter.site/images/2019-03-channel_design.png)
 
 channel设计涉及的数据结构很简单，这就是**channel的本质**：
 - 基于数组的循环队列，有缓冲的channel用它暂存数据
@@ -61,7 +61,7 @@ Kavya的PPT应该包含了channel的80%的设计思想，但也有一些缺失�
 PPT在此：[Understanding Channels](https://speakerdeck.com/kavya719/understanding-channels)，如果你有心，还可以在这个网站看到Kavya关于goroutine调度的PPT，福利哦😝。(访问不了请翻墙，或阅读原文从博客文章最下面看Github备份)
 
 微信二维码跳转：
-![](http://img.lessisbetter.site/2019-03-channel_design_qrcode.png)
+![](https://lessisbetter.site/images/2019-03-channel_design_qrcode.png)
 
 
 ### channel是怎么实现的？
@@ -76,7 +76,7 @@ PPT在此：[Understanding Channels](https://speakerdeck.com/kavya719/understand
 
 微信二维码跳转：
 
-![](http://img.lessisbetter.site/2019-03-channel_source_qrcode.png)
+![](https://lessisbetter.site/images/2019-03-channel_source_qrcode.png)
 
 ### 我学到了什么？
 
@@ -130,4 +130,4 @@ if stop := <-stopCh; stop {
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />

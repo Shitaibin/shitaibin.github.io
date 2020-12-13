@@ -25,7 +25,7 @@ tags: ['职业发展']
 
 如果垄断是“因”，企业收益就是“果”。
 
-![](http://img.lessisbetter.site/2020-03-cr-monopoly.png)
+![](https://lessisbetter.site/images/2020-03-cr-monopoly.png)
 
 收益的因不只有垄断，但垄断可以带来巨大收益。
 
@@ -39,7 +39,7 @@ tags: ['职业发展']
 
 说一个开发者最容易体会的例子：解决bug，需要定位问题的“根因”，只解决中间原因，并不能真正解决bug。
 
-![](http://img.lessisbetter.site/2020-03-cr-root-cause.png)
+![](https://lessisbetter.site/images/2020-03-cr-root-cause.png)
 
 ### 如何从因果关系角度，建设个人能力？
 
@@ -49,7 +49,7 @@ tags: ['职业发展']
 不同岗位、层次看到的能力维度是不一样的，比如CTO在找技术总监时的岗位时，需要有体系建设的能力。所以上面强调的是中级开发者。
 
 
-![](http://img.lessisbetter.site/2020-03-cr-personal-ability.png)
+![](https://lessisbetter.site/images/2020-03-cr-personal-ability.png)
 
 这5个维度的能力是因，项目、职位、收入这些是果。
 
@@ -59,7 +59,7 @@ tags: ['职业发展']
 
 建设能力的“因”是**持续学习**。
 
-![](http://img.lessisbetter.site/2020-03-cr-continuelearn.png)
+![](https://lessisbetter.site/images/2020-03-cr-continuelearn.png)
 
 这几年的付费学习，可把持续学习给玩坏了，总是弥漫着一种贩卖焦虑的气息，但不可否认的是，持续学习的人，总有机会。
 

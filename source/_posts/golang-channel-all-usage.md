@@ -475,5 +475,5 @@ func handle(wg *sync.WaitGroup, a int) chan int {
 
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>

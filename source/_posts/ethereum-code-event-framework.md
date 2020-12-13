@@ -29,7 +29,7 @@ tags: ['以太坊', '区块链']
 
 ## 事件框架的抽象结构
 
-![原始事件框架抽象结构](http://img.lessisbetter.site/2018-12-event-framework.png)
+![原始事件框架抽象结构](https://lessisbetter.site/images/2018-12-event-framework.png)
 
 
 如上图，轻量级的事件框架会把所有的被订阅的事件收集起来，然后把每个订阅者组合成一个列表，当事件框架收到某个事件的时候，就把订阅该事件的所有订阅者找出来，然后把这个事件发给他们。
@@ -61,7 +61,7 @@ tags: ['以太坊', '区块链']
 2. 发布事件和传递事件。`TypeMux.Post()`，入参为事件类型，根据订阅表找出该事件的订阅者列表，遍历列表，依次向每个订阅者传递事件，如果前一个没有传递完成进入阻塞，会导致后边的订阅者不能及时收到事件。
 
 
-![TypeMux抽象结构](http://img.lessisbetter.site/2018-12-typemux.png
+![TypeMux抽象结构](https://lessisbetter.site/images/2018-12-typemux.png
 )
 
 
@@ -214,7 +214,7 @@ Feed和TypeMux相同的是，它们都是推模式，不同的是Feed是异步�
 
 Feed是一个一对多的事件流框架。**每个类型的事件都需要一个与之对应的Feed**，订阅者通过这个Feed进行订阅事件，发布者通过这个Feed发布事件。
 
-![Feed抽象结构](http://img.lessisbetter.site/2018-12-event-feed.png
+![Feed抽象结构](https://lessisbetter.site/images/2018-12-event-feed.png
 )
 
 看下Feed是如何实现2个功能的：

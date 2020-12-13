@@ -121,7 +121,7 @@ go tool pprof -pdf ./hi /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile
 
 效果：
 
-![cpu pprof](http://img.lessisbetter.site/2018-12-cpu-pprof.png
+![cpu pprof](https://lessisbetter.site/images/2018-12-cpu-pprof.png
 )
 
 5步已经结束，你已经学会使用cpu pprof了吗？
@@ -141,7 +141,7 @@ go tool pprof -pdf ./hi /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile
 ```
 
 
-![mem pprof](http://img.lessisbetter.site/2018-12-mem.pprof.png)
+![mem pprof](https://lessisbetter.site/images/2018-12-mem.pprof.png)
 
 
 > 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。

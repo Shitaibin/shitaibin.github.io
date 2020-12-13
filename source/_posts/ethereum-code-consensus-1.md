@@ -26,7 +26,7 @@ tags: ['以太坊', '区块链']
 - worker：副矿长，负责具体挖矿工作的安排，把挖矿任务（Work）安排给agent。
 - agent：真实的矿工，他们负责挖矿，把自己的劳动成果（Result）交给worker，agent默认只有1个，可以通过API创建多个。
 
-![img](http://img.lessisbetter.site/2018-06-22-121153.jpg)
+![img](https://lessisbetter.site/images/2018-06-22-121153.jpg)
 
 ## 一个区块产生的主要流程
 
@@ -42,7 +42,7 @@ tags: ['以太坊', '区块链']
 6. engine.Seal把`Nonce`和`MixDigest`填到区块头，生成一个`new block`交给agent.mine.
 7. agent.mine把`new block`封装成`Result`，发送给worker。
 
-![img](http://img.lessisbetter.site/2018-06-22-121152.jpg)
+![img](https://lessisbetter.site/images/2018-06-22-121152.jpg)
 
 ## 矿工的主要函数
 
@@ -63,7 +63,7 @@ tags: ['以太坊', '区块链']
 2. `update()`：负责处理外部事件。它是死循环，主要处理3种事件：1）ChainHeadEvent，有了新区块头，所以得切换到挖下一个高度的区块，2）ChainSideEvent，收到了uncle区块，缓存起来，3）TxPreEvent，预处理交易，如果在挖矿执行`commitNewWork`，如果未挖矿，则交易设置为未决状态。
 3. `wait()`：负责处理agent挖矿的结果。它是死循环，一直等待接收agent发回的result，然后把区块加入到本地数据库，如果没有问题，就发布`NewMinedBlockEvent`事件，通告其他节点挖到了一个新块。
 
-![img](http://img.lessisbetter.site/2018-06-22-121154.jpg)
+![img](https://lessisbetter.site/images/2018-06-22-121154.jpg)
 *图片来自网络，原出处已不详，如果侵犯您的权益，请通知我立即删除*
 
 ### agent的主要函数
@@ -72,7 +72,7 @@ tags: ['以太坊', '区块链']
 
 1. `update()`：负责接收worker发来的任务（work）。它是死循环，把work交给mine去挖矿。
 2. `mine()`：负责挖矿。它拥有挖矿的能力，调用Engine.Seal挖矿，如果挖矿成功则生成result，发送给worker。 
-   ![img](http://img.lessisbetter.site/2018-06-22-121151.jpg)
+   ![img](https://lessisbetter.site/images/2018-06-22-121151.jpg)
     *图片来自网络，原出处已不详，如果侵犯您的权益，请通知我立即删除*
 
 

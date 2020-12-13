@@ -11,7 +11,7 @@ tags: ['Go', '内存']
 
 从非常宏观的角度看，Go的内存管理就是下图这个样子，我们今天主要关注其中标红的部分。
 
-![Go内存管理](http://img.lessisbetter.site/2019-07-go-memory-manage.png)
+![Go内存管理](https://lessisbetter.site/images/2019-07-go-memory-manage.png)
 
 > 友情提醒：
 >
@@ -34,7 +34,7 @@ Go这门语言抛弃了C/C++中的开发者管理内存的方式：主动申请�
 
 ### 存储金字塔
 
-![img](http://img.lessisbetter.site/2019-07-data-heirarchy.jpg)
+![img](https://lessisbetter.site/images/2019-07-data-heirarchy.jpg)
 
 
 
@@ -55,13 +55,13 @@ Go这门语言抛弃了C/C++中的开发者管理内存的方式：主动申请�
 
 CPU速度很快，但硬盘等持久存储很慢，如果CPU直接访问磁盘，磁盘可以拉低CPU的速度，机器整体性能就会低下，为了弥补这2个硬件之间的速率差异，所以在CPU和磁盘之间增加了比磁盘快很多的内存。
 
-![CPU和内存速率差异](http://img.lessisbetter.site/2019-07-CPU-DRAM.png)
+![CPU和内存速率差异](https://lessisbetter.site/images/2019-07-CPU-DRAM.png)
 
 然而，CPU跟内存的速率也不是相同的，从上图可以看到，CPU的速率提高的很快（摩尔定律），然而内存速率增长的很慢，*虽然CPU的速率现在增加的很慢了，但是内存的速率也没增加多少，速率差距很大*，从1980年开始CPU和内存速率差距在不断拉大，为了弥补这2个硬件之间的速率差异，所以在CPU跟内存之间增加了比内存更快的Cache，Cache是内存数据的缓存，可以降低CPU访问内存的时间。
 
 不要以为有了[Cache](https://zh.wikipedia.org/wiki/CPU缓存)就万事大吉了，CPU的速率还在不断增大，Cache也在不断改变，从最初的1级，到后来的2级，到当代的3级Cache，*[（有兴趣看cache历史）](<https://zh.wikipedia.org/wiki/CPU%E7%BC%93%E5%AD%98#%E5%8E%86%E5%8F%B2%E5%92%8C%E6%9C%AA%E6%9D%A5>)*。
 
-![MBP的CPU和Cache信息](http://img.lessisbetter.site/2019-07-mbp-memory.png)
+![MBP的CPU和Cache信息](https://lessisbetter.site/images/2019-07-mbp-memory.png)
 
 三级Cache分别是L1、L2、L3，它们的速率是三个不同的层级，L1速率最快，与CPU速率最接近，是RAM速率的100倍，L2速率就降到了RAM的25倍，L3的速率更靠近RAM的速率。
 
@@ -73,7 +73,7 @@ CPU速度很快，但硬盘等持久存储很慢，如果CPU直接访问磁盘�
 
 虚拟内存是当代操作系统必备的一项重要功能了，它向进程屏蔽了底层了RAM和磁盘，并向进程提供了远超物理内存大小的内存空间。我们看一下虚拟内存的**分层设计**。
 
-![虚拟内存原理](http://img.lessisbetter.site/2019-07-Virtual-Memory-in-OS-Operating-System.png)
+![虚拟内存原理](https://lessisbetter.site/images/2019-07-Virtual-Memory-in-OS-Operating-System.png)
 
 上图展示了某进程访问数据，当Cache没有命中的时候，访问虚拟内存获取数据的过程。
 
@@ -87,7 +87,7 @@ CPU速度很快，但硬盘等持久存储很慢，如果CPU直接访问磁盘�
 
 我们现在从虚拟内存，再进一层，看虚拟内存中的栈和堆，也就是进程对内存的管理。
 
-![虚拟内存布局](http://img.lessisbetter.site/2019-07-figure_6-1.png)
+![虚拟内存布局](https://lessisbetter.site/images/2019-07-figure_6-1.png)
 
 上图展示了一个进程的虚拟内存划分，代码中使用的内存地址都是虚拟内存地址，而不是实际的物理内存地址。栈和堆只是虚拟内存上2块不同功能的内存区域：
 
@@ -103,17 +103,17 @@ CPU速度很快，但硬盘等持久存储很慢，如果CPU直接访问磁盘�
 
 ### 堆内存管理
 
-![内存管理](http://img.lessisbetter.site/2019-07-Mutator-Allocator-Collector.png)
+![内存管理](https://lessisbetter.site/images/2019-07-Mutator-Allocator-Collector.png)
 
 我们再进一层，当我们说内存管理的时候，主要是指堆内存的管理，因为栈的内存管理不需要程序去操心。这小节看下堆内存管理干的是啥，如上图所示主要是3部分：**分配内存块，回收内存块和组织内存块**。
 
 在一个最简单的内存管理中，堆内存最初会是一个完整的大块，即未分配内存，当来申请的时候，就会从未分配内存，分割出一个小内存块(block)，然后用链表把所有内存块连接起来。需要一些信息描述每个内存块的基本信息，比如大小(size)、是否使用中(used)和下一个内存块的地址(next)，内存块实际数据存储在data中。
 
-![内存块链表](http://img.lessisbetter.site/2019-07-Memory_Blocks.png)
+![内存块链表](https://lessisbetter.site/images/2019-07-Memory_Blocks.png)
 
 一个内存块包含了3类信息，如下图所示，元数据、用户数据和对齐字段，内存对齐是为了提高访问效率。下图申请5Byte内存的时候，就需要进行内存对齐。
 
-![内存块和对齐](http://img.lessisbetter.site/2019-07-Alignment-Header.png)
+![内存块和对齐](https://lessisbetter.site/images/2019-07-Alignment-Header.png)
 
 释放内存实质是把使用的内存块从链表中取出来，然后标记为未使用，当分配内存块的时候，可以从未使用内存块中有先查找大小相近的内存块，如果找不到，再从未分配的内存中分配内存。
 
@@ -151,7 +151,7 @@ TCMalloc的做法是什么呢？**为每个线程预分配一块缓存，线程�
 
 > 声明：我没有研究过TCMalloc，以下介绍根据TCMalloc官方资料和其他博主资料总结而来，错误之处请朋友告知我。
 
-![TCMalloc概要图](http://img.lessisbetter.site/2019-07-tcmalloc-Overview.svg)
+![TCMalloc概要图](https://lessisbetter.site/images/2019-07-tcmalloc-Overview.svg)
 
 结合上图，介绍TCMalloc的几个重要概念：
 
@@ -161,7 +161,7 @@ TCMalloc的做法是什么呢？**为每个线程预分配一块缓存，线程�
 4. **CentralCache**：是所有线程共享的缓存，也是保存的空闲内存块链表，链表的数量与ThreadCache中链表数量相同，当ThreadCache内存块不足时，可以从CentralCache取，当ThreadCache内存块多时，可以放回CentralCache。由于CentralCache是共享的，所以它的访问是要加锁的。
 5. **PageHeap**：PageHeap是堆内存的抽象，PageHeap存的也是若干链表，链表保存的是Span，当CentralCache没有内存的时，会从PageHeap取，把1个Span拆成若干内存块，添加到对应大小的链表中，当CentralCache内存多的时候，会放回PageHeap。如下图，分别是1页Page的Span链表，2页Page的Span链表等，最后是large span set，这个是用来保存中大对象的。毫无疑问，PageHeap也是要加锁的。
 
-![PageHeap](http://img.lessisbetter.site/2019-07-tcmalloc-PageHeap.svg)
+![PageHeap](https://lessisbetter.site/images/2019-07-tcmalloc-PageHeap.svg)
 
 上文提到了小、中、大对象，Go内存管理中也有类似的概念，我们瞄一眼TCMalloc的定义：
 
@@ -204,7 +204,7 @@ TCMalloc的做法是什么呢？**为每个线程预分配一块缓存，线程�
 
 Go内存管理的许多概念在TCMalloc中已经有了，含义是相同的，只是名字有一些变化。先给大家上一幅宏观的图，借助图一起来介绍。
 
-![Go内存管理](http://img.lessisbetter.site/2019-07-go-memory-detail.png)
+![Go内存管理](https://lessisbetter.site/images/2019-07-go-memory-detail.png)
 
 #### Page
 
@@ -236,7 +236,7 @@ mheap与TCMalloc中的PageHeap类似，**它是堆内存的抽象，把从OS申�
 
 除了以上内存块组织概念，还有几个重要的大小概念，一定要拿出来讲一下，不要忽视他们的重要性，他们是内存分配、组织和地址转换的基础。
 
-![Go内存大小转换](http://img.lessisbetter.site/2019-07-go-memory-sizes.png)
+![Go内存大小转换](https://lessisbetter.site/images/2019-07-go-memory-sizes.png)
 
 1. **object size**：代码里简称`size`，指申请内存的对象大小。
 2. **size class**：代码里简称`class`，它是size的级别，相当于把size归类到一定大小的区间段，比如size[1,8]属于size class 1，size(8,16]属于size class 2。
@@ -250,11 +250,11 @@ mheap与TCMalloc中的PageHeap类似，**它是堆内存的抽象，把从OS申�
 
 仔细看一遍这个表，再向下看转换是如何实现的。
 
-![Go内存分配表](http://img.lessisbetter.site/2019-07-go-sizetable.png)
+![Go内存分配表](https://lessisbetter.site/images/2019-07-go-sizetable.png)
 
 在Go内存大小转换那幅图中已经标记各大小之间的转换，分别是数组：`class_to_size`，`size_to_class*`和`class_to_allocnpages`，这3个数组内容，就是跟上表的映射关系匹配的。比如`class_to_size`，从上表看class 1对应的保存对象大小为8，所以`class_to_size[1]=8`，span大小为8192Byte，即8KB，为1页，所以`class_to_allocnpages[1]=1`。
 
-![Size转换](http://img.lessisbetter.site/2019-07-size_tranform.png)
+![Size转换](https://lessisbetter.site/images/2019-07-size_tranform.png)
 
 **为何不使用函数计算各种转换，而是写成数组？**
 
@@ -289,7 +289,7 @@ Span最浪费内存的场景是：Span内的每一个对象空间保存的对象
 
 > ((c.size - (preSize+1)) * objects + tailWaste) / spanSize
 
-![Span内object分布情况](http://img.lessisbetter.site/2019-07-span-objects.png)
+![Span内object分布情况](https://lessisbetter.site/images/2019-07-span-objects.png)
 
 > 感谢[foobar](https://github.com/foobar)的提醒max waste的计算。
 
@@ -299,13 +299,13 @@ Span最浪费内存的场景是：Span内的每一个对象空间保存的对象
 
 Go中的内存分类并不像TCMalloc那样分成小、中、大对象，但是它的小对象里又细分了一个Tiny对象，Tiny对象指大小在1Byte到16Byte之间并且不包含指针的对象。小对象和大对象只用大小划定，无其他区分。
 
-![Go内存对象分类](http://img.lessisbetter.site/2019-07-go-memory-classify.png)
+![Go内存对象分类](https://lessisbetter.site/images/2019-07-go-memory-classify.png)
 
 小对象是在mcache中分配的，而大对象是直接从mheap分配的，从小对象的内存分配看起。
 
 #### 小对象分配
 
-![Go内存管理](http://img.lessisbetter.site/2019-07-go-memory-detail.png)
+![Go内存管理](https://lessisbetter.site/images/2019-07-go-memory-detail.png)
 
 [大小转换](#大小转换)这一小节，我们介绍了转换表，size class从1到66共66个，代码中`_NumSizeClasses=67`代表了实际使用的size class数量，即67个，从0到66，size class 0实际并未使用到。
 
@@ -360,7 +360,7 @@ span class = 3 << 1 | 1 = 7
 
 Span可以按对象大小切成很多份，这些都可以从映射表上计算出来，以size class 3对应的span为例，span大小是8KB，每个对象实际所占空间为32Byte，这个span就被分成了256块，可以根据span的起始地址计算出每个对象块的内存地址。
 
-![Span内对象](http://img.lessisbetter.site/2019-07-go-memory-objs.png)
+![Span内对象](https://lessisbetter.site/images/2019-07-go-memory-objs.png)
 
 随着内存的分配，span中的对象内存块，有些被占用，有些未被占用，比如上图，整体代表1个span，蓝色块代表已被占用内存，绿色块代表未被占用内存。
 
@@ -379,7 +379,7 @@ mcentral和mcache一样，都是0~133这134个span class级别，但每个级别
 
 这2个东西名称一直有点绕，建议直接把empty理解为没有对象空间就好了。
 
-![mcentral](http://img.lessisbetter.site/2019-07-go-mcentral.png)
+![mcentral](https://lessisbetter.site/images/2019-07-go-mcentral.png)
 
 *实际代码中每1个span class对应1个mcentral，图里把所有mcentral抽象成1个整体了。*
 
@@ -394,7 +394,7 @@ mheap里保存了2棵**二叉排序树**，按span的page数量进行排序：
 
 如果是垃圾回收导致的span释放，span会被加入到`scav`，否则加入到`free`，比如刚从OS申请的的内存也组成的Span。
 
-![mheap](http://img.lessisbetter.site/2019-07-go-mheap.png)
+![mheap](https://lessisbetter.site/images/2019-07-go-mheap.png)
 
 mheap中还有arenas，有一组heapArena组成，每一个heapArena都包含了连续的`pagesPerArena`个span，这个主要是为mheap管理span和垃圾回收服务。
 
@@ -475,6 +475,6 @@ func sysUnused(v unsafe.Pointer, n uintptr) {
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 
 

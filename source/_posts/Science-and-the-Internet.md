@@ -35,7 +35,7 @@ tags: ['Mac']
 4. 访问Google搜索
 5. 设置为PAC模式
 
-![](http://img.lessisbetter.site/2019-01-ss-ng.png)
+![](https://lessisbetter.site/images/2019-01-ss-ng.png)
 
 
 经过以上配置，浏览器可以直接科学上网了，如果让终端和其他服务器上网，可设置Shadowsocks的http代理和socks5代理。
@@ -46,7 +46,7 @@ tags: ['Mac']
 
 SSR提供了用户自定义PAC的方法，只要把自定义规则黏贴在里面就可以了：
 
-![](http://img.lessisbetter.site/2019-08-ssr-user-pac.png)
+![](https://lessisbetter.site/images/2019-08-ssr-user-pac.png)
 
 
 自定义PAC编写规则，下面的`.hyperledger.org`，所有`hyperledger.org`网站的连接都会走`remote proxy`，注意前面的`.`不要少了，这个正则规则可以匹配`*.hyperledger.org`以及`hyperledger.org`本身。
@@ -60,18 +60,18 @@ SSR提供了用户自定义PAC的方法，只要把自定义规则黏贴在里�
 
 点击状态栏shadowsocks图标，【HTTP代理设置...】是配置Http代理。【高级设置...】是socks5代理设置。
 
-![](http://img.lessisbetter.site/2019-07-ss_http.png)
+![](https://lessisbetter.site/images/2019-07-ss_http.png)
 
 
 **http代理支持http和https2个协议的代理**，IP设置为0.0.0.0就可以为其他机器做http和https代理，如果只有本机用，可以使用默认的127。
 
-![](http://img.lessisbetter.site/2019-07-ss-http-set.png)
+![](https://lessisbetter.site/images/2019-07-ss-http-set.png)
 
 ## 开启SOCKS5代理
 
 socks5的ip设置同http代理。
 
-![](http://img.lessisbetter.site/2019-07-ss-socks5.png)
+![](https://lessisbetter.site/images/2019-07-ss-socks5.png)
 
 
 # 终端科学上网

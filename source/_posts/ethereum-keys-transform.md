@@ -36,7 +36,7 @@ tags: ['以太坊']
 
 **16进制字符串和`ecdsa.PrivateKey`相互转换是非常简单的**，`ecdsa.Private`和以太坊的账号转换，则是非常乱的，整理出来了一幅图，没这幅图，每次看都要梳理一段时间，浪费生命。
 
-![](http://img.lessisbetter.site/2019-04-eth-keys-transform.png)
+![](https://lessisbetter.site/images/2019-04-eth-keys-transform.png)
 
 图注：
 1. `keystore`代表包名，`Keystore`代表类型

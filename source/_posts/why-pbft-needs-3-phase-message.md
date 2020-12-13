@@ -60,7 +60,7 @@ PBFT作为解决拜占庭问题的策略：**非拜占庭节点不知道哪些�
 
 ## 什么是3阶段消息
 
-![3阶段消息](http://img.lessisbetter.site/2020-03-pbft-3-phase-message.png)
+![3阶段消息](https://lessisbetter.site/images/2020-03-pbft-3-phase-message.png)
 
 3阶段消息是：Pre-prepare、Prepare和Commit。每个消息都会包含数字签名，证明消息的发送者，以及消息类型，下文中会省略。
 
@@ -114,7 +114,7 @@ PBFT的论文提到了2个不变性，这2个不变性，**用来证明PBFT如�
 - committed-local：副本i已经是Prepared状态，并且收到了2f+1个Commit消息。
 - committed：至少f+1个非拜占庭节点已经是Prepared状态。
 
-![](http://img.lessisbetter.site/2020-03-pbft-committed.png)
+![](https://lessisbetter.site/images/2020-03-pbft-committed.png)
 
 **第2个不变性**，如果副本i是committed-local，那么一定存在committed。
 

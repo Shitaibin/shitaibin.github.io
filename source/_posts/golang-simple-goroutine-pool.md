@@ -16,7 +16,7 @@ goroutine是非常轻量的，不会暂用太多资源，基本上有多少任�
 
 ### 最简单的协程池模型
 
-![简单协程池模型](http://img.lessisbetter.site/2018-12-simple-goroutine-pool.png)
+![简单协程池模型](https://lessisbetter.site/images/2018-12-simple-goroutine-pool.png)
 
 
 上面这个图展示了最简单的协程池的样子。先**把协程池作为一个整体看，它使用2个通道，左边的`jobCh`是任务通道，任务会从这个通道中流进来，右边的`retCh`是结果通道，协程池处理任务后得到的结果会写入这个通道**。至于协程池中，有多少协程处理任务，这是外部不关心的。
@@ -122,7 +122,7 @@ worker 1 processed job: 0
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
+<img src="https://lessisbetter.site/images/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
 
 
 

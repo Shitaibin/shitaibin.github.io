@@ -106,7 +106,7 @@ dr-xr-xr-x 6 root root  0 Aug 30 09:30 systemd
 
 发现cpu、cpuacct都指向了 `cpu,cpuacct` 目录，把它们合成了1个cgroup节点。另外 net_cls 和 net_prio 也都合到了 `net_cls,net_prio` 节点，也就形成了下面这幅图的样子，并把资源控制分成了5个类别：CPU、内存、网络、进程控制、设备，另外的`perf_event`是cgroup对自身的监控，不归于资源控制。
 
-![](http://img.lessisbetter.site/2020-08-30-cgroup-subsystem.png)
+![](https://lessisbetter.site/images/2020-08-30-cgroup-subsystem.png)
 
 子系统挂载到cgroup的虚拟文件系统是通过mount命令实现的，系统启动时自动挂载subsystem到cgroup，查看已经挂载的Cgroup：
 

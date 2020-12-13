@@ -16,7 +16,7 @@ tags: ['一致性', '共识', 'Raft']
 1. raftNode：上层应用逻辑
 1. 其他：Client、Network、State
 
-![etcd raft workflow](http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow.png)
+![etcd raft workflow](https://lessisbetter.site/images/2019-09-etcd-raft-msg-flow.png)
 
 图中的箭头为数据的流向，这幅图包含了多个流程，接下来会分成4个流程介绍：
 
@@ -37,7 +37,7 @@ tags: ['一致性', '共识', 'Raft']
 1. raftLog用来暂时存储和查询日志，请求会先加入到unstable
 
 
-![etcd raft request flow](http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-req.png)
+![etcd raft request flow](https://lessisbetter.site/images/2019-09-etcd-raft-msg-flow-req.png)
 
 ## 发送消息
 
@@ -47,7 +47,7 @@ tags: ['一致性', '共识', 'Raft']
 1. 利用NewReady创建结构体Ready，并写入到readyc通道
 1. raftNode从通道读到Ready，取出其中的消息，交给Network发送给其他节点
 
-![etcd raft send message flow](http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-send.png)
+![etcd raft send message flow](https://lessisbetter.site/images/2019-09-etcd-raft-msg-flow-send.png)
 
 ## 接收消息
 
@@ -57,7 +57,7 @@ tags: ['一致性', '共识', 'Raft']
 1. raftNode调用Step函数，将数据发给raft，数据被写入recvc通道
 1. raft的Step从recvc收到消息，并修改raftLog中的日志
 
-![etcd raft receive msg flow](http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-recv.png)
+![etcd raft receive msg flow](https://lessisbetter.site/images/2019-09-etcd-raft-msg-flow-recv.png)
 
 ## 应用日志
 
@@ -73,5 +73,5 @@ raft会将达成一致的log通知给raftNode，让它应用到上层的数据�
 
 Storage接口更多信息请看[Storage接口介绍](http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/#Storage)。
 
-![etcd raft apply logs flow](http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-commit.png)
+![etcd raft apply logs flow](https://lessisbetter.site/images/2019-09-etcd-raft-msg-flow-commit.png)
 

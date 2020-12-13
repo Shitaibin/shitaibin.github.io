@@ -32,7 +32,7 @@ protobuf是支持多种编程语言的，即多种编程语言的类型数据可
 
 对于Go，protoc需要使用插件**protoc-gen-go**，把`a.proto`，编译成`a.pb.go`，其中包含了定义的数据类型，它的序列化和反序列化函数等。
 
-![](http://img.lessisbetter.site/2019-09-protoc.png)
+![](https://lessisbetter.site/images/2019-09-protoc.png)
 
 敲黑板，对Go语言，protoc只负责利用protoc-gen-go把proto文件编译成Go语言文件，并不负责序列化和反序列化，生成的Go语言文件中的序列化和反序列化操作都是只是wrapper。
 
@@ -40,7 +40,7 @@ protobuf是支持多种编程语言的，即多种编程语言的类型数据可
 
 由`github.com/golang/protobuf/proto`完成，它负责把结构体等序列化成proto数据(`[]byte`)，把proto数据反序列化成Go结构体。
 
-![](http://img.lessisbetter.site/2019-09-marshal-unmarshal.png)
+![](https://lessisbetter.site/images/2019-09-marshal-unmarshal.png)
 
 OK，原理部分就铺垫这些，看一个简单样例，了解protoc和protoc-gen-go的使用，以及进行序列化和反序列化操作。
 

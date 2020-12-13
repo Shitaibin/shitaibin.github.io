@@ -39,7 +39,7 @@ memory.kmem.tcp.failcnt         memory.memsw.failcnt                memory.press
 
 下图进行了汇总，虚线所圈出的指标为常用指标，每个指标的含义也如图所标注：
 
-![cgroup memory subsystem](http://img.lessisbetter.site/2020-08-cgroup-memory.png)
+![cgroup memory subsystem](https://lessisbetter.site/images/2020-08-cgroup-memory.png)
 
 所有指标的含义可以参考[Linux Kernel关于cgroup memory](https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups/memory.txt)的介绍。
 
@@ -135,7 +135,7 @@ top命令查看进程占用内存情况：
 
 从 `pstree -p` 可以查看整个进程树:
 
-![](http://img.lessisbetter.site/2020-cgroup-memory-pstree.png)
+![](https://lessisbetter.site/images/2020-cgroup-memory-pstree.png)
 
 
 ## 利用Go演示Cgroup内存限制
@@ -264,7 +264,7 @@ stress: info: [6] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
 
 tasks下都是在cgroup `test_memory_limit` 中的进程，这些是Host中真实的进程号，通过`pstree -p`查看进程树，看看这些都是哪些进程：
 
-![Cgroup限制内存的进程树](http://img.lessisbetter.site/2020-08-cgroup.png)
+![Cgroup限制内存的进程树](https://lessisbetter.site/images/2020-08-cgroup.png)
 
 进程树佐证了前面的代码执行流程分析大致是对的，只不过这其中还涉及一些创建子进程的具体手段，比如stress是通过sh命令创建出来的。
 

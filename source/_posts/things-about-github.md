@@ -12,7 +12,7 @@ tags: ['Github']
 
 明明都是我提交的，怎么显示unkonw commit呢？
 
-![unknown commit](http://img.lessisbetter.site/github-unkonw-commit.png)
+![unknown commit](https://lessisbetter.site/images/github-unkonw-commit.png)
 
 原因：本地Git配置的邮箱与Github上面配置的邮箱不一致，具体原因是大小写导致的，本地中有大写字母，而Github上面全为小写。
 

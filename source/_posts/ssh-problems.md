@@ -62,7 +62,7 @@ echo "1460" > /sys/class/net/eth0/mtu
 
 使用iterm2保存了机器的Profile，连接的时候报错，在本机ssh命令连接正常，错误如下图：
 
-![](http://img.lessisbetter.site/2019-03-fail1.png)
+![](https://lessisbetter.site/images/2019-03-fail1.png)
 
 出现: `command not found`。
 

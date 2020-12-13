@@ -511,4 +511,4 @@ func append(slice []Type, elems ...Type) []Type
 > 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/05/03/go-concurrent-problems1/](http://lessisbetter.site/2019/05/03/go-concurrent-problems1/)
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />

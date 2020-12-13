@@ -65,7 +65,7 @@ ORDER BY prod_price, prod_name;
 ```
 
 效果
-![](http://img.lessisbetter.site/review-SQL-3-1.png)
+![](https://lessisbetter.site/images/review-SQL-3-1.png)
 
 
 为什么列顺序不是：
@@ -77,7 +77,7 @@ ORDER BY prod_price, prod_name;
 ```
 
 效果
-![](http://img.lessisbetter.site/review-SQL-3-2.png)
+![](https://lessisbetter.site/images/review-SQL-3-2.png)
 
 
 
@@ -116,7 +116,7 @@ ORDER BY prod_price DESC, prod_name DESC;
 
 ## 操作符
 
-![](http://img.lessisbetter.site/review-SQL-operators.png)
+![](https://lessisbetter.site/images/review-SQL-operators.png)
 
 
 ## 范围检查
@@ -408,7 +408,7 @@ SELECT month("2016-3-13 1:1:1"); -- 获取输入date的月份
 
 聚集函数（aggregate function）对某些行运行的函数，计算并返回一个值。
 
-![](http://img.lessisbetter.site/9-1.png)
+![](https://lessisbetter.site/images/9-1.png)
 
 ## AVG
 
@@ -542,7 +542,7 @@ HAVING items >= 3
 ORDER BY items, order_num;
 ```
 
-![](http://img.lessisbetter.site/10-2.png)
+![](https://lessisbetter.site/images/10-2.png)
 
 
 # 子查询
@@ -609,7 +609,7 @@ WHERE vendors.vend_id = products.vend_id;
 
 效果：
 
-![](http://img.lessisbetter.site/12-1.png)
+![](https://lessisbetter.site/images/12-1.png)
 
 - 如果没有WHERE，将会产生笛卡尔积效果：
 
@@ -621,7 +621,7 @@ ORDER BY vend_name, prod_name;
 
 效果：
 
-![](http://img.lessisbetter.site/12-2.png)
+![](https://lessisbetter.site/images/12-2.png)
 
 所以我们需要WHERE进行过滤。
 
@@ -698,7 +698,7 @@ WHERE语句中的条件顺序很重要，一般可以是这种思路：我查询
 
 假如要给与Jim Jones同一公司的所有顾客发送一封信件。这个查询要求首先找出Jim Jones工作的公司，然后找出在该公司工作的顾客。
 
-![](http://img.lessisbetter.site/13-1.png)
+![](https://lessisbetter.site/images/13-1.png)
 
 在这里好像cust_name是公司名，而cust_contact是联系人的名字，而Jim Jones则是其中的一个联系人。
 
@@ -732,7 +732,7 @@ ON orders.cust_id = customers.cust_id;
 
 效果：
 
-![](http://img.lessisbetter.site/13-2.png)
+![](https://lessisbetter.site/images/13-2.png)
 
 
 ## 聚集函数与联结
@@ -768,7 +768,7 @@ GROUP BY customer_id;
 ```
 
 效果：
-![](http://img.lessisbetter.site/13-3.png)
+![](https://lessisbetter.site/images/13-3.png)
 
 
 ## 联结总结

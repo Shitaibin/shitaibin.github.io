@@ -12,20 +12,20 @@ tags: ['Fabric', '区块链']
 
 ### 交易宏观流程
 
-![](http://img.lessisbetter.site/2019-07-tx-flow.png)
+![](https://lessisbetter.site/images/2019-07-tx-flow.png)
 
 交易的详细流程请阅读 [交易流程](http://lessisbetter.site/2019/07/17/fabric-concepts-notes/#%E4%BA%A4%E6%98%93)，了解交易流程的几大环节。
 
 ### 链码调用流程
 
-![](http://img.lessisbetter.site/2019-07-fabric-invoke-chaincode.png)
+![](https://lessisbetter.site/images/2019-07-fabric-invoke-chaincode.png)
 
 上图，展示了客户端、Peer，以及链码容器 3大主体在交易流程中的背书过程，请关注一下Peer中的 Handler，它负责和链码容器交互。
 
 
 ### 提案背书流程
 
-![](http://img.lessisbetter.site/2019-07-chaincode_swimlane.png)
+![](https://lessisbetter.site/images/2019-07-chaincode_swimlane.png)
 
 上图，从接近源码的层面，展示了交易背书过程。其中Fabric、Shim 是 Peer 中的模块，ChainCode 代表链码容器，Endorser Chaincode 代表 Peer 对交易提案和模拟执行结果进行背书。
 
@@ -753,7 +753,7 @@ func (cs *ChaincodeSupport) Invoke(txParams *ccprovider.TransactionParams, cccid
 
 某个 Peer 上可以部署多个链码容器，Peer 为了和这些链码容器交互/通信，给每个链码容器都创建了一个 Handler，Handler 携带了 Peer 和链码容器交互的资源。
 
-![](http://img.lessisbetter.site/2019-10-peer-cc-handler.png)
+![](https://lessisbetter.site/images/2019-10-peer-cc-handler.png)
 
 ```go
 // Launch starts executing chaincode if it is not already running. This method

@@ -13,7 +13,7 @@ tags: ['Kubernetes']
 
 Kustmoize有Base和Overlay 2个概念，被依赖的层成为base，当前进行覆盖操作的层成为overlay。所以1个overlay，也可以是另外overlay的base。
 
-![Kustomize base和overlay](http://img.lessisbetter.site/2020-11-kustomize-base-overlay.png)
+![Kustomize base和overlay](https://lessisbetter.site/images/2020-11-kustomize-base-overlay.png)
 
 在kubectl v1.14之后，其中融合了kustomize，也就说如果安装了kubectl无需安装kustomize，即可使用kustomize。
 

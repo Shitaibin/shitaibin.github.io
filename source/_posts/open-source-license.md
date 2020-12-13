@@ -10,10 +10,10 @@ tags: ['开源']
 1. 要做的事情，是否满足开源项目的License。
 2. 开源一个项目，该如何选择License。
 
-![](http://img.lessisbetter.site/2020-05-license-choose.jpg)
+![](https://lessisbetter.site/images/2020-05-license-choose.jpg)
 来源：https://www.zhihu.com/question/28292322/answer/656121132
 
-![](http://img.lessisbetter.site/2020-05-license-2.jpg)
+![](https://lessisbetter.site/images/2020-05-license-2.jpg)
 来源：https://www.zhihu.com/question/28292322/answer/840556759
 从左到右，是从宽松到严格。
 

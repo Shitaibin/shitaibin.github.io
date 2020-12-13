@@ -345,7 +345,7 @@ Only once
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
+<img src="https://lessisbetter.site/images/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>

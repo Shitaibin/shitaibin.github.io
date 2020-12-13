@@ -8,4 +8,4 @@ fabric-sdk-go 配置文件示例 [config_e2e](https://github.com/hyperledger/fab
 
 配置项内容可按以下分类：
 
-![fabric-sdk-go configure](http://img.lessisbetter.site/2019-10-fabric-sdk-go-conf-yaml.png)
+![fabric-sdk-go configure](https://lessisbetter.site/images/2019-10-fabric-sdk-go-conf-yaml.png)

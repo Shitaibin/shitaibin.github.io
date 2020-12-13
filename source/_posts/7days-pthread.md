@@ -62,7 +62,7 @@ rwlock保护一个共享队列。
 2，如果没有条件变量，程序员需要不断检查条件（变量）是否改变，非常浪费资源。  
 3，条件标量总是和互斥量一起使用。  
 4，条件变量使用顺序：  
-![pthread条件变量执行顺序](http://img.lessisbetter.site/pthread_cond_2.png)  
+![pthread条件变量执行顺序](https://lessisbetter.site/images/pthread_cond_2.png)  
 解释：  
 线程A：
 
@@ -83,7 +83,7 @@ rwlock保护一个共享队列。
 * `pthread_cond_signal()`通知线程A
 * 继续
 
-![pthread条件变量](http://img.lessisbetter.site/pthread_cond.png-own)
+![pthread条件变量](https://lessisbetter.site/images/pthread_cond.png-own)
 
 5，条件变量信号多播`pthread_cond_broadcast()`，当多个线程等待条件变量时。
 

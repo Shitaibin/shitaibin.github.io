@@ -8,7 +8,7 @@ tags: ['分布式']
 
 下图来自Wiki。
 
-![](http://img.lessisbetter.site/2019-03-Network_Partition_for_Optimization-2.png)
+![](https://lessisbetter.site/images/2019-03-Network_Partition_for_Optimization-2.png)
 
 ### 定义
 WIKI给的定义是：**网络分区指由于网络设备的failure，造成网络分裂为多个独立的组**。
@@ -24,7 +24,7 @@ Gilbert和Lynch在论文中定义分区容忍性的：**网络允许丢失一个
 
 ### 网络分区和网络模型
 
-![](http://img.lessisbetter.site/2019-03-network-partion-1.jpg)
+![](https://lessisbetter.site/images/2019-03-network-partion-1.jpg)
 
 我们考虑下网络分区的检测。
 

@@ -11,7 +11,7 @@ XML有一个非常强大的解析工具是XPath，用于提取XML中的内容。
 
 JSONPath现在有很多不同的实现，不同的实现支持的提取语法略有不同，比如Goessner的JSONPath如下：
 
-![goessner jsonpath](http://img.lessisbetter.site/2020-11-goessner-jsonpath.png)
+![goessner jsonpath](https://lessisbetter.site/images/2020-11-goessner-jsonpath.png)
 
 
 
@@ -115,7 +115,7 @@ kubectl get pods --all-namespaces -o=jsonpath='{range .items[*]}{"pod: "}{.metad
 kubectl get pods --all-namespaces -o=jsonpath='{.items[*].metadata.name}'
 ```
 
-![](http://img.lessisbetter.site/2020-11-1-pod-name.png)
+![](https://lessisbetter.site/images/2020-11-1-pod-name.png)
 
 先提取每个pod的名称，这个还和原生的jsonpath一样。
 
@@ -123,7 +123,7 @@ kubectl get pods --all-namespaces -o=jsonpath='{.items[*].metadata.name}'
 kubectl get pods --all-namespaces -o=jsonpath='{range .items[*]}{"pod: "}{.metadata.name}{"\n"}{end}'
 ```
 
-![](http://img.lessisbetter.site/2020-11-2-pod-name-range.png)
+![](https://lessisbetter.site/images/2020-11-2-pod-name-range.png)
 
 因为每个pod还要取容器名称和镜像，所以最好每个pod占一行，我们需要使用`range .. end`处理每一个pod，列pod所含的容器。
 
@@ -132,7 +132,7 @@ kubectl get pods --all-namespaces -o=jsonpath='{range .items[*]}{"pod: "}{.metad
 
 ```
 
-![](http://img.lessisbetter.site/2020-11-3-pod-containers.png)
+![](https://lessisbetter.site/images/2020-11-3-pod-containers.png)
 
 可以看到每个pod内可能包含多个容器，所以也得用`range .. end`去处理pod的每一个container。
 
@@ -141,7 +141,7 @@ kubectl get pods --all-namespaces -o=jsonpath='{range .items[*]}{"pod: "}{.metad
 
 ```
 
-![](http://img.lessisbetter.site/2020-11-4-pod-contianers-image.png)
+![](https://lessisbetter.site/images/2020-11-4-pod-contianers-image.png)
 
 上面提到使用jsonpath可以简化层级，因为`containers`这个名词在层级中是独有的，不像`name`可能是存在于多个层级，所以可以使用`..`简化：
 
@@ -149,7 +149,7 @@ kubectl get pods --all-namespaces -o=jsonpath='{range .items[*]}{"pod: "}{.metad
 kubectl get pods --all-namespaces -o=jsonpath='{range .items[*]}{"pod: "}{.metadata.name} {"\n"}{range ..containers[*]}{"\tcontainer: "}{.name}{"\n\timage: "}{.image}{"\n"}{end}{end}'
 ```
 
-![](http://img.lessisbetter.site/2020-11-5-simplify-pod-containers.png)
+![](https://lessisbetter.site/images/2020-11-5-simplify-pod-containers.png)
 
 最后看一下过滤的使用，只想列出`weave`的pod的容器和镜像：
 
@@ -157,7 +157,7 @@ kubectl get pods --all-namespaces -o=jsonpath='{range .items[*]}{"pod: "}{.metad
 kubectl get pods --all-namespaces -o=jsonpath='{range .items[?(@.metadata.name=="weave-net-sqjzh")]}{"pod: "}{.metadata.name} {"\n"}{range ..containers[*]}{"\tcontainer: "}{.name}{"\n\timage: "}{.image}{"\n"}{end}{end}'
 ```
 
-![](http://img.lessisbetter.site/2020-11-6-pod-filter.png)
+![](https://lessisbetter.site/images/2020-11-6-pod-filter.png)
 
 ### 练习
 

@@ -24,7 +24,7 @@ tags: ['Go', 'log']
 
 第4点重点解释一下：
 
-![debug-demo](http://img.lessisbetter.site/2019-07-debug-demo.png)
+![debug-demo](https://lessisbetter.site/images/2019-07-debug-demo.png)
 
 这是一个打印Debug级别的日志，它还有1项日志信息，是来自`func()`的结果，请问：
 
@@ -33,11 +33,11 @@ tags: ['Go', 'log']
 
 如果你认为不会执行，看下面的Demo，log使用zap。
 
-![log-test](http://img.lessisbetter.site/2019-07-log-test.png)
+![log-test](https://lessisbetter.site/images/2019-07-log-test.png)
 
 结果：
 
-![log-ret](http://img.lessisbetter.site/2019-07-log-ret.png)
+![log-ret](https://lessisbetter.site/images/2019-07-log-ret.png)
 
 事实证明无论限制的日志级别是什么，`log.***`一定会被调用，它入参中的函数也一定会被调用，只不过是日记级别不满足打印时，不会打印而已。被调函数的结果只被这条`log.***`使用，结果这个日志根本不打印，这就浪费了CPU。
 
@@ -47,11 +47,11 @@ tags: ['Go', 'log']
 
 日志级别设置为Info，不代表`log.Debug`函数不执行。`log.Debug`函数一定会执行，看下图，`log.Info，Error`等接口会调用相同的真实实现函数`log.log`，`log.log`的入参包含了`log.Info`等接口的入参，以及当前的`log_level`，比如以下2种是等价的：
 
-![log-log](http://img.lessisbetter.site/2019-07-log-log.png)
+![log-log](https://lessisbetter.site/images/2019-07-log-log.png)
 
 所以，无论设置的是什么日志级别控制，`log.Debug`一定会被执行，至于当前日志是否会打印，会在`log.log`里决定。
 
-![image-20190712072742045](http://img.lessisbetter.site/2019-07-log-call.png)
+![image-20190712072742045](https://lessisbetter.site/images/2019-07-log-call.png)
 
 
 
@@ -59,7 +59,7 @@ tags: ['Go', 'log']
 
 日志打印本质是函数调用，会先计算入参，再调用函数。比如：
 
-![log-debug](http://img.lessisbetter.site/2019-07-log-debug.png)
+![log-debug](https://lessisbetter.site/images/2019-07-log-debug.png)
 
 所以`func()`一定会被调用。
 
@@ -79,4 +79,4 @@ tags: ['Go', 'log']
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />

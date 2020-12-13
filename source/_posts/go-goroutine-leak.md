@@ -55,7 +55,7 @@ func main() {
 
 ### 浏览器方式
 
-![image-20190516173924325](http://img.lessisbetter.site/2019-05-image-20190516173924325-7999564.png)
+![image-20190516173924325](https://lessisbetter.site/images/2019-05-image-20190516173924325-7999564.png)
 
 输入网址`ip:port/debug/pprof/`打开pprof主页，从上到下依次是**5类profile信息**：
 
@@ -283,7 +283,7 @@ Go虽然有GC来回收不再使用的堆内存，减轻了开发人员对内存�
 
 **如果使用云平台部署Go程序**，云平台都提供了内存查看的工具，可以查看OS的内存占用情况和某个进程的内存占用情况，比如阿里云，我们在1个云主机上只部署了1个Go服务，所以OS的内存占用情况，基本是也反映了进程内存占用情况，OS内存占用情况如下，可以看到**随着时间的推进，内存的占用率在不断的提高，这是内存泄露的最明显现象**：
 
-![image-20190512111200988](http://img.lessisbetter.site/2019-05-image-20190512111200988-7630721.png)
+![image-20190512111200988](https://lessisbetter.site/images/2019-05-image-20190512111200988-7630721.png)
 
 
 
@@ -307,7 +307,7 @@ echo $time"\tmemory(Byte)\t"$prog_mem >>~/record/prog_mem.log
 
 脚本输出的内容保存在`prog_mem.log`，只要大体浏览一下就可以发现内存的增长情况，判断是否存在内存泄露。如果需要可视化，可以直接黏贴`prog_mem.log`内容到Excel等表格工具，绘制内存占用图。
 
-![image-20190512172935195](http://img.lessisbetter.site/2019-05-image-20190512172935195-7653375.png)
+![image-20190512172935195](https://lessisbetter.site/images/2019-05-image-20190512172935195-7653375.png)
 
 ## go pprof发现存在内存问题
 
@@ -317,7 +317,7 @@ echo $time"\tmemory(Byte)\t"$prog_mem >>~/record/prog_mem.log
 
 后来读了Dave的[《High Performance Go Workshop》](<https://dave.cheney.net/high-performance-go-workshop/dotgo-paris.html#using_more_than_one_cpu>)，刷新了对heap的认识，内存pprof的简要内容如下：
 
-![image-20190512114048868](http://img.lessisbetter.site/2019-05-image-20190512114048868-7632448.png)
+![image-20190512114048868](https://lessisbetter.site/images/2019-05-image-20190512114048868-7632448.png)
 
 Dave讲了以下几点：
 
@@ -443,7 +443,7 @@ heap能显示内存的分配情况，以及哪行代码占用了多少内存，�
 
 **第2种情况，就是goroutine泄露，这是通过heap无法发现的，所以heap在定位内存泄露这件事上，发挥的作用不大**。
 
-![image-20190512144150064](http://img.lessisbetter.site/2019-05-image-20190512144150064-7643310.png)
+![image-20190512144150064](https://lessisbetter.site/images/2019-05-image-20190512144150064-7643310.png)
 
 --------------
 
@@ -625,7 +625,7 @@ http://ip:port/debug/pprof/goroutine?debug=1
 
 效果如下：
 
-![](http://img.lessisbetter.site/2019-05-image-20190516143740567-7988660.png)
+![](https://lessisbetter.site/images/2019-05-image-20190516143740567-7988660.png)
 
 看起来密密麻麻的，其实简单又十分有用，看上图标出来的部分，手机上图看起来可能不方便，那就放大图片，或直接看下面各字段的含义：
 1. `goroutine profile: total 32023`：32023是**goroutine的总数量**，
@@ -670,7 +670,7 @@ url请求中设置debug=2：
 http://ip:port/debug/pprof/goroutine?debug=2
 ```
 
-![](http://img.lessisbetter.site/2019-05-image-20190516143537339-7988537.png)
+![](https://lessisbetter.site/images/2019-05-image-20190516143537339-7988537.png)
 
 第2种方式和第1种方式是互补的，它可以看到每个goroutine的信息：
 
@@ -828,4 +828,4 @@ goroutine泄露的本质是channel阻塞，无法继续向下执行，导致此g
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />

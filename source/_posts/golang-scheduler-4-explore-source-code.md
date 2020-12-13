@@ -53,7 +53,7 @@ Go调度器的源码还涉及GC等，阅读源码时，可以暂时先跳过，�
 
 最后，送大家一幅流程图，画出了主要的调度流程，大家也可边阅读边画，增加理解，**高清版可到博客下载（原图原文跳转）**。
 
-![](http://img.lessisbetter.site/2019-04-shcedule-flow.png)
+![](https://lessisbetter.site/images/2019-04-shcedule-flow.png)
 
 
 ## 如何探索调度器
@@ -245,5 +245,5 @@ schedule(): goid = 0
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 

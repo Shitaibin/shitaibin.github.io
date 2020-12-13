@@ -9,7 +9,7 @@ tags: ['JOS', 'fork', '操作系统']
 
 # JOS中写时拷贝的fork设计
 
-![JOS中写时拷贝的fork设计](http://img.lessisbetter.site/fork-design.jpg)
+![JOS中写时拷贝的fork设计](https://lessisbetter.site/images/fork-design.jpg)
 
 <!--more-->
 

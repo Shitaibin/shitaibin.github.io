@@ -43,7 +43,7 @@ tags: ['Fabric', '区块链']
 
 注册和部署的简要流程如下：
 
-![](http://img.lessisbetter.site/2019-09-deploy-scc-flow.png)
+![](https://lessisbetter.site/images/2019-09-deploy-scc-flow.png)
 
 
 1. peer运行启动程序
@@ -912,7 +912,7 @@ func chatWithPeer(chaincodename string, stream PeerChaincodeStream, cc Chaincode
 1. 使用channel封装的Stream
 1. gRPC的Stream
 
-![](http://img.lessisbetter.site/2019-09-peer-cc-communication.png)
+![](https://lessisbetter.site/images/2019-09-peer-cc-communication.png)
 
 链码容器和Peer通信的接口是：
 
@@ -1036,5 +1036,5 @@ func (s *inProcStream) CloseSend() error {
 
 但前面还没有介绍Peer和链码容器之间的通信，所以不展示代码了，展示一下Peer和链码容器的消息交互图：
 
-![](http://img.lessisbetter.site/2019-09-deploycc-msg.png)
+![](https://lessisbetter.site/images/2019-09-deploycc-msg.png)
 

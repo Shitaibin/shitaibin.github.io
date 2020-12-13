@@ -11,13 +11,13 @@ pbft的论文提到这样**2**段话，可以很好的解决这个问题：
 
 
 
-![](http://img.lessisbetter.site/2019-02-pbft-paper1.png)
+![](https://lessisbetter.site/images/2019-02-pbft-paper1.png)
 *page3*
 
 
 **在存在f个faulty节点的情况下，`3f+1`是保证系统安全性和活跃性的最小的总节点数量**。当存在f个节点不响应的情况下，需要`n-f`个正常节点达成共识需要保障`n-f > f`。另外一种情况：f个响应的节点是错误的（响应错误数据），f个节点没有响应，但他们不是faulty的，所以要保证`好的响应的节点 - 好的未响应的节点 - 坏的响应的节点 > 坏的节点`，即需要`n - f -f > f`，`n > 3f`。但n只能是整数，所以`n >= 3f + 1`。
 
-![](http://img.lessisbetter.site/2019-02-pbft-paper2.png)
+![](https://lessisbetter.site/images/2019-02-pbft-paper2.png)
 *page3*
 
 副本节点的数量设为`R`，为了**简便**使`R = 3f + 1`。尽管存在副本节点数量多于`3f+1`的情况，比如`3f+2, 3f+3`，**但多出来的节点没有带来任何改善，反而降低了系统的性能，因为需要更多的通信量**。
@@ -41,4 +41,4 @@ pbft的论文提到这样**2**段话，可以很好的解决这个问题：
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />

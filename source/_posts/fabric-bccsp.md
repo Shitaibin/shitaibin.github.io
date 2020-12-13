@@ -24,7 +24,7 @@ BCCSP是Block Chain Crypto Service Provider的缩写。
 
 bccsp模块中当前有2种密码实现，它们都是bccsp中的密码学插件：SW和PKCS11，SW代表的是国际标准加密的软实现，SW是software的缩写，PKCS11代指硬实现。
 
-![](http://img.lessisbetter.site/2020-04-fabric-bccsp.png)
+![](https://lessisbetter.site/images/2020-04-fabric-bccsp.png)
 
 > 扩展阅读：PKCS11是PKCS系列标准中的第11个，它定义了应用层和底层加密设备的交互标准，比如过去在电脑上，插入USBKey用网银转账时，就需要走USBKey中的硬件进行数字签名，这个过程就需要使用PCKS11。
 
@@ -50,7 +50,7 @@ SW是国际标准加密的软实现插件，它包含了ECDSA算法、RSA算法�
 
 SW要做的是，把ECDSA、RSA、AES、SHA中的各种函数，对应到以上各种分类中，主要的分类如下图所示。
 
-![](http://img.lessisbetter.site/2020-04-12-bccsp-sw.png)
+![](https://lessisbetter.site/images/2020-04-12-bccsp-sw.png)
 
 从上图可以看出，密钥生成、派生、导入都包含了ECDSA、RSA、AES，签名和延签包含了ECDSA和RSA，摘要计算包含了SHA系列，加密解密包含了AES，但没有包含RSA，是因为非对称加密耗时，并不常用。
 
@@ -64,7 +64,7 @@ Fabric支持国密并非仅仅在bccsp中增加1个国密实现这么简单，�
 
 综上情况，你需要一个中间件，中间件中包含定义好国密接口、国密数字证书接口等，用这些接口去适配Fabric，然后当采用不同国密实现时，只需要对具体实现进行封装，去适配中间件中定义好的接口。
 
-![](http://img.lessisbetter.site/2020-04-fabric-gm.png)
+![](https://lessisbetter.site/images/2020-04-fabric-gm.png)
 
 ## 社区对Fabric支持国密的态度
 

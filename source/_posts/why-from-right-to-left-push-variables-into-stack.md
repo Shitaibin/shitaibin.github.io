@@ -18,12 +18,12 @@ tags: ['操作系统','栈']
 <!--more-->
 
 
-![](http://img.lessisbetter.site/stack_frame.png)
+![](https://lessisbetter.site/images/stack_frame.png)
 图1：函数调用栈帧
 
 这个图2也有意思，把函数调用之间的关系展示了出来。
 
-![](http://img.lessisbetter.site/process_and_stack.png)
+![](https://lessisbetter.site/images/process_and_stack.png)
 图2：函数调用关系
 
 ## 理论分析
@@ -34,7 +34,7 @@ tags: ['操作系统','栈']
 
 那么调用栈图3：
 
-![](http://img.lessisbetter.site/2016-enter-stack-sequence.png)
+![](https://lessisbetter.site/images/2016-enter-stack-sequence.png)
 图3：自右向左入栈的调用栈
 
 虽然不知道可变参数n的大小，但是，依然可以根据固定参数的大小m，找到可变参数的开始位置，然后去访问就可以了。**至于访问第n+1个可变参数，会造成什么问题，我们一会讨论。**
@@ -43,7 +43,7 @@ tags: ['操作系统','栈']
 
 那么调用栈图4：
 
-![](http://img.lessisbetter.site/2016-enter-stack-sequence-2.png)
+![](https://lessisbetter.site/images/2016-enter-stack-sequence-2.png)
 图4：自左向右入栈的调用栈
 
 在只知道ebp的情况下，而不知道可变参数n的大小，不能确定可变参数和参数的分解，怎么确定参数1，参数m的地址呢？不确定他们怎么能访问呢？**真相就是这样子，你无法确定各参数的地址**。

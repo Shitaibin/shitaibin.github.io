@@ -8,7 +8,7 @@ minikube很好，但某些原因造成国内用起来比较慢，要各种挂代
 
 ## minikube原理
 
-![](http://img.lessisbetter.site/2020-08-minikube.jpeg)
+![](https://lessisbetter.site/images/2020-08-minikube.jpeg)
 
 kubectl和kube-apiserver是CS架构，kubectl是操作k8s集群的客户端，kube-apiserver是服务端。
 

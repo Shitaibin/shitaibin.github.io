@@ -60,7 +60,7 @@ tls目录，为TLS通信相关的证书：
 - 数字签名：Signature
 - 证书、公钥等签名者身份信息：ProposalBytes.Proposal.Header.SignatureHeader.Creator
 
-![signed_proposal](http://img.lessisbetter.site/2019-11-signed_proposal.png)
+![signed_proposal](https://lessisbetter.site/images/2019-11-signed_proposal.png)
 > 图来自杨保华的[hyperledger_code_fabric](https://github.com/yeasy/hyperledger_code_fabric) 。
 
 交易中最重要的是Envelope结构体，SDK向Orderer提交交易时，会发送Envelope消息，它包含了：
@@ -68,7 +68,7 @@ tls目录，为TLS通信相关的证书：
 - 交易发送方的身份信息：Payload.Header.SignatureHeader.Creator
 - 可选背书节点的身份信息，不同的交易类型，Data包含了不同的信息，如果是需要背书的，可以包含背书的信息、签名和身份信息：Payload.Data.SignedChainccodeDeploymentSpec.OwnerEndorsements.signingidentity
 
-![Signed transaction](http://img.lessisbetter.site/2019-11-tx_envelop.jpeg)
+![Signed transaction](https://lessisbetter.site/images/2019-11-tx_envelop.jpeg)
 > 图来自《区块链原理、设计与应用》，为升级链码的交易Envelope结构。
 
 在验证消息的签名时，会从中提取出数字签名Signature，身份信息（证书、公钥）和被签名消息体，完成以下验证：
@@ -77,7 +77,7 @@ tls目录，为TLS通信相关的证书：
 
 验证的整体流程如下：
 
-![Verify signature](http://img.lessisbetter.site/2019-11-verify-signature.png)
+![Verify signature](https://lessisbetter.site/images/2019-11-verify-signature.png)
 
 ## 验证签名的函数
 

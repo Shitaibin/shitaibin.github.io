@@ -125,5 +125,5 @@ Time to sleep
 > 2. 本文作者：[大彬](http://lessisbetter.site/about/)
 > 3. 如果喜欢本文，随意转载，但请保留此原文链接：[https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg](https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg)
 
-![一起学Golang-分享有料的Go语言技术](http://img.lessisbetter.site/2019-01-article_qrcode.jpg)
+![一起学Golang-分享有料的Go语言技术](https://lessisbetter.site/images/2019-01-article_qrcode.jpg)
 

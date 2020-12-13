@@ -14,14 +14,14 @@
 ## 个人公众号
 
 
-<img src="http://img.lessisbetter.site/gzh-tail-big.png" align=center />
+<img src="https://lessisbetter.site/images/gzh-tail-big.png" align=center />
 
 
 ## 线下分享
 
 | 日期    | 活动       | 分享PPT                                                     | 文章 |
 | ------ | ---------- | ---------------------------------------------------------- | --- |
-| 2019年06月02日 | Go语言中文网杭州MeetUp | [Go语言思维FirstClassFunction](http://img.lessisbetter.site/Go语言思维First-class-function.pdf) | [First class function in Go](http://lessisbetter.site/2019/06/09/golang-first-class-function/) |
+| 2019年06月02日 | Go语言中文网杭州MeetUp | [Go语言思维FirstClassFunction](https://lessisbetter.site/images/Go语言思维First-class-function.pdf) | [First class function in Go](http://lessisbetter.site/2019/06/09/golang-first-class-function/) |
 
 ## 资源
 

@@ -24,7 +24,7 @@ tags: ['Go']
 > 提示：图在前，场景描述在后。
 
 
-![](http://img.lessisbetter.site/2019-04-image-20190331190809649-4030489.png)
+![](https://lessisbetter.site/images/2019-04-image-20190331190809649-4030489.png)
 
 > 上图中三角形、正方形、圆形分别代表了M、P、G，正方形连接的绿色长方形代表了P的本地队列。
 
@@ -32,33 +32,33 @@ tags: ['Go']
 
 
 
-![](http://img.lessisbetter.site/2019-04-image-20190331190826838-4030506.png)
+![](https://lessisbetter.site/images/2019-04-image-20190331190826838-4030506.png)
 
 
 
 **场景2**：**g1运行完成后(函数：`goexit`)，m上运行的goroutine切换为g0，g0负责调度时协程的切换（函数：`schedule`）**。从p1的本地队列取g2，从g0切换到g2，并开始运行g2(函数：`execute`)。实现了**线程m1的复用**。
 
-![](http://img.lessisbetter.site/2019-04-image-20190331160718646-4019638.png)
+![](https://lessisbetter.site/images/2019-04-image-20190331160718646-4019638.png)
 
 **场景3**：假设每个p的本地队列只能存4个g。g2要创建了6个g，前4个g（g3, g4, g5, g6）已经加入p1的本地队列，p1本地队列满了。
 
-![](http://img.lessisbetter.site/2019-04-image-20190331160728024-4019648.png)
+![](https://lessisbetter.site/images/2019-04-image-20190331160728024-4019648.png)
 
 > 蓝色长方形代表全局队列。
 
 **场景4**：g2在创建g7的时候，发现p1的本地队列已满，需要执行**负载均衡**，把p1中本地队列中前一半的g，还有新创建的g**转移**到全局队列（实现中并不一定是新的g，如果g是g2之后就执行的，会被保存在本地队列，利用某个老的g替换新g加入全局队列），这些g被转移到全局队列时，会被打乱顺序。所以g3,g4,g7被转移到全局队列。
 
-![](http://img.lessisbetter.site/2019-04-image-20190331161138353-4019898.png)
+![](https://lessisbetter.site/images/2019-04-image-20190331161138353-4019898.png)
 
 **场景5**：g2创建g8时，p1的本地队列未满，所以g8会被加入到p1的本地队列。
 
 
 
-![](http://img.lessisbetter.site/2019-04-image-20190331162734830-4020854.png)
+![](https://lessisbetter.site/images/2019-04-image-20190331162734830-4020854.png)
 
 **场景6**：**在创建g时，运行的g会尝试唤醒其他空闲的p和m执行**。假定g2唤醒了m2，m2绑定了p2，并运行g0，但p2本地队列没有g，m2此时为自旋线程（没有G但为运行状态的线程，不断寻找g，后续场景会有介绍）。
 
-![](http://img.lessisbetter.site/2019-04-image-20190331162717486-4020837.png)
+![](https://lessisbetter.site/images/2019-04-image-20190331162717486-4020837.png)
 
 
 
@@ -72,7 +72,7 @@ n = min(len(GQ)/GOMAXPROCS + 1, len(GQ/2))
 
 假定我们场景中一共有4个P，所以m2只从能从全局队列取1个g（即g3）移动p2本地队列，然后完成从g0到g3的切换，运行g3。
 
-![](http://img.lessisbetter.site/2020-09-go-scheduler-p8.png)
+![](https://lessisbetter.site/images/2020-09-go-scheduler-p8.png)
 
 **场景8**：假设g2一直在m1上运行，经过2轮后，m2已经把g7、g4也挪到了p2的本地队列并完成运行，全局队列和p2的本地队列都空了，如上图左边。
 
@@ -80,11 +80,11 @@ n = min(len(GQ)/GOMAXPROCS + 1, len(GQ/2))
 
 
 
-![](http://img.lessisbetter.site/2019-04-image-20190331170113457-4022873.png)
+![](https://lessisbetter.site/images/2019-04-image-20190331170113457-4022873.png)
 
 **场景9**：p1本地队列g5、g6已经被其他m偷走并运行完成，当前m1和m2分别在运行g2和g8，m3和m4没有goroutine可以运行，m3和m4处于**自旋状态**，它们不断寻找goroutine。为什么要让m3和m4自旋，自旋本质是在运行，线程在运行却没有执行g，就变成了浪费CPU？销毁线程不是更好吗？可以节约CPU资源。创建和销毁CPU都是浪费时间的，我们**希望当有新goroutine创建时，立刻能有m运行它**，如果销毁再新建就增加了时延，降低了效率。当然也考虑了过多的自旋线程是浪费CPU，所以系统中最多有GOMAXPROCS个自旋的线程，多余的没事做线程会让他们休眠（见函数：`notesleep()`）。
 
-![](http://img.lessisbetter.site/2019-04-image-20190331182939318-4028179.png)
+![](https://lessisbetter.site/images/2019-04-image-20190331182939318-4028179.png)
 
 **场景10**：假定当前除了m3和m4为自旋线程，还有m5和m6为自旋线程，g8创建了g9，g8进行了**阻塞的系统调用**，m2和p2立即解绑，p2会执行以下判断：如果p2本地队列有g、全局队列有g或有空闲的m，p2都会立马唤醒1个m和它绑定，否则p2则会加入到空闲P列表，等待m来获取可用的p。本场景中，p2本地队列有g，可以和其他自旋线程m5绑定。
 
@@ -102,7 +102,7 @@ n = min(len(GQ)/GOMAXPROCS + 1, len(GQ/2))
 
 如果你看这幅图还有些似懂非懂，建议赶紧开始看[雨痕大神的Golang源码剖析](github.com/qyuhen/book)，章节：并发调度。
 
-![](http://img.lessisbetter.site/2019-04-arch.png)
+![](https://lessisbetter.site/images/2019-04-arch.png)
 
 
 
@@ -112,7 +112,7 @@ n = min(len(GQ)/GOMAXPROCS + 1, len(GQ/2))
 
 下篇会是源码层面的内容了，关于源码分析的书籍、文章可以先看起来了，先剧透一篇图，希望阅读下篇文章赶紧关注本公众号。
 
-![](http://img.lessisbetter.site/2019-04-flow.png)
+![](https://lessisbetter.site/images/2019-04-flow.png)
 
 
 
@@ -143,4 +143,4 @@ n = min(len(GQ)/GOMAXPROCS + 1, len(GQ/2))
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />

@@ -141,7 +141,7 @@ for j from 1 to m
 Suppose an arithmetic expression is given as a tree. Each leaf is an integer and each internal node is one of the standard arithmetical operations `(+,−,*,/)`. For example, the expression `2+3*4+(3*4)/5` is represented by the tree in Figure 5.17(a). 
 Give an O(n) algorithm for evaluating such an expression, where there are n nodes in the tree.
 
-![Figure 5.17](http://img.lessisbetter.site/Figure_5.17.JPG)
+![Figure 5.17](https://lessisbetter.site/images/Figure_5.17.JPG)
 
 解答
 
@@ -266,8 +266,8 @@ A vertex cover of a graph G=(V,E) is a subset of vertices V′ such that each ed
 
     插图如下(以2叉树做例子)：
 
-    ![顶点覆盖1](http://img.lessisbetter.site/Ex-5-13b.jpg)
-    ![顶点覆盖2](http://img.lessisbetter.site/Ex-5-13a.jpg)
+    ![顶点覆盖1](https://lessisbetter.site/images/Ex-5-13b.jpg)
+    ![顶点覆盖2](https://lessisbetter.site/images/Ex-5-13a.jpg)
 
 + (b) 任何一条边在V'中至少有一个节点，那么V'中所有节点的度的和sum至少为m（图G的边的总数）减少V'中相邻节点的数量，就能降低sum的值。使用(a)中的方法，可以尽量降低sum的值，因为在(a)中选择的点尽量是隔代选择。另外的隔代选择方案是吧叶节点以及他们的父亲的父亲作为目标节点，得到的V'同样是尽量小的。
     
@@ -285,7 +285,7 @@ A *vertex cover* of a graph G=(V,E) is a subset of vertices V′∈V such that e
 否定。反例：
 下图得到的DFS序列可以是[1, 3, 2]，叶节点为2,3。那么V'={1}。并不是一个顶点覆盖。
 
-![5-14反例](http://img.lessisbetter.site/Ex-5-14.JPG)
+![5-14反例](https://lessisbetter.site/images/Ex-5-14.JPG)
 
 #### 5-15
 
@@ -317,7 +317,7 @@ An *independent set* of an undirected graph G=(V,E) is a set of vertices U such 
 1. 着色方案是固定的：孩子与父亲是相反的颜色。
 1. 题目要求找到最大的独立集合。
 
-![二叉树着色](http://img.lessisbetter.site/Ex-5-16-b.JPG)
+![二叉树着色](https://lessisbetter.site/images/Ex-5-16-b.JPG)
 
 先着色，进行一次遍历，将不同颜色的放入两个序列，取总度的和较大者。
 
@@ -373,7 +373,7 @@ Improve your algorithm to run in time O(|V|·|E|). You may assume |V|≤|E|.
             finish = true
     ```
 
-    ![5-17](http://img.lessisbetter.site/Ex-5-17.JPG)
+    ![5-17](https://lessisbetter.site/images/Ex-5-17.JPG)
     
     github仓库源码及测试数据:[传送门-->](https://github.com/Shitaibin/The-Algorithm-Design-Manual/blob/master/5.11/5-17.c)
 
@@ -464,4 +464,4 @@ Let v and w be two vertices in a directed graph G=(V,E). Design a linear-time al
 
 
 
-[Figure 5.17]:[http://img.lessisbetter.site/444.JPG]
+[Figure 5.17]:[https://lessisbetter.site/images/444.JPG]

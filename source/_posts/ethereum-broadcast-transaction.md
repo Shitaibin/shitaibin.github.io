@@ -8,7 +8,7 @@ tags: ['区块链','以太坊']
 
 从宏观看，交易在区块链网络中的传播，像广度搜索算法，也像湖面上的水纹，一圈圈向外扩散。但实际场景由于网络通信环境，可能效果上并非一圈一圈向外的，但总体上是向外扩散。
 
-![](http://img.lessisbetter.site/2019-03-tx-macro.png)
+![](https://lessisbetter.site/images/2019-03-tx-macro.png)
 
 
 
@@ -23,4 +23,4 @@ tags: ['区块链','以太坊']
 7. peer收到交易消息后，加入`txpool`，回到步骤2。
 
 
-![](http://img.lessisbetter.site/2019-03-tx-micro.png)
+![](https://lessisbetter.site/images/2019-03-tx-micro.png)

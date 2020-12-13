@@ -8,7 +8,7 @@ tags: ['区块链','Fabric']
 
 社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。
 
-![fabric chaincode error](http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png)
+![fabric chaincode error](https://lessisbetter.site/images/2019-09-fabric-chaincode-error.png)
 
 大家的问题是：
 

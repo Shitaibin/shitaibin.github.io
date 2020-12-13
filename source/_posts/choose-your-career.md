@@ -71,7 +71,7 @@ CTO是个多面手，他的主要能力栈：
 
 关于领导力，我根据郭炜的描述，做了一个导图，把一个大的、复杂的能力拆解，感觉目标就清晰了。
 
-![](http://img.lessisbetter.site/2019-01-leadership.png)
+![](https://lessisbetter.site/images/2019-01-leadership.png)
 *根据领导力300讲文章《技术领导力就是“成事”的能力》制作*
 
 
@@ -113,4 +113,4 @@ But很多人都有一个特（问）点（题），不了解自己。你问他�
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />

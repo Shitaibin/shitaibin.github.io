@@ -16,7 +16,7 @@ tags: ['Go', 'RPC']
 上一篇文章[Go是如何实现protobuf的编解码的（1）：原理](http://lessisbetter.site/2019/08/26/protobuf-in-go/)
 中已经指出了**Go语言数据和Protobuf数据的编解码是由包`github.com/golang/protobuf/proto`完成的**，本编就来分析一下proto包是如何实现编解码的。
 
-![](http://img.lessisbetter.site/2019-09-marshal-unmarshal.png)
+![](https://lessisbetter.site/images/2019-09-marshal-unmarshal.png)
 
 ## 编解码原理
 
@@ -25,7 +25,7 @@ tags: ['Go', 'RPC']
 1. 为每一个底层类型配备一个或多个编解码函数
 1. 把一个结构体的字段，递归的拆解成底层类型，然后选择合适的函数进行编码或解码操作
 
-![](http://img.lessisbetter.site/2019-09-protobuf-marshal.png)
+![](https://lessisbetter.site/images/2019-09-protobuf-marshal.png)
 
 接下来先看编码，再看解码。
 

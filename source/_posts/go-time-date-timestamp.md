@@ -7,7 +7,7 @@ tags: ['Go']
 
 字符串格式日期、time.Time类型、整形时间戳三者之间的转换如下图：
 
-![](http://img.lessisbetter.site/2020-07-go-time-date-transform.png)
+![](https://lessisbetter.site/images/2020-07-go-time-date-transform.png)
 
 有2点要注意：
 1. 字符串日期和时间戳之间不能直接转换，需要通过time.Time完成。

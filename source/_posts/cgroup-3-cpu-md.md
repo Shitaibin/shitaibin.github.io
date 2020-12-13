@@ -31,7 +31,7 @@ VERSION="18.04.3 LTS (Bionic Beaver)"
 
 每个子系统都有多个配置项和指标文件，主要介绍下图常用的配置项：
 
-![cpu、cpuacct、cpuset的指标](http://img.lessisbetter.site/2020-09-cgroup-cpux.png)
+![cpu、cpuacct、cpuset的指标](https://lessisbetter.site/images/2020-09-cgroup-cpux.png)
 
 ### cpu
 
@@ -42,11 +42,11 @@ cpu子系统用来限制cgroup如何使用CPU的时间，也就是调度，它�
 
 share调度的配置项和原理如下：
 
-![cpu share调度](http://img.lessisbetter.site/2020-09-cgroup-cpu-share.png)
+![cpu share调度](https://lessisbetter.site/images/2020-09-cgroup-cpu-share.png)
 
 cfs 是Completely Fair Scheduler的缩写，代表完全公平调度，它利用 `cpu.cfs_quota_us` 和 `cpu.cfs_period_us` 实现公平调度，这两个文件内容组合使用可以限制进程在长度为 `cfs_period_us` 的时间内，只能被分配到总量为 `cfs_quota_us` 的 CPU 时间。CFS的指标如下：
 
-![cpu cfs调度](http://img.lessisbetter.site/2020-09-cgroup-cpu-cfs.png)
+![cpu cfs调度](https://lessisbetter.site/images/2020-09-cgroup-cpu-cfs.png)
 
 **注意**： 
 1. `cfs_period_us` 取值范围1000~1000000：1ms ~ 1s，`cfs_quota_us`的最小值为1000，当设置的值不在取值范围时，会报 `write xxx: invalid argument` 的错误。
@@ -58,7 +58,7 @@ rt 是RealTime的缩写，它是实时调度，它与cfs调度的区别是cfs不
 
 cpuacct包含非常多的统计指标，常用的有以下4个文件：
 
-![cpuacct常用指标文件](http://img.lessisbetter.site/2020-09-cgroup-cpuacct.png)
+![cpuacct常用指标文件](https://lessisbetter.site/images/2020-09-cgroup-cpuacct.png)
 
 
 
@@ -73,7 +73,7 @@ cpuacct包含非常多的统计指标，常用的有以下4个文件：
 
 cpuset也包含居多的配置项，主要是分为cpu和mem 2类，mem与NUMA有关，其常用的配置项如下图:
 
-![cpuset常用配置项](http://img.lessisbetter.site/2020-09-cgroup-cpuset.png)
+![cpuset常用配置项](https://lessisbetter.site/images/2020-09-cgroup-cpuset.png)
 
 
 ## 利用Docker演示Cgroup CPU限制

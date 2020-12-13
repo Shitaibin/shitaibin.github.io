@@ -51,7 +51,7 @@ DataFlow指数据流动，Drawing指把数据流动画出来，Pipeline指的是
 1. 每个人都可以向银行发起请求，请求可以是存、取、查3种操作，并且包含操作时必要的数据，包含的数据只和自身相关。
 2. 银行处理请求后给用户发送响应，包含的数据只和操作用户相关。
 
-![](http://img.lessisbetter.site/2019-01-12-bank-user.png)
+![](https://lessisbetter.site/images/2019-01-12-bank-user.png)
 
 你一定发现了上面的数据流动：
 1. 请求数据：个人请求数据流向银行。
@@ -63,7 +63,7 @@ channel是数据流动的通道/管道，为流动的数据建立通道，这里
 
 我们把channel添加到上图中，得到下面的图：
 
-![](http://img.lessisbetter.site/2019-01-12-bank_channel.png)
+![](https://lessisbetter.site/images/2019-01-12-bank_channel.png)
 
 以上就是从数据流动的角度，发现如何使用channel解决并发问题。思路有了，再思考下代码层面需要怎么做：
 
@@ -166,7 +166,7 @@ Bank exit
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>

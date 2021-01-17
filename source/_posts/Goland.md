@@ -67,6 +67,10 @@ sudo chown $USER ~/Library/Caches/com.microsoft.VSCode.ShipIt/
 
 1. 快捷键添加的注释前面默认是没有空格的，`//comment`，如果要这种效果`// comment`，设置中搜索`Add leading space to comments`。
 1. 设置保存自动格式化代码。设置 -> Tools -> File Watcher -> +号 -> go fmt -> 确定。
+1. 自动import，等同go fmt设置。
+1. 自带变量引用的地方高亮，默认是 cmd+F7，设置 -> Keymap -> 搜索Find usages in file -> 重设为 cmd+' 。
+1. `!=` 修改为 `≠`，设置 -> Editor -> Font -> Enabe fount ligatures 。
+
 
 ### Goland插件
 1. MultiHighlight：一直高亮单词，方便阅读和查找。

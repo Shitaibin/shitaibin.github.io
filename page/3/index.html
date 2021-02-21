@@ -195,7 +195,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -241,6 +241,169 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/15/gops-introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/03/15/gops-introduction/" class="post-title-link" itemprop="url">Go官方进程诊断工具gops详解</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-15 20:20:47" itemprop="dateCreated datePublished" datetime="2020-03-15T20:20:47+08:00">2020-03-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="gops简介"><a href="#gops简介" class="headerlink" title="gops简介"></a>gops简介</h2><p><a target="_blank" rel="noopener" href="https://github.com/google/gops">gops</a> 是Go团队提供的命令行工具，它可以用来获取go进程运行时信息。</p>
+<p>可以查看：</p>
+<ul>
+<li>当前有哪些go语言进程，哪些使用gops的go进程</li>
+<li>进程的概要信息</li>
+<li>进程的调用栈</li>
+<li>进程的内存使用情况</li>
+<li>构建程序的Go版本</li>
+<li>运行时统计信息</li>
+</ul>
+<p>可以获取：</p>
+<ul>
+<li>trace</li>
+<li>cpu profile和memory profile</li>
+</ul>
+<p>还可以：</p>
+<ul>
+<li>让进程进行1次GC</li>
+<li>设置GC百分比</li>
+</ul>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><p>使用<code>Options</code>配置agent。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;runtime&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;github.com/google/gops/agent&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err := agent.Listen(agent.Options&#123;</span><br><span class="line">		Addr:            <span class="string">&quot;0.0.0.0:8848&quot;</span>,</span><br><span class="line">		<span class="comment">// ConfigDir:       &quot;/home/centos/gopsconfig&quot;, // 最好使用默认</span></span><br><span class="line">		ShutdownCleanup: <span class="literal">true</span>&#125;); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 测试代码</span></span><br><span class="line">	_ = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">1000</span>, <span class="number">1000</span>)</span><br><span class="line">	runtime.GC()</span><br><span class="line"></span><br><span class="line">	_ = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">1000</span>, <span class="number">2000</span>)</span><br><span class="line">	runtime.GC()</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Hour)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="agent-Option选项"><a href="#agent-Option选项" class="headerlink" title="agent Option选项"></a>agent Option选项</h2><p>agent有3个配置：</p>
+<ul>
+<li><code>Addr</code>：agent要监听的ip和端口，默认ip为环回地址，端口随机分配。</li>
+<li><code>ConfigDir</code>：该目录存放的不是agent的配置，而是每一个使用了agent的go进程信息，文件以pid命名，内容是该pid进程所监听的端口号，所以其中文件的目的是形成pid到端口的映射。默认值为<code>~/.config/gops</code></li>
+<li><code>ShutdownCleanup</code>：进程退出时，是否清理ConfigDir中的文件，默认值为false，不清理</li>
+</ul>
+<p>通常可以把<code>Addr</code>设置为要监听的IP，把<code>ShutdownCleanup</code>设置为<code>ture</code>，进程退出后，残留在ConfigDir目录的文件不再有用，最好清除掉。</p>
+<p><code>ConfigDir</code>示例：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// gopsconfig为设置的ConfigDir目录，2051为pid，8848为端口号。</span><br><span class="line">➜  ~ cat gopsconfig/2051</span><br><span class="line">8848%</span><br><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">tcp6       0      0 :::8848                 :::*                    LISTEN      2051/./gopsexample</span><br></pre></td></tr></table></figure>
+
+<h2 id="gops原理"><a href="#gops原理" class="headerlink" title="gops原理"></a>gops原理</h2><p>gops的原理是，代码中导入<code>gops/agent</code>，建立agent服务，gops命令连接<code>agent</code>读取进程信息。</p>
+<p><img src="https://lessisbetter.site/images/2020-03-gops.png" alt="gops"></p>
+<p><code>agent</code>的实现原理可以查看<code>agent/handle</code><a target="_blank" rel="noopener" href="https://github.com/google/gops/blob/master/agent/agent.go#L182">函数</a>。</p>
+<p>使用go标准库中原生接口实现相关功能，如同你要在自己的程序中开启pprof类似，只不过这部分功能由<code>gops/agent</code>实现了：</p>
+<ul>
+<li>使用<code>runtime.MemStats</code>获取内存情况</li>
+<li>使用<code>runtime/pprof</code>获取调用栈、cpu profile和memory profile</li>
+<li>使用<code>runtime/trace</code>获取trace</li>
+<li>使用<code>runtime</code>获取stats信息</li>
+<li>使用<code>runtime/debug</code>、<code>GC</code>设置和启动GC</li>
+</ul>
+<p>再谈<code>ConfigDir</code>。从源码上看，<code>ConfigDir</code>对agent并没有用途，对gops有用。当gops和ConfigDir在一台机器上时，即gops查看本机的go进程信息，gops可以通过其中的文件，快速找到agent服务的端口。能够实现：<code>gops &lt;sub-cmd&gt; pid</code>到<code>gops &lt;sub-cmd&gt; 127.0.0.1:port</code>的转换。</p>
+<p>如果代码中通过<code>ConfigDir</code>指定了其他目录，使用<code>gops</code>时，需要添加环境变量<code>GOPS_CONFIG_DIR</code>指向<code>ConfigDir</code>使用的目录。</p>
+<h2 id="子命令介绍"><a href="#子命令介绍" class="headerlink" title="子命令介绍"></a>子命令介绍</h2><p>gops后面可以跟子命令，然后是pid或者远端地址。</p>
+<p>也可以直接跟pid，查看本机进程信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops help memstats</span><br><span class="line">gops is a tool to list and diagnose Go processes.</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  gops &lt;cmd&gt; &lt;pid|addr&gt; ...</span><br><span class="line">  gops &lt;pid&gt; # displays process info</span><br><span class="line">  gops help  # displays this help message</span><br><span class="line"></span><br><span class="line">Commands:</span><br><span class="line">  stack      Prints the stack trace.</span><br><span class="line">  gc         Runs the garbage collector and blocks until successful.</span><br><span class="line">  setgc	     Sets the garbage collection target percentage.</span><br><span class="line">  memstats   Prints the allocation and garbage collection stats.</span><br><span class="line">  version    Prints the Go version used to build the program.</span><br><span class="line">  stats      Prints runtime stats.</span><br><span class="line">  trace      Runs the runtime tracer for 5 secs and launches &quot;go tool trace&quot;.</span><br><span class="line">  pprof-heap Reads the heap profile and launches &quot;go tool pprof&quot;.</span><br><span class="line">  pprof-cpu  Reads the CPU profile and launches &quot;go tool pprof&quot;.</span><br><span class="line"></span><br><span class="line">All commands require the agent running on the Go process.</span><br><span class="line">&quot;*&quot; indicates the process is running the agent.</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看当前机器上go程序进程信息"><a href="#查看当前机器上go程序进程信息" class="headerlink" title="查看当前机器上go程序进程信息"></a>查看当前机器上go程序进程信息</h3><p>查看当前机器上的go进程，可以列出pid、ppid、进程名、可执行程序所使用的go版本，以及可执行程序的路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops</span><br><span class="line">67292 66333 gops                         * go1.13    &#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;gops&#x2F;gops</span><br><span class="line">67434 65931 gops                           go1.13    &#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;bin&#x2F;gops</span><br><span class="line">66551 1     gocode                         go1.11.2  &#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;bin&#x2F;gocode</span><br><span class="line">137   1     com.docker.vmnetd              go1.12.7  &#x2F;Library&#x2F;PrivilegedHelperTools&#x2F;com.docker.vmnetd</span><br><span class="line">811   807   com.docker.backend             go1.12.13 &#x2F;Applications&#x2F;Docker.app&#x2F;Contents&#x2F;MacOS&#x2F;com.docker.backend</span><br><span class="line">807   746   com.docker.supervisor          go1.12.13 &#x2F;Applications&#x2F;Docker.app&#x2F;Contents&#x2F;MacOS&#x2F;com.docker.supervisor</span><br><span class="line">810   807   com.docker.driver.amd64-linux  go1.12.13 &#x2F;Applications&#x2F;Docker.app&#x2F;Contents&#x2F;MacOS&#x2F;com.docker.driver.amd64-linux</span><br></pre></td></tr></table></figure>
+
+<p>带<code>*</code>的是程序中使用了gops/agent，不带<code>*</code>的是普通的go程序。</p>
+<h3 id="go程序进程树"><a href="#go程序进程树" class="headerlink" title="go程序进程树"></a>go程序进程树</h3><p>查看进程树：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops tree</span><br><span class="line">...</span><br><span class="line">├── 66333</span><br><span class="line">│   └── [*]  67292 (gops) &#123;go1.13&#125;</span><br><span class="line">├── 1</span><br><span class="line">│   ├── 66551 (gocode) &#123;go1.11.2&#125;</span><br><span class="line">│   └── 137 (com.docker.vmnetd) &#123;go1.12.7&#125;</span><br><span class="line">├── 65931</span><br><span class="line">│   └── 67476 (gops) &#123;go1.13&#125;</span><br><span class="line">└── 746</span><br><span class="line">    └── 807 (com.docker.supervisor) &#123;go1.12.13&#125;</span><br><span class="line">        ├── 811 (com.docker.backend) &#123;go1.12.13&#125;</span><br><span class="line">        └── 810 (com.docker.driver.amd64-linux) &#123;go1.12.13&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="pid：进程概要信息"><a href="#pid：进程概要信息" class="headerlink" title="pid：进程概要信息"></a>pid：进程概要信息</h3><p>查看进程的概要信息，非gops进程也可以：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops 67292</span><br><span class="line">parent PID:	66333</span><br><span class="line">threads:	7</span><br><span class="line">memory usage:	0.018%</span><br><span class="line">cpu usage:	0.000%</span><br><span class="line">username:	shitaibin</span><br><span class="line">cmd+args:	.&#x2F;gops</span><br><span class="line">elapsed time:	11:28</span><br><span class="line">local&#x2F;remote:	127.0.0.1:54753 &lt;-&gt; :0 (LISTEN)</span><br><span class="line">➜  ~</span><br><span class="line">➜  ~ gops 807</span><br><span class="line">parent PID:	746</span><br><span class="line">threads:	28</span><br><span class="line">memory usage:	0.057%</span><br><span class="line">cpu usage:	0.003%</span><br><span class="line">username:	shitaibin</span><br><span class="line">cmd+args:	&#x2F;Applications&#x2F;Docker.app&#x2F;Contents&#x2F;MacOS&#x2F;com.docker.supervisor -watchdog fd:0</span><br><span class="line">elapsed time:	27-23:36:35</span><br><span class="line">local&#x2F;remote:	127.0.0.1:54832 &lt;-&gt; :0 ()</span><br><span class="line">local&#x2F;remote:	*:53849 &lt;-&gt; :0 ()</span><br><span class="line">local&#x2F;remote:	127.0.0.1:49473 &lt;-&gt; :0 (LISTEN)</span><br></pre></td></tr></table></figure>
+
+<h3 id="stack：当前调用栈"><a href="#stack：当前调用栈" class="headerlink" title="stack：当前调用栈"></a>stack：当前调用栈</h3><p>查看使用gops的进程的调用栈：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops stack 67292</span><br><span class="line">goroutine 19 [running]:</span><br><span class="line">runtime&#x2F;pprof.writeGoroutineStacks(0x1197160, 0xc00009c028, 0x0, 0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;pprof&#x2F;pprof.go:679 +0x9d</span><br><span class="line">runtime&#x2F;pprof.writeGoroutine(0x1197160, 0xc00009c028, 0x2, 0x0, 0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;pprof&#x2F;pprof.go:668 +0x44</span><br><span class="line">runtime&#x2F;pprof.(*Profile).WriteTo(0x1275c60, 0x1197160, 0xc00009c028, 0x2, 0xc00009c028, 0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;pprof&#x2F;pprof.go:329 +0x3da</span><br><span class="line">github.com&#x2F;google&#x2F;gops&#x2F;agent.handle(0x1665008, 0xc00009c028, 0xc000014068, 0x1, 0x1, 0x0, 0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;src&#x2F;github.com&#x2F;google&#x2F;gops&#x2F;agent&#x2F;agent.go:185 +0x1ab</span><br><span class="line">github.com&#x2F;google&#x2F;gops&#x2F;agent.listen()</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;src&#x2F;github.com&#x2F;google&#x2F;gops&#x2F;agent&#x2F;agent.go:133 +0x2bf</span><br><span class="line">created by github.com&#x2F;google&#x2F;gops&#x2F;agent.Listen</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;go&#x2F;src&#x2F;github.com&#x2F;google&#x2F;gops&#x2F;agent&#x2F;agent.go:111 +0x364</span><br><span class="line"></span><br><span class="line">goroutine 1 [sleep]:</span><br><span class="line">runtime.goparkunlock(...)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;proc.go:310</span><br><span class="line">time.Sleep(0x34630b8a000)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;time.go:105 +0x157</span><br><span class="line">main.main()</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;Workspace&#x2F;golang_step_by_step&#x2F;gops&#x2F;example.go:15 +0xa3</span><br><span class="line"></span><br><span class="line">goroutine 18 [syscall]:</span><br><span class="line">os&#x2F;signal.signal_recv(0x0)</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;runtime&#x2F;sigqueue.go:144 +0x96</span><br><span class="line">os&#x2F;signal.loop()</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;os&#x2F;signal&#x2F;signal_unix.go:23 +0x22</span><br><span class="line">created by os&#x2F;signal.init.0</span><br><span class="line">	&#x2F;Users&#x2F;shitaibin&#x2F;goroot&#x2F;src&#x2F;os&#x2F;signal&#x2F;signal_unix.go:29 +0x41</span><br></pre></td></tr></table></figure>
+
+<h3 id="memstats-内存使用情况"><a href="#memstats-内存使用情况" class="headerlink" title="memstats: 内存使用情况"></a>memstats: 内存使用情况</h3><p>查看gops进程内存使用情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops memstats 67944</span><br><span class="line">alloc: 136.80KB (140088 bytes) &#x2F;&#x2F; 当前分配出去未收回的内存总量</span><br><span class="line">total-alloc: 152.08KB (155728 bytes) &#x2F;&#x2F; 已分配出去的内存总量</span><br><span class="line">sys: 67.25MB (70518784 bytes) &#x2F;&#x2F; 当前进程从OS获取的内存总量</span><br><span class="line">lookups: 0</span><br><span class="line">mallocs: 418 &#x2F;&#x2F; 分配的对象数量</span><br><span class="line">frees: 82 &#x2F;&#x2F; 释放的对象数量</span><br><span class="line">heap-alloc: 136.80KB (140088 bytes) &#x2F;&#x2F; 当前分配出去未收回的堆内存总量</span><br><span class="line">heap-sys: 63.56MB (66650112 bytes) &#x2F;&#x2F; 当前堆从OS获取的内存</span><br><span class="line">heap-idle: 62.98MB (66035712 bytes) &#x2F;&#x2F; 当前堆中空闲的内存量</span><br><span class="line">heap-in-use: 600.00KB (614400 bytes) &#x2F;&#x2F; 当前堆使用中的内存量</span><br><span class="line">heap-released: 62.89MB (65945600 bytes)</span><br><span class="line">heap-objects: 336 &#x2F;&#x2F; 堆中对象数量</span><br><span class="line">stack-in-use: 448.00KB (458752 bytes) &#x2F;&#x2F; 栈使用中的内存量 </span><br><span class="line">stack-sys: 448.00KB (458752 bytes) &#x2F;&#x2F; 栈从OS获取的内存总量 </span><br><span class="line">stack-mspan-inuse: 10.89KB (11152 bytes)</span><br><span class="line">stack-mspan-sys: 16.00KB (16384 bytes)</span><br><span class="line">stack-mcache-inuse: 13.56KB (13888 bytes)</span><br><span class="line">stack-mcache-sys: 16.00KB (16384 bytes)</span><br><span class="line">other-sys: 1.01MB (1062682 bytes)</span><br><span class="line">gc-sys: 2.21MB (2312192 bytes)</span><br><span class="line">next-gc: when heap-alloc &gt;&#x3D; 4.00MB (4194304 bytes) &#x2F;&#x2F; 下次GC的条件</span><br><span class="line">last-gc: 2020-03-16 10:06:26.743193 +0800 CST &#x2F;&#x2F; 上次GC的世界</span><br><span class="line">gc-pause-total: 83.84µs &#x2F;&#x2F; GC总暂停时间</span><br><span class="line">gc-pause: 44891 &#x2F;&#x2F; 上次GC暂停时间，单位纳秒</span><br><span class="line">num-gc: 2 &#x2F;&#x2F; 已进行的GC次数</span><br><span class="line">enable-gc: true &#x2F;&#x2F; 是否开始GC</span><br><span class="line">debug-gc: false</span><br></pre></td></tr></table></figure>
+
+<h3 id="stats-运行时信息"><a href="#stats-运行时信息" class="headerlink" title="stats: 运行时信息"></a>stats: 运行时信息</h3><p>查看运行时统计信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops stats 68125</span><br><span class="line">goroutines: 3</span><br><span class="line">OS threads: 12</span><br><span class="line">GOMAXPROCS: 8</span><br><span class="line">num CPU: 8</span><br></pre></td></tr></table></figure>
+
+<h3 id="trace"><a href="#trace" class="headerlink" title="trace"></a>trace</h3><p>获取当前运行5s的trace信息，会打开网页：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops trace 68125</span><br><span class="line">Tracing now, will take 5 secs...</span><br><span class="line">Trace dump saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;trace116447431</span><br><span class="line">2020&#x2F;03&#x2F;16 10:23:37 Parsing trace...</span><br><span class="line">2020&#x2F;03&#x2F;16 10:23:37 Splitting trace...</span><br><span class="line">2020&#x2F;03&#x2F;16 10:23:37 Opening browser. Trace viewer is listening on http:&#x2F;&#x2F;127.0.0.1:55480</span><br></pre></td></tr></table></figure>
+
+<h3 id="cpu-profile"><a href="#cpu-profile" class="headerlink" title="cpu profile"></a>cpu profile</h3><p>获取cpu profile，并进入交互模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops pprof-cpu 68125</span><br><span class="line">Profiling CPU now, will take 30 secs...</span><br><span class="line"></span><br><span class="line">Profile dump saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;profile431166544</span><br><span class="line">Binary file saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;binary765361519</span><br><span class="line">File: binary765361519</span><br><span class="line">Type: cpu</span><br><span class="line">Time: Mar 16, 2020 at 10:25am (CST)</span><br><span class="line">Duration: 30s, Total samples &#x3D; 0</span><br><span class="line">No samples were found with the default sample value type.</span><br><span class="line">Try &quot;sample_index&quot; command to analyze different sample values.</span><br><span class="line">Entering interactive mode (type &quot;help&quot; for commands, &quot;o&quot; for options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) top</span><br><span class="line">Showing nodes accounting for 0, 0% of 0 total</span><br><span class="line">      flat  flat%   sum%        cum   cum%</span><br></pre></td></tr></table></figure>
+
+<h3 id="memory-profile"><a href="#memory-profile" class="headerlink" title="memory profile"></a>memory profile</h3><p>获取memory profile，并进入交互模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops pprof-heap 68125</span><br><span class="line">Profile dump saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;profile292136242</span><br><span class="line">Binary file saved to: &#x2F;var&#x2F;folders&#x2F;5g&#x2F;rz16gqtx3nsdfs7k8sb80jth0000gn&#x2F;T&#x2F;binary693335273</span><br><span class="line">File: binary693335273</span><br><span class="line">Type: inuse_space</span><br><span class="line">Time: Mar 16, 2020 at 10:27am (CST)</span><br><span class="line">No samples were found with the default sample value type.</span><br><span class="line">Try &quot;sample_index&quot; command to analyze different sample values.</span><br><span class="line">Entering interactive mode (type &quot;help&quot; for commands, &quot;o&quot; for options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) traces</span><br><span class="line">File: binary693335273</span><br><span class="line">Type: inuse_space</span><br><span class="line">Time: Mar 16, 2020 at 10:27am (CST)</span><br><span class="line">-----------+-------------------------------------------------------</span><br><span class="line">     bytes:  256kB</span><br><span class="line">         0   compress&#x2F;flate.(*compressor).init</span><br><span class="line">             compress&#x2F;flate.NewWriter</span><br><span class="line">             compress&#x2F;gzip.(*Writer).Write</span><br><span class="line">             runtime&#x2F;pprof.(*profileBuilder).build</span><br><span class="line">             runtime&#x2F;pprof.profileWriter</span><br><span class="line">-----------+-------------------------------------------------------</span><br><span class="line">     bytes:  64kB</span><br><span class="line">         0   compress&#x2F;flate.newDeflateFast</span><br><span class="line">             compress&#x2F;flate.(*compressor).init</span><br><span class="line">             compress&#x2F;flate.NewWriter</span><br><span class="line">             compress&#x2F;gzip.(*Writer).Write</span><br><span class="line">             runtime&#x2F;pprof.(*profileBuilder).build</span><br><span class="line">             runtime&#x2F;pprof.profileWriter</span><br><span class="line">-----------+-------------------------------------------------------</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用远程连接"><a href="#使用远程连接" class="headerlink" title="使用远程连接"></a>使用远程连接</h2><p>agent的默认配置<code>Option&#123;&#125;</code>，监听的是环回地址。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ sudo netstat -nap | grep 414</span><br><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">(Not all processes could be identified, non-owned process info</span><br><span class="line"> will not be shown, you would have to be root to see it all.)</span><br><span class="line">tcp        0      0 127.0.0.1:36812         0.0.0.0:*               LISTEN      414/./gopsexample</span><br></pre></td></tr></table></figure>
+
+<p>修改程序，在<code>Option</code>中设置监听的地址和端口：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">agent.Listen(agent.Options&#123;Addr:<span class="string">&quot;0.0.0.0:8848&quot;</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>在远程主机上重新编译、重启进程，确认进程监听的端口：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">(Not all processes could be identified, non-owned process info</span><br><span class="line"> will not be shown, you would have to be root to see it all.)</span><br><span class="line">tcp6       0      0 :::8848                 :::*                    LISTEN      887/./gopsexample</span><br></pre></td></tr></table></figure>
+
+<p>在本地主机上使用gops连接远端go进程，并查看数据：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops stats 192.168.9.137:8848</span><br><span class="line">goroutines: 3</span><br><span class="line">OS threads: 9</span><br><span class="line">GOMAXPROCS: 4</span><br><span class="line">num CPU: 4</span><br></pre></td></tr></table></figure>
+
+<p><code>gops</code>后面只能跟pid查看进程简要信息，不能跟ip和port查看远端go进程简要信息，这些简要信息可以通过子命令汇集起来。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops 192.168.9.137:8848</span><br><span class="line">gops: unknown subcommand</span><br><span class="line">➜  ~ </span><br><span class="line">➜  ~ gops version 192.168.9.137:8848</span><br><span class="line">go1.13</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1391,132 +1554,6 @@
 <li>写区块：BlockWriter、metadata</li>
 </ul>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从宏观的角度介绍了Orderer的功能、核心组成，以及交易在Orderer中的流程，Peer如何从Orderer获取区块。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="云原生、Go语言、区块链">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/11/18/fabric-orderer-structs/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 6：Orderer核心数据结构</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-11-18 20:45:23" itemprop="dateCreated datePublished" datetime="2019-11-18T20:45:23+08:00">2019-11-18</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>许多Orderer的文章，都是从Orderer的启动过程讲起，今天换一种“乐高”角度，先看看有哪些“零件”，再看这些零件怎么配合。</p>
-<p>Orderer负责接收交易，把交易打包成区块，然后区块在所有Orderer节点之间达成一致，再分发给Peer的功能，这涉及了：</p>
-<ul>
-<li>网络：gRPC接收交易，向Peer发送区块</li>
-<li>切块：把交易打包成区块</li>
-<li>共识：所有Orderer节点达成一致</li>
-</ul>
-<p>这些功能是由Orderer核心数据结构组织起来。</p>
-<blockquote>
-<p>在Fabric中，通道和链在概念上都是一条区块链，所以本文中也会可能会混用链和通道。</p>
-</blockquote>
-<h2 id="核心数据结构"><a href="#核心数据结构" class="headerlink" title="核心数据结构"></a>核心数据结构</h2><h3 id="Registrar"><a href="#Registrar" class="headerlink" title="Registrar"></a>Registrar</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-registrar.png" alt="Registrar"></p>
-<p>代码中，这样描述Registrar：</p>
-<blockquote>
-<p>Registrar serves as a point of access and control for the individual channel resources.</p>
-</blockquote>
-<p>可见它负责了每个channel资源的访问和控制点，也就说，要对某个通道怎么样，得从这入手。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Registrar <span class="keyword">struct</span> &#123;</span><br><span class="line">	lock sync.RWMutex</span><br><span class="line">	<span class="comment">// 保存了多条链</span></span><br><span class="line">	chains <span class="keyword">map</span>[<span class="keyword">string</span>]*ChainSupport</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 共识插件</span></span><br><span class="line">	consenters         <span class="keyword">map</span>[<span class="keyword">string</span>]consensus.Consenter</span><br><span class="line">	ledgerFactory      blockledger.Factory</span><br><span class="line">	signer             crypto.LocalSigner</span><br><span class="line">    </span><br><span class="line">	systemChannelID    <span class="keyword">string</span></span><br><span class="line">	systemChannel      *ChainSupport</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>chains</code>保存了每一条链，每一条链在Orderer中都以<a href="#ChainSupport">ChainSupport</a>代表。</li>
-<li><code>consenters</code>保存了所有的共识插件，每个共识插件都是一个<a href="#Consenter">Consenter</a>，Fabric 1.4中共识插件有Solo、Kafka、EtcdRaft。</li>
-<li><code>ledgerFactory</code>用来读取和创建链的账本。</li>
-<li><code>signer</code>用来对Orderer中的数据进行签名，以及创建<a href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/#%E8%A7%A3%E5%AF%86SignatureHeader">SignatureHeader</a>。</li>
-<li><code>systemChannelID</code>和<code>systemChannel</code>分别是系统链ID、系统链实例。</li>
-</ul>
-<h3 id="ChainSupport"><a href="#ChainSupport" class="headerlink" title="ChainSupport"></a>ChainSupport</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-chainsupport.png" alt="chainsupport"></p>
-<p>ChainSupport汇集了一条通道所需要的所有资源，所以说一个ChainSupport代表了一条链。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ChainSupport <span class="keyword">struct</span> &#123;</span><br><span class="line">	*ledgerResources</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line">	*BlockWriter</span><br><span class="line">	consensus.Chain</span><br><span class="line">	cutter blockcutter.Receiver</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>ChainSupport 是一堆接口的集合，这些接口构成一条链所有的操作，接口可以分为4类：</p>
-<ul>
-<li>账本：<code>ledgerResources</code>、<code>BlockWriter</code>分别是账本读写和把区块写入到账本。</li>
-<li>消息：<code>msgprocessor.Processor</code>、<code>cutter</code>分别是处理交易和把交易切块。</li>
-<li>共识：<code>consensus.Chain</code>是Orderer的共识实例，比如每条链都有自己的Raft共识实例，它们互不干扰。</li>
-<li>签名：<code>crypto.LocalSigner</code>，同Registrar中的介绍。</li>
-</ul>
-<h3 id="Chain"><a href="#Chain" class="headerlink" title="Chain"></a>Chain</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-chain.png" alt="Chain"></p>
-<p>Chain是接口，它的实现并不一条链，而是一条链的共识实例，可以是Solo、Kafka和EtcdRaft，它运行在单独的协程，使用Channel和ChainSupport通信，它调用其它接口完成切块，以及让所有的Orderer节点对交易达成一致。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Chain defines a way to inject messages for ordering.</span></span><br><span class="line"><span class="comment">// Note, that in order to allow flexibility in the implementation, it is the responsibility of the implementer</span></span><br><span class="line"><span class="comment">// to take the ordered messages, send them through the blockcutter.Receiver supplied via HandleChain to cut blocks,</span></span><br><span class="line"><span class="comment">// and ultimately write the ledger also supplied via HandleChain.  This design allows for two primary flows</span></span><br><span class="line"><span class="comment">// 1. Messages are ordered into a stream, the stream is cut into blocks, the blocks are committed (solo, kafka)</span></span><br><span class="line"><span class="comment">// 2. Messages are cut into blocks, the blocks are ordered, then the blocks are committed (sbft)</span></span><br><span class="line"><span class="keyword">type</span> Chain <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// 普通消息/交易排序</span></span><br><span class="line">	<span class="comment">// Order accepts a message which has been processed at a given configSeq.</span></span><br><span class="line">	<span class="comment">// If the configSeq advances, it is the responsibility of the consenter</span></span><br><span class="line">	<span class="comment">// to revalidate and potentially discard the message</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Order(env *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置消息/交易排序</span></span><br><span class="line">	<span class="comment">// Configure accepts a message which reconfigures the channel and will</span></span><br><span class="line">	<span class="comment">// trigger an update to the configSeq if committed.  The configuration must have</span></span><br><span class="line">	<span class="comment">// been triggered by a ConfigUpdate message. If the config sequence advances,</span></span><br><span class="line">	<span class="comment">// it is the responsibility of the consenter to recompute the resulting config,</span></span><br><span class="line">	<span class="comment">// discarding the message if the reconfiguration is no longer valid.</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Configure(config *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 等待排序集群可用</span></span><br><span class="line">	<span class="comment">// WaitReady blocks waiting for consenter to be ready for accepting new messages.</span></span><br><span class="line">	<span class="comment">// This is useful when consenter needs to temporarily block ingress messages so</span></span><br><span class="line">	<span class="comment">// that in-flight messages can be consumed. It could return error if consenter is</span></span><br><span class="line">	<span class="comment">// in erroneous states. If this blocking behavior is not desired, consenter could</span></span><br><span class="line">	<span class="comment">// simply return nil.</span></span><br><span class="line">	WaitReady() error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当排序集群发送错误时，会关闭返回的通道</span></span><br><span class="line">	<span class="comment">// Errored returns a channel which will close when an error has occurred.</span></span><br><span class="line">	<span class="comment">// This is especially useful for the Deliver client, who must terminate waiting</span></span><br><span class="line">	<span class="comment">// clients when the consenter is not up to date.</span></span><br><span class="line">	Errored() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动当前链</span></span><br><span class="line">	<span class="comment">// Start should allocate whatever resources are needed for staying up to date with the chain.</span></span><br><span class="line">	<span class="comment">// Typically, this involves creating a thread which reads from the ordering source, passes those</span></span><br><span class="line">	<span class="comment">// messages to a block cutter, and writes the resulting blocks to the ledger.</span></span><br><span class="line">	Start()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 停止当前链，并释放资源</span></span><br><span class="line">	<span class="comment">// Halt frees the resources which were allocated for this Chain.</span></span><br><span class="line">	Halt()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Consenter"><a href="#Consenter" class="headerlink" title="Consenter"></a>Consenter</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-consenter.png" alt="Consenter"></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Consenter <span class="keyword">interface</span> &#123;</span><br><span class="line">	HandleChain(support ConsenterSupport, metadata *cb.Metadata) (Chain, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Consenter也是接口，它只有1个功能用来创建<code>Chain</code>。每种共识插件，都有自己单独的<strong>consenter实现</strong>，分别用来创建solo实例、kafka实例或etcdraft实例。</p>
-<h3 id="ConsenterSupport"><a href="#ConsenterSupport" class="headerlink" title="ConsenterSupport"></a>ConsenterSupport</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-consentersupport.png" alt="ConsenterSupport"></p>
-<p>ConsenterSupport为<strong>consenter实现</strong>提供所需的资源，其实就是共识用来访问外部数据的接口。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ConsenterSupport provides the resources available to a Consenter implementation.</span></span><br><span class="line"><span class="keyword">type</span> ConsenterSupport <span class="keyword">interface</span> &#123;</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line"></span><br><span class="line">	<span class="comment">// VerifyBlockSignature verifies a signature of a block with a given optional</span></span><br><span class="line">	<span class="comment">// configuration (can be nil).</span></span><br><span class="line">	VerifyBlockSignature([]*cb.SignedData, *cb.ConfigEnvelope) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 提供把消息切成块的接口</span></span><br><span class="line">	<span class="comment">// BlockCutter returns the block cutting helper for this channel.</span></span><br><span class="line">	BlockCutter() blockcutter.Receiver</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的orderer配置</span></span><br><span class="line">	<span class="comment">// SharedConfig provides the shared config from the channel&#x27;s current config block.</span></span><br><span class="line">	SharedConfig() channelconfig.Orderer</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的通道配置</span></span><br><span class="line">	<span class="comment">// ChannelConfig provides the channel config from the channel&#x27;s current config block.</span></span><br><span class="line">	ChannelConfig() channelconfig.Channel</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 生成区块</span></span><br><span class="line">	<span class="comment">// CreateNextBlock takes a list of messages and creates the next block based on the block with highest block number committed to the ledger</span></span><br><span class="line">	<span class="comment">// Note that either WriteBlock or WriteConfigBlock must be called before invoking this method a second time.</span></span><br><span class="line">	CreateNextBlock(messages []*cb.Envelope) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 读区块</span></span><br><span class="line">	<span class="comment">// Block returns a block with the given number,</span></span><br><span class="line">	<span class="comment">// or nil if such a block doesn&#x27;t exist.</span></span><br><span class="line">	Block(number <span class="keyword">uint64</span>) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写区块</span></span><br><span class="line">	<span class="comment">// WriteBlock commits a block to the ledger.</span></span><br><span class="line">	WriteBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写配置区块并更新配置</span></span><br><span class="line">	<span class="comment">// WriteConfigBlock commits a block to the ledger, and applies the config update inside.</span></span><br><span class="line">	WriteConfigBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Sequence returns the current config squence.</span></span><br><span class="line">	Sequence() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// ChainID returns the channel ID this support is associated with.</span></span><br><span class="line">	ChainID() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Height returns the number of blocks in the chain this channel is associated with.</span></span><br><span class="line">	Height() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 以原始数据的格式追加区块，不像WriteBlock那样会修改元数据</span></span><br><span class="line">	<span class="comment">// Append appends a new block to the ledger in its raw form,</span></span><br><span class="line">	<span class="comment">// unlike WriteBlock that also mutates its metadata.</span></span><br><span class="line">	Append(block *cb.Block) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="宏观视角"><a href="#宏观视角" class="headerlink" title="宏观视角"></a>宏观视角</h2><p>把上面介绍的各项，融合在一幅图中：</p>
-<ul>
-<li>Registrar 包容万象，主要是ChainSupport和Consenter，Consenter是可插拔的</li>
-<li>ChainSupport 代表了一条链，能够指向属于本条链的共识实例，该共识实例由对应共识类型的Consenter创建</li>
-<li>共识实例使用ConsenterSupport访问共识外部资源</li>
-</ul>
-<p><img src="https://lessisbetter.site/images/2019-11-core-struct-of-orderer.png"></p>
 
       
     </div>

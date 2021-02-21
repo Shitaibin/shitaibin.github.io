@@ -195,7 +195,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -241,6 +241,103 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/01/23/why-pbft-using-3f-plus-1/" class="post-title-link" itemprop="url">为什么PBFT的节点数量是3f+1?</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-23 17:15:06" itemprop="dateCreated datePublished" datetime="2019-01-23T17:15:06+08:00">2019-01-23</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>问题：为什么PBFT的节点数量是3f+1?</p>
+<p>pbft的论文提到这样<strong>2</strong>段话，可以很好的解决这个问题：</p>
+<p><img src="https://lessisbetter.site/images/2019-02-pbft-paper1.png"><br><em>page3</em></p>
+<p><strong>在存在f个faulty节点的情况下，<code>3f+1</code>是保证系统安全性和活跃性的最小的总节点数量</strong>。当存在f个节点不响应的情况下，需要<code>n-f</code>个正常节点达成共识需要保障<code>n-f &gt; f</code>。另外一种情况：f个响应的节点是错误的（响应错误数据），f个节点没有响应，但他们不是faulty的，所以要保证<code>好的响应的节点 - 好的未响应的节点 - 坏的响应的节点 &gt; 坏的节点</code>，即需要<code>n - f -f &gt; f</code>，<code>n &gt; 3f</code>。但n只能是整数，所以<code>n &gt;= 3f + 1</code>。</p>
+<p><img src="https://lessisbetter.site/images/2019-02-pbft-paper2.png"><br><em>page3</em></p>
+<p>副本节点的数量设为<code>R</code>，为了<strong>简便</strong>使<code>R = 3f + 1</code>。尽管存在副本节点数量多于<code>3f+1</code>的情况，比如<code>3f+2, 3f+3</code>，<strong>但多出来的节点没有带来任何改善，反而降低了系统的性能，因为需要更多的通信量</strong>。</p>
+<p>为什么这样说呢？</p>
+<p><code>3f+2, 3f+3</code>的实际能容错的节点数量与<code>3f+1</code>是相同的，即只能容忍<code>f</code>个faulty的节点。</p>
+<p>根据论文，当<code>n = 3f+1</code>时，</p>
+<ul>
+<li>在Prepare进入Commit阶段，需要<code>2f</code>个Prepare消息，即需要<code>n - 1 - f</code>条Prepare消息。</li>
+<li>在Commit阶段完成，需要<code>2f+1</code>条Commit消息，即需要<code>n - f</code>条Commit消息。</li>
+</ul>
+<p>请思考，当<code>n = 3f+2</code>时，</p>
+<ul>
+<li>在Prepare进入Commit阶段，需要<code>n - 1 - f</code>个Prepare消息，即<code>2f+1</code>需要条Prepare消息。</li>
+<li>在Commit阶段完成，需要<code>n - 1 - f</code>条Commit消息，即需要<code>2f+1</code>条Commit消息。</li>
+</ul>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/">http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1310,85 +1407,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2018/12/02/golang-exit-goroutine-in-3-ways/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="云原生、Go语言、区块链">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2018/11/28/golang-pipeline-fan-model/" class="post-title-link" itemprop="url">Golang并发模型：轻松入门流水线FAN模式</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2018-11-28 21:17:30" itemprop="dateCreated datePublished" datetime="2018-11-28T21:17:30+08:00">2018-11-28</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>前一篇文章<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw">《Golang并发模型：轻松入门流水线模型》</a>，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。</p>
-<h3 id="FAN-IN和FAN-OUT模式"><a href="#FAN-IN和FAN-OUT模式" class="headerlink" title="FAN-IN和FAN-OUT模式"></a>FAN-IN和FAN-OUT模式</h3><p>Golang的并发模式灵感来自现实世界，这些模式是通用的，毫无例外，FAN模式也是对当前世界的模仿。<strong>以汽车组装为例，汽车生产线上有个阶段是给小汽车装4个轮子，可以把这个阶段任务交给4个人同时去做，这4个人把轮子都装完后，再把汽车移动到生产线下一个阶段。这个过程中，就有任务的分发，和任务结果的收集。其中任务分发是FAN-OUT，任务收集是FAN-IN。</strong></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/11/28/golang-pipeline-fan-model/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

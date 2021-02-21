@@ -195,7 +195,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -241,6 +241,345 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/05/18/go-goroutine-leak/" class="post-title-link" itemprop="url">实战Go内存泄露</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-05-18 10:30:47" itemprop="dateCreated datePublished" datetime="2019-05-18T10:30:47+08:00">2019-05-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>最近解决了我们项目中的一个内存泄露问题，事实再次证明pprof是一个好工具，但掌握好工具的正确用法，才能发挥好工具的威力，不然就算你手里有屠龙刀，也成不了天下第一，本文就是带你用pprof定位内存泄露问题。</p>
+<p>关于Go的内存泄露有这么一句话不知道你听过没有：</p>
+<blockquote>
+<p>10次内存泄露，有9次是goroutine泄露。</p>
+</blockquote>
+<p>我所解决的问题，也是goroutine泄露导致的内存泄露，所以<strong>这篇文章主要介绍Go程序的goroutine泄露，掌握了如何定位和解决goroutine泄露，就掌握了内存泄露的大部分场景</strong>。</p>
+<blockquote>
+<p>本文草稿最初数据都是生产坏境数据，为了防止敏感内容泄露，全部替换成了demo数据，demo的数据比生产环境数据简单多了，更适合入门理解，有助于掌握pprof。</p>
+</blockquote>
+<hr>
+<h1 id="go-pprof基本知识"><a href="#go-pprof基本知识" class="headerlink" title="go pprof基本知识"></a>go pprof基本知识</h1><p>定位goroutine泄露会使用到pprof，pprof是Go的性能工具，在开始介绍内存泄露前，先简单介绍下pprof的基本使用，更详细的使用给大家推荐了资料。</p>
+<h2 id="什么是pprof"><a href="#什么是pprof" class="headerlink" title="什么是pprof"></a>什么是pprof</h2><p>pprof是Go的性能分析工具，在程序运行过程中，可以记录程序的运行信息，可以是CPU使用情况、内存使用情况、goroutine运行情况等，当需要性能调优或者定位Bug时候，这些记录的信息是相当重要。</p>
+<h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h2><p>使用pprof有多种方式，Go已经现成封装好了1个：<code>net/http/pprof</code>，使用简单的几行命令，就可以开启pprof，记录运行信息，并且提供了Web服务，能够通过浏览器和命令行2种方式获取运行数据。</p>
+<p>看个最简单的pprof的例子：</p>
+<p><em>文件：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/blob/master/pprof/pprof/demo.go">golang_step_by_step/pprof/pprof/demo.go</a></em></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">	_ <span class="string">&quot;net/http/pprof&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 开启pprof，监听请求</span></span><br><span class="line">	ip := <span class="string">&quot;0.0.0.0:6060&quot;</span></span><br><span class="line">	<span class="keyword">if</span> err := http.ListenAndServe(ip, <span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;start pprof failed on %s\n&quot;</span>, ip)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><em>提醒：本文所有代码部分可左右滑动</em></p>
+<h3 id="浏览器方式"><a href="#浏览器方式" class="headerlink" title="浏览器方式"></a>浏览器方式</h3><p><img src="https://lessisbetter.site/images/2019-05-image-20190516173924325-7999564.png" alt="image-20190516173924325"></p>
+<p>输入网址<code>ip:port/debug/pprof/</code>打开pprof主页，从上到下依次是<strong>5类profile信息</strong>：</p>
+<ol>
+<li><strong>block</strong>：goroutine的阻塞信息，本例就截取自一个goroutine阻塞的demo，但block为0，没掌握block的用法</li>
+<li><strong>goroutine</strong>：所有goroutine的信息，下面的<code>full goroutine stack dump</code>是输出所有goroutine的调用栈，是goroutine的debug=2，后面会详细介绍。</li>
+<li><strong>heap</strong>：堆内存的信息</li>
+<li><strong>mutex</strong>：锁的信息</li>
+<li><strong>threadcreate</strong>：线程信息</li>
+</ol>
+<p>这篇文章我们主要关注goroutine和heap，这两个都会打印调用栈信息，goroutine里面还会包含goroutine的数量信息，heap则是内存分配信息，本文用不到的地方就不展示了，最后推荐几篇文章大家去看。</p>
+<h3 id="命令行方式"><a href="#命令行方式" class="headerlink" title="命令行方式"></a>命令行方式</h3><p>当连接在服务器终端上的时候，是没有浏览器可以使用的，Go提供了命令行的方式，能够获取以上5类信息，这种方式用起来更方便。</p>
+<p>使用命令<code>go tool pprof url</code>可以获取指定的profile文件，此命令会发起http请求，然后下载数据到本地，之后进入交互式模式，就像gdb一样，可以使用命令查看运行信息，以下是5类请求的方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载cpu profile，默认从当前开始收集30s的cpu使用情况，需要等待30s</span></span><br><span class="line">go tool pprof http://localhost:6060/debug/pprof/profile   <span class="comment"># 30-second CPU profile</span></span><br><span class="line">go tool pprof http://localhost:6060/debug/pprof/profile?seconds=120     <span class="comment"># wait 120s</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载heap profile</span></span><br><span class="line">go tool pprof http://localhost:6060/debug/pprof/heap      <span class="comment"># heap profile</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载goroutine profile</span></span><br><span class="line">go tool pprof http://localhost:6060/debug/pprof/goroutine <span class="comment"># goroutine profile</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载block profile</span></span><br><span class="line">go tool pprof http://localhost:6060/debug/pprof/block     <span class="comment"># goroutine blocking profile</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载mutex profile</span></span><br><span class="line">go tool pprof http://localhost:6060/debug/pprof/mutex</span><br></pre></td></tr></table></figure>
+
+<p>上面的<code>pprof/demo.go</code>太简单了，如果去获取内存profile，几乎获取不到什么，换一个Demo进行内存profile的展示：</p>
+<p><em>文件：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/blob/master/pprof/heap/demo2.go">golang_step_by_step/pprof/heap/demo2.go</a></em></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 展示内存增长和pprof，并不是泄露</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">	_ <span class="string">&quot;net/http/pprof&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行一段时间：fatal error: runtime: out of memory</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 开启pprof</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ip := <span class="string">&quot;0.0.0.0:6060&quot;</span></span><br><span class="line">		<span class="keyword">if</span> err := http.ListenAndServe(ip, <span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Printf(<span class="string">&quot;start pprof failed on %s\n&quot;</span>, ip)</span><br><span class="line">			os.Exit(<span class="number">1</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	tick := time.Tick(time.Second / <span class="number">100</span>)</span><br><span class="line">	<span class="keyword">var</span> buf []<span class="keyword">byte</span></span><br><span class="line">	<span class="keyword">for</span> <span class="keyword">range</span> tick &#123;</span><br><span class="line">		buf = <span class="built_in">append</span>(buf, <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>)...)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面这个demo会不断的申请内存，把它编译运行起来，然后执行：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="keyword">go</span> tool pprof http:<span class="comment">//localhost:6060/debug/pprof/heap</span></span><br><span class="line"></span><br><span class="line">Fetching profile over HTTP from http:<span class="comment">//localhost:6060/debug/pprof/heap</span></span><br><span class="line">Saved profile in /home/ubuntu/pprof/pprof.demo.alloc_objects.alloc_space.inuse_objects.inuse_space<span class="number">.001</span>.pb.gz       <span class="comment">//&lt;--- 下载到的内存profile文件</span></span><br><span class="line">File: demo <span class="comment">// 程序名称</span></span><br><span class="line">Build ID: a9069a125ee9c0df3713b2149ca859e8d4d11d5a</span><br><span class="line">Type: inuse_space</span><br><span class="line">Time: May <span class="number">16</span>, <span class="number">2019</span> at <span class="number">8</span>:<span class="number">55</span>pm (CST)</span><br><span class="line">Entering interactive mode (<span class="keyword">type</span> <span class="string">&quot;help&quot;</span> <span class="keyword">for</span> commands, <span class="string">&quot;o&quot;</span> <span class="keyword">for</span> options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) help  <span class="comment">// 使用help打印所有可用命令</span></span><br><span class="line">  Commands:</span><br><span class="line">    callgrind        Outputs a graph in callgrind format</span><br><span class="line">    comments         Output all profile comments</span><br><span class="line">    disasm           Output assembly listings annotated with samples</span><br><span class="line">    dot              Outputs a graph in DOT format</span><br><span class="line">    eog              Visualize graph through eog</span><br><span class="line">    evince           Visualize graph through evince</span><br><span class="line">    gif              Outputs a graph image in GIF format</span><br><span class="line">    gv               Visualize graph through gv</span><br><span class="line">    kcachegrind      Visualize report in KCachegrind</span><br><span class="line">    list             Output annotated source <span class="keyword">for</span> functions matching regexp</span><br><span class="line">    pdf              Outputs a graph in PDF format</span><br><span class="line">    peek             Output callers/callees of functions matching regexp</span><br><span class="line">    png              Outputs a graph image in PNG format</span><br><span class="line">    proto            Outputs the profile in compressed protobuf format</span><br><span class="line">    ps               Outputs a graph in PS format</span><br><span class="line">    raw              Outputs a text representation of the raw profile</span><br><span class="line">    svg              Outputs a graph in SVG format</span><br><span class="line">    tags             Outputs all tags in the profile</span><br><span class="line">    text             Outputs top entries in text form</span><br><span class="line">    top              Outputs top entries in text form</span><br><span class="line">    topproto         Outputs top entries in compressed protobuf format</span><br><span class="line">    traces           Outputs all profile samples in text form</span><br><span class="line">    tree             Outputs a text rendering of call graph</span><br><span class="line">    web              Visualize graph through web browser</span><br><span class="line">    weblist          Display annotated source in a web browser</span><br><span class="line">    o/options        List options and their current values</span><br><span class="line">    quit/exit/^D     Exit pprof</span><br><span class="line">    </span><br><span class="line">    ....</span><br></pre></td></tr></table></figure>
+
+<p>以上信息我们只关注2个地方：</p>
+<ol>
+<li>下载得到的文件：<code>/home/ubuntu/pprof/pprof.demo.alloc_objects.alloc_space.inuse_objects.inuse_space.001.pb.gz</code>，这其中包含了程序名<code>demo</code>，profile类型<code>alloc</code>已分配的内存，<code>inuse</code>代表使用中的内存。</li>
+<li><code>help</code>可以获取帮助，最先会列出支持的命令，想掌握pprof，要多看看，多尝试。</li>
+</ol>
+<p>关于命令，本文只会用到3个，我认为也是最常用的：<code>top</code>、<code>list</code>、<code>traces</code>，分别介绍一下。</p>
+<h4 id="top"><a href="#top" class="headerlink" title="top"></a>top</h4><p>按指标大小列出前10个函数，比如内存是按内存占用多少，CPU是按执行时间多少。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(pprof) top</span><br><span class="line">Showing nodes accounting <span class="keyword">for</span> <span class="number">814.62</span>MB, <span class="number">100</span>% of <span class="number">814.62</span>MB total</span><br><span class="line">      flat  flat%   sum%        cum   cum%</span><br><span class="line">  <span class="number">814.62</span>MB   <span class="number">100</span>%   <span class="number">100</span>%   <span class="number">814.62</span>MB   <span class="number">100</span>%  main.main</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%   <span class="number">814.62</span>MB   <span class="number">100</span>%  runtime.main</span><br></pre></td></tr></table></figure>
+
+<p>top会列出5个统计数据：</p>
+<ul>
+<li>flat: 本函数占用的内存量。</li>
+<li>flat%: 本函数内存占使用中内存总量的百分比。</li>
+<li>sum%: 前面每一行flat百分比的和，比如第2行虽然的100% 是 100% + 0%。</li>
+<li>cum: 是累计量，加入main函数调用了函数f，函数f占用的内存量，也会记进来。</li>
+<li>cum%: 是累计量占总量的百分比。</li>
+</ul>
+<h4 id="list"><a href="#list" class="headerlink" title="list"></a>list</h4><p>查看某个函数的代码，以及该函数每行代码的指标信息，如果函数名不明确，会进行模糊匹配，比如<code>list main</code>会列出<code>main.main</code>和<code>runtime.main</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">(pprof) list main.main  <span class="comment">// 精确列出函数</span></span><br><span class="line">Total: <span class="number">814.62</span>MB</span><br><span class="line">ROUTINE ======================== main.main in /home/ubuntu/heap/demo2.<span class="keyword">go</span></span><br><span class="line">  <span class="number">814.62</span>MB   <span class="number">814.62</span>MB (flat, cum)   <span class="number">100</span>% of Total</span><br><span class="line">         .          .     <span class="number">20</span>:	&#125;()</span><br><span class="line">         .          .     <span class="number">21</span>:</span><br><span class="line">         .          .     <span class="number">22</span>:	tick := time.Tick(time.Second / <span class="number">100</span>)</span><br><span class="line">         .          .     <span class="number">23</span>:	<span class="keyword">var</span> buf []<span class="keyword">byte</span></span><br><span class="line">         .          .     <span class="number">24</span>:	<span class="keyword">for</span> <span class="keyword">range</span> tick &#123;</span><br><span class="line">  <span class="number">814.62</span>MB   <span class="number">814.62</span>MB     <span class="number">25</span>:		buf = <span class="built_in">append</span>(buf, <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>)...)</span><br><span class="line">         .          .     <span class="number">26</span>:	&#125;</span><br><span class="line">         .          .     <span class="number">27</span>:&#125;</span><br><span class="line">         .          .     <span class="number">28</span>:</span><br><span class="line">(pprof) list main  <span class="comment">// 匹配所有函数名带main的函数</span></span><br><span class="line">Total: <span class="number">814.62</span>MB</span><br><span class="line">ROUTINE ======================== main.main in /home/ubuntu/heap/demo2.<span class="keyword">go</span></span><br><span class="line">  <span class="number">814.62</span>MB   <span class="number">814.62</span>MB (flat, cum)   <span class="number">100</span>% of Total</span><br><span class="line">         .          .     <span class="number">20</span>:	&#125;()</span><br><span class="line">         .          .     <span class="number">21</span>:</span><br><span class="line">..... <span class="comment">// 省略几行</span></span><br><span class="line">         .          .     <span class="number">28</span>:</span><br><span class="line">ROUTINE ======================== runtime.main in /usr/lib/<span class="keyword">go</span><span class="number">-1.10</span>/src/runtime/proc.<span class="keyword">go</span></span><br><span class="line">         <span class="number">0</span>   <span class="number">814.62</span>MB (flat, cum)   <span class="number">100</span>% of Total</span><br><span class="line">         .          .    <span class="number">193</span>:		<span class="comment">// A program compiled with -buildmode=c-archive or c-shared</span></span><br><span class="line">..... <span class="comment">// 省略几行</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到在<code>main.main</code>中的第25行占用了814.62MB内存，左右2个数据分别是flat和cum，含义和top中解释的一样。</p>
+<h4 id="traces"><a href="#traces" class="headerlink" title="traces"></a>traces</h4><p>打印所有调用栈，以及调用栈的指标信息。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">(pprof) traces</span><br><span class="line">File: demo2</span><br><span class="line">Type: inuse_space</span><br><span class="line">Time: May <span class="number">16</span>, <span class="number">2019</span> at <span class="number">7</span>:<span class="number">08</span>pm (CST)</span><br><span class="line">-----------+-------------------------------------------------------</span><br><span class="line">     bytes:  <span class="number">813.46</span>MB</span><br><span class="line">  <span class="number">813.46</span>MB   main.main</span><br><span class="line">             runtime.main</span><br><span class="line">-----------+-------------------------------------------------------</span><br><span class="line">     bytes:  <span class="number">650.77</span>MB</span><br><span class="line">         <span class="number">0</span>   main.main</span><br><span class="line">             runtime.main</span><br><span class="line">....... <span class="comment">// 省略几十行</span></span><br></pre></td></tr></table></figure>
+
+<p>每个<code>- - - - -</code> 隔开的是一个调用栈，能看到<code>runtime.main</code>调用了<code>main.main</code>，并且<code>main.main</code>中占用了813.46MB内存。</p>
+<p>其他的profile操作和内存是类似的，这里就不展示了。</p>
+<p>这里只是简单介绍本文用到的pprof的功能，pprof功能很强大，也经常和benchmark结合起来，但这不是本文的重点，所以就不多介绍了，为大家推荐几篇文章，一定要好好研读、实践：</p>
+<ol>
+<li>Go官方博客关于pprof的介绍，很详细，也包含样例，可以实操：<a target="_blank" rel="noopener" href="https://blog.golang.org/profiling-go-programs">Profiling Go Programs</a>。</li>
+<li>跟煎鱼也讨论过pprof，煎鱼的这篇文章也很适合入门： <a target="_blank" rel="noopener" href="https://github.com/EDDYCJY/blog/blob/master/golang/2018-09-15-Golang%20%E5%A4%A7%E6%9D%80%E5%99%A8%E4%B9%8B%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90%20PProf.md">Golang 大杀器之性能剖析 PProf</a>。</li>
+</ol>
+<hr>
+<h1 id="什么是内存泄露"><a href="#什么是内存泄露" class="headerlink" title="什么是内存泄露"></a>什么是内存泄露</h1><p>内存泄露指的是程序运行过程中已不再使用的内存，没有被释放掉，导致这些内存无法被使用，直到程序结束这些内存才被释放的问题。</p>
+<p>Go虽然有GC来回收不再使用的堆内存，减轻了开发人员对内存的管理负担，但这并不意味着Go程序不再有内存泄露问题。在Go程序中，如果没有Go语言的编程思维，也不遵守良好的编程实践，就可能埋下隐患，造成内存泄露问题。</p>
+<h1 id="怎么发现内存泄露"><a href="#怎么发现内存泄露" class="headerlink" title="怎么发现内存泄露"></a>怎么发现内存泄露</h1><p>在Go中发现内存泄露有2种方法，一个是通用的监控工具，另一个是go pprof：</p>
+<ol>
+<li><strong>监控工具</strong>：固定周期对进程的内存占用情况进行采样，数据可视化后，根据内存占用走势（持续上升），很容易发现是否发生内存泄露。</li>
+<li><strong>go pprof</strong>：适合没有监控工具的情况，使用Go提供的pprof工具判断是否发生内存泄露。</li>
+</ol>
+<p>这2种方式分别介绍一下。</p>
+<h2 id="监控工具查看进程内在占用情况"><a href="#监控工具查看进程内在占用情况" class="headerlink" title="监控工具查看进程内在占用情况"></a>监控工具查看进程内在占用情况</h2><p><strong>如果使用云平台部署Go程序</strong>，云平台都提供了内存查看的工具，可以查看OS的内存占用情况和某个进程的内存占用情况，比如阿里云，我们在1个云主机上只部署了1个Go服务，所以OS的内存占用情况，基本是也反映了进程内存占用情况，OS内存占用情况如下，可以看到<strong>随着时间的推进，内存的占用率在不断的提高，这是内存泄露的最明显现象</strong>：</p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512111200988-7630721.png" alt="image-20190512111200988"></p>
+<p><strong>如果没有云平台这种内存监控工具，可以制作一个简单的内存记录工具。</strong></p>
+<p>1、建立一个脚本<code>prog_mem.sh</code>，获取进程占用的物理内存情况，脚本内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">prog_name=<span class="string">&quot;your_programe_name&quot;</span></span><br><span class="line">prog_mem=$(pidstat  -r -u -h -C <span class="variable">$prog_name</span> |awk <span class="string">&#x27;NR==4&#123;print $12&#125;&#x27;</span>)</span><br><span class="line">time=$(date <span class="string">&quot;+%Y-%m-%d %H:%M:%S&quot;</span>)</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$time</span><span class="string">&quot;\tmemory(Byte)\t&quot;</span><span class="variable">$prog_mem</span> &gt;&gt;~/record/prog_mem.log</span><br></pre></td></tr></table></figure>
+
+<p>2、然后使用<code>crontab</code>建立定时任务，每分钟记录1次。使用<code>crontab -e</code>编辑crontab配置，在最后增加1行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*/1 * * * * ~/record/prog_mem.sh</span><br></pre></td></tr></table></figure>
+
+<p>脚本输出的内容保存在<code>prog_mem.log</code>，只要大体浏览一下就可以发现内存的增长情况，判断是否存在内存泄露。如果需要可视化，可以直接黏贴<code>prog_mem.log</code>内容到Excel等表格工具，绘制内存占用图。</p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512172935195-7653375.png" alt="image-20190512172935195"></p>
+<h2 id="go-pprof发现存在内存问题"><a href="#go-pprof发现存在内存问题" class="headerlink" title="go pprof发现存在内存问题"></a>go pprof发现存在内存问题</h2><blockquote>
+<p>有情提醒：如果对pprof不了解，可以先看[go pprof基本知识](#go pprof基本知识)，这是下一节，看完再倒回来看。</p>
+</blockquote>
+<p>如果你Google或者百度，Go程序内存泄露的文章，它总会告诉你使用<strong>pprof heap</strong>，能够生成漂亮的调用路径图，火焰图等等，然后你根据调用路径就能定位内存泄露问题，我最初也是对此深信不疑，尝试了若干天后，只是发现内存泄露跟某种场景有关，根本找不到内存泄露的根源，<strong>如果哪位朋友用heap就能定位内存泄露的线上问题，麻烦介绍下</strong>。</p>
+<p>后来读了Dave的<a target="_blank" rel="noopener" href="https://dave.cheney.net/high-performance-go-workshop/dotgo-paris.html#using_more_than_one_cpu">《High Performance Go Workshop》</a>，刷新了对heap的认识，内存pprof的简要内容如下：</p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512114048868-7632448.png" alt="image-20190512114048868"></p>
+<p>Dave讲了以下几点：</p>
+<ol>
+<li><strong>内存profiling记录的是堆内存分配的情况，以及调用栈信息</strong>，并不是进程完整的内存情况，猜测这也是在go pprof中称为heap而不是memory的原因。</li>
+<li><strong>栈内存的分配是在调用栈结束后会被释放的内存，所以并不在内存profile中</strong>。</li>
+<li>内存profiling是基于抽样的，默认是每1000次堆内存分配，执行1次profile记录。</li>
+<li>因为内存profiling是基于抽样和它跟踪的是已分配的内存，而不是使用中的内存，（比如有些内存已经分配，看似使用，但实际以及不使用的内存，比如内存泄露的那部分），所以<strong>不能使用内存profiling衡量程序总体的内存使用情况</strong>。</li>
+<li><strong>Dave个人观点：使用内存profiling不能够发现内存泄露</strong>。</li>
+</ol>
+<p>基于目前对heap的认知，我有2个观点：</p>
+<ol>
+<li><strong>heap能帮助我们发现内存问题，但不一定能发现内存泄露问题</strong>，这个看法与Dave是类似的。heap记录了内存分配的情况，我们能通过heap观察内存的变化，增长与减少，内存主要被哪些代码占用了，程序存在内存问题，这只能说明内存有使用不合理的地方，但并不能说明这是内存泄露。</li>
+<li><strong>heap在帮助定位内存泄露原因上贡献的力量微乎其微</strong>。如第一条所言，能通过heap找到占用内存多的位置，但这个位置通常不一定是内存泄露，就算是内存泄露，也只是内存泄露的结果，并不是真正导致内存泄露的根源。</li>
+</ol>
+<p>接下来，我介绍怎么用heap发现问题，然后再解释为什么heap几乎不能定位内存泄露的根因。</p>
+<h3 id="怎么用heap发现内存问题"><a href="#怎么用heap发现内存问题" class="headerlink" title="怎么用heap发现内存问题"></a>怎么用heap发现内存问题</h3><p>使用pprof的heap能够获取程序运行时的内存信息，在程序平稳运行的情况下，每个一段时间使用heap获取内存的profile，<strong>然后使用<code>base</code>能够对比两个profile文件的差别，就像<code>diff</code>命令一样显示出增加和减少的变化</strong>，使用一个简单的demo来说明heap和base的使用，依然使用demo2进行展示。</p>
+<p><em>文件：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/blob/master/pprof/heap/demo2.go">golang_step_by_step/pprof/heap/demo2.go</a></em></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 展示内存增长和pprof，并不是泄露</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">	_ <span class="string">&quot;net/http/pprof&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行一段时间：fatal error: runtime: out of memory</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 开启pprof</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ip := <span class="string">&quot;0.0.0.0:6060&quot;</span></span><br><span class="line">		<span class="keyword">if</span> err := http.ListenAndServe(ip, <span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Printf(<span class="string">&quot;start pprof failed on %s\n&quot;</span>, ip)</span><br><span class="line">			os.Exit(<span class="number">1</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	tick := time.Tick(time.Second / <span class="number">100</span>)</span><br><span class="line">	<span class="keyword">var</span> buf []<span class="keyword">byte</span></span><br><span class="line">	<span class="keyword">for</span> <span class="keyword">range</span> tick &#123;</span><br><span class="line">		buf = <span class="built_in">append</span>(buf, <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>)...)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将上面代码运行起来，执行以下命令获取profile文件，Ctrl-D退出，1分钟后再获取1次。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof http://localhost:6060/debug/pprof/heap</span><br></pre></td></tr></table></figure>
+
+<p>我已经获取到了两个profile文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ls</span><br><span class="line">pprof.demo2.alloc_objects.alloc_space.inuse_objects.inuse_space.001.pb.gz</span><br><span class="line">pprof.demo2.alloc_objects.alloc_space.inuse_objects.inuse_space.002.pb.gz</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>base</code>把001文件作为基准，然后用002和001对比，先执行<code>top</code>看<code>top</code>的对比，然后执行<code>list main</code>列出<code>main</code>函数的内存对比，结果如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="keyword">go</span> tool pprof -base pprof.demo2.alloc_objects.alloc_space.inuse_objects.inuse_space<span class="number">.001</span>.pb.gz pprof.demo2.alloc_objects.alloc_space.inuse_objects.inuse_space<span class="number">.002</span>.pb.gz</span><br><span class="line"></span><br><span class="line">File: demo2</span><br><span class="line">Type: inuse_space</span><br><span class="line">Time: May <span class="number">14</span>, <span class="number">2019</span> at <span class="number">2</span>:<span class="number">33</span>pm (CST)</span><br><span class="line">Entering interactive mode (<span class="keyword">type</span> <span class="string">&quot;help&quot;</span> <span class="keyword">for</span> commands, <span class="string">&quot;o&quot;</span> <span class="keyword">for</span> options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) top</span><br><span class="line">Showing nodes accounting <span class="keyword">for</span> <span class="number">970.34</span>MB, <span class="number">32.30</span>% of <span class="number">3003.99</span>MB total</span><br><span class="line">      flat  flat%   sum%        cum   cum%</span><br><span class="line">  <span class="number">970.34</span>MB <span class="number">32.30</span>% <span class="number">32.30</span>%   <span class="number">970.34</span>MB <span class="number">32.30</span>%  main.main   <span class="comment">// 看这</span></span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>% <span class="number">32.30</span>%   <span class="number">970.34</span>MB <span class="number">32.30</span>%  runtime.main</span><br><span class="line">(pprof)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) list main.main</span><br><span class="line">Total: <span class="number">2.93</span>GB</span><br><span class="line">ROUTINE ======================== main.main in /home/ubuntu/heap/demo2.<span class="keyword">go</span></span><br><span class="line">  <span class="number">970.34</span>MB   <span class="number">970.34</span>MB (flat, cum) <span class="number">32.30</span>% of Total</span><br><span class="line">         .          .     <span class="number">20</span>:	&#125;()</span><br><span class="line">         .          .     <span class="number">21</span>:</span><br><span class="line">         .          .     <span class="number">22</span>:	tick := time.Tick(time.Second / <span class="number">100</span>)</span><br><span class="line">         .          .     <span class="number">23</span>:	<span class="keyword">var</span> buf []<span class="keyword">byte</span></span><br><span class="line">         .          .     <span class="number">24</span>:	<span class="keyword">for</span> <span class="keyword">range</span> tick &#123;</span><br><span class="line">  <span class="number">970.34</span>MB   <span class="number">970.34</span>MB     <span class="number">25</span>:		buf = <span class="built_in">append</span>(buf, <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>)...) <span class="comment">// 看这</span></span><br><span class="line">         .          .     <span class="number">26</span>:	&#125;</span><br><span class="line">         .          .     <span class="number">27</span>:&#125;</span><br><span class="line">         .          .     <span class="number">28</span>:</span><br></pre></td></tr></table></figure>
+
+<p><code>top</code>列出了<code>main.main</code>和<code>runtime.main</code>，<code>main.main</code>就是我们编写的main函数，<code>runtime.main</code>是runtime包中的main函数，也就是所有main函数的入口，这里不多介绍了，有兴趣可以看之前的调度器文章<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">《Go调度器系列（2）宏观看调度器》</a>。</p>
+<p><code>top</code>显示<code>main.main</code> 第2次内存占用，比第1次内存占用多了970.34MB。</p>
+<p><code>list main.main</code>告诉了我们增长的内存都在这一行：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">buf = <span class="built_in">append</span>(buf, <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>)...)</span><br></pre></td></tr></table></figure>
+
+<p>001和002 profile的文件不进去看了，你本地测试下计算差值，绝对是刚才对比出的970.34MB。</p>
+<h3 id="heap“不能”定位内存泄露"><a href="#heap“不能”定位内存泄露" class="headerlink" title="heap“不能”定位内存泄露"></a>heap“不能”定位内存泄露</h3><p>heap能显示内存的分配情况，以及哪行代码占用了多少内存，我们能轻易的找到占用内存最多的地方，如果这个地方的数值还在不断怎大，基本可以认定这里就是内存泄露的位置。</p>
+<p>曾想按图索骥，从内存泄露的位置，根据调用栈向上查找，总能找到内存泄露的原因，这种方案看起来是不错的，但实施起来却找不到内存泄露的原因，结果是事半功倍。</p>
+<p>原因在于一个Go程序，其中有大量的goroutine，这其中的调用关系也许有点复杂，也许内存泄露是在某个三方包里。举个栗子，比如下面这幅图，每个椭圆代表1个goroutine，其中的数字为编号，箭头代表调用关系。heap profile显示g111（最下方标红节点）这个协程的代码出现了泄露，任何一个从g101到g111的调用路径都可能造成了g111的内存泄露，有2类可能：</p>
+<ol>
+<li>该goroutine只调用了少数几次，但消耗了大量的内存，说明每个goroutine调用都消耗了不少内存，<strong>内存泄露的原因基本就在该协程内部</strong>。</li>
+<li>该goroutine的调用次数非常多，虽然每个协程调用过程中消耗的内存不多，但该调用路径上，协程数量巨大，造成消耗大量的内存，并且这些goroutine由于某种原因无法退出，占用的内存不会释放，<strong>内存泄露的原因在到g111调用路径上某段代码实现有问题，造成创建了大量的g111</strong>。</li>
+</ol>
+<p><strong>第2种情况，就是goroutine泄露，这是通过heap无法发现的，所以heap在定位内存泄露这件事上，发挥的作用不大</strong>。</p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190512144150064-7643310.png" alt="image-20190512144150064"></p>
+<hr>
+<h1 id="goroutine泄露怎么导致内存泄露"><a href="#goroutine泄露怎么导致内存泄露" class="headerlink" title="goroutine泄露怎么导致内存泄露"></a>goroutine泄露怎么导致内存泄露</h1><h2 id="什么是goroutine泄露"><a href="#什么是goroutine泄露" class="headerlink" title="什么是goroutine泄露"></a>什么是goroutine泄露</h2><p>如果你启动了1个goroutine，但并没有符合预期的退出，直到程序结束，此goroutine才退出，这种情况就是goroutine泄露。</p>
+<blockquote>
+<p>提前思考：什么会导致goroutine无法退出/阻塞？</p>
+</blockquote>
+<h2 id="goroutine泄露怎么导致内存泄露-1"><a href="#goroutine泄露怎么导致内存泄露-1" class="headerlink" title="goroutine泄露怎么导致内存泄露"></a>goroutine泄露怎么导致内存泄露</h2><p>每个goroutine占用2KB内存，泄露1百万goroutine至少泄露<code>2KB * 1000000 = 2GB</code>内存，为什么说至少呢？</p>
+<p>goroutine执行过程中还存在一些变量，如果这些变量指向堆内存中的内存，GC会认为这些内存仍在使用，不会对其进行回收，这些内存谁都无法使用，造成了内存泄露。</p>
+<p>所以goroutine泄露有2种方式造成内存泄露：</p>
+<ol>
+<li>goroutine本身的栈所占用的空间造成内存泄露。</li>
+<li>goroutine中的变量所占用的堆内存导致堆内存泄露，这一部分是能通过heap profile体现出来的。</li>
+</ol>
+<p>Dave在文章中也提到了，如果不知道何时停止一个goroutine，这个goroutine就是潜在的内存泄露：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://dave.cheney.net/high-performance-go-workshop/dotgo-paris.html#know_when_to_stop_a_goroutine">7.1.1 Know when to stop a goroutine</a></p>
+<p>If you don’t know the answer, that’s a potential memory leak as the goroutine will pin its stack’s memory on the heap, as well as any heap allocated variables reachable from the stack.</p>
+</blockquote>
+<h2 id="怎么确定是goroutine泄露引发的内存泄露"><a href="#怎么确定是goroutine泄露引发的内存泄露" class="headerlink" title="怎么确定是goroutine泄露引发的内存泄露"></a>怎么确定是goroutine泄露引发的内存泄露</h2><p>掌握了前面的pprof命令行的基本用法，很快就可以确认是否是goroutine泄露导致内存泄露，如果你不记得了，马上回去看一下[go pprof基本知识](#go pprof基本知识)。</p>
+<p><strong>判断依据：在节点正常运行的情况下，隔一段时间获取goroutine的数量，如果后面获取的那次，某些goroutine比前一次多，如果多获取几次，是持续增长的，就极有可能是goroutine泄露</strong>。</p>
+<p>goroutine导致内存泄露的demo：</p>
+<p><em>文件：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/blob/master/pprof/goroutine/leak_demo1.go">golang_step_by_step/pprof/goroutine/leak_demo1.go</a></em></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// goroutine泄露导致内存泄露</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">	_ <span class="string">&quot;net/http/pprof&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 开启pprof</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ip := <span class="string">&quot;0.0.0.0:6060&quot;</span></span><br><span class="line">		<span class="keyword">if</span> err := http.ListenAndServe(ip, <span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Printf(<span class="string">&quot;start pprof failed on %s\n&quot;</span>, ip)</span><br><span class="line">			os.Exit(<span class="number">1</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	outCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="comment">// 死代码，永不读取</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">if</span> <span class="literal">false</span> &#123;</span><br><span class="line">			&lt;-outCh</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">select</span> &#123;&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 每s起100个goroutine，goroutine会阻塞，不释放内存</span></span><br><span class="line">	tick := time.Tick(time.Second / <span class="number">100</span>)</span><br><span class="line">	i := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> <span class="keyword">range</span> tick &#123;</span><br><span class="line">		i++</span><br><span class="line">		fmt.Println(i)</span><br><span class="line">		alloc1(outCh)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">alloc1</span><span class="params">(outCh <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> alloc2(outCh)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">alloc2</span><span class="params">(outCh <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> fmt.Println(<span class="string">&quot;alloc-fm exit&quot;</span>)</span><br><span class="line">		<span class="comment">// 分配内存，假用一下</span></span><br><span class="line">		buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>*<span class="number">10</span>)</span><br><span class="line">		_ = <span class="built_in">len</span>(buf)</span><br><span class="line">		fmt.Println(<span class="string">&quot;alloc done&quot;</span>)</span><br><span class="line"></span><br><span class="line">		outCh &lt;- <span class="number">0</span> <span class="comment">// 53行</span></span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>编译并运行以上代码，然后使用<code>go tool pprof</code>获取gorourine的profile文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof http:&#x2F;&#x2F;localhost:6060&#x2F;debug&#x2F;pprof&#x2F;goroutine</span><br></pre></td></tr></table></figure>
+
+<p>已经通过pprof命令获取了2个goroutine的profile文件:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ls</span><br><span class="line">/home/ubuntu/pprof/pprof.leak_demo.goroutine.001.pb.gz</span><br><span class="line">/home/ubuntu/pprof/pprof.leak_demo.goroutine.002.pb.gz</span><br></pre></td></tr></table></figure>
+
+<p>同heap一样，我们可以使用<code>base</code>对比2个goroutine profile文件：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$<span class="keyword">go</span> tool pprof -base pprof.leak_demo.goroutine<span class="number">.001</span>.pb.gz pprof.leak_demo.goroutine<span class="number">.002</span>.pb.gz</span><br><span class="line"></span><br><span class="line">File: leak_demo</span><br><span class="line">Type: goroutine</span><br><span class="line">Time: May <span class="number">16</span>, <span class="number">2019</span> at <span class="number">2</span>:<span class="number">44</span>pm (CST)</span><br><span class="line">Entering interactive mode (<span class="keyword">type</span> <span class="string">&quot;help&quot;</span> <span class="keyword">for</span> commands, <span class="string">&quot;o&quot;</span> <span class="keyword">for</span> options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) top</span><br><span class="line">Showing nodes accounting <span class="keyword">for</span> <span class="number">20312</span>, <span class="number">100</span>% of <span class="number">20312</span> total</span><br><span class="line">      flat  flat%   sum%        cum   cum%</span><br><span class="line">     <span class="number">20312</span>   <span class="number">100</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  runtime.gopark</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  main.alloc2</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  main.alloc2.func1</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  runtime.chansend</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  runtime.chansend1</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  runtime.goparkunlock</span><br><span class="line">(pprof)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到运行到<code>runtime.gopark</code>的goroutine数量增加了20312个。再通过002文件，看一眼执行到<code>gopark</code>的goroutine数量，即挂起的goroutine数量：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> tool pprof pprof.leak_demo.goroutine<span class="number">.002</span>.pb.gz</span><br><span class="line">File: leak_demo</span><br><span class="line">Type: goroutine</span><br><span class="line">Time: May <span class="number">16</span>, <span class="number">2019</span> at <span class="number">2</span>:<span class="number">47</span>pm (CST)</span><br><span class="line">Entering interactive mode (<span class="keyword">type</span> <span class="string">&quot;help&quot;</span> <span class="keyword">for</span> commands, <span class="string">&quot;o&quot;</span> <span class="keyword">for</span> options)</span><br><span class="line">(pprof) top</span><br><span class="line">Showing nodes accounting <span class="keyword">for</span> <span class="number">24330</span>, <span class="number">100</span>% of <span class="number">24331</span> total</span><br><span class="line">Dropped <span class="number">32</span> nodes (cum &lt;= <span class="number">121</span>)</span><br><span class="line">      flat  flat%   sum%        cum   cum%</span><br><span class="line">     <span class="number">24330</span>   <span class="number">100</span>%   <span class="number">100</span>%      <span class="number">24330</span>   <span class="number">100</span>%  runtime.gopark</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">24326</span>   <span class="number">100</span>%  main.alloc2</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">24326</span>   <span class="number">100</span>%  main.alloc2.func1</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">24326</span>   <span class="number">100</span>%  runtime.chansend</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">24326</span>   <span class="number">100</span>%  runtime.chansend1</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">24327</span>   <span class="number">100</span>%  runtime.goparkunlock</span><br></pre></td></tr></table></figure>
+
+<p>显示有24330个goroutine被挂起，这不是goroutine泄露这是啥？已经能确定八九成goroutine泄露了。</p>
+<p>是什么导致如此多的goroutine被挂起而无法退出？接下来就看怎么定位goroutine泄露。</p>
+<hr>
+<h1 id="定位goroutine泄露的2种方法"><a href="#定位goroutine泄露的2种方法" class="headerlink" title="定位goroutine泄露的2种方法"></a>定位goroutine泄露的2种方法</h1><p>使用pprof有2种方式，一种是web网页，一种是<code>go tool pprof</code>命令行交互，这两种方法查看goroutine都支持，但有轻微不同，也有各自的优缺点。</p>
+<p>我们先看Web的方式，再看命令行交互的方式，这两种都很好使用，结合起来用也不错。</p>
+<h2 id="Web可视化查看"><a href="#Web可视化查看" class="headerlink" title="Web可视化查看"></a>Web可视化查看</h2><p>Web方式适合web服务器的端口能访问的情况，使用起来方便，有2种方式：</p>
+<ol>
+<li><strong>查看某条调用路径上，当前阻塞在此goroutine的数量</strong></li>
+<li>查看所有goroutine的运行栈（调用路径），可以<strong>显示阻塞在此的时间</strong></li>
+</ol>
+<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><p>url请求中设置debug=1：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ip:port&#x2F;debug&#x2F;pprof&#x2F;goroutine?debug&#x3D;1</span><br></pre></td></tr></table></figure>
+
+<p>效果如下：</p>
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190516143740567-7988660.png"></p>
+<p>看起来密密麻麻的，其实简单又十分有用，看上图标出来的部分，手机上图看起来可能不方便，那就放大图片，或直接看下面各字段的含义：</p>
+<ol>
+<li><code>goroutine profile: total 32023</code>：32023是<strong>goroutine的总数量</strong>，</li>
+<li><code>32015 @ 0x42e15a 0x42e20e 0x40534b 0x4050e5 ...</code>：32015代表当前有32015个goroutine运行这个调用栈，并且停在相同位置，@后面的十六进制，现在用不到这个数据，所以暂不深究了。</li>
+<li>下面是当前goroutine的<strong>调用栈</strong>，列出了<strong>函数和所在文件的行数，这个行数对定位很有帮助</strong>，如下：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">32015 @ 0x42e15a 0x42e20e 0x40534b 0x4050e5 0x6d8559 0x6d831b 0x45abe1</span><br><span class="line">#	0x6d8558	main.alloc2.func1+0xf8	&#x2F;home&#x2F;ubuntu&#x2F;heap&#x2F;leak_demo.go:53</span><br><span class="line">#	0x6d831a	main.alloc2+0x2a	&#x2F;home&#x2F;ubuntu&#x2F;heap&#x2F;leak_demo.go:54</span><br></pre></td></tr></table></figure>
+
+<p>根据上面的提示，就能判断32015个goroutine运行到<code>leak_demo.go</code>的53行：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">alloc2</span><span class="params">(outCh <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> fmt.Println(<span class="string">&quot;alloc-fm exit&quot;</span>)</span><br><span class="line">		<span class="comment">// 分配内存，假用一下</span></span><br><span class="line">		buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>*<span class="number">10</span>)</span><br><span class="line">		_ = <span class="built_in">len</span>(buf)</span><br><span class="line">		fmt.Println(<span class="string">&quot;alloc done&quot;</span>)</span><br><span class="line"></span><br><span class="line">		outCh &lt;- <span class="number">0</span> <span class="comment">// 53行</span></span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>阻塞的原因是outCh这个写操作无法完成，outCh是无缓冲的通道，并且由于以下代码是死代码，所以goroutine始终没有从outCh读数据，造成outCh阻塞，进而造成无数个alloc2的goroutine阻塞，形成内存泄露：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="literal">false</span> &#123;</span><br><span class="line">    &lt;-outCh</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><p>url请求中设置debug=2：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ip:port&#x2F;debug&#x2F;pprof&#x2F;goroutine?debug&#x3D;2</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://lessisbetter.site/images/2019-05-image-20190516143537339-7988537.png"></p>
+<p>第2种方式和第1种方式是互补的，它可以看到每个goroutine的信息：</p>
+<ol>
+<li><code>goroutine 20 [chan send, 2 minutes]</code>：20是goroutine id，<code>[]</code>中是当前goroutine的状态，阻塞在写channel，并且阻塞了2分钟，长时间运行的系统，你能看到阻塞时间更长的情况。</li>
+<li>同时，也可以看到调用栈，看当前执行停到哪了：<code>leak_demo.go</code>的53行，</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">goroutine <span class="number">20</span> [<span class="keyword">chan</span> send, <span class="number">2</span> minutes]:</span><br><span class="line">main.alloc2.func1(<span class="number">0xc42015e060</span>)</span><br><span class="line">	/home/ubuntu/heap/leak_demo.<span class="keyword">go</span>:<span class="number">53</span> +<span class="number">0xf9</span>  <span class="comment">// 这</span></span><br><span class="line">main.alloc2(<span class="number">0xc42015e060</span>)</span><br><span class="line">	/home/ubuntu/heap/leak_demo.<span class="keyword">go</span>:<span class="number">54</span> +<span class="number">0x2b</span></span><br><span class="line">created by main.alloc1</span><br><span class="line">	/home/ubuntu/heap/leak_demo.<span class="keyword">go</span>:<span class="number">42</span> +<span class="number">0x3f</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="命令行交互式方法"><a href="#命令行交互式方法" class="headerlink" title="命令行交互式方法"></a>命令行交互式方法</h2><p>Web的方法是简单粗暴，无需登录服务器，浏览器打开看看就行了。但就像前面提的，没有浏览器可访问时，命令行交互式才是最佳的方式，并且也是手到擒来，感觉比Web一样方便。</p>
+<p>命令行交互式只有1种获取goroutine profile的方法，不像Web网页分<code>debug=1</code>和<code>debug=2</code>2中方式，并将profile文件保存到本地：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注意命令没有`debug=1`，debug=1，加debug有些版本的go不支持</span></span><br><span class="line">$ <span class="keyword">go</span> tool pprof http:<span class="comment">//0.0.0.0:6060/debug/pprof/goroutine</span></span><br><span class="line">Fetching profile over HTTP from http:<span class="comment">//localhost:6061/debug/pprof/goroutine</span></span><br><span class="line">Saved profile in /home/ubuntu/pprof/pprof.leak_demo.goroutine<span class="number">.001</span>.pb.gz  <span class="comment">// profile文件保存位置</span></span><br><span class="line">File: leak_demo</span><br><span class="line">Type: goroutine</span><br><span class="line">Time: May <span class="number">16</span>, <span class="number">2019</span> at <span class="number">2</span>:<span class="number">44</span>pm (CST)</span><br><span class="line">Entering interactive mode (<span class="keyword">type</span> <span class="string">&quot;help&quot;</span> <span class="keyword">for</span> commands, <span class="string">&quot;o&quot;</span> <span class="keyword">for</span> options)</span><br><span class="line">(pprof)</span><br></pre></td></tr></table></figure>
+<p>命令行只需要掌握3个命令就好了，上面介绍过了，详细的倒回去看<a href="#top">top</a>, <a href="#list">list</a>, <a href="#traces">traces</a>：</p>
+<ol>
+<li><strong>top</strong>：显示正运行到某个函数goroutine的数量</li>
+<li><strong>traces</strong>：显示所有goroutine的调用栈</li>
+<li><strong>list</strong>：列出代码详细的信息。</li>
+</ol>
+<p>我们依然使用<code>leak_demo.go</code>这个demo，</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">$  <span class="keyword">go</span> tool pprof -base pprof.leak_demo.goroutine<span class="number">.001</span>.pb.gz pprof.leak_demo.goroutine<span class="number">.002</span>.pb.gz</span><br><span class="line">File: leak_demo</span><br><span class="line">Type: goroutine</span><br><span class="line">Time: May <span class="number">16</span>, <span class="number">2019</span> at <span class="number">2</span>:<span class="number">44</span>pm (CST)</span><br><span class="line">Entering interactive mode (<span class="keyword">type</span> <span class="string">&quot;help&quot;</span> <span class="keyword">for</span> commands, <span class="string">&quot;o&quot;</span> <span class="keyword">for</span> options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) top</span><br><span class="line">Showing nodes accounting <span class="keyword">for</span> <span class="number">20312</span>, <span class="number">100</span>% of <span class="number">20312</span> total</span><br><span class="line">      flat  flat%   sum%        cum   cum%</span><br><span class="line">     <span class="number">20312</span>   <span class="number">100</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  runtime.gopark</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  main.alloc2</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  main.alloc2.func1</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  runtime.chansend</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  runtime.chansend1</span><br><span class="line">         <span class="number">0</span>     <span class="number">0</span>%   <span class="number">100</span>%      <span class="number">20312</span>   <span class="number">100</span>%  runtime.goparkunlock</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) traces</span><br><span class="line">File: leak_demo</span><br><span class="line">Type: goroutine</span><br><span class="line">Time: May <span class="number">16</span>, <span class="number">2019</span> at <span class="number">2</span>:<span class="number">44</span>pm (CST)</span><br><span class="line">-----------+-------------------------------------------------------</span><br><span class="line">     <span class="number">20312</span>   runtime.gopark</span><br><span class="line">             runtime.goparkunlock</span><br><span class="line">             runtime.chansend</span><br><span class="line">             runtime.chansend1 <span class="comment">// channel发送</span></span><br><span class="line">             main.alloc2.func1 <span class="comment">// alloc2中的匿名函数</span></span><br><span class="line">             main.alloc2</span><br><span class="line">-----------+-------------------------------------------------------</span><br></pre></td></tr></table></figure>
+
+<p>top命令在<a href="#%E6%80%8E%E4%B9%88%E7%A1%AE%E5%AE%9A%E6%98%AFgoroutine%E6%B3%84%E9%9C%B2%E5%BC%95%E5%8F%91%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2">怎么确定是goroutine泄露引发的内存泄露</a>介绍过了，直接看traces命令，traces能列出002中比001中多的那些goroutine的调用栈，这里只有1个调用栈，有20312个goroutine都执行这个调用路径，可以看到alloc2中的匿名函数<code>alloc2.func1</code>调用了写channel的操作，然后阻塞挂起了goroutine，使用list列出<code>alloc2.func1</code>的代码，显示有20312个goroutine阻塞在53行：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">(pprof) list main.alloc2.func1</span><br><span class="line">Total: <span class="number">20312</span></span><br><span class="line">ROUTINE ======================== main.alloc2.func1 in /home/ubuntu/heap/leak_demo.<span class="keyword">go</span></span><br><span class="line">         <span class="number">0</span>      <span class="number">20312</span> (flat, cum)   <span class="number">100</span>% of Total</span><br><span class="line">         .          .     <span class="number">48</span>:		<span class="comment">// 分配内存，假用一下</span></span><br><span class="line">         .          .     <span class="number">49</span>:		buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>*<span class="number">10</span>)</span><br><span class="line">         .          .     <span class="number">50</span>:		_ = <span class="built_in">len</span>(buf)</span><br><span class="line">         .          .     <span class="number">51</span>:		fmt.Println(<span class="string">&quot;alloc done&quot;</span>)</span><br><span class="line">         .          .     <span class="number">52</span>:</span><br><span class="line">         .      <span class="number">20312</span>     <span class="number">53</span>:		outCh &lt;- <span class="number">0</span>  <span class="comment">// 看这</span></span><br><span class="line">         .          .     <span class="number">54</span>:	&#125;()</span><br><span class="line">         .          .     <span class="number">55</span>:&#125;</span><br><span class="line">         .          .     <span class="number">56</span>:</span><br></pre></td></tr></table></figure>
+
+<p><strong>友情提醒：使用list命令的前提是程序的源码在当前机器，不然可没法列出源码。</strong>服务器上，通常没有源码，那我们咋办呢？刚才介绍了Web查看的方式，那里会列出代码行数，我们可以使用<code>wget</code>下载网页：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://localhost:6060/debug/pprof/goroutine?debug=1</span><br></pre></td></tr></table></figure>
+
+<p>下载网页后，使用编辑器打开文件，使用关键字<code>main.alloc2.func1</code>进行搜索，找到与当前相同的调用栈，就可以看到该goroutine阻塞在哪一行了，不要忘记使用<code>debug=2</code>还可以看到阻塞了多久和原因，Web方式中已经介绍了，此处省略代码几十行。</p>
+<hr>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>文章略长，但全是干货，感谢阅读到这。然读到着了，跟定很想掌握pprof，建议实践一把，现在和大家温习一把本文的主要内容。</p>
+<h2 id="goroutine泄露的本质"><a href="#goroutine泄露的本质" class="headerlink" title="goroutine泄露的本质"></a>goroutine泄露的本质</h2><p>goroutine泄露的本质是channel阻塞，无法继续向下执行，导致此goroutine关联的内存都无法释放，进一步造成内存泄露。</p>
+<h2 id="goroutine泄露的发现和定位"><a href="#goroutine泄露的发现和定位" class="headerlink" title="goroutine泄露的发现和定位"></a>goroutine泄露的发现和定位</h2><p>利用好go pprof获取goroutine profile文件，然后利用3个命令top、traces、list定位内存泄露的原因。</p>
+<h2 id="goroutine泄露的场景"><a href="#goroutine泄露的场景" class="headerlink" title="goroutine泄露的场景"></a>goroutine泄露的场景</h2><p>泄露的场景不仅限于以下两类，但因channel相关的泄露是最多的。</p>
+<ol>
+<li>channel的读或者写：<ol>
+<li>无缓冲channel的阻塞通常是写操作因为没有读而阻塞</li>
+<li>有缓冲的channel因为缓冲区满了，写操作阻塞</li>
+<li>期待从channel读数据，结果没有goroutine写</li>
+</ol>
+</li>
+<li>select操作，select里也是channel操作，如果所有case上的操作阻塞，goroutine也无法继续执行。</li>
+</ol>
+<h2 id="编码goroutine泄露的建议"><a href="#编码goroutine泄露的建议" class="headerlink" title="编码goroutine泄露的建议"></a>编码goroutine泄露的建议</h2><p>为避免goroutine泄露造成内存泄露，启动goroutine前要思考清楚：</p>
+<ol>
+<li>goroutine如何退出？</li>
+<li>是否会有阻塞造成无法退出？如果有，那么这个路径是否会创建大量的goroutine？</li>
+</ol>
+<h1 id="示例源码"><a href="#示例源码" class="headerlink" title="示例源码"></a>示例源码</h1><p><strong>本文所有示例源码，及历史文章、代码都存储在Github，阅读原文可直接跳转</strong>，Github：<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/golang_step_by_step/tree/master/pprof">https://github.com/Shitaibin/golang_step_by_step/tree/master/pprof</a> 。</p>
+<h1 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h1><p>这些既是参考资料也是推荐阅读的文章，不容错过。</p>
+<p>【Go Blog关于pprof详细介绍和Demo】 <a target="_blank" rel="noopener" href="https://blog.golang.org/profiling-go-programs">https://blog.golang.org/profiling-go-programs</a></p>
+<p>【Dave关于高性能Go程序的workshop】 <a target="_blank" rel="noopener" href="https://dave.cheney.net/high-performance-go-workshop/dotgo-paris.html#using_more_than_one_cpu">https://dave.cheney.net/high-performance-go-workshop/dotgo-paris.html#using_more_than_one_cpu</a></p>
+<p>【煎鱼pprof文章，很适合入门 Golang大杀器之性能剖析PProf】 <a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000016412013">https://segmentfault.com/a/1190000016412013</a></p>
+<p>【SO上goroutine调用栈各字段的介绍】<a target="_blank" rel="noopener" href="https://stackoverflow.com/a/38414527/4296218">https://stackoverflow.com/a/38414527/4296218</a></p>
+<p>【我的老文，有runtime.main的介绍，想学习调度器，可以看下系列文章 Go调度器系列（2）宏观看调度器】<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/</a></p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/">http://lessisbetter.site/2019/05/18/go-goroutine-leak/</a></li>
+</ol>
+</blockquote>
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1417,110 +1756,6 @@
 </blockquote>
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
 <img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/04/ssh-problems/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="云原生、Go语言、区块链">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/03/04/ssh-problems/" class="post-title-link" itemprop="url">SSH问题记录</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-03-04 11:07:20" itemprop="dateCreated datePublished" datetime="2019-03-04T11:07:20+08:00">2019-03-04</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>最近经常连国外的服务器，出现了连不上、连上又经常断开的问题。</p>
-<h4 id="连不上1"><a href="#连不上1" class="headerlink" title="连不上1"></a>连不上1</h4><p>发现卡在：<code>debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</code>上，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -v xxx@47.88.217.222</span><br><span class="line">OpenSSH_7.9p1, LibreSSL 2.7.3</span><br><span class="line">debug1: Reading configuration data &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;config</span><br><span class="line">debug1: Reading configuration data &#x2F;etc&#x2F;ssh&#x2F;ssh_config</span><br><span class="line">debug1: &#x2F;etc&#x2F;ssh&#x2F;ssh_config line 48: Applying options for *</span><br><span class="line">debug1: Connecting to 47.88.217.222 [47.88.217.222] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_rsa type 0</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_rsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_dsa type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_dsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ecdsa type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ecdsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ed25519 type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ed25519-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_xmss type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_xmss-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_7.9</span><br><span class="line">debug1: Remote protocol version 2.0, remote software version OpenSSH_7.2p2 Ubuntu-4ubuntu2.4</span><br><span class="line">debug1: match: OpenSSH_7.2p2 Ubuntu-4ubuntu2.4 pat OpenSSH_7.0*,OpenSSH_7.1*,OpenSSH_7.2*,OpenSSH_7.3*,OpenSSH_7.4*,OpenSSH_7.5*,OpenSSH_7.6*,OpenSSH_7.7* compat 0x04000002</span><br><span class="line">debug1: Authenticating to 47.88.217.222:22 as &#39;nameXXX&#39;</span><br><span class="line">debug1: SSH2_MSG_KEXINIT sent</span><br><span class="line">debug1: SSH2_MSG_KEXINIT received</span><br><span class="line">debug1: kex: algorithm: curve25519-sha256@libssh.org</span><br><span class="line">debug1: kex: host key algorithm: ecdsa-sha2-nistp256</span><br><span class="line">debug1: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</span><br></pre></td></tr></table></figure>
-
-<p>Google一下，</p>
-<ul>
-<li>原因：MTU太大了，造成了丢包。</li>
-<li>方案：把MTU改小，服务器和本机最好都修改，因为无论哪一方的报文再大被丢包都会造成连接失败。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ifconfig eth0 mtu 1200</span><br></pre></td></tr></table></figure>
-
-<p>或</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;1460&quot; &gt; &#x2F;sys&#x2F;class&#x2F;net&#x2F;eth0&#x2F;mtu</span><br></pre></td></tr></table></figure>
-
-<h3 id="连不上2"><a href="#连不上2" class="headerlink" title="连不上2"></a>连不上2</h3><p>使用iterm2保存了机器的Profile，连接的时候报错，在本机ssh命令连接正常，错误如下图：</p>
-<p><img src="https://lessisbetter.site/images/2019-03-fail1.png"></p>
-<p>出现: <code>command not found</code>。</p>
-<ul>
-<li>原因：iterm的profile配置中，Command那项只显示一行，把它ctrl-a全部拷贝出来，发现不仅<code>ssh vnt@47..123</code>，后面还多了2行ip，启动的时候把ip当命令发给服务器，导致出现了此错误。</li>
-<li>方案：修改Command只包含ssh命令。</li>
-</ul>
-<h3 id="连接断开"><a href="#连接断开" class="headerlink" title="连接断开"></a>连接断开</h3><p>都是国外服务器，通信延迟有点高，ping一下，延迟都在300ms以上，经常操作着就卡住了，然后一会报错：<code>packet_write_wait:  Broken pipe</code>。</p>
-<ul>
-<li>原因：通信不好造成连接断开。</li>
-<li>方案：加心跳配置。</li>
-</ul>
-<p>服务器端或客户端其中一边加就行了，优先加客户端，因为我Mac经常连各种服务器：</p>
-<p>文件：~/.ssh/config</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ServerAliveInterval 60</span><br></pre></td></tr></table></figure>
-
-<p>如果服务器被多人连，服务器端也得设置：</p>
-<p>文件： /etc/ssh/sshd_config</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClientAliveInterval 60</span><br></pre></td></tr></table></figure>
-
-
       
     </div>
 

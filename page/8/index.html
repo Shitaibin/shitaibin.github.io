@@ -195,7 +195,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -241,6 +241,110 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/04/ssh-problems/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/03/04/ssh-problems/" class="post-title-link" itemprop="url">SSH问题记录</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-04 11:07:20" itemprop="dateCreated datePublished" datetime="2019-03-04T11:07:20+08:00">2019-03-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>最近经常连国外的服务器，出现了连不上、连上又经常断开的问题。</p>
+<h4 id="连不上1"><a href="#连不上1" class="headerlink" title="连不上1"></a>连不上1</h4><p>发现卡在：<code>debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</code>上，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -v xxx@47.88.217.222</span><br><span class="line">OpenSSH_7.9p1, LibreSSL 2.7.3</span><br><span class="line">debug1: Reading configuration data &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;config</span><br><span class="line">debug1: Reading configuration data &#x2F;etc&#x2F;ssh&#x2F;ssh_config</span><br><span class="line">debug1: &#x2F;etc&#x2F;ssh&#x2F;ssh_config line 48: Applying options for *</span><br><span class="line">debug1: Connecting to 47.88.217.222 [47.88.217.222] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_rsa type 0</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_rsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_dsa type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_dsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ecdsa type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ecdsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ed25519 type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ed25519-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_xmss type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_xmss-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_7.9</span><br><span class="line">debug1: Remote protocol version 2.0, remote software version OpenSSH_7.2p2 Ubuntu-4ubuntu2.4</span><br><span class="line">debug1: match: OpenSSH_7.2p2 Ubuntu-4ubuntu2.4 pat OpenSSH_7.0*,OpenSSH_7.1*,OpenSSH_7.2*,OpenSSH_7.3*,OpenSSH_7.4*,OpenSSH_7.5*,OpenSSH_7.6*,OpenSSH_7.7* compat 0x04000002</span><br><span class="line">debug1: Authenticating to 47.88.217.222:22 as &#39;nameXXX&#39;</span><br><span class="line">debug1: SSH2_MSG_KEXINIT sent</span><br><span class="line">debug1: SSH2_MSG_KEXINIT received</span><br><span class="line">debug1: kex: algorithm: curve25519-sha256@libssh.org</span><br><span class="line">debug1: kex: host key algorithm: ecdsa-sha2-nistp256</span><br><span class="line">debug1: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</span><br></pre></td></tr></table></figure>
+
+<p>Google一下，</p>
+<ul>
+<li>原因：MTU太大了，造成了丢包。</li>
+<li>方案：把MTU改小，服务器和本机最好都修改，因为无论哪一方的报文再大被丢包都会造成连接失败。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ifconfig eth0 mtu 1200</span><br></pre></td></tr></table></figure>
+
+<p>或</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;1460&quot; &gt; &#x2F;sys&#x2F;class&#x2F;net&#x2F;eth0&#x2F;mtu</span><br></pre></td></tr></table></figure>
+
+<h3 id="连不上2"><a href="#连不上2" class="headerlink" title="连不上2"></a>连不上2</h3><p>使用iterm2保存了机器的Profile，连接的时候报错，在本机ssh命令连接正常，错误如下图：</p>
+<p><img src="https://lessisbetter.site/images/2019-03-fail1.png"></p>
+<p>出现: <code>command not found</code>。</p>
+<ul>
+<li>原因：iterm的profile配置中，Command那项只显示一行，把它ctrl-a全部拷贝出来，发现不仅<code>ssh vnt@47..123</code>，后面还多了2行ip，启动的时候把ip当命令发给服务器，导致出现了此错误。</li>
+<li>方案：修改Command只包含ssh命令。</li>
+</ul>
+<h3 id="连接断开"><a href="#连接断开" class="headerlink" title="连接断开"></a>连接断开</h3><p>都是国外服务器，通信延迟有点高，ping一下，延迟都在300ms以上，经常操作着就卡住了，然后一会报错：<code>packet_write_wait:  Broken pipe</code>。</p>
+<ul>
+<li>原因：通信不好造成连接断开。</li>
+<li>方案：加心跳配置。</li>
+</ul>
+<p>服务器端或客户端其中一边加就行了，优先加客户端，因为我Mac经常连各种服务器：</p>
+<p>文件：~/.ssh/config</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ServerAliveInterval 60</span><br></pre></td></tr></table></figure>
+
+<p>如果服务器被多人连，服务器端也得设置：</p>
+<p>文件： /etc/ssh/sshd_config</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClientAliveInterval 60</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1252,103 +1356,6 @@
 <p>技术人讲业务，难免有不准确的地方，如果不对请重喷！</p>
 </blockquote>
 <h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/9P3hcbQHdWOnyVgr9VpzMw">如何用“区块链+稳定币”技术来提升资产证券化市场运作效率</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="云原生、Go语言、区块链">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/01/23/why-pbft-using-3f-plus-1/" class="post-title-link" itemprop="url">为什么PBFT的节点数量是3f+1?</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-01-23 17:15:06" itemprop="dateCreated datePublished" datetime="2019-01-23T17:15:06+08:00">2019-01-23</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>问题：为什么PBFT的节点数量是3f+1?</p>
-<p>pbft的论文提到这样<strong>2</strong>段话，可以很好的解决这个问题：</p>
-<p><img src="https://lessisbetter.site/images/2019-02-pbft-paper1.png"><br><em>page3</em></p>
-<p><strong>在存在f个faulty节点的情况下，<code>3f+1</code>是保证系统安全性和活跃性的最小的总节点数量</strong>。当存在f个节点不响应的情况下，需要<code>n-f</code>个正常节点达成共识需要保障<code>n-f &gt; f</code>。另外一种情况：f个响应的节点是错误的（响应错误数据），f个节点没有响应，但他们不是faulty的，所以要保证<code>好的响应的节点 - 好的未响应的节点 - 坏的响应的节点 &gt; 坏的节点</code>，即需要<code>n - f -f &gt; f</code>，<code>n &gt; 3f</code>。但n只能是整数，所以<code>n &gt;= 3f + 1</code>。</p>
-<p><img src="https://lessisbetter.site/images/2019-02-pbft-paper2.png"><br><em>page3</em></p>
-<p>副本节点的数量设为<code>R</code>，为了<strong>简便</strong>使<code>R = 3f + 1</code>。尽管存在副本节点数量多于<code>3f+1</code>的情况，比如<code>3f+2, 3f+3</code>，<strong>但多出来的节点没有带来任何改善，反而降低了系统的性能，因为需要更多的通信量</strong>。</p>
-<p>为什么这样说呢？</p>
-<p><code>3f+2, 3f+3</code>的实际能容错的节点数量与<code>3f+1</code>是相同的，即只能容忍<code>f</code>个faulty的节点。</p>
-<p>根据论文，当<code>n = 3f+1</code>时，</p>
-<ul>
-<li>在Prepare进入Commit阶段，需要<code>2f</code>个Prepare消息，即需要<code>n - 1 - f</code>条Prepare消息。</li>
-<li>在Commit阶段完成，需要<code>2f+1</code>条Commit消息，即需要<code>n - f</code>条Commit消息。</li>
-</ul>
-<p>请思考，当<code>n = 3f+2</code>时，</p>
-<ul>
-<li>在Prepare进入Commit阶段，需要<code>n - 1 - f</code>个Prepare消息，即<code>2f+1</code>需要条Prepare消息。</li>
-<li>在Commit阶段完成，需要<code>n - 1 - f</code>条Commit消息，即需要<code>2f+1</code>条Commit消息。</li>
-</ul>
-<blockquote>
-<ol>
-<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
-<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
-<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/">http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/</a></li>
-</ol>
-</blockquote>
-<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="https://lessisbetter.site/images/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 
       
     </div>

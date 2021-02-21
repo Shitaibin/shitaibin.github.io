@@ -195,7 +195,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -241,6 +241,132 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/11/18/fabric-orderer-structs/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 6：Orderer核心数据结构</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-11-18 20:45:23" itemprop="dateCreated datePublished" datetime="2019-11-18T20:45:23+08:00">2019-11-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>许多Orderer的文章，都是从Orderer的启动过程讲起，今天换一种“乐高”角度，先看看有哪些“零件”，再看这些零件怎么配合。</p>
+<p>Orderer负责接收交易，把交易打包成区块，然后区块在所有Orderer节点之间达成一致，再分发给Peer的功能，这涉及了：</p>
+<ul>
+<li>网络：gRPC接收交易，向Peer发送区块</li>
+<li>切块：把交易打包成区块</li>
+<li>共识：所有Orderer节点达成一致</li>
+</ul>
+<p>这些功能是由Orderer核心数据结构组织起来。</p>
+<blockquote>
+<p>在Fabric中，通道和链在概念上都是一条区块链，所以本文中也会可能会混用链和通道。</p>
+</blockquote>
+<h2 id="核心数据结构"><a href="#核心数据结构" class="headerlink" title="核心数据结构"></a>核心数据结构</h2><h3 id="Registrar"><a href="#Registrar" class="headerlink" title="Registrar"></a>Registrar</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-registrar.png" alt="Registrar"></p>
+<p>代码中，这样描述Registrar：</p>
+<blockquote>
+<p>Registrar serves as a point of access and control for the individual channel resources.</p>
+</blockquote>
+<p>可见它负责了每个channel资源的访问和控制点，也就说，要对某个通道怎么样，得从这入手。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Registrar <span class="keyword">struct</span> &#123;</span><br><span class="line">	lock sync.RWMutex</span><br><span class="line">	<span class="comment">// 保存了多条链</span></span><br><span class="line">	chains <span class="keyword">map</span>[<span class="keyword">string</span>]*ChainSupport</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 共识插件</span></span><br><span class="line">	consenters         <span class="keyword">map</span>[<span class="keyword">string</span>]consensus.Consenter</span><br><span class="line">	ledgerFactory      blockledger.Factory</span><br><span class="line">	signer             crypto.LocalSigner</span><br><span class="line">    </span><br><span class="line">	systemChannelID    <span class="keyword">string</span></span><br><span class="line">	systemChannel      *ChainSupport</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>chains</code>保存了每一条链，每一条链在Orderer中都以<a href="#ChainSupport">ChainSupport</a>代表。</li>
+<li><code>consenters</code>保存了所有的共识插件，每个共识插件都是一个<a href="#Consenter">Consenter</a>，Fabric 1.4中共识插件有Solo、Kafka、EtcdRaft。</li>
+<li><code>ledgerFactory</code>用来读取和创建链的账本。</li>
+<li><code>signer</code>用来对Orderer中的数据进行签名，以及创建<a href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/#%E8%A7%A3%E5%AF%86SignatureHeader">SignatureHeader</a>。</li>
+<li><code>systemChannelID</code>和<code>systemChannel</code>分别是系统链ID、系统链实例。</li>
+</ul>
+<h3 id="ChainSupport"><a href="#ChainSupport" class="headerlink" title="ChainSupport"></a>ChainSupport</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-chainsupport.png" alt="chainsupport"></p>
+<p>ChainSupport汇集了一条通道所需要的所有资源，所以说一个ChainSupport代表了一条链。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ChainSupport <span class="keyword">struct</span> &#123;</span><br><span class="line">	*ledgerResources</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line">	*BlockWriter</span><br><span class="line">	consensus.Chain</span><br><span class="line">	cutter blockcutter.Receiver</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ChainSupport 是一堆接口的集合，这些接口构成一条链所有的操作，接口可以分为4类：</p>
+<ul>
+<li>账本：<code>ledgerResources</code>、<code>BlockWriter</code>分别是账本读写和把区块写入到账本。</li>
+<li>消息：<code>msgprocessor.Processor</code>、<code>cutter</code>分别是处理交易和把交易切块。</li>
+<li>共识：<code>consensus.Chain</code>是Orderer的共识实例，比如每条链都有自己的Raft共识实例，它们互不干扰。</li>
+<li>签名：<code>crypto.LocalSigner</code>，同Registrar中的介绍。</li>
+</ul>
+<h3 id="Chain"><a href="#Chain" class="headerlink" title="Chain"></a>Chain</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-chain.png" alt="Chain"></p>
+<p>Chain是接口，它的实现并不一条链，而是一条链的共识实例，可以是Solo、Kafka和EtcdRaft，它运行在单独的协程，使用Channel和ChainSupport通信，它调用其它接口完成切块，以及让所有的Orderer节点对交易达成一致。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Chain defines a way to inject messages for ordering.</span></span><br><span class="line"><span class="comment">// Note, that in order to allow flexibility in the implementation, it is the responsibility of the implementer</span></span><br><span class="line"><span class="comment">// to take the ordered messages, send them through the blockcutter.Receiver supplied via HandleChain to cut blocks,</span></span><br><span class="line"><span class="comment">// and ultimately write the ledger also supplied via HandleChain.  This design allows for two primary flows</span></span><br><span class="line"><span class="comment">// 1. Messages are ordered into a stream, the stream is cut into blocks, the blocks are committed (solo, kafka)</span></span><br><span class="line"><span class="comment">// 2. Messages are cut into blocks, the blocks are ordered, then the blocks are committed (sbft)</span></span><br><span class="line"><span class="keyword">type</span> Chain <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// 普通消息/交易排序</span></span><br><span class="line">	<span class="comment">// Order accepts a message which has been processed at a given configSeq.</span></span><br><span class="line">	<span class="comment">// If the configSeq advances, it is the responsibility of the consenter</span></span><br><span class="line">	<span class="comment">// to revalidate and potentially discard the message</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Order(env *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置消息/交易排序</span></span><br><span class="line">	<span class="comment">// Configure accepts a message which reconfigures the channel and will</span></span><br><span class="line">	<span class="comment">// trigger an update to the configSeq if committed.  The configuration must have</span></span><br><span class="line">	<span class="comment">// been triggered by a ConfigUpdate message. If the config sequence advances,</span></span><br><span class="line">	<span class="comment">// it is the responsibility of the consenter to recompute the resulting config,</span></span><br><span class="line">	<span class="comment">// discarding the message if the reconfiguration is no longer valid.</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Configure(config *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 等待排序集群可用</span></span><br><span class="line">	<span class="comment">// WaitReady blocks waiting for consenter to be ready for accepting new messages.</span></span><br><span class="line">	<span class="comment">// This is useful when consenter needs to temporarily block ingress messages so</span></span><br><span class="line">	<span class="comment">// that in-flight messages can be consumed. It could return error if consenter is</span></span><br><span class="line">	<span class="comment">// in erroneous states. If this blocking behavior is not desired, consenter could</span></span><br><span class="line">	<span class="comment">// simply return nil.</span></span><br><span class="line">	WaitReady() error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当排序集群发送错误时，会关闭返回的通道</span></span><br><span class="line">	<span class="comment">// Errored returns a channel which will close when an error has occurred.</span></span><br><span class="line">	<span class="comment">// This is especially useful for the Deliver client, who must terminate waiting</span></span><br><span class="line">	<span class="comment">// clients when the consenter is not up to date.</span></span><br><span class="line">	Errored() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动当前链</span></span><br><span class="line">	<span class="comment">// Start should allocate whatever resources are needed for staying up to date with the chain.</span></span><br><span class="line">	<span class="comment">// Typically, this involves creating a thread which reads from the ordering source, passes those</span></span><br><span class="line">	<span class="comment">// messages to a block cutter, and writes the resulting blocks to the ledger.</span></span><br><span class="line">	Start()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 停止当前链，并释放资源</span></span><br><span class="line">	<span class="comment">// Halt frees the resources which were allocated for this Chain.</span></span><br><span class="line">	Halt()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Consenter"><a href="#Consenter" class="headerlink" title="Consenter"></a>Consenter</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-consenter.png" alt="Consenter"></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Consenter <span class="keyword">interface</span> &#123;</span><br><span class="line">	HandleChain(support ConsenterSupport, metadata *cb.Metadata) (Chain, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Consenter也是接口，它只有1个功能用来创建<code>Chain</code>。每种共识插件，都有自己单独的<strong>consenter实现</strong>，分别用来创建solo实例、kafka实例或etcdraft实例。</p>
+<h3 id="ConsenterSupport"><a href="#ConsenterSupport" class="headerlink" title="ConsenterSupport"></a>ConsenterSupport</h3><p><img src="https://lessisbetter.site/images/2019-11-orderer-consentersupport.png" alt="ConsenterSupport"></p>
+<p>ConsenterSupport为<strong>consenter实现</strong>提供所需的资源，其实就是共识用来访问外部数据的接口。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ConsenterSupport provides the resources available to a Consenter implementation.</span></span><br><span class="line"><span class="keyword">type</span> ConsenterSupport <span class="keyword">interface</span> &#123;</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line"></span><br><span class="line">	<span class="comment">// VerifyBlockSignature verifies a signature of a block with a given optional</span></span><br><span class="line">	<span class="comment">// configuration (can be nil).</span></span><br><span class="line">	VerifyBlockSignature([]*cb.SignedData, *cb.ConfigEnvelope) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 提供把消息切成块的接口</span></span><br><span class="line">	<span class="comment">// BlockCutter returns the block cutting helper for this channel.</span></span><br><span class="line">	BlockCutter() blockcutter.Receiver</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的orderer配置</span></span><br><span class="line">	<span class="comment">// SharedConfig provides the shared config from the channel&#x27;s current config block.</span></span><br><span class="line">	SharedConfig() channelconfig.Orderer</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的通道配置</span></span><br><span class="line">	<span class="comment">// ChannelConfig provides the channel config from the channel&#x27;s current config block.</span></span><br><span class="line">	ChannelConfig() channelconfig.Channel</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 生成区块</span></span><br><span class="line">	<span class="comment">// CreateNextBlock takes a list of messages and creates the next block based on the block with highest block number committed to the ledger</span></span><br><span class="line">	<span class="comment">// Note that either WriteBlock or WriteConfigBlock must be called before invoking this method a second time.</span></span><br><span class="line">	CreateNextBlock(messages []*cb.Envelope) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 读区块</span></span><br><span class="line">	<span class="comment">// Block returns a block with the given number,</span></span><br><span class="line">	<span class="comment">// or nil if such a block doesn&#x27;t exist.</span></span><br><span class="line">	Block(number <span class="keyword">uint64</span>) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写区块</span></span><br><span class="line">	<span class="comment">// WriteBlock commits a block to the ledger.</span></span><br><span class="line">	WriteBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写配置区块并更新配置</span></span><br><span class="line">	<span class="comment">// WriteConfigBlock commits a block to the ledger, and applies the config update inside.</span></span><br><span class="line">	WriteConfigBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Sequence returns the current config squence.</span></span><br><span class="line">	Sequence() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// ChainID returns the channel ID this support is associated with.</span></span><br><span class="line">	ChainID() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Height returns the number of blocks in the chain this channel is associated with.</span></span><br><span class="line">	Height() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 以原始数据的格式追加区块，不像WriteBlock那样会修改元数据</span></span><br><span class="line">	<span class="comment">// Append appends a new block to the ledger in its raw form,</span></span><br><span class="line">	<span class="comment">// unlike WriteBlock that also mutates its metadata.</span></span><br><span class="line">	Append(block *cb.Block) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="宏观视角"><a href="#宏观视角" class="headerlink" title="宏观视角"></a>宏观视角</h2><p>把上面介绍的各项，融合在一幅图中：</p>
+<ul>
+<li>Registrar 包容万象，主要是ChainSupport和Consenter，Consenter是可插拔的</li>
+<li>ChainSupport 代表了一条链，能够指向属于本条链的共识实例，该共识实例由对应共识类型的Consenter创建</li>
+<li>共识实例使用ConsenterSupport访问共识外部资源</li>
+</ul>
+<p><img src="https://lessisbetter.site/images/2019-11-core-struct-of-orderer.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1774,178 +1900,6 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们终于知道Policy是哪来的，又是如何被使用的了。管理和查看链码信息，本质是创建一个调用LSCC的Proposal或者交易，链码的信息会保存在LSCC，当VSCC验证链码的交易时，会从LSCC获取信息，包括背书策略、vscc插件等，以验证交易。</p>
 <p>最后，ESCC、VSCC也是进行了可插拔设计的。</p>
 <p><img src="https://lessisbetter.site/images/2019-09-endorser-policy.png" alt="endorser policy"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="云原生、Go语言、区块链">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/09/05/etcd-raft-sources-structs/" class="post-title-link" itemprop="url">Etcd Raft架构设计和源码剖析3：重要结构体定义</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-09-05 21:59:35" itemprop="dateCreated datePublished" datetime="2019-09-05T21:59:35+08:00">2019-09-05</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。</p>
-<p>在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。</p>
-<p><img src="https://lessisbetter.site/images/2019-08-raft-%E5%9B%BE1.png" alt="State machine"></p>
-<p>Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并不是raft的一部分，而是用来存储数据的模块。</p>
-<h2 id="Entry"><a href="#Entry" class="headerlink" title="Entry"></a>Entry</h2><p>每个Raft集群节点都是一个状态机，每个节点都使用相同的log entry序列修改状态机的数据，Entry就是每一个操作项，<strong>raft的核心能力就是为应用层提供序列相同的entry</strong>。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Entry <span class="keyword">struct</span> &#123;</span><br><span class="line">	Term             <span class="keyword">uint64</span>    <span class="string">`protobuf:&quot;varint,2,opt,name=Term&quot; json:&quot;Term&quot;`</span></span><br><span class="line">	Index            <span class="keyword">uint64</span>    <span class="string">`protobuf:&quot;varint,3,opt,name=Index&quot; json:&quot;Index&quot;`</span></span><br><span class="line">	Type             EntryType <span class="string">`protobuf:&quot;varint,1,opt,name=Type,enum=raftpb.EntryType&quot; json:&quot;Type&quot;`</span></span><br><span class="line">	Data             []<span class="keyword">byte</span>    <span class="string">`protobuf:&quot;bytes,4,opt,name=Data&quot; json:&quot;Data,omitempty&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> EntryType <span class="keyword">int32</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	EntryNormal       EntryType = <span class="number">0</span></span><br><span class="line">	EntryConfChange   EntryType = <span class="number">1</span></span><br><span class="line">	EntryConfChangeV2 EntryType = <span class="number">2</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<p>每一个Entry，都可以使用(Term, Index)进行唯一标记，相当于Entry的ID：</p>
-<ul>
-<li>Term：即raft论文中的Term，表明了当前Entry所属的Term。raft不使用绝对时间，而是使用相对时间，它把时间分割成了大小不等的term，每一轮选举都会开启一个新的term，term值会连续累加。如果当前的节点已经是Term 10缺收到了Term 8的Entry，Term 8的Entry已经过时，会被丢弃。</li>
-<li>Index：每一个Entry都有一个的Index，代表当前Entry在log entry序列中的位置，每个index上最终只有1个达成共识的Entry。</li>
-</ul>
-<p>除了用于达成一致的Term和Index外，Entry还携带了数据：</p>
-<ul>
-<li>Type：表明当前Entry的类型，<code>EntryNormal</code>代表是Entry携带的是修改状态机的操作数据，<code>EntryConfChange</code>和<code>EntryConfChangeV2</code>代表的是Entry携带的是修改当前raft集群的配置。</li>
-<li>Data：是序列化的数据，不同的Type类型，对应不同的Data。</li>
-</ul>
-<h2 id="Snapshot"><a href="#Snapshot" class="headerlink" title="Snapshot"></a>Snapshot</h2><p>在Entry特别多的场景下，会存在一些问题，比如现在有1亿条已经达成一致Entry，后面还有源源不断的Entry产生，是否有以下问题：</p>
-<ol>
-<li>这些Entry占用了大量的磁盘空间，但实际上过去的Entry已经对已经拥有这些Entry的节点没有意义了，只对那些没有Entry的节点有意义，leader把Entry发送给没有这些Entry节点，以让这些节点最终能和leader保持一致的状态。</li>
-<li>有些follower非常慢，或者刚启动，或者重启过，与leader的当前状态已经严重脱节，让他们从Entry 0开始同步，然后应用到状态机，这种操作时间效率是不是非常慢？然后每一个Entry都会产生一个历史的状态，当产生新的状态之后，历史状态对当前节点也没有意义。</li>
-</ol>
-<p>解决这种问题的办法就是快照，比如虚拟机的快照，或者docker镜像（镜像本质也是一种快照），有了快照就可以把状态机快速恢复到快照时的状态，<strong>空间和时间上效率都能提高很多</strong>。</p>
-<p>Raft可以定期产生一些快照，然后在这些快照上按序应用快照之后的Entry就能得到一致的状态。1亿个Entry + 1亿01个Entry得到的状态，跟第1亿个Entry后所产生的快照+1亿零1个Entry得到的状态是一致的。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Snapshot <span class="keyword">struct</span> &#123;</span><br><span class="line">	Data             []<span class="keyword">byte</span>           <span class="string">`protobuf:&quot;bytes,1,opt,name=data&quot; json:&quot;data,omitempty&quot;`</span></span><br><span class="line">	Metadata         SnapshotMetadata <span class="string">`protobuf:&quot;bytes,2,opt,name=metadata&quot; json:&quot;metadata&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> SnapshotMetadata <span class="keyword">struct</span> &#123;</span><br><span class="line">	ConfState        ConfState <span class="string">`protobuf:&quot;bytes,1,opt,name=conf_state,json=confState&quot; json:&quot;conf_state&quot;`</span></span><br><span class="line">	Index            <span class="keyword">uint64</span>    <span class="string">`protobuf:&quot;varint,2,opt,name=index&quot; json:&quot;index&quot;`</span></span><br><span class="line">	Term             <span class="keyword">uint64</span>    <span class="string">`protobuf:&quot;varint,3,opt,name=term&quot; json:&quot;term&quot;`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Data：是状态机中状态的快照。</li>
-<li>Metadata：是快照自身相关的数据。<ul>
-<li>ConfState：是快照时，当前raft的配置状态，这些状态数据并不在状态机中，所以需要进行保存。</li>
-<li>Index、Term：快照所依据的Entry所在的Index和Term。</li>
-</ul>
-</li>
-</ul>
-<h2 id="Message"><a href="#Message" class="headerlink" title="Message"></a>Message</h2><p>Raft集群节点之间的通信只使用了1个结构体<code>Message</code>，Message中有一个<code>Type</code>成员，表明了当前的Message是哪种消息，比如可以是Raft论文中提到的AppendEntries，RequestVotes等，目前实际可以容纳19种类型的消息，每种消息对Raft都有不同的作用，具体见<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/51065416">这篇文章</a>：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不同的Message类型会用到不同的字段</span></span><br><span class="line"><span class="keyword">type</span> Message <span class="keyword">struct</span> &#123;</span><br><span class="line">	Type             MessageType <span class="string">`protobuf:&quot;varint,1,opt,name=type,enum=raftpb.MessageType&quot; json:&quot;type&quot;`</span></span><br><span class="line">	To               <span class="keyword">uint64</span>      <span class="string">`protobuf:&quot;varint,2,opt,name=to&quot; json:&quot;to&quot;`</span></span><br><span class="line">	From             <span class="keyword">uint64</span>      <span class="string">`protobuf:&quot;varint,3,opt,name=from&quot; json:&quot;from&quot;`</span></span><br><span class="line">	Term             <span class="keyword">uint64</span>      <span class="string">`protobuf:&quot;varint,4,opt,name=term&quot; json:&quot;term&quot;`</span></span><br><span class="line">	LogTerm          <span class="keyword">uint64</span>      <span class="string">`protobuf:&quot;varint,5,opt,name=logTerm&quot; json:&quot;logTerm&quot;`</span></span><br><span class="line">	Index            <span class="keyword">uint64</span>      <span class="string">`protobuf:&quot;varint,6,opt,name=index&quot; json:&quot;index&quot;`</span></span><br><span class="line">	Entries          []Entry     <span class="string">`protobuf:&quot;bytes,7,rep,name=entries&quot; json:&quot;entries&quot;`</span></span><br><span class="line">	Commit           <span class="keyword">uint64</span>      <span class="string">`protobuf:&quot;varint,8,opt,name=commit&quot; json:&quot;commit&quot;`</span></span><br><span class="line">	Snapshot         Snapshot    <span class="string">`protobuf:&quot;bytes,9,opt,name=snapshot&quot; json:&quot;snapshot&quot;`</span></span><br><span class="line">	Reject           <span class="keyword">bool</span>        <span class="string">`protobuf:&quot;varint,10,opt,name=reject&quot; json:&quot;reject&quot;`</span></span><br><span class="line">	RejectHint       <span class="keyword">uint64</span>      <span class="string">`protobuf:&quot;varint,11,opt,name=rejectHint&quot; json:&quot;rejectHint&quot;`</span></span><br><span class="line">	Context          []<span class="keyword">byte</span>      <span class="string">`protobuf:&quot;bytes,12,opt,name=context&quot; json:&quot;context,omitempty&quot;`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Message中包含了很多字段，不同的消息类型使用的字段组合不相同，可以从不同消息的处理逻辑中看出来。</p>
-<ul>
-<li>To, From：是消息的接收节点和发送节点的的Raft ID。</li>
-<li>Term：创建Message时，发送节点所在的Term。</li>
-<li>LogTerm：创建Message时，发送节点本地所保存的log entry序列中最大的Term，在选举的时候会使用。</li>
-<li>Index：不同的消息类型，Index的含义不同。Term和Index与Entry中的Term和Index不一定会相同，因为某个follower可能比较慢，leader向follower发送已经committed的Entry。</li>
-<li>Entries：发送给follower，待follower处理的Entry。</li>
-<li>Commit：创建Message时，不同消息含义不同，Append时是发送节点本地已committed的Index，Heartbeat时是committed Index或者与follower匹配的Index。</li>
-<li>Snapshot：leader传递给follower的snapshot。</li>
-<li>Reject：投票和Append的响应消息使用，Reject表示拒绝leader发来的消息。</li>
-<li>RejectHint：拒绝Append消息的响应消息使用，用来给leader提示，发送follower已有的最后一个Index。</li>
-<li>Context：某些消息的附加信息，即用来存储通用的数据。比如竞选时，存放<code>campaignTransfer</code>。</li>
-</ul>
-<h2 id="Storage"><a href="#Storage" class="headerlink" title="Storage"></a>Storage</h2><p>etcd/raft不负责<strong>持久化数据存储</strong>和网络通信，网络数据都是通过Node接口的函数传入和传出raft。持久化数据存储由创建raft.Node的应用层负责，包含：</p>
-<ul>
-<li>应用层使用Entry生成的状态机，即一致的应用数据。</li>
-<li>WAL：Write Ahead Log，历史的Entry（包含还未达成一致的Entry）和快照数据。</li>
-</ul>
-<p>Snapshot是已在节点间达成一致Entry的快照，快照之前的Entry必然都是已经达成一致的，而快照之后，有达成一致的，也有写入磁盘还未达成一致的Entry。etcd/raft会使用到这些Entry和快照，而<code>Storage</code>接口，就是用来读这些数据的。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Storage is an interface that may be implemented by the application</span></span><br><span class="line"><span class="comment">// to retrieve log entries from storage.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// If any Storage method returns an error, the raft instance will</span></span><br><span class="line"><span class="comment">// become inoperable and refuse to participate in elections; the</span></span><br><span class="line"><span class="comment">// application is responsible for cleanup and recovery in this case.</span></span><br><span class="line"><span class="keyword">type</span> Storage <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// TODO(tbg): split this into two interfaces, LogStorage and StateStorage.</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// InitialState returns the saved HardState and ConfState information.</span></span><br><span class="line">	InitialState() (pb.HardState, pb.ConfState, error)</span><br><span class="line">	<span class="comment">// Entries returns a slice of log entries in the range [lo,hi).</span></span><br><span class="line">	<span class="comment">// MaxSize limits the total size of the log entries returned, but</span></span><br><span class="line">	<span class="comment">// Entries returns at least one entry if any.</span></span><br><span class="line">	Entries(lo, hi, maxSize <span class="keyword">uint64</span>) ([]pb.Entry, error)</span><br><span class="line">	<span class="comment">// Term returns the term of entry i, which must be in the range</span></span><br><span class="line">	<span class="comment">// [FirstIndex()-1, LastIndex()]. The term of the entry before</span></span><br><span class="line">	<span class="comment">// FirstIndex is retained for matching purposes even though the</span></span><br><span class="line">	<span class="comment">// rest of that entry may not be available.</span></span><br><span class="line">	Term(i <span class="keyword">uint64</span>) (<span class="keyword">uint64</span>, error)</span><br><span class="line">	<span class="comment">// LastIndex returns the index of the last entry in the log.</span></span><br><span class="line">	LastIndex() (<span class="keyword">uint64</span>, error)</span><br><span class="line">	<span class="comment">// FirstIndex returns the index of the first log entry that is</span></span><br><span class="line">	<span class="comment">// possibly available via Entries (older entries have been incorporated</span></span><br><span class="line">	<span class="comment">// into the latest Snapshot; if storage only contains the dummy entry the</span></span><br><span class="line">	<span class="comment">// first log entry is not available).</span></span><br><span class="line">	FirstIndex() (<span class="keyword">uint64</span>, error)</span><br><span class="line">	<span class="comment">// Snapshot returns the most recent snapshot.</span></span><br><span class="line">	<span class="comment">// If snapshot is temporarily unavailable, it should return ErrSnapshotTemporarilyUnavailable,</span></span><br><span class="line">	<span class="comment">// so raft state machine could know that Storage needs some time to prepare</span></span><br><span class="line">	<span class="comment">// snapshot and call Snapshot later.</span></span><br><span class="line">	Snapshot() (pb.Snapshot, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用这个接口，从应用层读取：</p>
-<ul>
-<li>InitialState：HardState和配置状态Confstate</li>
-<li>Entries：根据Index获取连续的Entry</li>
-<li>Term：获取某个Entry所在的Term</li>
-<li>LastIndex：获取本节点已存储的最新的Entry的Index</li>
-<li>FirstIndex：获取本节点已存储的第一个Entry的Index</li>
-<li>Snapshot：获取本节点最近生成的Snapshot，Snapshot是由应用层创建的，并暂时保存起来，raft调用此接口读取</li>
-</ul>
-<p>每次都从磁盘文件读取这些数据，效率必然是不高的，所以etcd/raft内定义了<code>MemoryStorage</code>，它实现了<code>Storage</code>接口，并且提供了函数来维护最新快照后的Entry，关于<code>MemoryStorage</code>见<a href="#raftLog">raftLog</a>小节，其中的<code>storage</code>即为<code>MemoryStorage</code>。</p>
-<h2 id="unstable"><a href="#unstable" class="headerlink" title="unstable"></a>unstable</h2><p>因为Entry的存储是由应用层负责的，所以raft需要暂时存储还未存到Storage中的Entry或者Snapshot，在创建Ready时，Entry和Snapshot会被封装到Ready，由应用层写入到storage。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// unstable.entries[i] has raft log position i+unstable.offset.</span></span><br><span class="line"><span class="comment">// Note that unstable.offset may be less than the highest log</span></span><br><span class="line"><span class="comment">// position in storage; this means that the next write to storage</span></span><br><span class="line"><span class="comment">// might need to truncate the log before persisting unstable.entries.</span></span><br><span class="line"><span class="keyword">type</span> unstable <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// the incoming unstable snapshot, if any.</span></span><br><span class="line">	snapshot *pb.Snapshot</span><br><span class="line">	<span class="comment">// all entries that have not yet been written to storage.</span></span><br><span class="line">	entries []pb.Entry</span><br><span class="line">	offset  <span class="keyword">uint64</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Snapshot：是follower从leader收到的最新的Snapshot。</li>
-<li>entries：对leader而已，是raft刚利用请求创建的Entry，对follower而言是从leader收到的Entry。</li>
-<li>offset：Entries[i].Index = i + offset。</li>
-</ul>
-<h2 id="raftLog"><a href="#raftLog" class="headerlink" title="raftLog"></a>raftLog</h2><p>raft使用raftLog来管理当前Entry序列和Snapshot等信息，它由Storage、unstable、committed和applied组成。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> raftLog <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// storage contains all stable entries since the last snapshot.</span></span><br><span class="line">	storage Storage</span><br><span class="line"></span><br><span class="line">	<span class="comment">// unstable contains all unstable entries and snapshot.</span></span><br><span class="line">	<span class="comment">// they will be saved into storage.</span></span><br><span class="line">	unstable unstable</span><br><span class="line"></span><br><span class="line">	<span class="comment">// committed和applied是storage的2个整数下标</span></span><br><span class="line">	<span class="comment">// committed到applied需要Ready</span></span><br><span class="line">	<span class="comment">// committed is the highest log position that is known to be in</span></span><br><span class="line">	<span class="comment">// stable storage on a quorum of nodes.</span></span><br><span class="line">	committed <span class="keyword">uint64</span></span><br><span class="line">	<span class="comment">// applied is the highest log position that the application has</span></span><br><span class="line">	<span class="comment">// been instructed to apply to its state machine.</span></span><br><span class="line">	<span class="comment">// Invariant: applied &lt;= committed</span></span><br><span class="line">	applied <span class="keyword">uint64</span></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Storage和unstable前面已经介绍过了，所以介绍下committed和applied。</p>
-<p>committed指最后一个在raft集群多数节点之间达成一致的Entry Index。</p>
-<p>applied指当前节点被应用层应用到状态机的最后一个Entry Index。applied和committed之间的Entry就是等待被应用层应用到状态机的Entry。</p>
-<p>前面提到Storage接口可以获取第一个索引firstIdx，最后一个索引lastIdx，在生成snapshot之后签名的Entry就可以删除了，所以firstidx是storage中snapshot后的第一个Entry的Index，lastIndex是storage中保存的最后一个Entry的Index，这个Entry可能还没有在raft集群多数节点之间达成一致，所以在committed之后，这些Entry是等待commit的Entry，leader发现某个Entry Index已经在多数节点之间达成一致，就会把committed移动到该Entry Index。</p>
-<p><img src="https://lessisbetter.site/images/2019-08-raftLog.png" alt="raftLog"></p>
-<h2 id="SoftState"><a href="#SoftState" class="headerlink" title="SoftState"></a>SoftState</h2><p>SoftState指易变的状态数据，记录了<strong>当前</strong>的Leader的Node ID，以及当前节点的角色。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SoftState provides state that is useful for logging and debugging.</span></span><br><span class="line"><span class="comment">// The state is volatile and does not need to be persisted to the WAL.</span></span><br><span class="line"><span class="keyword">type</span> SoftState <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// leader的Node ID</span></span><br><span class="line">	Lead <span class="keyword">uint64</span> <span class="comment">// must use atomic operations to access; keep 64-bit aligned.</span></span><br><span class="line">	<span class="comment">// 节点是什么角色：leader、follower...</span></span><br><span class="line">	RaftState StateType</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// StateType represents the role of a node in a cluster.</span></span><br><span class="line"><span class="keyword">type</span> StateType <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> stmap = [...]<span class="keyword">string</span>&#123;</span><br><span class="line">	<span class="string">&quot;StateFollower&quot;</span>,</span><br><span class="line">	<span class="string">&quot;StateCandidate&quot;</span>,</span><br><span class="line">	<span class="string">&quot;StateLeader&quot;</span>,</span><br><span class="line">	<span class="string">&quot;StatePreCandidate&quot;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="HardState"><a href="#HardState" class="headerlink" title="HardState"></a>HardState</h2><p>HardState是写入到WAL（存储Entry的文件）的状态，可以在节点重启时恢复raft的状态，它了记录：</p>
-<ul>
-<li>Term：节点当前所在的Term。</li>
-<li>Vote：节点在竞选期间所投的候选节点ID。</li>
-<li>Commit：当前已经committed Entry Index。</li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> HardState <span class="keyword">struct</span> &#123;</span><br><span class="line">	Term             <span class="keyword">uint64</span> <span class="string">`protobuf:&quot;varint,1,opt,name=term&quot; json:&quot;term&quot;`</span></span><br><span class="line">	Vote             <span class="keyword">uint64</span> <span class="string">`protobuf:&quot;varint,2,opt,name=vote&quot; json:&quot;vote&quot;`</span></span><br><span class="line">	Commit           <span class="keyword">uint64</span> <span class="string">`protobuf:&quot;varint,3,opt,name=commit&quot; json:&quot;commit&quot;`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="Ready"><a href="#Ready" class="headerlink" title="Ready"></a>Ready</h2><p>终于到etcd raft最重要的一个结构体了。raft使用Ready结构体对外传递数据，是多种数据的打包。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Ready encapsulates the entries and messages that are ready to read,</span></span><br><span class="line"><span class="comment">// be saved to stable storage, committed or sent to other peers.</span></span><br><span class="line"><span class="comment">// All fields in Ready are read-only.</span></span><br><span class="line"><span class="keyword">type</span> Ready <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// The current volatile state of a Node.</span></span><br><span class="line">	<span class="comment">// SoftState will be nil if there is no update.</span></span><br><span class="line">	<span class="comment">// It is not required to consume or store SoftState.</span></span><br><span class="line">	*SoftState</span><br><span class="line"></span><br><span class="line">	<span class="comment">// The current state of a Node to be saved to stable storage BEFORE</span></span><br><span class="line">	<span class="comment">// Messages are sent.</span></span><br><span class="line">	<span class="comment">// HardState will be equal to empty state if there is no update.</span></span><br><span class="line">	pb.HardState</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ReadStates can be used for node to serve linearizable read requests locally</span></span><br><span class="line">	<span class="comment">// when its applied index is greater than the index in ReadState.</span></span><br><span class="line">	<span class="comment">// Note that the readState will be returned when raft receives msgReadIndex.</span></span><br><span class="line">	<span class="comment">// The returned is only valid for the request that requested to read.</span></span><br><span class="line">	ReadStates []ReadState</span><br><span class="line"></span><br><span class="line">	<span class="comment">// unstable的entry，即待写入到storage的entry</span></span><br><span class="line">	<span class="comment">// Entries specifies entries to be saved to stable storage BEFORE</span></span><br><span class="line">	<span class="comment">// Messages are sent.</span></span><br><span class="line">	Entries []pb.Entry</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Snapshot specifies the snapshot to be saved to stable storage.</span></span><br><span class="line">	Snapshot pb.Snapshot</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 待applied的entry</span></span><br><span class="line">	<span class="comment">// CommittedEntries specifies entries to be committed to a</span></span><br><span class="line">	<span class="comment">// store/state-machine. These have previously been committed to stable</span></span><br><span class="line">	<span class="comment">// store.</span></span><br><span class="line">	CommittedEntries []pb.Entry</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Messages specifies outbound messages to be sent AFTER Entries are</span></span><br><span class="line">	<span class="comment">// committed to stable storage.</span></span><br><span class="line">	<span class="comment">// If it contains a MsgSnap message, the application MUST report back to raft</span></span><br><span class="line">	<span class="comment">// when the snapshot has been received or has failed by calling ReportSnapshot.</span></span><br><span class="line">	Messages []pb.Message</span><br><span class="line"></span><br><span class="line">	<span class="comment">// MustSync indicates whether the HardState and Entries must be synchronously</span></span><br><span class="line">	<span class="comment">// written to disk or if an asynchronous write is permissible.</span></span><br><span class="line">	MustSync <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>SoftState、HardState、Entry、Snapshot、Message都已经介绍过，不再单独介绍含义。</p>
-<p>Entries和CommittedEntries的区别是，Entries保存的是从unstable读取的Entry，它们即将被应用层写入storage，CommittedEntries是已经被Committed，还没有applied，应用层会把他们应用到状态机。</p>
-<p>ReadStates用来处理读请求，MustSync用来指明应用层是否采用异步的方式写数据。</p>
-<p>应用层在接收到Ready后，应当处理Ready中的每一个有效字段，处理完毕后，调用<code>Advance()</code>通知raft Ready已处理完毕。</p>
 
       
     </div>

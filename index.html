@@ -195,7 +195,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -241,6 +241,89 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2021/02/21/k8s-hostport/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="云原生、Go语言、区块链">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/02/21/k8s-hostport/" class="post-title-link" itemprop="url">k8s hostport</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-02-21 10:18:46 / 修改时间：10:20:47" itemprop="dateCreated datePublished" datetime="2021-02-21T10:18:46+08:00">2021-02-21</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>hostport是一种把host的ip:port绑定到pod的port方法，是端口路由，访问host的ip:port即可访问pod的port。</p>
+<p>hostport是一个三元组配置：<code>&lt;hostIP, hostPort, protocol&gt;</code> ，hostIP不配置时，默认为<code>0.0.0.0</code>，<code>protocol</code>默认为<code>TCP</code>。</p>
+<p>如下的Pod声明文件，指nginx这个Pod使用hostport，使用的是&lt;0.0.0.0, 80, TCP&gt;，即host上所有IP的80端口的TCP连接，都会转发给该nginx Pod。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">image:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">      <span class="attr">hostPort:</span> <span class="number">80</span></span><br></pre></td></tr></table></figure>
+
+<p>特点：</p>
+<ol>
+<li>host上的任何两个pod不能有相同的hostport。由于端口绑定，host上的某个端口只能被1个Pod所绑定。</li>
+<li>host的ip和port资源是有限的，所能支持使用hostPort的pod数也是有限的。</li>
+<li>灵活性差，需要维护name service。当pod被迁移到新node时，需要使用新node的ip访问pod。</li>
+</ol>
+<p>node1的ip为<code>10.0.13.3</code>，则：</p>
+<ol>
+<li>&lt;0.0.0.0, 80, TCP&gt; 和 &lt;10.0.13.3, 80, TCP&gt;是冲突的。</li>
+<li>&lt;10.0.13.3, TCP&gt; 和 &lt;10.0.13.3, 80, TCP&gt;是冲突的。</li>
+<li>&lt;0.0.0.0, 80, TCP&gt; 和 &lt;10.0.13.3, 80, UDP&gt;是不冲突的。</li>
+<li>&lt;10.0.13.3, 80, TCP&gt; 和 &lt;10.0.13.3, 80, UDP&gt;是不冲突的。</li>
+<li>&lt;0.0.0.0, 80, TCP&gt; 和 &lt;10.0.13.3, 90, TCP&gt;是不冲突的。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1456,172 +1539,6 @@
 <li><a target="_blank" rel="noopener" href="https://my.oschina.net/xiaominmin/blog/3068364">解决写 cpu.cfs_quota_us <code>invalid argument</code>问题</a></li>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/xftony/article/details/80536562">解决写 cpuset.tasks <code>No space</code> 问题</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/raymondshiquan/articles/2727037.html">cgroup使用踩坑</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/08/30/cgroup-2-memory/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://lessisbetter.site/images/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="云原生、Go语言、区块链">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/08/30/cgroup-2-memory/" class="post-title-link" itemprop="url">Docker容器基础2：Cgroup - memory子系统</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-08-30 10:45:08" itemprop="dateCreated datePublished" datetime="2020-08-30T10:45:08+08:00">2020-08-30</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-13 16:44:06" itemprop="dateModified" datetime="2020-12-13T16:44:06+08:00">2020-12-13</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="测试环境版本"><a href="#测试环境版本" class="headerlink" title="测试环境版本"></a>测试环境版本</h2><p>测试机采用的Ubuntu 16.04 与 Linux 4.4.0 内核版本：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[~]$ cat &#x2F;etc&#x2F;issue</span><br><span class="line">Ubuntu 16.04.4 LTS \n \l</span><br><span class="line">[~]$</span><br><span class="line">[~]$ cat &#x2F;proc&#x2F;version</span><br><span class="line">Linux version 4.4.0-117-generic (buildd@lgw01-amd64-057) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.9) ) #141-Ubuntu SMP Tue Mar 13 12:01:47 UTC 2018</span><br></pre></td></tr></table></figure>
-
-<p><strong>提醒</strong>：Linux内核版本至少要大于 4.3 这样cgroup的功能才是全的，否则Linux内核版本过低，由于功能不全可能无法运行提供的Demo，目前已知无法运行的内核版本有：<code>Linux version 3.10.0</code>。</p>
-<h2 id="Cgroup-memory子系统介绍"><a href="#Cgroup-memory子系统介绍" class="headerlink" title="Cgroup memory子系统介绍"></a>Cgroup memory子系统介绍</h2><p>cgroup的memory子系统全称为 Memory Resource Controller ，它能够限制cgroup中所有任务的使用的内存和交换内存进行限制，并且采取control措施：当OOM时，是否要kill进程。</p>
-<p>memroy包含了很多设置指标和统计指标：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ ls memory.*</span><br><span class="line">memory.failcnt                  memory.kmem.tcp.limit_in_bytes      memory.memsw.limit_in_bytes      memory.soft_limit_in_bytes</span><br><span class="line">memory.force_empty              memory.kmem.tcp.max_usage_in_bytes  memory.memsw.max_usage_in_bytes  memory.stat</span><br><span class="line">memory.kmem.failcnt             memory.kmem.tcp.usage_in_bytes      memory.memsw.usage_in_bytes      memory.swappiness</span><br><span class="line">memory.kmem.limit_in_bytes      memory.kmem.usage_in_bytes          memory.move_charge_at_immigrate  memory.usage_in_bytes</span><br><span class="line">memory.kmem.max_usage_in_bytes  memory.limit_in_bytes               memory.numa_stat                 memory.use_hierarchy</span><br><span class="line">memory.kmem.slabinfo            memory.max_usage_in_bytes           memory.oom_control</span><br><span class="line">memory.kmem.tcp.failcnt         memory.memsw.failcnt                memory.pressure_level</span><br></pre></td></tr></table></figure>
-
-<p>下图进行了汇总，虚线所圈出的指标为常用指标，每个指标的含义也如图所标注：</p>
-<p><img src="https://lessisbetter.site/images/2020-08-cgroup-memory.png" alt="cgroup memory subsystem"></p>
-<p>所有指标的含义可以参考<a target="_blank" rel="noopener" href="https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups/memory.txt">Linux Kernel关于cgroup memory</a>的介绍。</p>
-<h2 id="利用Docker演示Cgroup内存限制"><a href="#利用Docker演示Cgroup内存限制" class="headerlink" title="利用Docker演示Cgroup内存限制"></a>利用Docker演示Cgroup内存限制</h2><ol>
-<li>创建一个容器，限制为内存为128MB</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[~]$ docker run --rm -itd -m 128m stress:16.04</span><br><span class="line">fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>容器内利用<code>stress</code>使用100MB内存</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[~]$ docker exec -it fda7bbf29 bash</span><br><span class="line">root@fda7bbf297d9:&#x2F;# stress --vm-bytes 100m --vm-keep -m 1</span><br><span class="line">stress: info: [23739] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>在memory子系统目录下，利用容器id找到与当前容器相关的cgroup目录</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice]$ find . -name &quot;*fda7bbf29*&quot; -print</span><br><span class="line">.&#x2F;var-lib-docker-containers-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f-shm.mount</span><br><span class="line">.&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope</span><br></pre></td></tr></table></figure>
-
-<p><code>./docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope</code> 目录为当前容器的内存cgroup节点。</p>
-<ol start="4">
-<li>查看该容器的内存使用量、限制，以及统计信息</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ cat memory.usage_in_bytes memory.limit_in_bytes memory.stat</span><br><span class="line">106049536 &#x2F;&#x2F; memory.usage_in_bytes</span><br><span class="line">134217728 &#x2F;&#x2F; memory.limit_in_bytes</span><br><span class="line">cache 0   &#x2F;&#x2F; 以下为memory.stat</span><br><span class="line">rss 105943040</span><br><span class="line">swap 0</span><br><span class="line">...</span><br><span class="line">hierarchical_memory_limit 134217728</span><br><span class="line">hierarchical_memsw_limit 268435456</span><br><span class="line">...</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>使用量为 ： 106049536 / 1024 / 1024 = 101.14 MB</li>
-<li>限制为 ： 134217728 / 1024 / 1024 = 128MB</li>
-</ul>
-<p>stat文件：</p>
-<ul>
-<li>rss ：105943040 / 1024 / 1024 = 101.03 MB</li>
-<li>hierarchical_memory_limit ： 134217728 / 1024 / 1024 = 128MB</li>
-</ul>
-<p>stat中rss的值与 <code>usage_in_bytes</code> 有稍微的出入，原因是 <code>usage_in_bytes</code> 的值为近视值，而之所以近似，是因为内核采用的是异步统计，造成统计值和当下的值存在误差。</p>
-<p>该cgroup中所有tasks所占用的真实内存可以使用：<code>stat.rss + stat.cache + stat.swap</code> ，在上面的例子中 cache 和 swap 都为0，所以 rss 的值就是真实的内存使用量。</p>
-<p>之所以存在 <code>usage_in_bytes</code> ， 这样做的目的是通过一个值可以快速获取内存的使用量，而无需进行计算。</p>
-<p>利用<code>docker.stats</code> 查看内存占用情况:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ docker stats</span><br><span class="line">CONTAINER           CPU %               MEM USAGE &#x2F; LIMIT     MEM %               NET I&#x2F;O             BLOCK I&#x2F;O           PIDS</span><br><span class="line">fda7bbf297d9        99.50%              101.1 MiB &#x2F; 128 MiB   79.01%              648 B &#x2F; 648 B       0 B &#x2F; 0 B           4</span><br></pre></td></tr></table></figure>
-
-<p>可以看到usage和limit分别为101.1MB和128MB，usage与cgroup中 <code>usage_in_bytes</code> 是一致的，limit与容器启动时的配置一致。</p>
-<p>top命令查看进程占用内存情况：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ top</span><br><span class="line">....</span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">13025 root      20   0  109872 102336     36 R  93.8  1.3   6:39.09 stress</span><br></pre></td></tr></table></figure>
-
-<p>可以看到<code>RES</code>为 102336 KB，即 99.9 MB，小于cgroup中统计的内存使用量，原因是因为cgroup中除了stress还有其他任务，比如docker中运行的ssh。</p>
-<p>可以查看该group的进程：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-fda7bbf297d9300894c10c5514c32c70a50987ae99cad5731234058d9f6e2b7f.scope]$ cat cgroup.procs</span><br><span class="line">13780</span><br><span class="line">13792</span><br><span class="line">13793</span><br><span class="line">21124</span><br><span class="line">21221</span><br></pre></td></tr></table></figure>
-
-<p>从 <code>pstree -p</code> 可以查看整个进程树:</p>
-<p><img src="https://lessisbetter.site/images/2020-cgroup-memory-pstree.png"></p>
-<h2 id="利用Go演示Cgroup内存限制"><a href="#利用Go演示Cgroup内存限制" class="headerlink" title="利用Go演示Cgroup内存限制"></a>利用Go演示Cgroup内存限制</h2><h3 id="测试源码"><a href="#测试源码" class="headerlink" title="测试源码"></a>测试源码</h3><p>cgroup的演示<a target="_blank" rel="noopener" href="https://github.com/Shitaibin/notes/blob/master/docker/codes/02.1.cgroup.go">源码</a> ，关于源码中的<code>/proc/self/exe</code>看<a href="#%E8%A1%A5%E5%85%85%E5%B0%8F%E7%9F%A5%E8%AF%86">补充小知识</a>。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="comment">// 参考《自动动手写Docker》</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;io/ioutil&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;os/exec&quot;</span></span><br><span class="line">	<span class="string">&quot;path&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">	<span class="string">&quot;syscall&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> CgroupMemoryHierarchyMount = <span class="string">&quot;/sys/fs/cgroup/memory&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> os.Args[<span class="number">0</span>] == <span class="string">&quot;/proc/self/exe&quot;</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;---------- 2 ------------&quot;</span>)</span><br><span class="line">		fmt.Printf(<span class="string">&quot;Current pid: %d\n&quot;</span>, syscall.Getpid())</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 创建stress子进程，施加内存压力</span></span><br><span class="line">		allocMemSize := <span class="string">&quot;99m&quot;</span> <span class="comment">// 另外1项测试为99m</span></span><br><span class="line">		fmt.Printf(<span class="string">&quot;allocMemSize: %v\n&quot;</span>, allocMemSize)</span><br><span class="line">		stressCmd := fmt.Sprintf(<span class="string">&quot;stress --vm-bytes %s --vm-keep -m 1&quot;</span>, allocMemSize)</span><br><span class="line">		cmd := exec.Command(<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, stressCmd)</span><br><span class="line">		cmd.SysProcAttr = &amp;syscall.SysProcAttr&#123;&#125;</span><br><span class="line">		cmd.Stdin = os.Stdin</span><br><span class="line">		cmd.Stdout = os.Stdout</span><br><span class="line">		cmd.Stderr = os.Stderr</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> err := cmd.Run(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Printf(<span class="string">&quot;stress run error: %v&quot;</span>, err)</span><br><span class="line">			os.Exit(<span class="number">-1</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">&quot;---------- 1 ------------&quot;</span>)</span><br><span class="line">	cmd := exec.Command(<span class="string">&quot;/proc/self/exe&quot;</span>)</span><br><span class="line">	cmd.SysProcAttr = &amp;syscall.SysProcAttr&#123;</span><br><span class="line">		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWNS | syscall.CLONE_NEWPID,</span><br><span class="line">	&#125;</span><br><span class="line">	cmd.Stdin = os.Stdin</span><br><span class="line">	cmd.Stdout = os.Stdout</span><br><span class="line">	cmd.Stderr = os.Stderr</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动子进程</span></span><br><span class="line">	<span class="keyword">if</span> err := cmd.Start(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;/proc/self/exe start error: %v&quot;</span>, err)</span><br><span class="line">		os.Exit(<span class="number">-1</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	cmdPid := cmd.Process.Pid</span><br><span class="line">	fmt.Printf(<span class="string">&quot;cmdPid: %d\n&quot;</span>, cmdPid)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建子cgroup</span></span><br><span class="line">	memoryGroup := path.Join(CgroupMemoryHierarchyMount, <span class="string">&quot;test_memory_limit&quot;</span>)</span><br><span class="line">	os.Mkdir(memoryGroup, <span class="number">0755</span>)</span><br><span class="line">	<span class="comment">// 设定内存限制</span></span><br><span class="line">	ioutil.WriteFile(path.Join(memoryGroup, <span class="string">&quot;memory.limit_in_bytes&quot;</span>),</span><br><span class="line">		[]<span class="keyword">byte</span>(<span class="string">&quot;100m&quot;</span>), <span class="number">0644</span>)</span><br><span class="line">	<span class="comment">// 将进程加入cgroup</span></span><br><span class="line">	ioutil.WriteFile(path.Join(memoryGroup, <span class="string">&quot;tasks&quot;</span>),</span><br><span class="line">		[]<span class="keyword">byte</span>(strconv.Itoa(cmdPid)), <span class="number">0644</span>)</span><br><span class="line"></span><br><span class="line">	cmd.Process.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>源码运行解读：</p>
-<ol>
-<li>使用<code>go run</code>运行程序，或build后运行程序时，程序的名字是<code>02.1.cgroup</code>，所以不满足<code>os.Args[0] == &quot;/proc/self/exe&quot;</code>会被跳过。</li>
-<li>然后使用<code>&quot;/proc/self/exe&quot;</code>新建了子进程，子进程此时叫：<code>&quot;/proc/self/exe&quot;</code></li>
-<li>创建cgroup <code>test_memory_limit</code>，然后设置内存限制为100MB</li>
-<li>把子进程加入到cgroup <code>test_memory_limit</code></li>
-<li>等待子进程结束</li>
-<li>子进程干了啥呢？子进程其实还是当前程序，只不过它的名字是<code>&quot;/proc/self/exe&quot;</code>，符合最初的if语句，之后它会创建stress子进程，然后运行stress，可以修改<code>allocMemSize</code>设置stress所要占用的内存</li>
-</ol>
-<h3 id="不超越内存限制情况"><a href="#不超越内存限制情况" class="headerlink" title="不超越内存限制情况"></a>不超越内存限制情况</h3><p>源码默认在启动stress时，stress占用99m内存，cgroup限制最多使用100m内存。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.1.cgroup.go</span><br><span class="line">---------- 1 ------------</span><br><span class="line">cmdPid: 2533</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">allocMemSize: 99m</span><br><span class="line">stress: info: [6] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd</span><br></pre></td></tr></table></figure>
-
-<p>可以看到，子进程<code>&quot;/proc/self/exe&quot;</code>运行后取得的pid为 <strong>2533</strong> ，在新的Namespace中，子进程<code>&quot;/proc/self/exe&quot;</code>的pid已经变成1，然后利用stress打了99M内存。</p>
-<p>使用top查看资源使用情况，stress进程内存RES大约为99M，pid 为 <strong>2539</strong> 。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND</span><br><span class="line">2539 root      20   0  103940 101680    284 R 93.8  9.9   0:06.09 stress</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat memory.limit_in_bytes</span><br><span class="line">104857600</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ # 104857600 刚好为100MB</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat memory.usage_in_bytes</span><br><span class="line">2617344</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat tasks</span><br><span class="line">2533 &lt;--- &#x2F;prof&#x2F;self&#x2F;exe进程</span><br><span class="line">2534</span><br><span class="line">2535</span><br><span class="line">2536</span><br><span class="line">2537</span><br><span class="line">2538</span><br><span class="line">2539 &lt;--- stress进程</span><br></pre></td></tr></table></figure>
-
-<p>tasks下都是在cgroup <code>test_memory_limit</code> 中的进程，这些是Host中真实的进程号，通过<code>pstree -p</code>查看进程树，看看这些都是哪些进程：</p>
-<p><img src="https://lessisbetter.site/images/2020-08-cgroup.png" alt="Cgroup限制内存的进程树"></p>
-<p>进程树佐证了前面的代码执行流程分析大致是对的，只不过这其中还涉及一些创建子进程的具体手段，比如stress是通过sh命令创建出来的。</p>
-<h3 id="内存超过限制被Kill情况"><a href="#内存超过限制被Kill情况" class="headerlink" title="内存超过限制被Kill情况"></a>内存超过限制被Kill情况</h3><p>内存超过cgroup限制的内存会怎么样？会OOM吗？</p>
-<p>如果将stress内存提高到占用101MB，大于cgroup中内存的限制100M时，整个group中的进程就会被Kill。</p>
-<p>修改代码，将 <code>allocMemSize</code> 设置为 <code>101m</code> ，然后重新运行程序。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.1.cgroup.go                                                                        *[master]</span><br><span class="line">---------- 1 ------------</span><br><span class="line">cmdPid: 21492</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">allocMemSize: 101m</span><br><span class="line">stress: info: [6] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd</span><br><span class="line">stress: FAIL: [6] (415) &lt;-- worker 7 got signal 9</span><br><span class="line">stress: WARN: [6] (417) now reaping child worker processes</span><br><span class="line">stress: FAIL: [6] (421) kill error: No such process</span><br><span class="line">stress: FAIL: [6] (451) failed run completed in 0s</span><br><span class="line">2020&#x2F;08&#x2F;27 17:38:52 exit status 1</span><br></pre></td></tr></table></figure>
-
-<p><code>stress: FAIL: [6] (415) &lt;-- worker 7 got signal 9</code> 说明收到了信号9，即SIGKILL 。</p>
-<h2 id="补充小知识"><a href="#补充小知识" class="headerlink" title="补充小知识"></a>补充小知识</h2><p>在演示源码中，使用到<code>&quot;/proc/self/exe&quot;</code>，它在Linux是一个特殊的软链接，它指向当前正在运行的程序，比如执行<code>ll</code>查看该文件时，它就执行了<code>/usr/bin/ls</code>，因为当前的程序是<code>ls</code>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[~]$ ll &#x2F;proc&#x2F;self&#x2F;exe</span><br><span class="line">lrwxrwxrwx 1 centos centos 0 8月  27 12:44 &#x2F;proc&#x2F;self&#x2F;exe -&gt; &#x2F;usr&#x2F;bin&#x2F;ls</span><br></pre></td></tr></table></figure>
-
-<p>演示代码中的技巧就是通过<code>&quot;/proc/self/exe&quot;</code>重新启动一个子进程，只不过进程名称叫<code>&quot;/proc/self/exe&quot;</code>而已。如果代码中没有那句if判断，又会执行到创建子进程，最终会导致递归溢出。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>memory是cgroup的一个子系统，主要用来控制一组进程的内存资源，对最大使用量进行限制和控制。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups/memory.txt">Linux Kernel关于cgroup memory</a></li>
-<li><a target="_blank" rel="noopener" href="https://union-click.jd.com/jdc?e=&p=AyIGZRtSFwsWB1EcXhUyFQ5WEloVCxMBURxrUV1KWQorAlBHU0VeBUVNR0ZbSkdETlcNVQtHRVNSUVNLXANBRA1XB14DS10cQQVYD21XHgBcGFIUAhsGUx9cJQEbBTJbEmFdcHkRSANGBhBDCnkmEVQeC2UaaxUDEwVWEl8RBhM3ZRtcJUN8B1QaUxMCFAFlGmsVBhoOUx9fFwESB1IfaxICGzeDtdnBl4nT2YZrJTIRN2UrWyUBIkU7HQxBABEGBhILHVdGAgcaXB0DQARWHQ4QVhFVVhkLEVciBVQaXxw=">阿里同学的书《自己动手写Docker》</a></li>
 </ol>
 
       
